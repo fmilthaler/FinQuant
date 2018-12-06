@@ -1,0 +1,25 @@
+################
+# Python files #
+################
+*.pyc
+*.ipynb
+.ipynb_checkpoints
+
+##################
+# Text artifacts #
+##################
+*~
+*.swp
+
+##############
+# bkup files #
+##############
+**/bkup-files
+
+###############
+# latex files #
+###############
+*.log
+*.aux
+*.out
+*.pdf
