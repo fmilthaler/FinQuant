@@ -68,11 +68,18 @@ df_pf
 
 # <codecell>
 
+# build portfolio object
+pf = portfolio.Portfolio("my Portfolio", 2018, df_pf, df_data)
 
+# print portfolio information
+print(pf)
+print("-------------------")
+pf.getFund("Fund2")
 
 # <codecell>
 
-
+#pf.pf_roi_data
+pf.getPfRoiData().describe()
 
 # <codecell>
 
