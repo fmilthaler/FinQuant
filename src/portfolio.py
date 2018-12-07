@@ -6,7 +6,15 @@ class Portfolio(object):
         self.ref_year = ref_year
         self.portfolio = pd.DataFrame(portfolio)
         self.raw_data = pd.DataFrame(raw_data)
+        # add column "Age" to dataframe:
+        self.addAge()
         self.pf_roi_data = self.extractPfRoiData()
+
+    def addAge(self):
+        if (not 'Age' in self.portfolio.columns):
+            idx = self.portfolio.columns.get_loc('Year')
+            self.portfolio.insert(loc=idx+1, column='Age',
+                                  value=self.getRefYear()-self.portfolio['Year'].values)
     def extractPfRoiData(self):
         pf_roi_data = None
         return pd.DataFrame([])
