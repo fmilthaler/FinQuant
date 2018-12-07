@@ -87,6 +87,8 @@ pf.getPfRoiData().describe()
 
 # <codecell>
 
+def SharpeRatio(x):
+    return np.sqrt(len(x)) * x.mean() / x.std()
 
 
 # <codecell>
