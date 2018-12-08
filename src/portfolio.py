@@ -58,6 +58,13 @@ class Portfolio(object):
         #self.pf_roi_data = self.extractPfRoiData()
         #self.funds = self.extractFunds()
         self.pf_roi_data = pd.DataFrame()
+        # initialise other instance variables:
+        self.pf_means = None
+        self.pf_weights = None
+        self.expectedRoi = None
+        self.volatility = None
+        self.covPf = None
+
 
     #def addAge(self):
     #    if (not 'Age' in self.portfolio.columns):
