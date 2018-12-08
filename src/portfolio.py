@@ -218,6 +218,12 @@ class Portfolio(object):
         # set instance variable
         self.setCovPf(covPf)
         return covPf
+
+    def compSharpe(self, riskfreerate):
+        expected_roi = self.getPfExpectedRoi()
+        volatility = self.getVolatility()
+        return SharpeRatio(expected_roi, riskfreerate, volatility)
+
     def __str__(self):
         return str(self.getPortfolio())
 
