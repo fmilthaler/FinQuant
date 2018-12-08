@@ -132,6 +132,10 @@ class Portfolio(object):
     def getFunds(self):
         return self.funds
 
+    def getCovPf(self):
+        # get the covariance matrix of the roi of the portfolio
+        return self.pf_roi_data.cov()
+
     def compPfWeights(self):
         import numpy as np
         # computes the weights of the funds in the given portfolio
