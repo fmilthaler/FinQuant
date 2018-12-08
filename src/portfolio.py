@@ -261,3 +261,6 @@ class PortfolioBKUP(object):
         return fund
     def __str__(self):
         return str(self.getPortfolio())
+def SharpeRatio(exproi, riskfreerate, volatility):
+    sharpe = (exproi - riskfreerate)/float(volatility)
+    return sharpe
