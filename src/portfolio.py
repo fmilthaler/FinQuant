@@ -29,6 +29,12 @@ class Fund(object):
     def compKurtosis(self):
         return self.roi_data.kurt().values[0]
     def expectedRoi(self):
+    def __str__(self):
+        #result = self.name+":\n"
+        #for label, value in self.investmentinfo.iteritems():
+        #    result = result+str(label)+": "+str(value)+"\n"
+        #return result
+        return str(pd.DataFrame([self.investmentinfo]))
 
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
