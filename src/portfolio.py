@@ -132,6 +132,20 @@ class Portfolio(object):
     def getFunds(self):
         return self.funds
 
+    def compPfWeights(self):
+        import numpy as np
+        # computes the weights of the funds in the given portfolio
+        # in respect of the total investment
+        total = self.portfolio.FMV.sum()
+        weights = self.portfolio.FMV/total
+        #weights = []
+        #for key in self.funds.keys():
+        #    weights.append(self.getFund(key).getInvestmentInfo().FMV/total)
+        #return np.array(weights)
+        return weights
+
+    def compPfMeans(self):
+        return self.getPfRoiData().mean().values
     def __str__(self):
         return str(self.getPortfolio())
 
