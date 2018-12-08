@@ -158,6 +158,15 @@ class Portfolio(object):
         pf_weights = self.compPfWeights()
         expectedRoi = np.sum(pf_means * pf_weights)
         return expectedRoi
+
+    def compPfVolatility(self):
+        import numpy as np
+        # computing the volatility of a portfolio
+        pf_weights = self.compPfWeights()
+        cov_matrix = self.getCovPf()
+        volatility = np.sqrt(np.dot(pf_weights.T, np.dot(cov_matrix, pf_weights)))
+        return volatility
+
     def __str__(self):
         return str(self.getPortfolio())
 
