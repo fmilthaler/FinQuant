@@ -28,13 +28,7 @@ class Fund(object):
         return self.roi_data.skew().values[0]
     def compKurtosis(self):
         return self.roi_data.kurt().values[0]
-    def expectedRoi(self):
-        return None
     def __str__(self):
-        #result = self.name+":\n"
-        #for label, value in self.investmentinfo.iteritems():
-        #    result = result+str(label)+": "+str(value)+"\n"
-        #return result
         return str(pd.DataFrame([self.investmentinfo]))
 
 class Portfolio(object):
