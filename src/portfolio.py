@@ -162,9 +162,13 @@ class Portfolio(object):
         volatility = self.getVolatility()
         return SharpeRatio(expected_roi, riskfreerate, volatility)
 
+    def compSkew(self):
+        return self.getPfRoiData().skew()
     def __str__(self):
         return str(self.getPortfolio())
 
+    def compKurtosis(self):
+        return self.getPfRoiData().kurt()
 class PortfolioBKUP(object):
     ''' Object that contains information about a investment portfolio.
     To initialise the object, it requires a name, reference year, a pandas.DataFrame
