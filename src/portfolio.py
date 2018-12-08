@@ -24,6 +24,11 @@ class Fund(object):
         return self.investmentinfo
     def getRoiData(self):
         return self.roi_data
+    def compSkew(self):
+        return self.roi_data.skew().values[0]
+    def compKurtosis(self):
+        return self.roi_data.kurt().values[0]
+    def expectedRoi(self):
 
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
