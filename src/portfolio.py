@@ -133,21 +133,19 @@ class Portfolio(object):
         return pf_weights
 
     def compPfExpectedRoi(self):
-        import numpy as np
-        #calculate portfolio ROI
+        # computing portfolio ROI
         pf_means = self.compPfMeans()
         pf_weights = self.compPfWeights()
-        expectedRoi = np.sum(pf_means * pf_weights)
+        expectedRoi = weightedMean(pf_means, pf_weights)
         # set instance variable
         self.setPfExpectedRoi(expectedRoi)
         return expectedRoi
 
     def compPfVolatility(self):
-        import numpy as np
         # computing the volatility of a portfolio
         pf_weights = self.compPfWeights()
         covPf = self.compCovPf()
-        volatility = np.sqrt(np.dot(pf_weights.T, np.dot(covPf, pf_weights)))
+        volatility = weightedStd(covPf, pf_weights)
         # set instance variable
         self.setVolatility(volatility)
         return volatility
@@ -258,6 +256,16 @@ class PortfolioBKUP(object):
         return fund
     def __str__(self):
         return str(self.getPortfolio())
+
+def weightedMean(means, weights):
+    import numpy as np
+    return np.sum(means * weights)
+
+def weightedStd(cov_matrix, weights):
+    import numpy as np
+    weighted_std = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+    return weighted_std
+
 def SharpeRatio(exproi, riskfreerate, volatility):
     sharpe = (exproi - riskfreerate)/float(volatility)
     return sharpe
