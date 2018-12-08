@@ -29,6 +29,7 @@ class Fund(object):
     def compKurtosis(self):
         return self.roi_data.kurt().values[0]
     def expectedRoi(self):
+        return None
     def __str__(self):
         #result = self.name+":\n"
         #for label, value in self.investmentinfo.iteritems():
