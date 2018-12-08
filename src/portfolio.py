@@ -150,6 +150,14 @@ class Portfolio(object):
 
     def compPfMeans(self):
         return self.getPfRoiData().mean().values
+
+    def compPfExpectedRoi(self):
+        import numpy as np
+        #calculate portfolio ROI
+        pf_means = self.compPfMeans()
+        pf_weights = self.compPfWeights()
+        expectedRoi = np.sum(pf_means * pf_weights)
+        return expectedRoi
     def __str__(self):
         return str(self.getPortfolio())
 
