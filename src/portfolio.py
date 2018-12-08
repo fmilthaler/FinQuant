@@ -26,6 +26,14 @@ class Fund(object):
         return self.roi_data
 
 class Portfolio(object):
+    ''' Object that contains information about a investment portfolio.
+    To initialise the object, it requires a name, reference year.
+    To fill the portfolio with investment information and daily return of investments
+    (ROI) data, the function addFund(fund) should be used, in which `fund` is a `Fund`
+    object. a pandas.DataFrame
+    of the portfolio investment information. The corresponding daily return of investments
+    (ROI) are stored in the Fund object.
+    '''
     #def __init__(self, name, ref_year, portfolio):
     def __init__(self, name, ref_year):
         self.name = name
