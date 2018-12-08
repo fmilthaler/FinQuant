@@ -22,7 +22,8 @@ sns.set_style('darkgrid')
 # <codecell>
 
 # importing some custom functions
-import portfolio
+from portfolio import Portfolio, Fund
+#from portfolio import expectedValue, volatility
 
 # <codecell>
 
@@ -49,6 +50,10 @@ pylab.rcParams['xtick.labelsize'] = 10
 ##set size of numbers on y-axis
 pylab.rcParams['ytick.labelsize'] = 10
 
+# <markdowncell>
+
+# ## Getting data from files
+
 # <codecell>
 
 # read data into pandas dataframe:
@@ -70,131 +75,133 @@ df_data.head()
 
 df_pf
 
+# <markdowncell>
+
+# ## Adding a column to dataframe
+
+# <codecell>
+
+refYear = 2018
+if (not 'Age' in df_pf.columns):
+    df_pf.insert(loc=3, column='Age',
+                 value=refYear - df_pf['Year'].values)
+df_pf
+
+# <markdowncell>
+
+# ## Extract data from pandas.DataFrame and feed it into the Portfolio data structure
+
+# <codecell>
+
+def extractRoiData(df, age, strategy):
+    # generate a string to query the relevant data:
+    querystring = 'Age=='+str(age)+' & Strategy=="'+str(strategy)+'"'
+    # get data for the given information:
+    roi_data = df.query(querystring).reset_index(drop=True).ROI
+    return pd.DataFrame(roi_data)
+
 # <codecell>
 
 # build portfolio object
-pf = portfolio.Portfolio("my Portfolio", 2018, df_pf, df_data)
+ref_year = 2018
 
-# print portfolio information
-print(pf)
-print("-------------------")
-pf.getFund("Fund2")
+pf = Portfolio('my Portfolio', ref_year)
+for i in range(len(df_pf)):
+    #print(df_pf.loc[i])
+    age = df_pf.loc[i].Age
+    strategy = df_pf.loc[i].Strategy
+    #data = extractRoiData()
+    pf.addFund(Fund(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
+
+
+# <markdowncell>
+
+# ## At this point, the portfolio data structure is completed
+# The data can be examined as below
 
 # <codecell>
 
-#pf.pf_roi_data
+pf.getPortfolio()
+
+# <codecell>
+
+fund0 = pf.getFund('Fund0')
+fund0.getRoiData().describe()
+
+# <codecell>
+
+pf.getPfRoiData().head()
+
+# <codecell>
+
 pf.getPfRoiData().describe()
 
-# <codecell>
+# <markdowncell>
 
-
-
-# <codecell>
-
-def SharpeRatio(x):
-    return np.sqrt(len(x)) * x.mean() / x.std()
-
+# ## Skew and Kurtosis for each fund individually
 
 # <codecell>
 
+# skew and kurtosis of each fund:
+for label, fund in pf.getFunds().items():
+    print("++++++++++++++++++")
+    print(str(label)+":")
+    print("Skew: %.2f" % fund.compSkew())
+    print("Kurtosis: %.2f" % fund.compKurtosis())
 
+# <markdowncell>
 
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-
+# ## Skew and Kurtosis can also be done on the entire portfolio
 
 # <codecell>
 
-
-
-# <codecell>
-
-
+pf.compSkew()
 
 # <codecell>
 
+pf.compKurtosis()
 
+# <markdowncell>
 
-# <codecell>
-
-
-
-# <codecell>
-
-
+# # Computing the expected ROI and volatility of a portfolio
+# These are done as shown below.
 
 # <codecell>
 
-# pivot the dataframe:
-#df_roi = pd.pivot_table(pf.getPfRoiData(), index=['Age', 'Strategy'],
-df_roi = pd.pivot_table(df_data, index=['Age'],
-                     columns=['Strategy'],
-                     values=['ROI'],
-                     aggfunc={'ROI': 
-                              [np.mean, np.std, np.min, np.max, np.var, SharpeRatio]},
-                              #[np.mean, np.std, np.min, np.max, np.var]},
-                              #[np.mean, np.var]},
-                     fill_value = 0
-                    )
-df_roi
+exp_roi = pf.compPfExpectedRoi()
+volatility = pf.compPfVolatility()
+print("expected ROI = %.2f" % exp_roi)
+print("volatility = %.2f" % volatility)
+
+# <markdowncell>
+
+# # Optimisation of portfolio
+# This is done by performing a Monte Carlo simulation that randomly selects the weights of the portfolio and then computes the Sharpe ratio. An example is shown below.
 
 # <codecell>
 
-# Plotting means of ROI
-# bar plot in seaborn:
-fig=pylab.figure(figsize=(9,5))
-ax = sns.barplot(x="Age", y="ROI", hue="Strategy", ci=None, data=df_data)
-pylab.ylim([0,1.75])
-pylab.xlabel('Age')
-pylab.ylabel('Average ROI')
-pylab.title('Average ROIs plotted over ages for different strategies')
-# adding values to bars:
-buyout_mean = df_roi['ROI']['mean']['Buyout'].values
-vc_mean = df_roi['ROI']['mean']['VC'].values
-all_means = list(np.array([buyout_mean, vc_mean]).flatten())
-mt.changeBarWidth(ax,.4)
-mt.addValToBarPlot(ax, all_means, xshift=0.075, precision=2)
-pylab.show()
+num_trials = 10000
+riskfreerate = 0
+(max_sharpe_port, min_vol_port) = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, plot=True)
+
+# <markdowncell>
+
+# ## The optimised Portfolio
 
 # <codecell>
 
-# Comparison of mean ROI obtained  different strategies
-strategies = ("Buyout", "VC")
-# first computing overall mean of ROI:
-roi_means = {}
-for strategy in strategies:
-    roi_means[strategy] = df_data.query('Strategy=="'+strategy+'"')['ROI'].mean()
-    print("Strategy: "+strategy)
-    print("Overall mean of ROI =",
-          round(roi_means[strategy],6))
-
-# Print out of result:
-key_max = max(roi_means.keys(), key=(lambda k: roi_means[k]))
-print("The maximum mean ROI of "
-      +str(round(roi_means[key_max], 5))
-      +" is obtained by strategy "+key_max+".")
+print("The portfolio with the highest Sharpe ratio is:")
+print(max_sharpe_port)
+print("\nAnd the portfolio with the minimum volatility is:")
+print(min_vol_port)
 
 # <codecell>
 
-# extra insights:
-# highest (max) mean of ROI per strategy per year:
-print("The maximum mean ROI of "
-      +str(round(df_roi['ROI']['mean'].max().max(),5))
-      +" is obtained by the strategy "
-      +str(df_roi['ROI']['mean'].max().idxmax())+".")
+pd.DataFrame([max_sharpe_port])
 
-print("However, the maximum ROI of "
-     +str(round(df_data.max()['ROI'],5))
-     +" is obtained by the strategy "+str(df_data.max()['Strategy'])
-     +" with an age of 6 (Vintage: 2011)")
+# <codecell>
+
+pd.DataFrame([min_vol_port])
 
 # <codecell>
 
@@ -203,3 +210,15 @@ print("However, the maximum ROI of "
 # <codecell>
 
 
+
+# <codecell>
+
+
+
+# <codecell>
+
+sns.pairplot(pf.getPfRoiData())
+
+# <codecell>
+
+sns.kdeplot(pf.getPfRoiData(), shade=True)
