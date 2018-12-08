@@ -121,6 +121,7 @@ class Portfolio(object):
         # add roi data to overall dataframe of roi data:
         self.pf_roi_data.insert(loc=cols, column=name, value=df.values)#, inplace=True)#, ignore_index=True)
 
+    # get functions:
     def getPortfolio(self):
         return self.portfolio
 
@@ -139,24 +140,57 @@ class Portfolio(object):
     def getFunds(self):
         return self.funds
 
+    def getPfMeans(self):
+        return self.pf_means
+
+    def getPfWeights(self):
+        return self.pf_weights
+
+    def getPfExpectedRoi(self):
+        return self.expectedRoi
+
+    def getVolatility(self):
+        return self.volatility
+
     def getCovPf(self):
-        # get the covariance matrix of the roi of the portfolio
-        return self.pf_roi_data.cov()
+        return self.covPf
+
+    # set functions:
+    def setPfMeans(self, pf_means):
+        self.pf_means = pf_means
+
+    def setPfWeights(self, pf_weights):
+        self.pf_weights = pf_weights
+
+    def setPfExpectedRoi(self, expectedRoi):
+        self.expectedRoi = expectedRoi
+
+    def setVolatility(self, volatility):
+        self.volatility = volatility
+
+    def setCovPf(self, covPf):
+        self.covPf = covPf
+
+    # functions to compute quantities
+    def compPfMeans(self):
+        pf_means = self.getPfRoiData().mean().values
+        # set instance variable
+        self.setPfMeans(pf_means)
+        return pf_means
 
     def compPfWeights(self):
         import numpy as np
         # computes the weights of the funds in the given portfolio
         # in respect of the total investment
         total = self.portfolio.FMV.sum()
-        weights = self.portfolio.FMV/total
+        pf_weights = self.portfolio.FMV/total
         #weights = []
         #for key in self.funds.keys():
         #    weights.append(self.getFund(key).getInvestmentInfo().FMV/total)
         #return np.array(weights)
-        return weights
-
-    def compPfMeans(self):
-        return self.getPfRoiData().mean().values
+        # set instance variable
+        self.setPfWeights(pf_weights)
+        return pf_weights
 
     def compPfExpectedRoi(self):
         import numpy as np
@@ -164,16 +198,26 @@ class Portfolio(object):
         pf_means = self.compPfMeans()
         pf_weights = self.compPfWeights()
         expectedRoi = np.sum(pf_means * pf_weights)
+        # set instance variable
+        self.setPfExpectedRoi(expectedRoi)
         return expectedRoi
 
     def compPfVolatility(self):
         import numpy as np
         # computing the volatility of a portfolio
         pf_weights = self.compPfWeights()
-        cov_matrix = self.getCovPf()
-        volatility = np.sqrt(np.dot(pf_weights.T, np.dot(cov_matrix, pf_weights)))
+        covPf = self.compCovPf()
+        volatility = np.sqrt(np.dot(pf_weights.T, np.dot(covPf, pf_weights)))
+        # set instance variable
+        self.setVolatility(volatility)
         return volatility
 
+    def compCovPf(self):
+        # get the covariance matrix of the roi of the portfolio
+        covPf = self.pf_roi_data.cov()
+        # set instance variable
+        self.setCovPf(covPf)
+        return covPf
     def __str__(self):
         return str(self.getPortfolio())
 
