@@ -21,24 +21,15 @@ sns.set_style('darkgrid')
 
 # <codecell>
 
-# importing some custom functions
+# importing some custom functions/objects
 from qpy.portfolio import Portfolio
 from qpy.fund import Fund
-#from portfolio import expectedValue, volatility
 
 # <codecell>
 
 import tools.mytools as mt
 
 # <codecell>
-
-# to plot within the notebook:
-#%pylab inline
-#pylab
-
-# <codecell>
-
-#import random, pylab, numpy
 
 ##set line width
 pylab.rcParams['lines.linewidth'] = 2
@@ -58,9 +49,8 @@ pylab.rcParams['ytick.labelsize'] = 10
 # <codecell>
 
 # read data into pandas dataframe:
-#df_pf_orig = pd.read_csv("../data/portfolio.csv", skiprows=1)
 df_pf_orig = pd.read_csv("../data/ex1-portfolio.csv")
-df_data_orig = pd.read_csv("../data/ex1-data.csv")#, usecols=[0,1,2,3,4])
+df_data_orig = pd.read_csv("../data/ex1-data.csv")
 # make copies
 df_pf = df_pf_orig.copy(deep=True)
 df_data = df_data_orig.copy(deep=True)
@@ -94,6 +84,7 @@ df_pf
 
 # <codecell>
 
+# custom function to deal with the messy data given in the data file
 def extractRoiData(df, age, strategy):
     # generate a string to query the relevant data:
     querystring = 'Age=='+str(age)+' & Strategy=="'+str(strategy)+'"'
@@ -106,7 +97,10 @@ def extractRoiData(df, age, strategy):
 # build portfolio object
 ref_year = 2018
 
+# creating an empty portfolio
 pf = Portfolio('my Portfolio', ref_year)
+# given the information of the portfolio and data pandas.DataFrame(s), 
+# filling the portfolio with information/data of the funds
 for i in range(len(df_pf)):
     #print(df_pf.loc[i])
     age = df_pf.loc[i].Age
@@ -156,11 +150,8 @@ for label, fund in pf.getFunds().items():
 
 # <codecell>
 
-pf.compSkew()
-
-# <codecell>
-
-pf.compKurtosis()
+print(pf.compSkew())
+print(pf.compKurtosis())
 
 # <markdowncell>
 
