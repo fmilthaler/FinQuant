@@ -187,6 +187,7 @@ class Portfolio(object):
         # plot results
         if (plot):
             # create scatter plot coloured by Sharpe Ratio
+            plt.figure()
             plt.scatter(df_results.volatility, df_results.roi, c=df_results.sharpe, cmap='RdYlBu', label=None)
             plt.title('Monte Carlo simulation to optimise the investments')
             plt.xlabel('Volatility')
@@ -197,6 +198,7 @@ class Portfolio(object):
             # mark in green the minimum volatility
             plt.scatter(pf_min_volatility[1], pf_min_volatility[0], marker="o", color='g', s=100, label='min volatility')
             plt.legend()
+            plt.show()
 
         return (pf_max_sharpe, pf_min_volatility)
 
