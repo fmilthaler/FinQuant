@@ -2,7 +2,8 @@ include common.mk
 
 PYDIR=qpy
 DATADIR=data
-CLEANDIRS = $(PYDIR:%=clean-%)
+EXAMPLEDIR=example
+CLEANDIRS = $(PYDIR:%=clean-%) $(EXAMPLEDIR:%=clean-%)
 
 SEARCH=
 
