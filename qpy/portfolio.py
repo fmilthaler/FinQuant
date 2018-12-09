@@ -1,5 +1,6 @@
 import pandas as pd
 #from qpy.fund import Fund
+from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
 
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
@@ -202,15 +203,3 @@ class Portfolio(object):
     def __str__(self):
         return str(self.getPortfolio())
 
-def weightedMean(means, weights):
-    import numpy as np
-    return np.sum(means * weights)
-
-def weightedStd(cov_matrix, weights):
-    import numpy as np
-    weighted_std = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
-    return weighted_std
-
-def SharpeRatio(exproi, riskfreerate, volatility):
-    sharpe = (exproi - riskfreerate)/float(volatility)
-    return sharpe
