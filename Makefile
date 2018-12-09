@@ -13,7 +13,7 @@ SEARCH=
 .PHONY: data
 .PHONY: clean
 
-all: data
+all: clean
 
 data:
 	@$(MAKE) -C data convert
