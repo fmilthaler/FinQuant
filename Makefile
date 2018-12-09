@@ -7,8 +7,6 @@ CLEANDIRS = $(PYDIR:%=clean-%) $(EXAMPLEDIR:%=clean-%)
 
 SEARCH=
 
-.PHONY: pydir $(PYDIR)
-.PHONY: datadir $(DATADIR)
 .PHONY: cleandirs $(CLEANDIRS)
 .PHONY: data
 .PHONY: clean
