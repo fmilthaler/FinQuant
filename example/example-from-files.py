@@ -22,17 +22,18 @@ sns.set_style('darkgrid')
 # <codecell>
 
 # importing some custom functions
-from portfolio import Portfolio, Fund
+from qpy.portfolio import Portfolio
+from qpy.fund import Fund
 #from portfolio import expectedValue, volatility
 
 # <codecell>
 
-import mytools as mt
+import tools.mytools as mt
 
 # <codecell>
 
 # to plot within the notebook:
-%pylab inline
+#%pylab inline
 #pylab
 
 # <codecell>
@@ -58,8 +59,8 @@ pylab.rcParams['ytick.labelsize'] = 10
 
 # read data into pandas dataframe:
 #df_pf_orig = pd.read_csv("../data/portfolio.csv", skiprows=1)
-df_pf_orig = pd.read_csv("../data/portfolio.csv")
-df_data_orig = pd.read_csv("../data/data.csv")#, usecols=[0,1,2,3,4])
+df_pf_orig = pd.read_csv("../data/ex1-portfolio.csv")
+df_data_orig = pd.read_csv("../data/ex1-data.csv")#, usecols=[0,1,2,3,4])
 # make copies
 df_pf = df_pf_orig.copy(deep=True)
 df_data = df_data_orig.copy(deep=True)
