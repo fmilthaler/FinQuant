@@ -119,10 +119,6 @@ pf.getPortfolio()
 
 # <codecell>
 
-fund0 = pf.getStock('Fund0')
-
-# <codecell>
-
 pf.getPfRoiData().head()
 
 # <codecell>
