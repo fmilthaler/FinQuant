@@ -97,7 +97,7 @@ def extractRoiData(df, age, strategy):
 ref_year = 2018
 
 # creating an empty portfolio
-pf = Portfolio('my Portfolio', ref_year)
+pf = Portfolio()
 # given the information of the portfolio and data pandas.DataFrame(s),
 # filling the portfolio with information/data of the stocks
 for i in range(len(df_pf)):
