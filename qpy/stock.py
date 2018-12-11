@@ -1,12 +1,14 @@
 import pandas as pd
 
-class Fund(object):
-    ''' Object that contains information about a fund.
+class Stock(object):
+    ''' Object that contains information about a stock/fund.
     To initialise the object, it requires a name, information about
-    the fund given as one of the following data structures:
+    the stock/fund given as one of the following data structures:
      - pandas.Series
      - pandas.DataFrame
-    The investment information should normally contain labels such as
+    The investment information can contain as little information as its name,
+    and the amount invested in it, but can also contain more information,
+    such as
      - Name
      - Year
      - Strategy
