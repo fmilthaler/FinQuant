@@ -36,18 +36,14 @@ class Stock(object):
 
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
-    To initialise the object, it requires a name, reference year.
+    To initialise the object, it does not require any input.
     To fill the portfolio with investment information and daily return of investments
     (ROI) data, the function addStock(stock) should be used, in which `stock` is a `Stock`
-    object. a pandas.DataFrame
-    of the portfolio investment information. The corresponding daily return of investments
-    (ROI) are stored in the Stock object.
+    object, a pandas.DataFrame of the portfolio investment information. The corresponding
+    daily return of investments (ROI) are stored in the Stock object.
     '''
-    def __init__(self, name, ref_year):
+    def __init__(self):
         # initilisating instance variables
-        self.name = name
-        self.ref_year = ref_year
-        # initialise some more instance variables that do not have a value yet
         self.portfolio = pd.DataFrame()
         self.stocks = {}
         self.pf_roi_data = pd.DataFrame()
@@ -74,9 +70,6 @@ class Portfolio(object):
     # get functions:
     def getPortfolio(self):
         return self.portfolio
-
-    def getRefYear(self):
-        return self.ref_year
 
     def getPfRoiData(self):
         return self.pf_roi_data
