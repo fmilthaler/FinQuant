@@ -90,6 +90,9 @@ class Portfolio(object):
     def getPfMeans(self):
         return self.pf_means
 
+    def getTotalFMV(self):
+        return self.portfolio.FMV.sum()
+
     def getPfWeights(self):
         return self.pf_weights
 
@@ -126,11 +129,9 @@ class Portfolio(object):
         return pf_means
 
     def compPfWeights(self):
-        import numpy as np
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
-        total = self.portfolio.FMV.sum()
-        pf_weights = self.portfolio.FMV/total
+        pf_weights = self.portfolio.FMV/self.getTotalFMV()
         # set instance variable
         self.setPfWeights(pf_weights)
         return pf_weights
