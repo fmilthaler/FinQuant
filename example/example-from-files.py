@@ -120,7 +120,7 @@ pf.getPortfolio()
 
 # <codecell>
 
-stock0 = pf.getStock('Stock0')
+fund0 = pf.getStock('Fund0')
 
 # <codecell>
 
