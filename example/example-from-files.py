@@ -168,7 +168,12 @@ print("volatility = {0:0.2f}".format(volatility))
 
 num_trials = 10000
 riskfreerate = 0
-(max_sharpe_port, min_vol_port) = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, plot=True)
+(pf_opt) = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, plot=True)
+
+# <codecell>
+
+print(pf_opt)
+pf_opt
 
 # <markdowncell>
 
