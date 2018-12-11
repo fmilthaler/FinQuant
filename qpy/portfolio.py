@@ -1,15 +1,15 @@
 import pandas as pd
-#from qpy.fund import Fund
+#from qpy.stock import Stock
 from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
 
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
     To initialise the object, it requires a name, reference year.
     To fill the portfolio with investment information and daily return of investments
-    (ROI) data, the function addFund(fund) should be used, in which `fund` is a `Fund`
+    (ROI) data, the function addStock(stock) should be used, in which `stock` is a `Stock`
     object. a pandas.DataFrame
     of the portfolio investment information. The corresponding daily return of investments
-    (ROI) are stored in the Fund object.
+    (ROI) are stored in the Stock object.
     '''
     def __init__(self, name, ref_year):
         # initilisating instance variables
@@ -17,7 +17,7 @@ class Portfolio(object):
         self.ref_year = ref_year
         # initialise some more instance variables that do not have a value yet
         self.portfolio = pd.DataFrame()
-        self.funds = {}
+        self.stocks = {}
         self.pf_roi_data = pd.DataFrame()
         self.pf_means = None
         self.pf_weights = None
@@ -25,13 +25,13 @@ class Portfolio(object):
         self.volatility = None
         self.covPf = None
 
-    def addFund(self, fund):
-        # adding fund to dictionary containing all funds provided
-        self.funds.update({fund.name : fund})
-        # adding information of fund to the portfolio
-        self.portfolio = self.portfolio.append(fund.getInvestmentInfo(), ignore_index=True)
-        # also add ROI data of fund to the dataframe containing all roi data points
-        self.__addRoiData(fund.name, fund.roi_data.ROI)
+    def addStock(self, stock):
+        # adding stock to dictionary containing all stocks provided
+        self.stocks.update({stock.name : stock})
+        # adding information of stock to the portfolio
+        self.portfolio = self.portfolio.append(stock.getInvestmentInfo(), ignore_index=True)
+        # also add ROI data of stock to the dataframe containing all roi data points
+        self.__addRoiData(stock.name, stock.roi_data.ROI)
 
     def __addRoiData(self, name, df):
         # get length of columns in pf_roi_data, in order to create a new column
@@ -49,11 +49,11 @@ class Portfolio(object):
     def getPfRoiData(self):
         return self.pf_roi_data
 
-    def getFund(self, name):
-        return self.getFunds()[name]
+    def getStock(self, name):
+        return self.getStocks()[name]
 
-    def getFunds(self):
-        return self.funds
+    def getStocks(self):
+        return self.stocks
 
     def getPfMeans(self):
         return self.pf_means
@@ -95,7 +95,7 @@ class Portfolio(object):
 
     def compPfWeights(self):
         import numpy as np
-        # computes the weights of the funds in the given portfolio
+        # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
         total = self.portfolio.FMV.sum()
         pf_weights = self.portfolio.FMV/total
@@ -148,11 +148,11 @@ class Portfolio(object):
         # both are returned as a pandas.Series
         import numpy as np
         if (plot): import matplotlib.pyplot as plt
-        # set number of funds in the portfolio
-        num_funds = len(self.getFunds())
+        # set number of stocks in the portfolio
+        num_stocks = len(self.getStocks())
         #set up array to hold results
         res_columns = ['roi','volatility','sharpe']
-        res_columns.extend(self.getFunds().keys())
+        res_columns.extend(self.getStocks().keys())
         results = np.zeros((len(res_columns),num_trials))
         # compute means and covariance matrix
         pf_means = self.compPfMeans()
@@ -160,7 +160,7 @@ class Portfolio(object):
         # monte carlo simulation
         for i in range(num_trials):
             # select random weights for portfolio
-            weights = np.array(np.random.random(num_funds))
+            weights = np.array(np.random.random(num_stocks))
             # rebalance weights
             weights = weights/np.sum(weights)
             # compute portfolio roi and volatility

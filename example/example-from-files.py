@@ -23,11 +23,11 @@ sns.set_style('darkgrid')
 
 # importing some custom functions/objects
 from qpy.portfolio import Portfolio
-from qpy.fund import Fund
+from qpy.stock import Stock
 
 # <codecell>
 
-import tools.mytools as mt
+#import tools.mytools as mt
 
 # <codecell>
 
@@ -99,14 +99,14 @@ ref_year = 2018
 
 # creating an empty portfolio
 pf = Portfolio('my Portfolio', ref_year)
-# given the information of the portfolio and data pandas.DataFrame(s), 
-# filling the portfolio with information/data of the funds
+# given the information of the portfolio and data pandas.DataFrame(s),
+# filling the portfolio with information/data of the stocks
 for i in range(len(df_pf)):
     #print(df_pf.loc[i])
     age = df_pf.loc[i].Age
     strategy = df_pf.loc[i].Strategy
     #data = extractRoiData()
-    pf.addFund(Fund(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
+    pf.addStock(Stock(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
 
 
 # <markdowncell>
@@ -120,8 +120,8 @@ pf.getPortfolio()
 
 # <codecell>
 
-fund0 = pf.getFund('Fund0')
-fund0.getRoiData().describe()
+stock0 = pf.getStock('Stock0')
+stock0.getRoiData().describe()
 
 # <codecell>
 
@@ -133,16 +133,16 @@ pf.getPfRoiData().describe()
 
 # <markdowncell>
 
-# ## Skew and Kurtosis for each fund individually
+# ## Skew and Kurtosis for each stock individually
 
 # <codecell>
 
-# skew and kurtosis of each fund:
-for label, fund in pf.getFunds().items():
+# skew and kurtosis of each stock:
+for label, stock in pf.getStocks().items():
     print("++++++++++++++++++")
     print(str(label)+":")
-    print("Skew: %.2f" % fund.compSkew())
-    print("Kurtosis: %.2f" % fund.compKurtosis())
+    print("Skew: %.2f" % stock.compSkew())
+    print("Kurtosis: %.2f" % stock.compKurtosis())
 
 # <markdowncell>
 
