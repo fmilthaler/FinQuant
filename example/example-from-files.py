@@ -121,7 +121,6 @@ pf.getPortfolio()
 # <codecell>
 
 stock0 = pf.getStock('Stock0')
-stock0.getRoiData().describe()
 
 # <codecell>
 
@@ -141,8 +140,8 @@ pf.getPfRoiData().describe()
 for label, stock in pf.getStocks().items():
     print("++++++++++++++++++")
     print(str(label)+":")
-    print("Skew: %.2f" % stock.compSkew())
-    print("Kurtosis: %.2f" % stock.compKurtosis())
+    print("Skew: {0:0.2f}".format(stock.compSkew()))
+    print("Kurtosis: {0:0.2f}".format(stock.compKurtosis()))
 
 # <markdowncell>
 
@@ -162,8 +161,8 @@ print(pf.compKurtosis())
 
 exp_roi = pf.compPfExpectedRoi()
 volatility = pf.compPfVolatility()
-print("expected ROI = %.2f" % exp_roi)
-print("volatility = %.2f" % volatility)
+print("expected ROI = {0:0.2f}".format(exp_roi))
+print("volatility = {0:0.2f}".format(volatility))
 
 # <markdowncell>
 
