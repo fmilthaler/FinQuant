@@ -181,26 +181,23 @@ pf_opt
 
 # <codecell>
 
+# print out optimised portfolio information:
 print("The portfolio with the highest Sharpe ratio is:")
-print(max_sharpe_port)
+print(pd.DataFrame(pf_opt.loc['Max Sharpe Ratio']))
+
 print("\nAnd the portfolio with the minimum volatility is:")
-print(min_vol_port)
+print(pd.DataFrame(pf_opt.loc['Min Volatility']))
 
 # <codecell>
 
-pd.DataFrame([max_sharpe_port])
-
-# <codecell>
-
-pd.DataFrame([min_vol_port])
-
-# <codecell>
-
-# Sum of FMV in optimised portfolio:
-sum = max_sharpe_port.Fund0+max_sharpe_port.Fund1+max_sharpe_port.Fund2+max_sharpe_port.Fund3+max_sharpe_port.Fund4+max_sharpe_port.Fund5
-print("Sum of FMV of optimised portfolio: {0:7.3f}".format(sum))
-# Sum of FMV in suggested portfolio:
-print("Sum of FMV of initial portfolio: {0:9.3f}".format(pf.getPortfolio().FMV.sum()))
+# sanity check: comparing sum of FMV of initial and optimised portfolios:
+labels = ['Max Sharpe Ratio', 'Min Volatility']
+for label in labels:
+    total = 0
+    for i in range(6):
+        total += pf_opt.loc['Min Volatility']['Fund'+str(i)]
+    print("Sum of FMV of {0} portfolio = {1:.5f}".format(label, total))
+print("Sum of FMV of {0} = {1:.5f}".format('Initial Portfolio', pf.getPortfolio().FMV.sum()))
 
 # <codecell>
 
