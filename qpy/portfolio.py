@@ -178,7 +178,7 @@ class Portfolio(object):
         num_stocks = len(self.getStocks())
         #set up array to hold results
         res_columns = list(self.getStocks().keys())
-        res_columns.extend(['ROI','Volatility','Sharpe'])
+        res_columns.extend(['ROI','Volatility','Sharpe Ratio'])
         results = np.zeros((len(res_columns),num_trials))
         # compute means and covariance matrix
         pf_means = self.compPfMeans()
@@ -201,18 +201,19 @@ class Portfolio(object):
             # store Sharpe Ratio
             results[num_stocks+2,i] = SharpeRatio(pf_roi, riskfreerate, pf_volatility)
 
-        # convert to pandas.DataFrame
+        # transpose and convert to pandas.DataFrame:
         df_results = pd.DataFrame(results.T,columns=res_columns)
-        # get portfolio with highest Sharpe Ratio
-        pf_max_sharpe = df_results.iloc[df_results['Sharpe'].idxmax()]
-        # get portfolio with minimum volatility
-        pf_min_volatility = df_results.iloc[df_results['Volatility'].idxmin()]
+        # adding info of max sharpe ratio and of min volatility
+        # to resulting df (with meaningful indices):
+        pf_opt = pd.DataFrame([df_results.iloc[df_results['Sharpe Ratio'].idxmax()],
+                               df_results.iloc[df_results['Volatility'].idxmin()]],
+                              index=['Max Sharpe Ratio', 'Min Volatility'])
 
         # plot results
         if (plot):
             # create scatter plot coloured by Sharpe Ratio
             plt.figure()
-            plt.scatter(df_results['Volatility'], df_results['ROI'], c=df_results['Sharpe'], cmap='RdYlBu', label=None)
+            plt.scatter(df_results['Volatility'], df_results['ROI'], c=df_results['Sharpe Ratio'], cmap='RdYlBu', label=None)
             plt.title('Monte Carlo simulation to optimise the investments')
             plt.xlabel('Volatility')
             plt.ylabel('ROI')
@@ -224,7 +225,7 @@ class Portfolio(object):
             plt.legend()
             plt.show()
 
-        return (pf_max_sharpe, pf_min_volatility)
+        return (pf_opt)
 
     def __str__(self):
         return str(self.getPortfolio())
