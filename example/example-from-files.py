@@ -22,8 +22,7 @@ sns.set_style('darkgrid')
 # <codecell>
 
 # importing some custom functions/objects
-from qpy.portfolio import Portfolio
-from qpy.stock import Stock
+from qpy.portfolio import Portfolio, Stock
 
 # <codecell>
 
