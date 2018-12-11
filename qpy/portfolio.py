@@ -8,13 +8,12 @@ class Stock(object):
      - pandas.Series
      - pandas.DataFrame
     The investment information can contain as little information as its name,
-    and the amount invested in it, but can also contain more information,
-    such as
-     - Name
+    and the amount invested in it, the column labels must be "Name" and "FMV"
+    respectively, but it can also contain more information, such as
      - Year
      - Strategy
      - CCY
-     - FMV
+     - etc
     It also requires daily return of investments (ROI) as a pandas.DataFrame or
     pandas.Series. If it is a DataFrame, the "roi_data" data structure is required
     to contain the following label
