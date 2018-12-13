@@ -32,7 +32,7 @@ class Stock(object):
     def compKurtosis(self):
         return self.roi_data.kurt().values[0]
     def __str__(self):
-        return str(pd.DataFrame([self.investmentinfo]))
+        return str(self.investmentinfo.to_frame().transpose())
 
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
