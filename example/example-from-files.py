@@ -168,7 +168,7 @@ print("volatility = {0:0.2f}".format(volatility))
 
 num_trials = 10000
 riskfreerate = 0
-(pf_opt) = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, plot=True)
+pf_opt = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, plot=True)
 
 # <codecell>
 
@@ -183,10 +183,10 @@ pf_opt
 
 # print out optimised portfolio information:
 print("The portfolio with the highest Sharpe ratio is:")
-print(pd.DataFrame(pf_opt.loc['Max Sharpe Ratio']))
+print(pf_opt.loc['Max Sharpe Ratio'].to_frame().T)
 
 print("\nAnd the portfolio with the minimum volatility is:")
-print(pd.DataFrame(pf_opt.loc['Min Volatility']))
+print(pf_opt.loc['Min Volatility'].to_frame().T)
 
 # <codecell>
 
