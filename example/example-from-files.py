@@ -137,6 +137,7 @@ for label, stock in pf.getStocks().items():
     print(str(label)+":")
     print("Skew: {0:0.2f}".format(stock.compSkew()))
     print("Kurtosis: {0:0.2f}".format(stock.compKurtosis()))
+    print(stock)
 
 # <markdowncell>
 
