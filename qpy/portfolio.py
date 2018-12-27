@@ -53,6 +53,20 @@ class Portfolio(object):
         self.volatility = None
         self.covPf = None
 
+    def addStocks(self, stocks, data):
+        #self.stocks
+        
+        for i in range(len(df_pf)):
+            self.addStock(Stock(stocks.loc[i], roi))
+            
+        for i in range(len(df_pf)):
+            #print(df_pf.loc[i])
+            age = df_pf.loc[i].Age
+            strategy = df_pf.loc[i].Strategy
+            #data = extractRoiData()
+            pf.addStock(Stock(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
+
+
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name : stock})
@@ -229,3 +243,47 @@ class Portfolio(object):
     def __str__(self):
         return str(self.getPortfolio())
 
+
+def buildPortfolioFromQuandl(names, start=None, end=None):
+    try:
+        import quandl
+        import datetimes
+    except ImportError:
+        print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
+    # create an empty portfolio
+    pf = Portfolio()
+    # Get data from quandl
+    for name in names:
+        try:
+            roi = quandl.get(name, start_date=start, end_date=end)
+            self.asset[symbol] = DataReader(
+                symbol, "yahoo", start=start, end=end)
+        except:
+            print("Asset " + str(symbol) + " not found!")
+
+    
+    
+    
+
+def buildPortfolio(pf_information=None, roi_data=None, names=None, start=None, end=None):
+    try:
+        import quandl
+        import datetimes
+    except ImportError:
+        print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
+
+    # create an empty portfolio
+    pf = Portfolio()
+    # Get data from quandl
+    for name in names:
+        try:
+            roi = quandl.get(name, start_date=start, end_date=end)
+            self.asset[symbol] = DataReader(
+                symbol, "yahoo", start=start, end=end)
+        except:
+            print("Asset " + str(symbol) + " not found!")
+
+
+    #except:
+        #print("Asset " + str(symbol) + " not found!")
+    #None
