@@ -66,7 +66,6 @@ class Portfolio(object):
             #data = extractRoiData()
             pf.addStock(Stock(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
 
-
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name : stock})
@@ -276,11 +275,6 @@ def getStocksFromQuandl(names, start=None, end=None):
     reqnames = correctQuandlRequestStockName(names)
     # get stocks:
     stocks = quandl.get(reqnames, start_date=start, end_date=end)
-    # works:
-    #stocks = []
-    #for name in names:
-    #    stock = getStockFromQuandl(name, start, end)
-    #    stocks.append(stock)
     return stocks
 
 def getStocksDataColumns(stocks, names, cols):
