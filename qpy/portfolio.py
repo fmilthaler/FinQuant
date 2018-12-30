@@ -49,6 +49,7 @@ class Portfolio(object):
         # initilisating instance variables
         self.portfolio = pd.DataFrame()
         self.stocks = {}
+        self.pf_stock_data = pd.DataFrame()
         self.pf_roi_data = pd.DataFrame()
         self.pf_means = None
         self.pf_weights = None
@@ -75,6 +76,13 @@ class Portfolio(object):
         # adding information of stock to the portfolio
         self.portfolio = self.portfolio.append(stock.getInvestmentInfo(), ignore_index=True)
         # also add ROI data of stock to the dataframe containing all roi data points
+        if (not stock.stock_data is None):
+            for datacol in stock.stock_data.columns:
+                cols = len(self.pf_stock_data.columns)
+                self.pf_stock_data.insert(loc=cols,
+                                          column=datacol,
+                                          value=stock.stock_data[datacol].values)
+
         self.__addRoiData(stock.name, stock.roi_data.ROI)
 
     def __addRoiData(self, name, df):
@@ -86,6 +94,9 @@ class Portfolio(object):
     # get functions:
     def getPortfolio(self):
         return self.portfolio
+
+    def getPfStockData(self):
+        return self.pf_stock_data
 
     def getPfRoiData(self):
         return self.pf_roi_data
