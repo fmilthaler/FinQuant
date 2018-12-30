@@ -19,12 +19,15 @@ class Stock(object):
     to contain the following label
      - ROI
     '''
-    def __init__(self, investmentinfo, roi_data):
+    def __init__(self, investmentinfo, roi_data=None, stock_data=None):
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
         self.roi_data = roi_data
+        self.stock_data = stock_data
     def getInvestmentInfo(self):
         return self.investmentinfo
+    def getStockData(self):
+        return self.stock_data
     def getRoiData(self):
         return self.roi_data
     def compSkew(self):
