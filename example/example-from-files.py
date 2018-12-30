@@ -7,7 +7,6 @@
 
 # <codecell>
 
-#from pylab import *
 import pylab
 import matplotlib.pyplot as plt
 import math, random
