@@ -244,31 +244,75 @@ class Portfolio(object):
         return str(self.getPortfolio())
 
 
-def buildPortfolioFromQuandl(names, start=None, end=None):
+
+def correctQuandlRequestStockName(names):
+    # make sure names is a list of names:
+    if (isinstance(names, str)):
+        names = [names]
+    reqnames = []
+    # correct stock names if necessary:
+    for name in names:
+        if (not name.startswith('WIKI/')):
+            name = 'WIKI/'+name
+        reqnames.append(name)
+    return reqnames
+
+def getStockFromQuandl(name, start=None, end=None):
     try:
         import quandl
-        import datetimes
+        import datetime
     except ImportError:
         print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
-    # create an empty portfolio
-    pf = Portfolio()
-    # Get data from quandl
-    for name in names:
-        try:
-            roi = quandl.get(name, start_date=start, end_date=end)
-            self.asset[symbol] = DataReader(
-                symbol, "yahoo", start=start, end=end)
-        except:
-            print("Asset " + str(symbol) + " not found!")
+    reqname = correctQuandlRequestStockName(name)
+    return quandl.get(reqname, start_date=start, end_date=end)
 
-    
-    
-    
-
-def buildPortfolio(pf_information=None, roi_data=None, names=None, start=None, end=None):
+def getStocksFromQuandl(names, start=None, end=None):
     try:
         import quandl
-        import datetimes
+        import datetime
+    except ImportError:
+        print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
+    # get correct stock names that quandl get request
+    reqnames = correctQuandlRequestStockName(names)
+    # get stocks:
+    stocks = quandl.get(reqnames, start_date=start, end_date=end)
+    # works:
+    #stocks = []
+    #for name in names:
+    #    stock = getStockFromQuandl(name, start, end)
+    #    stocks.append(stock)
+    return stocks
+
+def getStocksDataColumns(stocks, names, cols):
+    # get correct stock names that quandl get request
+    reqnames = correctQuandlRequestStockName(names)
+    # get current column labels and replacement labels
+    reqcolnames = []
+    for name in reqnames:
+        for col in cols:
+            reqcolnames.append(name+' - '+col)
+    stocks = stocks.loc[:, reqcolnames]
+    # now rename the columns:
+    newcolnames = {}
+    for i in reqcolnames:
+        newcolnames.update({i: i.replace('WIKI/','')})
+    stocks.rename(columns=newcolnames, inplace=True)
+    return stocks
+
+def buildPortfolioFromQuandl(names, start=None, end=None, datacolumns=["Adj. Close"]):
+    # create an empty portfolio
+    pf = Portfolio()
+    stocks = getStocksFromQuandl(names, start, end)
+    # get certain columns:
+    stocks = getStocksDataColumns(stocks, names, datacolumns)
+    return stocks
+
+
+
+def buildPortfolio(pf_information=None, roi_data=None, names=None, start=None, end=None, datacolumns=None):
+    try:
+        import quandl
+        import datetime
     except ImportError:
         print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
 
