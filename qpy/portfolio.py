@@ -83,7 +83,8 @@ class Portfolio(object):
                                           column=datacol,
                                           value=stock.stock_data[datacol].values)
 
-        self.__addRoiData(stock.name, stock.roi_data.ROI)
+        if (not stock.roi_data is None):
+            self.__addRoiData(stock.name, stock.roi_data.ROI)
 
     def __addRoiData(self, name, df):
         # get length of columns in pf_roi_data, in order to create a new column
