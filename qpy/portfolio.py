@@ -58,10 +58,10 @@ class Portfolio(object):
 
     def addStocks(self, stocks, data):
         #self.stocks
-        
+
         for i in range(len(df_pf)):
             self.addStock(Stock(stocks.loc[i], roi))
-            
+
         for i in range(len(df_pf)):
             #print(df_pf.loc[i])
             age = df_pf.loc[i].Age
