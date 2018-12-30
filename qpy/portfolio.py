@@ -311,12 +311,25 @@ def getStocksDataColumns(stocks, names, cols):
     stocks.rename(columns=newcolnames, inplace=True)
     return stocks
 
-def buildPortfolioFromQuandl(names, start=None, end=None, datacolumns=["Adj. Close"]):
+def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
+                             datacolumns=["Adj. Close"]):
     # create an empty portfolio
     pf = Portfolio()
     stocksdata = getStocksFromQuandl(names, start, end)
     # get certain columns:
     stocksdata = getStocksDataColumns(stocksdata, names, datacolumns)
+    # add stocks to portfolio
+    for stockname in stocksdata.columns:
+        print("stockname = ", stockname)
+    # build portfolio
+    for i in range(len(pf_information)):
+        print(pf_information.loc[i])
+        #pf.addStock(Stock(pf_information.loc[i], stock_data=stocksdata[]))
+        #data = extractRoiData()
+        #pf.addStock(Stock(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
+
+    
+    #pf.addStock(Stock(stocks.loc[i], extractRoiData(df_data, age, strategy)))
     return stocksdata#pf
 
 
