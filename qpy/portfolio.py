@@ -296,10 +296,10 @@ def getStocksDataColumns(stocks, names, cols):
 def buildPortfolioFromQuandl(names, start=None, end=None, datacolumns=["Adj. Close"]):
     # create an empty portfolio
     pf = Portfolio()
-    stocks = getStocksFromQuandl(names, start, end)
+    stocksdata = getStocksFromQuandl(names, start, end)
     # get certain columns:
-    stocks = getStocksDataColumns(stocks, names, datacolumns)
-    return stocks
+    stocksdata = getStocksDataColumns(stocksdata, names, datacolumns)
+    return stocksdata#pf
 
 
 
