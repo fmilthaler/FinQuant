@@ -280,6 +280,9 @@ def getStocksFromQuandl(names, start=None, end=None):
     stocks = quandl.get(reqnames, start_date=start, end_date=end)
     return stocks
 
+def getQuandlDataColumnLabel(stock_name, data_label):
+    return stock_name+' - '+data_label
+
 def getStocksDataColumns(stocks, names, cols):
     # get correct stock names that quandl get request
     reqnames = correctQuandlRequestStockName(names)
@@ -287,7 +290,7 @@ def getStocksDataColumns(stocks, names, cols):
     reqcolnames = []
     for name in reqnames:
         for col in cols:
-            reqcolnames.append(name+' - '+col)
+            reqcolnames.append(getQuandlDataColumnLabel(name, col))
     stocks = stocks.loc[:, reqcolnames]
     # now rename the columns:
     newcolnames = {}
