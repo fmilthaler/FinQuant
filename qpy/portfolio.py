@@ -87,6 +87,7 @@ class Portfolio(object):
             self.pf_stock_data.set_index(stock.stock_data.index.values,
                                          inplace=True)
 
+        # set roi_data, if given
         if (not stock.roi_data is None):
             self.__addRoiData(stock.name, stock.roi_data.ROI)
 
@@ -94,7 +95,9 @@ class Portfolio(object):
         # get length of columns in pf_roi_data, in order to create a new column
         cols = len(self.pf_roi_data.columns)
         # add roi data to overall dataframe of roi data:
-        self.pf_roi_data.insert(loc=cols, column=name, value=df.values)#, inplace=True)#, ignore_index=True)
+        self.pf_roi_data.insert(loc=cols, column=name, value=df.values)
+        # set index correctly
+        self.pf_roi_data.set_index(df.index.values, inplace=True)
 
     # get functions:
     def getPortfolio(self):
@@ -323,17 +326,10 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     # get certain columns:
     stocksdata = getStocksDataColumns(stocksdata, names, datacolumns)
     # add stocks to portfolio
-    for stockname in stocksdata.columns:
-        print("stockname = ", stockname)
+    # better to use stocks function here than the below
     # build portfolio
     for i in range(len(pf_information)):
         print(pf_information.loc[i])
-        #pf.addStock(Stock(pf_information.loc[i], stock_data=stocksdata[]))
-        #data = extractRoiData()
-        #pf.addStock(Stock(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
-
-
-    #pf.addStock(Stock(stocks.loc[i], extractRoiData(df_data, age, strategy)))
     return stocksdata#pf
 
 
