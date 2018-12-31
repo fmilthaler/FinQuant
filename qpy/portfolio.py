@@ -93,6 +93,8 @@ class Portfolio(object):
                                      )
         # set index correctly
         self.pf_stock_data.set_index(df.index.values, inplace=True)
+        # set index name:
+        self.pf_stock_data.index.rename('Date', inplace=True)
 
     def _addRoiData(self, name, df):
         # get length of columns in pf_roi_data, in order to create a new column
@@ -101,6 +103,8 @@ class Portfolio(object):
         self.pf_roi_data.insert(loc=cols, column=name, value=df.values)
         # set index correctly
         self.pf_roi_data.set_index(df.index.values, inplace=True)
+        # set index name:
+        self.pf_roi_data.index.rename('Date', inplace=True)
 
     # get functions:
     def getPortfolio(self):
