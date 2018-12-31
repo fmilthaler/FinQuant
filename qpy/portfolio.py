@@ -329,8 +329,11 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     # better to use stocks function here than the below
     # build portfolio
     for i in range(len(pf_information)):
-        print(pf_information.loc[i])
-    return stocksdata#pf
+        name = pf_information.loc[i].Name
+        pf.addStock(Stock(pf_information.loc[i],
+                          stock_data=stocksdata.filter(regex=name))
+                   )
+    return pf
 
 
 
