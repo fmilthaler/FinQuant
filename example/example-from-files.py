@@ -47,8 +47,8 @@ pylab.rcParams['ytick.labelsize'] = 10
 # <codecell>
 
 # read data into pandas dataframe:
-df_pf_orig = pd.read_csv("../data/ex1-portfolio.csv")
-df_data_orig = pd.read_csv("../data/ex1-data.csv")
+df_pf_orig = pd.read_csv("../data/ex2-portfolio.csv")
+df_data_orig = pd.read_csv("../data/ex2-data.csv")
 # make copies
 df_pf = df_pf_orig.copy(deep=True)
 df_data = df_data_orig.copy(deep=True)
