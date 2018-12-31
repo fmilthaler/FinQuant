@@ -334,7 +334,9 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     stocksdata = getStocksDataColumns(stocksdata, names, datacolumns)
     # add stocks to portfolio
     # better to use stocks function here than the below
-    # build portfolio
+    # build portfolio at once:
+    
+    # build portfolio stock by stock:
     for i in range(len(pf_information)):
         name = pf_information.loc[i].Name
         pf.addStock(Stock(pf_information.loc[i],
