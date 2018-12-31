@@ -77,13 +77,13 @@ class Portfolio(object):
         self.portfolio = self.portfolio.append(stock.getInvestmentInfo(), ignore_index=True)
         # also add ROI data of stock to the dataframe containing all roi data points
         if (not stock.stock_data is None):
-            self.__addStockData(stock.stock_data)
+            self._addStockData(stock.stock_data)
 
         # set roi_data, if given
         if (not stock.roi_data is None):
-            self.__addRoiData(stock.name, stock.roi_data.ROI)
+            self._addRoiData(stock.name, stock.roi_data.ROI)
 
-    def __addStockData(self, df):
+    def _addStockData(self, df):
         # loop over columns in given dataframe
         for datacol in df.columns:
             cols = len(self.pf_stock_data.columns)
@@ -94,7 +94,7 @@ class Portfolio(object):
         # set index correctly
         self.pf_stock_data.set_index(df.index.values, inplace=True)
 
-    def __addRoiData(self, name, df):
+    def _addRoiData(self, name, df):
         # get length of columns in pf_roi_data, in order to create a new column
         cols = len(self.pf_roi_data.columns)
         # add roi data to overall dataframe of roi data:
