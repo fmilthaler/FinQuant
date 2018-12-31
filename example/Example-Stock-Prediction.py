@@ -99,35 +99,6 @@ pf.getPfStockData().tail(2)
 
 # <codecell>
 
-stock = pf.getStocks()['GOOG']
-stock.stock_data.tail(2)
-
-# <markdowncell>
-
-# ### write to file
-
-# <codecell>
-
-#df = pf.getPfStockData()
-##print(df)
-#
-#pf.getPortfolio().to_csv("my-pf.csv", encoding='utf-8', index=False, header=True)
-#pf.getPfStockData().to_csv("my-pfstockdata.csv", encoding='utf-8', index=True, index_label="Date")
-
-# <markdowncell>
-
-# ### read from csv to dataframe
-
-# <codecell>
-
-#test = pd.read_csv("my-pf.csv")
-pf_info = pd.read_csv("../data/ex1-portfolio.csv")
-pf_info
-pfstockdata = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
-pfstockdata.head(3)
-
-# <codecell>
-
 goog = pf.getStock('GOOG')
 print(goog)
 goog.getStockData().head(2)
@@ -140,8 +111,19 @@ for stockname in pf.getPfStockData().columns:
 
 # <codecell>
 
-for i in range(len(pfinfo)):
-    print(pfinfo.loc[i])
+
+
+# <codecell>
+
+
+
+# <codecell>
+
+
+
+# <markdowncell>
+
+# ### Continue here
 
 # <codecell>
 
