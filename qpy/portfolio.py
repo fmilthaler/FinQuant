@@ -81,7 +81,11 @@ class Portfolio(object):
                 cols = len(self.pf_stock_data.columns)
                 self.pf_stock_data.insert(loc=cols,
                                           column=datacol,
-                                          value=stock.stock_data[datacol].values)
+                                          value=stock.stock_data[datacol].values
+                                         )
+            # set index correctly
+            self.pf_stock_data.set_index(stock.stock_data.index.values,
+                                         inplace=True)
 
         if (not stock.roi_data is None):
             self.__addRoiData(stock.name, stock.roi_data.ROI)
@@ -328,7 +332,7 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
         #data = extractRoiData()
         #pf.addStock(Stock(df_pf.loc[i], extractRoiData(df_data, age, strategy)))
 
-    
+
     #pf.addStock(Stock(stocks.loc[i], extractRoiData(df_data, age, strategy)))
     return stocksdata#pf
 
