@@ -35,19 +35,6 @@ plt.rcParams['ytick.labelsize'] = 10
 
 # <codecell>
 
-import quandl
-import os
-
-filename = os.environ['HOME']+'/.quandl/api_key'
-with open(filename) as f:
-    lines = f.readlines()
-if (len(lines) != 1):
-    raise ValueError('Could not get the quandl api key from '+filename)
-quandl_api_key = ''.join(lines).strip()
-
-# setting api key:
-quandl.ApiConfig.api_key = quandl_api_key
-
 import datetime
 
 from sklearn.linear_model import LinearRegression
@@ -56,36 +43,111 @@ from sklearn.model_selection import train_test_split
 
 # <codecell>
 
-start = datetime.datetime(2017,1,1)
+# importing some custom functions/objects
+from qpy.portfolio import Portfolio, Stock, buildPortfolioFromQuandl
+
+# <codecell>
+
+import quandl
+import os
+
+# <codecell>
+
+#filename = os.environ['HOME']+'/.quandl/api_key'
+#with open(filename) as f:
+#    lines = f.readlines()
+#if (len(lines) != 1):
+#    raise ValueError('Could not get the quandl api key from '+filename)
+#quandl_api_key = ''.join(lines).strip()
+
+## setting api key:
+#quandl.ApiConfig.api_key = quandl_api_key
+
+# <markdowncell>
+
+# ## Get data from quandl
+
+# <codecell>
+
+d = {0 : {'Name':'GOOG', 'FMV':20}, 1: {'Name':'AMZN', 'FMV':33}, 2: {'Name':'MSFT', 'FMV':8}}
+pfinfo = pd.DataFrame.from_dict(d, orient='index')
+
+# <codecell>
+
+start = datetime.datetime(2015,1,1)
 end = datetime.datetime(2017,12,31)
-start='2017-01-01'
-end='2017-12-31'
-test = quandl.get('WIKI/AAPL', column='Adj. Close', start_date=start, end_date=end)['Adj. Close'].to_frame().rename(columns={'Adj. Close':'AAPL'})
-test.head(3)
+#names = ['WIKI/AAPL', 'WIKI/MSFT']
+names = [d[k]['Name'] for k, v in d.items()]
+datacolumns = ['Adj. Close']
+datacolumns = ['Adj. Close', 'High']
+
+pf = buildPortfolioFromQuandl(pfinfo, names, start, end, datacolumns)
+pfinfo
 
 # <codecell>
 
-names = ['WIKI/AAPL', 'WIKI/MSFT']
-data = quandl.get(names)
-data.tail(2)
+print(pf)
 
 # <codecell>
 
-cols = ['WIKI/AAPL - Adj. Close', 'WIKI/MSFT - Adj. Close']
-try:
-    data = data.loc[:,[cols[0], cols[1]]]
-    data.rename(columns={'WIKI/AAPL - Adj. Close': 'AAPL', 'WIKI/MSFT - Adj. Close': 'MSFT'}, inplace=True)
-except KeyError:
-    if (all(names in data.columns)):
-    # raise Exception("Could not extract column(s) from dataframe.")
-        pass
-data.tail()
+pf.getPfStockData().head(3)
+pf.getStocks()['AMZN'].getStockData().head(3)
+
+# <codecell>
+
+pf.getPfStockData().tail(2)
+
+# <codecell>
+
+stock = pf.getStocks()['GOOG']
+stock.stock_data.tail(2)
+
+# <markdowncell>
+
+# ### write to file
+
+# <codecell>
+
+#df = pf.getPfStockData()
+##print(df)
+#
+#pf.getPortfolio().to_csv("my-pf.csv", encoding='utf-8', index=False, header=True)
+#pf.getPfStockData().to_csv("my-pfstockdata.csv", encoding='utf-8', index=True, index_label="Date")
+
+# <markdowncell>
+
+# ### read from csv to dataframe
+
+# <codecell>
+
+#test = pd.read_csv("my-pf.csv")
+pf_info = pd.read_csv("../data/ex1-portfolio.csv")
+pf_info
+pfstockdata = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
+pfstockdata.head(3)
+
+# <codecell>
+
+goog = pf.getStock('GOOG')
+print(goog)
+goog.getStockData().head(2)
+#pf.getPfStockData()
+
+# <codecell>
+
+for stockname in pf.getPfStockData().columns:
+        print("stockname = ", stockname)
+
+# <codecell>
+
+for i in range(len(pfinfo)):
+    print(pfinfo.loc[i])
 
 # <codecell>
 
 # We will look at stock prices over a one year period, starting at January 1, 2017
-start = datetime.datetime(2017,1,1)
-end = datetime.datetime(2017,12,31)
+#start = datetime.datetime(2015,1,1)
+#end = datetime.datetime(2017,12,31)
 
 names = ['WIKI/'+str(i) for i in ['AAPL', 'MSFT', 'GOOG', 'AMZN']]#+'WIKI'
 print("names = ",names)
@@ -248,11 +310,33 @@ stock_change.plot(grid = True).axhline(y = 0, color = "black", lw = 2)
 
 # <codecell>
 
+len(apple.index)
+len(apple.columns)
+num_cols = len(apple.columns)
+num_cols
+apple.columns
+
+# <codecell>
+
 # compute moving averages:
+#if (not 'Age' in df_pf.columns):
+j = 0
 movingavg = [5, 10, 15, 20, 30, 50, 100, 200]
 for stock in [apple, microsoft, google, amazon]:
+    #print("stock: ",stock)
     for i in movingavg:
-        stock[str(i)+"d"] = np.round(stock["Close"].rolling(window = i, center = False).mean(), 2)
+        #stock = stock.insert(loc=num_cols+j, column=str(i)+'d', value=np.round(stock["Adj. Close"].rolling(window = i, center = False).mean(), 2))
+        #stock.loc[:,str(i)+"d"] = np.round(stock["Close"].rolling(window = i, center = False).mean(), 2)
+        #stock.loc[:,str(i)+"d"] = np.round(stock["Close"].rolling(window = i, center = False).mean(), 2)
+        #stock = stock.assign(i=np.round(stock["Close"].rolling(window = i, center = False).mean(), 2))
+        #[str(i)+"d"] = 
+        #stock[str(i)+"d"] = np.round(stock["Close"].rolling(window = i, center = False).mean(), 2)
+        stock.loc[:][str(i)+'d'] = np.round(stock['Adj. Close'].rolling(window = i, center = False).mean(), 2)
+        j = j+1
+
+# <codecell>
+
+apple.head()
 
 # <codecell>
 
