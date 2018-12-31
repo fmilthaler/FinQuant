@@ -29,6 +29,11 @@ class Stock(object):
     def getStockData(self):
         return self.stock_data
     def getRoiData(self):
+        if (self.roi_data is None):
+            self.compRoiData()
+        return self.roi_data
+    def compRoiData(self):
+        # self.roi_data = computation with self.stock_data here
         return self.roi_data
     def compSkew(self):
         return self.roi_data.skew().values[0]
