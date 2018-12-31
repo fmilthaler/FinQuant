@@ -349,7 +349,9 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
                    )
     return pf
 
-
+def buildPortfolioFromDf(pf_information, stock_data, roi_data=None):
+    
+    return None
 
 def buildPortfolio(pf_information=None, roi_data=None, names=None, start=None, end=None, datacolumns=None):
     try:
