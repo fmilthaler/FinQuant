@@ -332,6 +332,17 @@ def getStocksDataColumns(stock_data, names, cols):
 
 def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
                              datacolumns=["Adj. Close"]):
+    ''' returns a portfolio based on input in form of a list of strings/names
+        of stocks.
+        Input:
+         * pf_information: DataFrame containing at least names and FMV of the stocks.
+         * names: A string or list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
+         * start (optional): String/datetime start date of stock data to be requested through quandl (default: None)
+         * end (optional): String/datetime end date of stock data to be requested through quandl (default: None)
+         * datacolumns (optional): A list of strings of data column labels to extracted and returned.
+        Output:
+         * pf: Instance of Portfolio which contains all the information requested by the user.
+    '''
     # create an empty portfolio
     pf = Portfolio()
     stock_data = getStocksFromQuandl(names, start, end)
