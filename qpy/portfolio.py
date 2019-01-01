@@ -279,6 +279,11 @@ class Portfolio(object):
 
 
 def correctQuandlRequestStockName(names):
+    ''' This function makes sure that all strings in the given list of stock names are
+        leading with "WIKI/" as required by quandl to request data.
+        Example: If an element of names is "GOOG" (which stands for Google), this
+                 function modifies the element of names to "WIKI/GOOG".
+    '''
     # make sure names is a list of names:
     if (isinstance(names, str)):
         names = [names]
@@ -307,9 +312,22 @@ def quandlRequest(names, start_date=None, end_date=None):
     return quandl.get(reqnames, start_date=start_date, end_date=end_date)
 
 def getQuandlDataColumnLabel(stock_name, data_label):
+    ''' Given stock name and label of a data column, this function returns the string
+        <stock_name> - <data_label>
+        as it can be found in a DataFrame returned by quandl.
+    '''
     return stock_name+' - '+data_label
 
 def getStocksDataColumns(stock_data, names, cols):
+    ''' This function returns a subset of the given DataFrame stock_data, which contains only the
+        data columns as specified in the input cols
+        Input:
+         * stock_data: A DataFrame which contains quantities of the stocks listed in pf_information
+         * names: A string or list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
+         * cols: A list of strings of column labels of stock_data to be extracted.
+        Output:
+         * stock_data: A DataFrame which contains only the data columns of stock_data as specified in cols.
+    '''
     # get correct stock names that quandl get request
     reqnames = correctQuandlRequestStockName(names)
     # get current column labels and replacement labels
