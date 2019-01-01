@@ -290,26 +290,21 @@ def correctQuandlRequestStockName(names):
         reqnames.append(name)
     return reqnames
 
-def getStockFromQuandl(name, start=None, end=None):
+def quandlRequest(names, start_date=None, end_date=None):
+    ''' This function performs a simple request from quandl.
+        Input:
+         * names: List of strings of stock names to be requested
+         * start_date (optional): String/datetime of the start date of relevant stock data
+         * end_date (optional): String/datetime of the end date of relevant stock data
+    '''
     try:
         import quandl
         import datetime
     except ImportError:
         print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
-    reqname = correctQuandlRequestStockName(name)
-    return quandl.get(reqname, start_date=start, end_date=end)
-
-def getStocksFromQuandl(names, start=None, end=None):
-    try:
-        import quandl
-        import datetime
-    except ImportError:
-        print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
-    # get correct stock names that quandl get request
+    # get correct stock names that quandl.get can request, e.g. "WIKI/GOOG" for Google
     reqnames = correctQuandlRequestStockName(names)
-    # get stocks:
-    stock_data = quandl.get(reqnames, start_date=start, end_date=end)
-    return stock_data
+    return quandl.get(reqnames, start_date=start_date, end_date=end_date)
 
 def getQuandlDataColumnLabel(stock_name, data_label):
     return stock_name+' - '+data_label
@@ -345,7 +340,8 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     '''
     # create an empty portfolio
     pf = Portfolio()
-    stock_data = getStocksFromQuandl(names, start, end)
+    # request data from quandl:
+    stock_data = quandlRequest(names, start, end)
     # extract only certain columns:
     stock_data = getStocksDataColumns(stock_data, names, datacolumns)
     # add stocks to portfolio
