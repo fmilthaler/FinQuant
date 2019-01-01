@@ -308,13 +308,13 @@ def getStocksFromQuandl(names, start=None, end=None):
     # get correct stock names that quandl get request
     reqnames = correctQuandlRequestStockName(names)
     # get stocks:
-    stocks = quandl.get(reqnames, start_date=start, end_date=end)
-    return stocks
+    stock_data = quandl.get(reqnames, start_date=start, end_date=end)
+    return stock_data
 
 def getQuandlDataColumnLabel(stock_name, data_label):
     return stock_name+' - '+data_label
 
-def getStocksDataColumns(stocks, names, cols):
+def getStocksDataColumns(stock_data, names, cols):
     # get correct stock names that quandl get request
     reqnames = correctQuandlRequestStockName(names)
     # get current column labels and replacement labels
@@ -322,21 +322,21 @@ def getStocksDataColumns(stocks, names, cols):
     for name in reqnames:
         for col in cols:
             reqcolnames.append(getQuandlDataColumnLabel(name, col))
-    stocks = stocks.loc[:, reqcolnames]
+    stock_data = stock_data.loc[:, reqcolnames]
     # now rename the columns:
     newcolnames = {}
     for i in reqcolnames:
         newcolnames.update({i: i.replace('WIKI/','')})
-    stocks.rename(columns=newcolnames, inplace=True)
-    return stocks
+    stock_data.rename(columns=newcolnames, inplace=True)
+    return stock_data
 
 def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
                              datacolumns=["Adj. Close"]):
     # create an empty portfolio
     pf = Portfolio()
-    stocksdata = getStocksFromQuandl(names, start, end)
-    # get certain columns:
-    stocksdata = getStocksDataColumns(stocksdata, names, datacolumns)
+    stock_data = getStocksFromQuandl(names, start, end)
+    # extract only certain columns:
+    stock_data = getStocksDataColumns(stock_data, names, datacolumns)
     # add stocks to portfolio
     # better to use stocks function here than the below
     # build portfolio at once:
@@ -345,8 +345,8 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     for i in range(len(pf_information)):
         name = pf_information.loc[i].Name
         pf.addStock(Stock(pf_information.loc[i],
-                          stock_data=stocksdata.filter(regex=name))
                    )
+                              stock_data=stock_data.filter(regex=name))
     return pf
 
 def buildPortfolioFromDf(pf_information, stock_data, roi_data=None):
