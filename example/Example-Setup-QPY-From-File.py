@@ -44,11 +44,10 @@ from sklearn.model_selection import train_test_split
 # <codecell>
 
 # importing some custom functions/objects
-from qpy.portfolio import Portfolio, Stock, buildPortfolioFromQuandl
+from qpy.portfolio import Portfolio, Stock, buildPortfolioFromDf
 
 # <codecell>
 
-import quandl
 import os
 
 # <codecell>
@@ -63,7 +62,7 @@ import os
 
 # <codecell>
 
-#test = pd.read_csv("my-pf.csv")
+# stock data was previously pulled from quandl and stored in ex1-stockdata.csv
 pf_info = pd.read_csv("../data/ex1-portfolio.csv")
 pfstockdata = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
 
@@ -77,7 +76,16 @@ pfstockdata.head(3)
 
 # <codecell>
 
+pf = buildPortfolioFromDf(pf_info, stock_data=pfstockdata)
 
+# <codecell>
+
+print(pf)
+
+# <codecell>
+
+pf.getPfStockData().head(3)
+#pf.getStocks()['GOOG'].getStockData().head(3)
 
 # <codecell>
 
@@ -86,6 +94,18 @@ pfstockdata.head(3)
 #print(pf)
 #pf.getPfStockData().head(3)
 #pf.getStocks()['AMZN'].getStockData().head(3)
+
+# <codecell>
+
+pf.getPfStockData().index
+
+# <codecell>
+
+
+
+# <codecell>
+
+
 
 # <codecell>
 
