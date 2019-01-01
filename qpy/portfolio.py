@@ -344,21 +344,49 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     stock_data = quandlRequest(names, start, end)
     # extract only certain columns:
     stock_data = getStocksDataColumns(stock_data, names, datacolumns)
-    # add stocks to portfolio
-    # better to use stocks function here than the below
-    # build portfolio at once:
-    
-    # build portfolio stock by stock:
-    for i in range(len(pf_information)):
-        name = pf_information.loc[i].Name
-        pf.addStock(Stock(pf_information.loc[i],
-                   )
-                              stock_data=stock_data.filter(regex=name))
+    # build portfolio:
+    pf = buildPortfolioFromDf(pf_information, stock_data=stock_data)
     return pf
 
-def buildPortfolioFromDf(pf_information, stock_data, roi_data=None):
-    
-    return None
+def stocknamesInDataColumns(names, df):
+    ''' returns True if at least one element of names was found as a
+        column label in the dataframe df.
+    '''
+    return any((name in label for name in names for label in df.columns))
+
+def buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
+    ''' returns a portfolio based on input in form of pandas.DataFrame
+        Input:
+         * pf_information: DataFrame containing at least names and FMV of the stocks.
+         * stock_data (optional): A DataFrame which contains quantities of the stocks listed in pf_information
+         * roi_data (optional): A DataFrame which contains the return of investment (ROI) data of the stocks listed in pf_information
+        Output:
+         * pf: Instance of Portfolio which contains all the information requested by the user.
+    '''
+    if ((stock_data is None and roi_data is None) or
+        ((not stock_data is None) and (not roi_data is None))):
+        raise ValueError("One of the two inpurt arguments stock_data, roi_data must be set.")
+    # make sure stock names are in data dataframe
+    if (stock_data is None): data = roi_data
+    elif (roi_data is None): data = stock_data
+    if (not stocknamesInDataColumns(pf_information.Name.values, data)):
+        raise ValueError("Error: None of the provided stock names were found in the provided dataframe.")
+    # building portfolio:
+    # better to use stocks function here than the below
+    # build portfolio at once:
+    # build portfolio stock by stock:
+    pf = Portfolio()
+    for i in range(len(pf_information)):
+        name = pf_information.loc[i].Name
+        if (roi_data is None):
+            pf.addStock(Stock(pf_information.loc[i],
+                              stock_data=stock_data.filter(regex=name))
+                       )
+        else:
+            pf.addStock(Stock(pf_information.loc[i],
+                              roi_data=roi_data.filter(regex=name))
+                       )
+    return pf
 
 def buildPortfolio(pf_information=None, roi_data=None, names=None, start=None, end=None, datacolumns=None):
     try:
