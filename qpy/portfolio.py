@@ -350,7 +350,7 @@ def buildPortfolioFromQuandl(pf_information, names, start_date=None, end_date=No
          * names: A string or list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
          * start (optional): String/datetime start date of stock data to be requested through quandl (default: None)
          * end (optional): String/datetime end date of stock data to be requested through quandl (default: None)
-         * datacolumns (optional): A list of strings of data column labels to be extracted and returned.
+         * datacolumns (optional): A list of strings of data column labels to be extracted and returned (default: ["Adj. Close"]).
         Output:
          * pf: Instance of Portfolio which contains all the information requested by the user.
     '''
