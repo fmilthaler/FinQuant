@@ -279,10 +279,9 @@ class Portfolio(object):
 
 
 def correctQuandlRequestStockName(names):
-    ''' This function makes sure that all strings in the given list of stock names are
-        leading with "WIKI/" as required by quandl to request data.
-        Example: If an element of names is "GOOG" (which stands for Google), this
-                 function modifies the element of names to "WIKI/GOOG".
+    ''' This function makes sure that all strings in the given list of stock names are leading with "WIKI/" as required by quandl to request data.
+
+        Example: If an element of names is "GOOG" (which stands for Google), this function modifies the element of names to "WIKI/GOOG".
     '''
     # make sure names is a list of names:
     if (isinstance(names, str)):
@@ -297,6 +296,7 @@ def correctQuandlRequestStockName(names):
 
 def quandlRequest(names, start_date=None, end_date=None):
     ''' This function performs a simple request from quandl.
+
         Input:
          * names: List of strings of stock names to be requested
          * start_date (optional): String/datetime of the start date of relevant stock data
@@ -312,15 +312,13 @@ def quandlRequest(names, start_date=None, end_date=None):
     return quandl.get(reqnames, start_date=start_date, end_date=end_date)
 
 def getQuandlDataColumnLabel(stock_name, data_label):
-    ''' Given stock name and label of a data column, this function returns the string
-        <stock_name> - <data_label>
-        as it can be found in a DataFrame returned by quandl.
+    ''' Given stock name and label of a data column, this function returns the string <stock_name> - <data_label> as it can be found in a DataFrame returned by quandl.
     '''
     return stock_name+' - '+data_label
 
 def getStocksDataColumns(stock_data, names, cols):
-    ''' This function returns a subset of the given DataFrame stock_data, which contains only the
-        data columns as specified in the input cols
+    ''' This function returns a subset of the given DataFrame stock_data, which contains only the data columns as specified in the input cols.
+
         Input:
          * stock_data: A DataFrame which contains quantities of the stocks listed in pf_information
          * names: A string or list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
@@ -345,14 +343,15 @@ def getStocksDataColumns(stock_data, names, cols):
 
 def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
                              datacolumns=["Adj. Close"]):
-    ''' returns a portfolio based on input in form of a list of strings/names
+    ''' Returns a portfolio based on input in form of a list of strings/names
         of stocks.
+
         Input:
-         * pf_information: DataFrame containing at least names and FMV of the stocks.
+         * pf_information: DataFrame with the required data column labels "Name" and "FMV" of the stocks.
          * names: A string or list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
          * start (optional): String/datetime start date of stock data to be requested through quandl (default: None)
          * end (optional): String/datetime end date of stock data to be requested through quandl (default: None)
-         * datacolumns (optional): A list of strings of data column labels to extracted and returned.
+         * datacolumns (optional): A list of strings of data column labels to be extracted and returned.
         Output:
          * pf: Instance of Portfolio which contains all the information requested by the user.
     '''
@@ -367,15 +366,15 @@ def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
     return pf
 
 def stocknamesInDataColumns(names, df):
-    ''' returns True if at least one element of names was found as a
-        column label in the dataframe df.
+    ''' Returns True if at least one element of names was found as a column label in the dataframe df.
     '''
     return any((name in label for name in names for label in df.columns))
 
 def buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
-    ''' returns a portfolio based on input in form of pandas.DataFrame
+    ''' Returns a portfolio based on input in form of pandas.DataFrame.
+
         Input:
-         * pf_information: DataFrame containing at least names and FMV of the stocks.
+         * pf_information: DataFrame with the required data column labels "Name" and "FMV" of the stocks.
          * stock_data (optional): A DataFrame which contains quantities of the stocks listed in pf_information
          * roi_data (optional): A DataFrame which contains the return of investment (ROI) data of the stocks listed in pf_information
         Output:
