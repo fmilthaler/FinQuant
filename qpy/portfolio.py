@@ -341,8 +341,7 @@ def getStocksDataColumns(stock_data, names, cols):
     stock_data.rename(columns=newcolnames, inplace=True)
     return stock_data
 
-def buildPortfolioFromQuandl(pf_information, names, start=None, end=None,
-                             datacolumns=["Adj. Close"]):
+def buildPortfolioFromQuandl(pf_information, names, start_date=None, end_date=None, datacolumns=["Adj. Close"]):
     ''' Returns a portfolio based on input in form of a list of strings/names
         of stocks.
 
