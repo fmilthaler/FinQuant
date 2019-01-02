@@ -4,9 +4,7 @@ def weightedMean(means, weights):
     return np.sum(means * weights)
 
 def weightedStd(cov_matrix, weights):
-    weighted_std = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
-    return weighted_std
+    return np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
 
 def SharpeRatio(exproi, riskfreerate, volatility):
-    sharpe = (exproi - riskfreerate)/float(volatility)
-    return sharpe
+    return (exproi - riskfreerate)/float(volatility)
