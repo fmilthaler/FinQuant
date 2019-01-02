@@ -44,7 +44,7 @@ from sklearn.model_selection import train_test_split
 # <codecell>
 
 # importing some custom functions/objects
-from qpy.portfolio import Portfolio, Stock, buildPortfolioFromDf
+from qpy.portfolio import Portfolio, Stock, buildPortfolio
 
 # <codecell>
 
@@ -76,28 +76,56 @@ pfstockdata.head(3)
 
 # <codecell>
 
-pf = buildPortfolioFromDf(pf_info, stock_data=pfstockdata)
+start = datetime.datetime(2015,1,1)
+end = datetime.datetime(2017,12,31)
+datacolumns = ['Adj. Close']
+datacolumns = ['Adj. Close', 'High']
+#pf = buildPortfolioFromDf(pf_info, stock_data=pfstockdata)
+#pf = buildPortfolio(pf_info, names=['GOOG','MSFT'], 
+#                    start_date=start, end_date=end, 
+#                    #datacolumns=datacolumns,
+#                    roi_data='test',
+#                   )
+
+pf = buildPortfolio(pf_info, #names=['GOOG','MSFT'],
+                    stock_data=pfstockdata,
+                    #start_date=1
+                    #datacolumns=datacolumns
+                   )
+
+#pf = buildPortfolio(pf_info, names=['GOOG','MSFT'],
+#                    roi_data=pfstockdata,
+#                   )
 
 # <codecell>
 
 print(pf)
+pf.getPfStockData().head(2)
+#pf.getPfStockData().tail(2)
 
 # <codecell>
 
-pf.getPfStockData().head(3)
-#pf.getStocks()['GOOG'].getStockData().head(3)
+
 
 # <codecell>
 
-# build portfolio
 
-#print(pf)
-#pf.getPfStockData().head(3)
-#pf.getStocks()['AMZN'].getStockData().head(3)
 
 # <codecell>
 
-pf.getPfStockData().index
+
+
+# <codecell>
+
+
+
+# <codecell>
+
+
+
+# <codecell>
+
+
 
 # <codecell>
 
