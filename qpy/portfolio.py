@@ -278,7 +278,7 @@ class Portfolio(object):
 
 
 
-def correctQuandlRequestStockName(names):
+def _correctQuandlRequestStockName(names):
     ''' This function makes sure that all strings in the given list of stock names are leading with "WIKI/" as required by quandl to request data.
 
         Example: If an element of names is "GOOG" (which stands for Google), this function modifies the element of names to "WIKI/GOOG".
@@ -294,7 +294,7 @@ def correctQuandlRequestStockName(names):
         reqnames.append(name)
     return reqnames
 
-def quandlRequest(names, start_date=None, end_date=None):
+def _quandlRequest(names, start_date=None, end_date=None):
     ''' This function performs a simple request from quandl.
 
         Input:
@@ -308,15 +308,15 @@ def quandlRequest(names, start_date=None, end_date=None):
     except ImportError:
         print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
     # get correct stock names that quandl.get can request, e.g. "WIKI/GOOG" for Google
-    reqnames = correctQuandlRequestStockName(names)
+    reqnames = _correctQuandlRequestStockName(names)
     return quandl.get(reqnames, start_date=start_date, end_date=end_date)
 
-def getQuandlDataColumnLabel(stock_name, data_label):
+def _getQuandlDataColumnLabel(stock_name, data_label):
     ''' Given stock name and label of a data column, this function returns the string <stock_name> - <data_label> as it can be found in a DataFrame returned by quandl.
     '''
     return stock_name+' - '+data_label
 
-def getStocksDataColumns(stock_data, names, cols):
+def _getStocksDataColumns(stock_data, names, cols):
     ''' This function returns a subset of the given DataFrame stock_data, which contains only the data columns as specified in the input cols.
 
         Input:
@@ -327,12 +327,12 @@ def getStocksDataColumns(stock_data, names, cols):
          * stock_data: A DataFrame which contains only the data columns of stock_data as specified in cols.
     '''
     # get correct stock names that quandl get request
-    reqnames = correctQuandlRequestStockName(names)
+    reqnames = _correctQuandlRequestStockName(names)
     # get current column labels and replacement labels
     reqcolnames = []
     for name in reqnames:
         for col in cols:
-            reqcolnames.append(getQuandlDataColumnLabel(name, col))
+            reqcolnames.append(_getQuandlDataColumnLabel(name, col))
     stock_data = stock_data.loc[:, reqcolnames]
     # now rename the columns:
     newcolnames = {}
@@ -341,7 +341,7 @@ def getStocksDataColumns(stock_data, names, cols):
     stock_data.rename(columns=newcolnames, inplace=True)
     return stock_data
 
-def buildPortfolioFromQuandl(pf_information, names, start_date=None, end_date=None, datacolumns=["Adj. Close"]):
+def _buildPortfolioFromQuandl(pf_information, names, start_date=None, end_date=None, datacolumns=["Adj. Close"]):
     ''' Returns a portfolio based on input in form of a list of strings/names
         of stocks.
 
@@ -357,19 +357,19 @@ def buildPortfolioFromQuandl(pf_information, names, start_date=None, end_date=No
     # create an empty portfolio
     pf = Portfolio()
     # request data from quandl:
-    stock_data = quandlRequest(names, start_date, end_date)
+    stock_data = _quandlRequest(names, start_date, end_date)
     # extract only certain columns:
-    stock_data = getStocksDataColumns(stock_data, names, datacolumns)
+    stock_data = _getStocksDataColumns(stock_data, names, datacolumns)
     # build portfolio:
-    pf = buildPortfolioFromDf(pf_information, stock_data=stock_data)
+    pf = _buildPortfolioFromDf(pf_information, stock_data=stock_data)
     return pf
 
-def stocknamesInDataColumns(names, df):
+def _stocknamesInDataColumns(names, df):
     ''' Returns True if at least one element of names was found as a column label in the dataframe df.
     '''
     return any((name in label for name in names for label in df.columns))
 
-def buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
+def _buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
     ''' Returns a portfolio based on input in form of pandas.DataFrame.
 
         Input:
@@ -385,7 +385,7 @@ def buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
     # make sure stock names are in data dataframe
     if (stock_data is None): data = roi_data
     elif (roi_data is None): data = stock_data
-    if (not stocknamesInDataColumns(pf_information.Name.values, data)):
+    if (not _stocknamesInDataColumns(pf_information.Name.values, data)):
         raise ValueError("Error: None of the provided stock names were found in the provided dataframe.")
     # building portfolio:
     # better to use stocks function here than the below
@@ -466,7 +466,7 @@ def buildPortfolio(pf_information, **kwargs):
         if (_allListEleInOther(['end_date'], kwargs.keys())): end_date = kwargs['end_date']
         if (_allListEleInOther(['datacolumns'], kwargs.keys())): datacolumns = kwargs['datacolumns']
         # get portfolio:
-        pf = buildPortfolioFromQuandl(pf_information, **kwargs)
+        pf = _buildPortfolioFromQuandl(pf_information, **kwargs)
 
     # 2. stock_data
     allowedInputArgs = ['stock_data']
@@ -477,7 +477,7 @@ def buildPortfolio(pf_information, **kwargs):
         if (_anyListEleInOther(_listComplement(allowedInputArgs, allInputArgs), kwargs.keys())):
             raise ValueError(inputError.format(complementInputArgs, allowedInputArgs))
         # get portfolio:
-        pf = buildPortfolioFromDf(pf_information, **kwargs)
+        pf = _buildPortfolioFromDf(pf_information, **kwargs)
 
     # 3. roi_data
     allowedInputArgs = ['roi_data']
@@ -488,6 +488,6 @@ def buildPortfolio(pf_information, **kwargs):
         if (_anyListEleInOther(_listComplement(allowedInputArgs, allInputArgs), kwargs.keys())):
             raise ValueError(inputError.format(complementInputArgs, allowedInputArgs))
         # get portfolio:
-        pf = buildPortfolioFromDf(pf_information, **kwargs)
+        pf = _buildPortfolioFromDf(pf_information, **kwargs)
 
     return pf
