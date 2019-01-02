@@ -435,7 +435,7 @@ def buildPortfolio(pf_information, **kwargs):
 
         Only the following combinations of inputs are allowed:
          * pf_information, names, start_date (optional), end_date (optional), datacolumns (optional)
-         * pf_information, stock_data, datacolumns (optional)
+         * pf_information, stock_data
          * pf_information, roi_data
         In the latter case, stock data (e.g. prices) are not present in the resulting portfolio, as the roi_data was given by user.
     '''
