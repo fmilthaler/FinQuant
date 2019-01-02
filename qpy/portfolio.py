@@ -404,8 +404,84 @@ def buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
                        )
     return pf
 
+def _allListEleInOther(l1, l2):
+    ''' Returns True if all elements of list l1 are found in list l2.
+    '''
+    return all(ele in l2 for ele in l1)
+
+def _anyListEleInOther(l1, l2):
+    ''' Returns True if any element of list l1 is found in list l2.
+    '''
+    return any(ele in l2 for ele in l1)
+
+def _listComplement(A, B):
+    ''' Returns the relative complement of A in B (also denoted as A\B)
+    '''
+    return list(set(B) - set(A))
+
+def buildPortfolio(pf_information, **kwargs):
+    ''' This function builds and returns a portfolio given a set of input arguments.
+
+        Input:
+         * pf_information: This input is always required. DataFrame with the required data column labels "Name" and "FMV" of the stocks.
+         * names: A string or list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
+         * start (optional): String/datetime start date of stock data to be requested through quandl (default: None)
+         * end (optional): String/datetime end date of stock data to be requested through quandl (default: None)
+         * stock_data (optional): A DataFrame which contains quantities of the stocks listed in pf_information
+         * roi_data (optional): A DataFrame which contains the return of investment (ROI) data of the stocks listed in pf_information
+         * datacolumns (optional): A list of strings of data column labels to be extracted and returned.
+        Output:
+         * pf: Instance of Portfolio which contains all the information requested by the user.
+
+        Only the following combinations of inputs are allowed:
+         * pf_information, names, start_date (optional), end_date (optional), datacolumns (optional)
+         * pf_information, stock_data, datacolumns (optional)
+         * pf_information, roi_data
+        In the latter case, stock data (e.g. prices) are not present in the resulting portfolio, as the roi_data was given by user.
+    '''
+    if (kwargs is None):
+        raise ValueError("Error: Please read through the docstring, buildPortfolio.__doc__.")
 
     # create an empty portfolio
     pf = Portfolio()
 
+    # list of all valid optional input arguments
+    allInputArgs = ['names', 'start_date', 'end_date', 'stock_data', 'datacolumns', 'roi_data']
+
+    # 1. names, start_date, end_date
+    allowedInputArgs = ['names', 'start_date', 'end_date', 'datacolumns']
+    if (_allListEleInOther(['names'], kwargs.keys())):
+        names = kwargs['names']
+        # check that no input argument conflict arises:
+        if (_anyListEleInOther(_listComplement(allowedInputArgs, allInputArgs), kwargs.keys())):
+            raise ValueError("Error: None of the input arguments 'roi_data', 'stock_data' are allowed in combination with 'names'. Please read through the docstring, buildPortfolio.__doc__.")
+        # set optional arguments:
+        start_date = None
+        end_date = None
+        datacolumns = None
+        if (_allListEleInOther(['start_date'], kwargs.keys())): start_date = kwargs['start_date']
+        if (_allListEleInOther(['end_date'], kwargs.keys())): end_date = kwargs['end_date']
+        if (_allListEleInOther(['datacolumns'], kwargs.keys())): datacolumns = kwargs['datacolumns']
+        pf = buildPortfolioFromQuandl(pf_information, **kwargs)
+
+    # 2. stock_data
+    allowedInputArgs = ['stock_data']
+    if (_allListEleInOther(['stock_data'], kwargs.keys())):
+        stock_data = kwargs['stock_data']
+        # check that no input argument conflict arises:
+        if (_anyListEleInOther(_listComplement(allowedInputArgs, allInputArgs), kwargs.keys())):
+            raise ValueError("Error: None of the input arguments 'roi_data', 'names', 'start_date', 'end_date', 'datacolumns' are allowed in combination with 'stock_data', 'datacolumns'. Please read through the docstring, buildPortfolio.__doc__.")
+        pf = buildPortfolioFromDf(pf_information, **kwargs)
+
+    #3. roi_data
+    allowedInputArgs = ['roi_data']
+    if (_allListEleInOther(['roi_data'], kwargs.keys())):
+        roi_data = kwargs['roi_data']
+        # check that no input argument conflict arises:
+        if (_anyListEleInOther(_listComplement(allowedInputArgs, allInputArgs), kwargs.keys())):
+            raise ValueError("Error: None of the input arguments 'stock_data', 'datacolumns', 'names', 'start_date', 'end_date', 'datacolumns' are allowed in combination with 'roi_data'. Please read through the docstring, buildPortfolio.__doc__.")
+        # get portfolio:
+        pf = buildPortfolioFromDf(pf_information, **kwargs)
+
+    return pf
 
