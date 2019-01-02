@@ -44,7 +44,7 @@ from sklearn.model_selection import train_test_split
 # <codecell>
 
 # importing some custom functions/objects
-from qpy.portfolio import Portfolio, Stock, buildPortfolioFromQuandl
+from qpy.portfolio import Portfolio, Stock, buildPortfolio
 
 # <codecell>
 
@@ -81,7 +81,7 @@ names = [d[k]['Name'] for k, v in d.items()]
 datacolumns = ['Adj. Close']
 datacolumns = ['Adj. Close', 'High']
 
-pf = buildPortfolioFromQuandl(pfinfo, names, start, end, datacolumns)
+pf = buildPortfolio(pfinfo, names=names, start_date=start, end_date=end, datacolumns=datacolumns)
 pfinfo
 
 # <codecell>
@@ -108,6 +108,18 @@ goog.getStockData().head(2)
 
 for stockname in pf.getPfStockData().columns:
         print("stockname = ", stockname)
+
+# <codecell>
+
+
+
+# <codecell>
+
+
+
+# <codecell>
+
+
 
 # <codecell>
 
