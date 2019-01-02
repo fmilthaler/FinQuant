@@ -404,25 +404,8 @@ def buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
                        )
     return pf
 
-def buildPortfolio(pf_information=None, roi_data=None, names=None, start=None, end=None, datacolumns=None):
-    try:
-        import quandl
-        import datetime
-    except ImportError:
-        print("The following packages are required:\n - quandl\n - datetime\nPlease ensure that they are installed.")
 
     # create an empty portfolio
     pf = Portfolio()
-    # Get data from quandl
-    for name in names:
-        try:
-            roi = quandl.get(name, start_date=start, end_date=end)
-            self.asset[symbol] = DataReader(
-                symbol, "yahoo", start=start, end=end)
-        except:
-            print("Asset " + str(symbol) + " not found!")
 
 
-    #except:
-        #print("Asset " + str(symbol) + " not found!")
-    #None
