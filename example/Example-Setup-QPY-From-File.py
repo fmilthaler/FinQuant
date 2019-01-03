@@ -7,54 +7,13 @@
 
 # <codecell>
 
-import matplotlib.pyplot as plt
-# to plot within the notebook:
-%matplotlib inline
-#pylab
-
-import math, random
 import numpy as np
 import pandas as pd
-import seaborn as sns; sns.set()
-#from scipy import stats
-
-sns.set_style('darkgrid')
-
-# <codecell>
-
-##set line width
-plt.rcParams['lines.linewidth'] = 2
-##set font size for titles 
-plt.rcParams['axes.titlesize'] = 14
-##set font size for labels on axes
-plt.rcParams['axes.labelsize'] = 12
-##set size of numbers on x-axis
-plt.rcParams['xtick.labelsize'] = 10
-##set size of numbers on y-axis
-plt.rcParams['ytick.labelsize'] = 10
-
-# <codecell>
-
 import datetime
-
-from sklearn.linear_model import LinearRegression
-from sklearn import preprocessing, svm
-from sklearn.model_selection import train_test_split
-
-# <codecell>
+import os
 
 # importing some custom functions/objects
 from qpy.portfolio import Portfolio, Stock, buildPortfolio
-
-# <codecell>
-
-import os
-
-# <codecell>
-
-# write data to disk:
-#pf.getPortfolio().to_csv("my-pf.csv", encoding='utf-8', index=False, header=True)
-#pf.getPfStockData().to_csv("my-pfstockdata.csv", encoding='utf-8', index=True, index_label="Date")
 
 # <markdowncell>
 
