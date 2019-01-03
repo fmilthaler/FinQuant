@@ -399,7 +399,7 @@ def _buildPortfolioFromQuandl(pf_information,
                               names,
                               start_date=None,
                               end_date=None,
-                              datacolumns=["Adj. Close"]):
+                              datacolumns=["Close"]):
     ''' Returns a portfolio based on input in form of a list of
         strings/names of stocks.
 
@@ -413,7 +413,7 @@ def _buildPortfolioFromQuandl(pf_information,
          * end_date (optional): String/datetime end date of stock data to
              be requested through quandl (default: None)
          * datacolumns (optional): A list of strings of data column labels
-             to be extracted and returned (default: ["Adj. Close"]).
+             to be extracted and returned (default: ["Close"]).
         Output:
          * pf: Instance of Portfolio which contains all the information
              requested by the user.
