@@ -3,7 +3,8 @@
 
 # <markdowncell>
 
-# ## Getting stock data
+# # Example:
+# ## Building a portfolio by downloading relevant data through quandl with stocknames, start and end date and column labels
 
 # <codecell>
 
@@ -44,7 +45,8 @@ from sklearn.model_selection import train_test_split
 # <codecell>
 
 # importing some custom functions/objects
-from qpy.portfolio import Portfolio, Stock, buildPortfolio
+#from qpy.portfolio import Portfolio, Stock, buildPortfolio
+from qpy.portfolio import buildPortfolio
 
 # <codecell>
 
@@ -53,36 +55,70 @@ import os
 
 # <codecell>
 
-#filename = os.environ['HOME']+'/.quandl/api_key'
-#with open(filename) as f:
-#    lines = f.readlines()
-#if (len(lines) != 1):
-#    raise ValueError('Could not get the quandl api key from '+filename)
-#quandl_api_key = ''.join(lines).strip()
+filename = os.environ['HOME']+'/.quandl/api_key'
+with open(filename) as f:
+    lines = f.readlines()
+if (len(lines) != 1):
+    raise ValueError('Could not get the quandl api key from '+filename)
+quandl_api_key = ''.join(lines).strip()
 
-## setting api key:
-#quandl.ApiConfig.api_key = quandl_api_key
+# setting api key:
+quandl.ApiConfig.api_key = quandl_api_key
 
 # <markdowncell>
 
-# ## Get data from quandl
+# ## Get data from quandl and build portfolio
 
 # <codecell>
 
 d = {0 : {'Name':'GOOG', 'FMV':20}, 1: {'Name':'AMZN', 'FMV':33}, 2: {'Name':'MSFT', 'FMV':8}}
-pfinfo = pd.DataFrame.from_dict(d, orient='index')
+pf_information = pd.DataFrame.from_dict(d, orient='index')
 
 # <codecell>
 
-start = datetime.datetime(2015,1,1)
-end = datetime.datetime(2017,12,31)
-#names = ['WIKI/AAPL', 'WIKI/MSFT']
-names = [d[k]['Name'] for k, v in d.items()]
-datacolumns = ['Adj. Close']
-datacolumns = ['Adj. Close', 'High']
+# names is a list stocknames
+# to request Google's stock, the user needs to know Google's 
+# identifier: GOOG
+# The python package quandl is used to download the data. 
+# To download Google's stock data, quandl requires the string
+# "WIKI/GOOG".
+# For simplicity, QPY facilitates a set of functions under the hood
+# to sort out lots of specific commands/required input for quandl.
+# When using QPY, the user simply needs to provide a list of stock
+# names. Moreover, the leading "WIKI/" in quandl's request can
+# be set by the user or left out.
 
-pf = buildPortfolio(pfinfo, names=names, start_date=start, end_date=end, datacolumns=datacolumns)
-pfinfo
+# For example, all three lists as shown below are valid input for
+# QPY's function "buildPortfolio(pfinfo, names=names)"
+# names = ['WIKI/GOOG', 'WIKI/AMZN']
+# names = ['GOOG', 'AMZN']
+# names = ['WIKI/GOOG', 'AMZN']
+
+# here we set the list of names based on the names in
+# the DataFrame pf_information
+names = pf_information['Name'].values.tolist()
+
+# dates can be set as datetime or string, as shown below:
+start_date = datetime.datetime(2015,1,1)
+end_date = '2017-12-31'
+
+# The user can also provide a list of column labels to extract from
+# the data obtained from quandl. If none is set, QPY will extract
+# the column 'Adj. Close' for each stock.
+datacolumns = ['Adj. Close', 'High', 'Close']
+
+pf = buildPortfolio(pf_information,
+                    names=names,
+                    start_date=start_date,
+                    end_date=end_date,
+                    datacolumns=datacolumns)
+pf_information
+
+# <codecell>
+
+df = pf.getPfStockData().copy(deep=True)
+#df = df.loc[df['GOOG']]
+all(df['GOOG - Adj. Close'] == df['GOOG - Close'])
 
 # <codecell>
 
@@ -91,7 +127,18 @@ print(pf)
 # <codecell>
 
 pf.getPfStockData().head(3)
+
+# <codecell>
+
+pf.optimisePortfolio(100, plot=True)
+
+# <codecell>
+
 pf.getStocks()['AMZN'].getStockData().head(3)
+
+# <codecell>
+
+pf.getStock('AMZN').getStockData().head(3)
 
 # <codecell>
 
