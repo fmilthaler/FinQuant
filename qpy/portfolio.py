@@ -296,36 +296,36 @@ class Portfolio(object):
             import matplotlib.pylab as plt
             plt.figure()
             # create scatter plot coloured by Sharpe Ratio
-            ax = df_results.plot.scatter(x='Volatility',
-                                         y='ROI',
-                                         c='Sharpe Ratio',
-                                         colormap='RdYlBu',
-                                         label=None)
+            plt.scatter(df_results['Volatility'],
+                        df_results['ROI'],
+                        c=df_results['Sharpe Ratio'],
+                        cmap='RdYlBu',
+                        label=None
+                       )
+            plt.colorbar()
             # mark in red the highest sharpe ratio
-            pf_opt.loc['Max Sharpe Ratio'].to_frame().T.plot.scatter(
-                x='Volatility',
-                y='ROI',
-                marker="o",
-                color='r',
-                s=100,
-                label='max Sharpe Ratio',
-                ax=ax)
+            plt.scatter(pf_opt.loc['Max Sharpe Ratio']['Volatility'],
+                        pf_opt.loc['Max Sharpe Ratio']['ROI'],
+                        marker='^',
+                        color='r',
+                        s=250,
+                        label='max Sharpe Ratio'
+                       )
             # mark in green the minimum volatility
-            pf_opt.loc['Min Volatility'].to_frame().T.plot.scatter(
-                x='Volatility',
-                y='ROI',
-                marker="o",
-                color='g',
-                s=100,
-                label='min Volatility',
-                ax=ax)
-            plt.title('Monte Carlo simulation to optimise the investments')
+            plt.scatter(pf_opt.loc['Min Volatility']['Volatility'],
+                        pf_opt.loc['Min Volatility']['ROI'],
+                        marker='^',
+                        color='g',
+                        s=250,
+                        label='min Volatility',
+                       )
+            plt.title('Monte Carlo simulation to optimise the portfolio')
             plt.xlabel('Volatility')
             plt.ylabel('ROI')
             plt.legend()
             plt.show()
 
-        return (pf_opt)
+        return pf_opt
 
     def __str__(self):
         return str(self.getPortfolio())
