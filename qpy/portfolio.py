@@ -235,8 +235,6 @@ class Portfolio(object):
         #  portfolio with minimum volatility)
         # both are returned as a pandas.Series
         import numpy as np
-        if (plot):
-            import matplotlib.pyplot as plt
         # set number of stocks in the portfolio
         num_stocks = len(self.getStocks())
         # set up array to hold results
@@ -285,6 +283,7 @@ class Portfolio(object):
 
         # plot results
         if (plot):
+            import matplotlib.pyplot as plt
             plt.figure()
             # create scatter plot coloured by Sharpe Ratio
             ax = df_results.plot.scatter(x='Volatility',
