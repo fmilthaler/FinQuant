@@ -35,6 +35,9 @@ class Stock(object):
         self.investmentinfo = investmentinfo
         self.roi_data = roi_data
         self.stock_data = stock_data
+        # if roi_data was not given, compute and set it
+        if (self.roi_data is None):
+            self.roi_data = self.compRoiData()
 
     def getInvestmentInfo(self):
         return self.investmentinfo
@@ -47,8 +50,12 @@ class Stock(object):
             self.compRoiData()
         return self.roi_data
 
-    def compRoiData(self):
+    def compRoiData(self, dataColumnLabel='Close', period=1):
         # self.roi_data = computation with self.stock_data here
+        # get correct column label ("<stock name> - <dataColumnLabel>")
+        label = self.name+' - '+dataColumnLabel
+        # compute Return of investment
+        self.roi_data = self.stock_data[label].pct_change(period).dropna().to_frame().rename(columns={label: 'ROI'})
         return self.roi_data
 
     def compSkew(self):
