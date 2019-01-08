@@ -243,7 +243,8 @@ class Portfolio(object):
         return self.getPfRoiData().kurt()
 
     # optimising the investments based on the sharpe ratio
-    def optimisePortfolio(self, num_trials, riskfreerate=0, plot=True):
+    def optimisePortfolio(self, num_trials, riskfreerate=0.005,
+                          period=252, plot=True):
         # optimise the portfolio by doing a monte carlo simulation:
         # trying num_trials different weights of the investment in the
         # portfolio.
@@ -268,8 +269,8 @@ class Portfolio(object):
             # rebalance weights
             weights = weights/np.sum(weights)
             # compute portfolio roi and volatility
-            pf_roi = weightedMean(pf_means, weights)
-            pf_volatility = weightedStd(cov_matrix, weights)
+            pf_roi = weightedMean(pf_means, weights) * period
+            pf_volatility = weightedStd(cov_matrix, weights) * np.sqrt(period)
 
             # add weights times total FMV to results array
             results[0:num_stocks, i] = weights*self.getTotalFMV()
