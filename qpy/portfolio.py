@@ -15,12 +15,22 @@ class Stock(object):
      - Strategy
      - CCY
      - etc
-    It also requires daily return of investments (ROI) as a pandas.DataFrame
-    or pandas.Series. If it is a DataFrame, the "roi_data" data structure is
-    required to contain the following label
+    It also requires either stock_data, e.g. daily closing prices, or
+    daily return of investments (ROI) (roi_data) as a pandas.DataFrame or
+    pandas.Series. If roi_data is given as a DataFrame, its data
+    structure is required to contain the following column label
      - ROI
+    If stock_data is given as a DataFrame, at least one data column
+    is required to containing the closing price, hence it is required to
+    contain one column label "<stock_name> - Close" which is used to
+    compute the return of investment. However, stock_data can contain more
+    data in additional columns.
     '''
     def __init__(self, investmentinfo, roi_data=None, stock_data=None):
+        # one of roi_data and stock_data must be provided
+        if (roi_data is None and stock_data is None or
+            roi_data is not None and stock_data is not None):
+            raise ValueError('Only one of "roi_data" and "stock_data" must be provided.')
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
         self.roi_data = roi_data
