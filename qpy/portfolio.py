@@ -321,7 +321,7 @@ class Portfolio(object):
                        )
             plt.title('Monte Carlo simulation to optimise the portfolio')
             plt.xlabel('Volatility')
-            plt.ylabel('ROI')
+            plt.ylabel('ROI [period='+str(period)+']')
             plt.legend()
             plt.show()
 
