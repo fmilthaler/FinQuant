@@ -71,7 +71,26 @@ quandl.ApiConfig.api_key = quandl_api_key
 
 # <codecell>
 
-d = {0 : {'Name':'GOOG', 'FMV':20}, 1: {'Name':'AMZN', 'FMV':33}, 2: {'Name':'MSFT', 'FMV':8}}
+#d = {0 : {'Name':'GOOG', 'FMV':20},
+#     1: {'Name':'AMZN', 'FMV':33},
+#     2: {'Name':'MSFT', 'FMV':18},
+#     3: {'Name':'AAPL', 'FMV':10},
+#     4: {'Name':'KO', 'FMV':15},
+#     5: {'Name':'XOM', 'FMV':11},
+#     6: {'Name':'JPM', 'FMV':21},
+#     7: {'Name':'DIS', 'FMV':9},
+#     8: {'Name':'MCD', 'FMV':23},
+#     9: {'Name':'WMT', 'FMV':3},
+#    }
+#pf_information = pd.DataFrame.from_dict(d, orient='index')
+
+# <codecell>
+
+d = {0 : {'Name':'GOOG', 'FMV':20},
+     1: {'Name':'AMZN', 'FMV':33},
+     2: {'Name':'MCD', 'FMV':15},
+     3: {'Name':'DIS', 'FMV':9},
+    }
 pf_information = pd.DataFrame.from_dict(d, orient='index')
 
 # <codecell>
