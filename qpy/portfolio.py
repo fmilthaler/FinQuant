@@ -22,7 +22,7 @@ class Stock(object):
      - ROI
     If stock_data is given as a DataFrame, at least one data column
     is required to containing the closing price, hence it is required to
-    contain one column label "<stock_name> - Close" which is used to
+    contain one column label "<stock_name> - Adj. Close" which is used to
     compute the return of investment. However, stock_data can contain more
     data in additional columns.
     '''
@@ -50,7 +50,7 @@ class Stock(object):
             self.compRoiData()
         return self.roi_data
 
-    def compRoiData(self, dataColumnLabel='Close', period=1):
+    def compRoiData(self, dataColumnLabel='Adj. Close', period=1):
         # self.roi_data = computation with self.stock_data here
         # get correct column label ("<stock name> - <dataColumnLabel>")
         label = self.name+' - '+dataColumnLabel
