@@ -167,8 +167,8 @@ print("volatility = {0:0.2f}".format(volatility))
 # <codecell>
 
 num_trials = 10000
-riskfreerate = 0
-pf_opt = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, plot=True)
+riskfreerate = 0.005
+pf_opt = pf.optimisePortfolio(num_trials, riskfreerate=riskfreerate, period=1, plot=True)
 
 # <codecell>
 
