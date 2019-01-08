@@ -282,14 +282,6 @@ class Portfolio(object):
                                                    riskfreerate,
                                                    pf_volatility)
 
-        # other example for optimisation
-        # for i in range(n_portfolios):
-        #     w = np.random.rand(len(assets))        # random weights
-        #     w = w / sum(w)                         # weights sum to 1
-        #     port_return = np.dot(w.T, hist_mean.as_matrix()) * 250         # annualize; 250 business days
-        #     port_stdev = np.sqrt(np.dot(w.T, np.dot(hist_cov, w))) * np.sqrt(250)  # annualize; 250 business days
-        #     port_returns[i] = port_return
-        #     port_stdevs[i] = port_stdev
         # transpose and convert to pandas.DataFrame:
         df_results = pd.DataFrame(results.T, columns=res_columns)
         # adding info of max sharpe ratio and of min volatility
