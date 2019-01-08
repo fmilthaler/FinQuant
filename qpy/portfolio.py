@@ -245,6 +245,15 @@ class Portfolio(object):
     # optimising the investments based on the sharpe ratio
     def optimisePortfolio(self, num_trials, riskfreerate=0.005,
                           period=252, plot=True):
+        '''
+        Optimisation of the portfolio by performing a Monte Carlo simulation.
+
+        Input:
+         * num_trials: Integer, number of portfolios to be computed, each with a random distribution of weights/investments in each stock
+         * riskfreerate: Float (default: 0.005), the risk free rate as required for the Sharpe Ratio
+         * period: Integer (default: 252), number of trading days, default value corresponds to trading days in a year
+         * plot: Boolean (default: True), if True, a plot showing the results is produced
+        '''
         # optimise the portfolio by doing a monte carlo simulation:
         # trying num_trials different weights of the investment in the
         # portfolio.
