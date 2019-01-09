@@ -362,7 +362,8 @@ def _correctQuandlRequestStockName(names):
 
 
 def _quandlRequest(names, start_date=None, end_date=None):
-    ''' This function performs a simple request from quandl.
+    ''' This function performs a simple request from quandl and returns
+        a DataFrame containing stock data.
 
         Input:
          * names: List of strings of stock names to be requested
@@ -384,7 +385,7 @@ def _quandlRequest(names, start_date=None, end_date=None):
 
 def _getQuandlDataColumnLabel(stock_name, data_label):
     ''' Given stock name and label of a data column, this function returns
-        the string <stock_name> - <data_label> as it can be found in a
+        the string "<stock_name> - <data_label>" as it can be found in a
         DataFrame returned by quandl.
     '''
     return stock_name+' - '+data_label
