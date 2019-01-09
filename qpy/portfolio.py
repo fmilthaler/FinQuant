@@ -109,6 +109,10 @@ class Portfolio(object):
         if (stock.roi_data is not None):
             self._addRoiData(stock.name, stock.roi_data.ROI)
 
+        # compute expected return of investment and volatility of portfolio
+        # and set corresponding instance variables:
+        self.setPfExpectedRoi(self.compPfExpectedRoi())
+        self.setPfVolatility(self.compPfVolatility())
 
     def _addStockData(self, df):
         # loop over columns in given dataframe
