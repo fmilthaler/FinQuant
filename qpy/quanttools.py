@@ -24,12 +24,18 @@ def optimisePortfolio(roi_data, total_investment, num_trials=10000,
          * roi_data: A DataFrame which contains the return of investment (ROI)
              data of relevant stocks
          * total_investment: Float, money to be invested.
-         * num_trials: Integer (default: 10000), number of portfolios to be computed, each with a random distribution of weights/investments in each stock
-         * riskfreerate: Float (default: 0.005), the risk free rate as required for the Sharpe Ratio
-         * period: Integer (default: 252), number of trading days, default value corresponds to trading days in a year
-         * plot: Boolean (default: True), if True, a plot showing the results is produced
+         * num_trials: Integer (default: 10000), number of portfolios to be
+             computed, each with a random distribution of weights/investments
+             in each stock
+         * riskfreerate: Float (default: 0.005), the risk free rate as
+             required for the Sharpe Ratio
+         * period: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+         * plot: Boolean (default: True), if True, a plot showing the results
+             is produced
         Output:
-         * pf_opt: DataFrame with optimised investment strategies for maximum Sharpe Ratio and minimum volatility.
+         * pf_opt: DataFrame with optimised investment strategies for maximum
+             Sharpe Ratio and minimum volatility.
         '''
         # set number of stocks in the portfolio
         num_stocks = len(roi_data.columns)
@@ -77,8 +83,7 @@ def optimisePortfolio(roi_data, total_investment, num_trials=10000,
                         df_results['ROI'],
                         c=df_results['Sharpe Ratio'],
                         cmap='RdYlBu',
-                        label=None
-                       )
+                        label=None)
             plt.colorbar()
             # mark in red the highest sharpe ratio
             plt.scatter(pf_opt.loc['Max Sharpe Ratio']['Volatility'],
@@ -86,16 +91,14 @@ def optimisePortfolio(roi_data, total_investment, num_trials=10000,
                         marker='^',
                         color='r',
                         s=250,
-                        label='max Sharpe Ratio'
-                       )
+                        label='max Sharpe Ratio')
             # mark in green the minimum volatility
             plt.scatter(pf_opt.loc['Min Volatility']['Volatility'],
                         pf_opt.loc['Min Volatility']['ROI'],
                         marker='^',
                         color='g',
                         s=250,
-                        label='min Volatility',
-                       )
+                        label='min Volatility')
             plt.title('Monte Carlo simulation to optimise the portfolio')
             plt.xlabel('Volatility')
             plt.ylabel('ROI [period='+str(period)+']')

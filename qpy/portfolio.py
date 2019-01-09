@@ -1,5 +1,6 @@
 import pandas as pd
-from qpy.quanttools import weightedMean, weightedStd, SharpeRatio, optimisePortfolio
+from qpy.quanttools import weightedMean, weightedStd,\
+ SharpeRatio, optimisePortfolio
 
 
 class Stock(object):
@@ -29,8 +30,9 @@ class Stock(object):
     def __init__(self, investmentinfo, roi_data=None, stock_data=None):
         # one of roi_data and stock_data must be provided
         if (roi_data is None and stock_data is None or
-            roi_data is not None and stock_data is not None):
-            raise ValueError('Only one of "roi_data" and "stock_data" must be provided.')
+           roi_data is not None and stock_data is not None):
+            raise ValueError('Only one of "roi_data" and "stock_data" '
+                             + 'must be provided.')
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
         self.roi_data = roi_data
@@ -55,7 +57,11 @@ class Stock(object):
         # get correct column label ("<stock name> - <dataColumnLabel>")
         label = self.name+' - '+dataColumnLabel
         # compute Return of investment
-        self.roi_data = self.stock_data[label].pct_change(period).dropna().to_frame().rename(columns={label: 'ROI'})
+        self.roi_data = (self.stock_data[label]
+                         .pct_change(period)
+                         .dropna()
+                         .to_frame()
+                         .rename(columns={label: 'ROI'}))
         return self.roi_data
 
     def compSkew(self):
@@ -243,17 +249,24 @@ class Portfolio(object):
         return self.getPfRoiData().kurt()
 
     # optimising the investments based on volatility and sharpe ratio
-    def optimisePortfolio(self, total_investment=None, num_trials=10000, riskfreerate=0.005, period=252, plot=True):
+    def optimisePortfolio(self, total_investment=None,
+                          num_trials=10000, riskfreerate=0.005,
+                          period=252, plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
 
         Input:
-         * total_investment: Float (default: None, which results in the sum of FMV
-             of the portfolio information), money to be invested.
-         * num_trials: Integer (default: 10000), number of portfolios to be computed, each with a random distribution of weights/investments in each stock
-         * riskfreerate: Float (default: 0.005), the risk free rate as required for the Sharpe Ratio
-         * period: Integer (default: 252), number of trading days, default value corresponds to trading days in a year
-         * plot: Boolean (default: True), if True, a plot showing the results is produced
+         * total_investment: Float (default: None, which results in the sum of
+             FMV of the portfolio information), money to be invested.
+         * num_trials: Integer (default: 10000), number of portfolios to be
+             computed, each with a random distribution of weights/investments
+             in each stock
+         * riskfreerate: Float (default: 0.005), the risk free rate as required
+             for the Sharpe Ratio
+         * period: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+         * plot: Boolean (default: True), if True, a plot showing the results
+             is produced
         '''
         if (total_investment is None):
             total_investment = self.getTotalFMV()
