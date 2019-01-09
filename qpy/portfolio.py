@@ -231,8 +231,8 @@ class Portfolio(object):
              for the Sharpe Ratio
          * period: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
-         * plot: Boolean (default: True), if True, a plot showing the results
-             is produced
+         * plot: Boolean (default: True), if True, a plot of the Monte Carlo
+             simulation is shown
         '''
         if (total_investment is None):
             total_investment = self.getTotalFMV()
