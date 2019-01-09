@@ -84,7 +84,7 @@ def optimisePortfolio(roi_data, total_investment, num_trials=10000,
                         c=df_results['Sharpe Ratio'],
                         cmap='RdYlBu',
                         label=None)
-            plt.colorbar()
+            cbar = plt.colorbar()
             # mark in red the highest sharpe ratio
             plt.scatter(pf_opt.loc['Max Sharpe Ratio']['Volatility'],
                         pf_opt.loc['Max Sharpe Ratio']['ROI'],
@@ -102,6 +102,7 @@ def optimisePortfolio(roi_data, total_investment, num_trials=10000,
             plt.title('Monte Carlo simulation to optimise the portfolio')
             plt.xlabel('Volatility')
             plt.ylabel('ROI [period='+str(period)+']')
+            cbar.ax.set_ylabel('Sharpe Ratio', rotation=90)
             plt.legend()
             plt.show()
 
