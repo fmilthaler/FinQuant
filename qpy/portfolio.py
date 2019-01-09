@@ -90,11 +90,8 @@ class Portfolio(object):
         self.stocks = {}
         self.pf_stock_data = pd.DataFrame()
         self.pf_roi_data = pd.DataFrame()
-        self.pf_means = None
-        self.pf_weights = None
         self.expectedRoi = None
         self.volatility = None
-        self.covPf = None
 
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
@@ -152,14 +149,8 @@ class Portfolio(object):
     def getStocks(self):
         return self.stocks
 
-    def getPfMeans(self):
-        return self.pf_means
-
     def getTotalFMV(self):
         return self.portfolio.FMV.sum()
-
-    def getPfWeights(self):
-        return self.pf_weights
 
     def getPfExpectedRoi(self):
         return self.expectedRoi
@@ -167,69 +158,49 @@ class Portfolio(object):
     def getPfVolatility(self):
         return self.volatility
 
-    def getCovPf(self):
-        return self.covPf
-
     # set functions:
-    def setPfMeans(self, pf_means):
-        self.pf_means = pf_means
-
-    def setPfWeights(self, pf_weights):
-        self.pf_weights = pf_weights
-
     def setPfExpectedRoi(self, expectedRoi):
         self.expectedRoi = expectedRoi
 
     def setPfVolatility(self, volatility):
         self.volatility = volatility
 
-    def setCovPf(self, covPf):
-        self.covPf = covPf
-
     # functions to compute quantities
     def compPfMeans(self):
-        pf_means = self.getPfRoiData().mean().values
-        # set instance variable
-        self.setPfMeans(pf_means)
-        return pf_means
+        # computes the means of the stock return of investments
+        # in the given portfolio
+        return self.getPfRoiData().mean().values
 
     def compPfWeights(self):
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
-        pf_weights = self.portfolio.FMV/self.getTotalFMV()
-        # set instance variable
-        self.setPfWeights(pf_weights)
-        return pf_weights
+        return self.portfolio['FMV']/self.getTotalFMV()
 
     def compPfExpectedRoi(self):
         # computing portfolio ROI
-        pf_means = self.compPfMeans()
-        pf_weights = self.compPfWeights()
-        expectedRoi = weightedMean(pf_means, pf_weights)
+        expectedRoi = weightedMean(self.compPfMeans(),
+                                   self.compPfWeights())
         # set instance variable
         self.setPfExpectedRoi(expectedRoi)
         return expectedRoi
 
     def compPfVolatility(self):
         # computing the volatility of a portfolio
-        pf_weights = self.compPfWeights()
-        covPf = self.compCovPf()
-        volatility = weightedStd(covPf, pf_weights)
+        volatility = weightedStd(self.compCovPf(),
+                                 self.compPfWeights())
         # set instance variable
         self.setPfVolatility(volatility)
         return volatility
 
     def compCovPf(self):
         # get the covariance matrix of the roi of the portfolio
-        covPf = self.pf_roi_data.cov()
-        # set instance variable
-        self.setCovPf(covPf)
-        return covPf
+        return self.pf_roi_data.cov()
 
     def compSharpe(self, riskfreerate):
-        expected_roi = self.getPfExpectedRoi()
-        volatility = self.getVolatility()
-        return SharpeRatio(expected_roi, riskfreerate, volatility)
+        # compute the Sharpe Ratio of the portfolio
+        return SharpeRatio(self.getPfExpectedRoi(),
+                           riskfreerate,
+                           self.getPfVolatility())
 
     def compSkew(self):
         return self.getPfRoiData().skew()
