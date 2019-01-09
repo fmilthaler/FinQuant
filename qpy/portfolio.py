@@ -1,5 +1,5 @@
 import pandas as pd
-from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
+from qpy.quanttools import weightedMean, weightedStd, SharpeRatio, optimisePortfolio
 
 
 class Stock(object):
@@ -242,99 +242,26 @@ class Portfolio(object):
     def compKurtosis(self):
         return self.getPfRoiData().kurt()
 
-    # optimising the investments based on the sharpe ratio
-    def optimisePortfolio(self, num_trials, riskfreerate=0.005,
-                          period=252, plot=True):
+    # optimising the investments based on volatility and sharpe ratio
+    def optimisePortfolio(self, total_investment=None, num_trials=10000, riskfreerate=0.005, period=252, plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
 
         Input:
-         * num_trials: Integer, number of portfolios to be computed, each with a random distribution of weights/investments in each stock
+         * total_investment: Float (default: None, which results in the sum of FMV
+             of the portfolio information), money to be invested.
+         * num_trials: Integer (default: 10000), number of portfolios to be computed, each with a random distribution of weights/investments in each stock
          * riskfreerate: Float (default: 0.005), the risk free rate as required for the Sharpe Ratio
          * period: Integer (default: 252), number of trading days, default value corresponds to trading days in a year
          * plot: Boolean (default: True), if True, a plot showing the results is produced
         '''
-        # optimise the portfolio by doing a monte carlo simulation:
-        # trying num_trials different weights of the investment in the
-        # portfolio.
-        # return values are:
-        # (portfolio with highest sharpe ratio,
-        #  portfolio with minimum volatility)
-        # both are returned as a pandas.Series
-        import numpy as np
-        # set number of stocks in the portfolio
-        num_stocks = len(self.getStocks())
-        # set up array to hold results
-        res_columns = list(self.getStocks().keys())
-        res_columns.extend(['ROI', 'Volatility', 'Sharpe Ratio'])
-        results = np.zeros((len(res_columns), num_trials))
-        # compute means and covariance matrix
-        pf_means = self.compPfMeans()
-        cov_matrix = self.compCovPf()
-        # monte carlo simulation
-        for i in range(num_trials):
-            # select random weights for portfolio
-            weights = np.array(np.random.random(num_stocks))
-            # rebalance weights
-            weights = weights/np.sum(weights)
-            # compute portfolio roi and volatility
-            pf_roi = weightedMean(pf_means, weights) * period
-            pf_volatility = weightedStd(cov_matrix, weights) * np.sqrt(period)
+        if (total_investment is None):
+            total_investment = self.getTotalFMV()
 
-            # add weights times total FMV to results array
-            results[0:num_stocks, i] = weights*self.getTotalFMV()
-            # store results in results array
-            results[num_stocks, i] = pf_roi
-            results[num_stocks+1, i] = pf_volatility
-            # store Sharpe Ratio
-            results[num_stocks+2, i] = SharpeRatio(pf_roi,
-                                                   riskfreerate,
-                                                   pf_volatility)
-
-        # transpose and convert to pandas.DataFrame:
-        df_results = pd.DataFrame(results.T, columns=res_columns)
-        # adding info of max sharpe ratio and of min volatility
-        # to resulting df (with meaningful indices):
-        pf_opt = pd.DataFrame([df_results.iloc[
-            df_results['Sharpe Ratio'].idxmax()],
-            df_results.iloc[df_results['Volatility'].idxmin()]],
-            index=['Max Sharpe Ratio', 'Min Volatility'])
-
-        # plot results
-        if (plot):
-            import matplotlib.pylab as plt
-            plt.figure()
-            # create scatter plot coloured by Sharpe Ratio
-            plt.scatter(df_results['Volatility'],
-                        df_results['ROI'],
-                        c=df_results['Sharpe Ratio'],
-                        cmap='RdYlBu',
-                        label=None
-                       )
-            plt.colorbar()
-            # mark in red the highest sharpe ratio
-            plt.scatter(pf_opt.loc['Max Sharpe Ratio']['Volatility'],
-                        pf_opt.loc['Max Sharpe Ratio']['ROI'],
-                        marker='^',
-                        color='r',
-                        s=250,
-                        label='max Sharpe Ratio'
-                       )
-            # mark in green the minimum volatility
-            plt.scatter(pf_opt.loc['Min Volatility']['Volatility'],
-                        pf_opt.loc['Min Volatility']['ROI'],
-                        marker='^',
-                        color='g',
-                        s=250,
-                        label='min Volatility',
-                       )
-            plt.title('Monte Carlo simulation to optimise the portfolio')
-            plt.xlabel('Volatility')
-            plt.ylabel('ROI [period='+str(period)+']')
-            plt.legend()
-            plt.show()
-
-        return pf_opt
+        return optimisePortfolio(self.getPfRoiData(), num_trials=num_trials,
+                                 total_investment=total_investment,
+                                 riskfreerate=riskfreerate, period=period,
+                                 plot=plot)
 
     def __str__(self):
         return str(self.getPortfolio())
