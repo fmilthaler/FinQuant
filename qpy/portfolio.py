@@ -203,9 +203,11 @@ class Portfolio(object):
                            self.getPfVolatility())
 
     def compSkew(self):
+        # compute the skewness of the portfolio
         return self.getPfRoiData().skew()
 
     def compKurtosis(self):
+        # compute the Kurtosis of the portfolio
         return self.getPfRoiData().kurt()
 
     # optimising the investments based on volatility and sharpe ratio
