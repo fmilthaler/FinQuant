@@ -1,6 +1,6 @@
 import pandas as pd
-from qpy.quanttools import weightedMean, weightedStd,\
- SharpeRatio, optimisePortfolio
+from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
+from qpy.quanttools import optimisePfMC
 
 
 class Stock(object):
@@ -237,7 +237,7 @@ class Portfolio(object):
         if (total_investment is None):
             total_investment = self.getTotalFMV()
 
-        return optimisePortfolio(self.getPfRoiData(), num_trials=num_trials,
+        return optimisePfMC(self.getPfRoiData(), num_trials=num_trials,
                                  total_investment=total_investment,
                                  riskfreerate=riskfreerate, period=period,
                                  plot=plot)

@@ -14,9 +14,9 @@ def SharpeRatio(exproi, riskfreerate, volatility):
     return (exproi - riskfreerate)/float(volatility)
 
 
-def optimisePortfolio(roi_data, total_investment, num_trials=10000,
-                      riskfreerate=0.005, period=252,
-                      plot=True):
+def optimisePfMC(roi_data, total_investment, num_trials=10000,
+                 riskfreerate=0.005, period=252,
+                 plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
 
