@@ -462,6 +462,13 @@ def buildPortfolio(pf_information, **kwargs):
          * pf_information, roi_data
         In the latter case, stock data (e.g. prices) are not present in
         the resulting portfolio, as the roi_data was given by user.
+
+        Moreover, the three different ways this function can be used are
+        useful for
+         1. building a portfolio by pulling data from quandl,
+         2. building a portfolio by providing stock data which was obtained
+             otherwise, e.g. from data files
+         3. building a portfolio by providing return data.
     '''
     docstringMsg = "Please read through the docstring, " \
                    "'buildPortfolio.__doc__'."
