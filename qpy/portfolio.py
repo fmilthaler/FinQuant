@@ -124,6 +124,7 @@ class Portfolio(object):
         if (stock.roi_data is not None):
             self._addRoiData(stock.name, stock.roi_data.ROI)
 
+
     def _addStockData(self, df):
         # loop over columns in given dataframe
         for datacol in df.columns:
@@ -175,7 +176,7 @@ class Portfolio(object):
     def getPfExpectedRoi(self):
         return self.expectedRoi
 
-    def getVolatility(self):
+    def getPfVolatility(self):
         return self.volatility
 
     def getCovPf(self):
@@ -191,7 +192,7 @@ class Portfolio(object):
     def setPfExpectedRoi(self, expectedRoi):
         self.expectedRoi = expectedRoi
 
-    def setVolatility(self, volatility):
+    def setPfVolatility(self, volatility):
         self.volatility = volatility
 
     def setCovPf(self, covPf):
@@ -227,7 +228,7 @@ class Portfolio(object):
         covPf = self.compCovPf()
         volatility = weightedStd(covPf, pf_weights)
         # set instance variable
-        self.setVolatility(volatility)
+        self.setPfVolatility(volatility)
         return volatility
 
     def compCovPf(self):
