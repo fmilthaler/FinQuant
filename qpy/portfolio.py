@@ -96,18 +96,6 @@ class Portfolio(object):
         self.volatility = None
         self.covPf = None
 
-#    def addStocks(self, stocks, data):
-#        for i in range(len(df_pf)):
-#            self.addStock(Stock(stocks.loc[i], roi))
-#
-#        for i in range(len(df_pf)):
-#            #print(df_pf.loc[i])
-#            age = df_pf.loc[i].Age
-#            strategy = df_pf.loc[i].Strategy
-#            #data = extractRoiData()
-#            pf.addStock(Stock(df_pf.loc[i],
-#                extractRoiData(df_data, age, strategy)))
-
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
