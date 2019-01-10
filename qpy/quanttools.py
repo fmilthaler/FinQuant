@@ -102,7 +102,7 @@ def optimisePfMC(roi_data, total_investment, num_trials=10000,
             plt.title('Monte Carlo simulation to optimise the portfolio')
             plt.xlabel('Volatility')
             plt.ylabel('ROI [period='+str(period)+']')
-            cbar.ax.set_ylabel('Sharpe Ratio', rotation=90)
+            cbar.ax.set_ylabel('Sharpe Ratio [period='+str(period)+']', rotation=90)
             plt.legend()
             plt.show()
 
