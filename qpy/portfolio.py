@@ -1,6 +1,8 @@
+import numpy as np
 import pandas as pd
 from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
-from qpy.quanttools import optimisePfMC
+from qpy.quanttools import historicalMeanReturn, optimisePfMC
+from qpy.quanttools import dailyReturns
 
 
 class Stock(object):
@@ -16,30 +18,18 @@ class Stock(object):
      - Strategy
      - CCY
      - etc
-    It also requires either stock_data, e.g. daily closing prices, or
-    daily return of investments (ROI) (roi_data) as a pandas.DataFrame or
-    pandas.Series. If roi_data is given as a DataFrame, its data
-    structure is required to contain the following column label
-     - ROI
-    If stock_data is given as a DataFrame, at least one data column
+    It also requires either stock_data, e.g. daily closing prices as a
+    pandas.DataFrame or pandas.Series.
+    "stock_data" must be given as a DataFrame, and at least one data column
     is required to containing the closing price, hence it is required to
     contain one column label "<stock_name> - Adj. Close" which is used to
-    compute the return of investment. However, stock_data can contain more
+    compute the return of investment. However, "stock_data" can contain more
     data in additional columns.
     '''
-    def __init__(self, investmentinfo, roi_data=None, stock_data=None):
-        # one of roi_data and stock_data must be provided
-        if (roi_data is None and stock_data is None or
-           roi_data is not None and stock_data is not None):
-            raise ValueError('Only one of "roi_data" and "stock_data" '
-                             + 'must be provided.')
+    def __init__(self, investmentinfo, stock_data):
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
-        self.roi_data = roi_data
         self.stock_data = stock_data
-        # if roi_data was not given, compute and set it
-        if (self.roi_data is None):
-            self.roi_data = self.compRoiData()
 
     def getInvestmentInfo(self):
         return self.investmentinfo
@@ -47,28 +37,11 @@ class Stock(object):
     def getStockData(self):
         return self.stock_data
 
-    def getRoiData(self):
-        if (self.roi_data is None):
-            self.compRoiData()
-        return self.roi_data
-
-    def compRoiData(self, dataColumnLabel='Adj. Close', period=1):
-        # self.roi_data = computation with self.stock_data here
-        # get correct column label ("<stock name> - <dataColumnLabel>")
-        label = self.name+' - '+dataColumnLabel
-        # compute Return of investment
-        self.roi_data = (self.stock_data[label]
-                         .pct_change(period)
-                         .dropna()
-                         .to_frame()
-                         .rename(columns={label: 'ROI'}))
-        return self.roi_data
-
     def compSkew(self):
-        return self.roi_data.skew().values[0]
+        return self.stock_data.skew().values[0]
 
     def compKurtosis(self):
-        return self.roi_data.kurt().values[0]
+        return self.stock_data.kurt().values[0]
 
     def __str__(self):
         return str(self.investmentinfo.to_frame().transpose())
@@ -77,20 +50,17 @@ class Stock(object):
 class Portfolio(object):
     ''' Object that contains information about a investment portfolio.
         To initialise the object, it does not require any input.
-        To fill the portfolio with investment information and daily
-        return of investments (ROI) data, the function addStock(stock)
-        should be used, in which `stock` is a `Stock` object, a
-        pandas.DataFrame of the portfolio investment information.
-        The corresponding daily return of investments (ROI) are stored
-        in the Stock object.
+        To fill the portfolio with investment information, the
+        function addStock(stock) should be used, in which `stock` is
+        a `Stock` object, a pandas.DataFrame of the portfolio investment
+        information.
     '''
     def __init__(self):
         # initilisating instance variables
         self.portfolio = pd.DataFrame()
         self.stocks = {}
         self.pf_stock_data = pd.DataFrame()
-        self.pf_roi_data = pd.DataFrame()
-        self.expectedRoi = None
+        self.expectedReturn = None
         self.volatility = None
 
     def addStock(self, stock):
@@ -100,18 +70,14 @@ class Portfolio(object):
         self.portfolio = self.portfolio.append(
             stock.getInvestmentInfo(),
             ignore_index=True)
-        # also add ROI data of stock to the dataframe containing
-        # all roi data points
-        if (stock.stock_data is not None):
-            self._addStockData(stock.stock_data)
-
-        # set roi_data, if given
-        if (stock.roi_data is not None):
-            self._addRoiData(stock.name, stock.roi_data.ROI)
+        # setting an appropriate name for the portfolio
+        self.portfolio.name = "Portfolio information"
+        # also add stock data of stock to the dataframe
+        self._addStockData(stock.stock_data)
 
         # compute expected return of investment and volatility of portfolio
         # and set corresponding instance variables:
-        self.setPfExpectedRoi(self.compPfExpectedRoi())
+        self.setPfExpectedReturn(self.compPfExpectedReturn())
         self.setPfVolatility(self.compPfVolatility())
 
     def _addStockData(self, df):
@@ -127,25 +93,12 @@ class Portfolio(object):
         # set index name:
         self.pf_stock_data.index.rename('Date', inplace=True)
 
-    def _addRoiData(self, name, df):
-        # get length of columns in pf_roi_data, in order to create a new column
-        cols = len(self.pf_roi_data.columns)
-        # add roi data to overall dataframe of roi data:
-        self.pf_roi_data.insert(loc=cols, column=name, value=df.values)
-        # set index correctly
-        self.pf_roi_data.set_index(df.index.values, inplace=True)
-        # set index name:
-        self.pf_roi_data.index.rename('Date', inplace=True)
-
     # get functions:
     def getPortfolio(self):
         return self.portfolio
 
     def getPfStockData(self):
         return self.pf_stock_data
-
-    def getPfRoiData(self):
-        return self.pf_roi_data
 
     def getStock(self, name):
         return self.getStocks()[name]
@@ -156,68 +109,86 @@ class Portfolio(object):
     def getTotalFMV(self):
         return self.portfolio.FMV.sum()
 
-    def getPfExpectedRoi(self):
-        return self.expectedRoi
+    def getPfExpectedReturn(self):
+        return self.expectedReturn
 
     def getPfVolatility(self):
         return self.volatility
 
     # set functions:
-    def setPfExpectedRoi(self, expectedRoi):
-        self.expectedRoi = expectedRoi
+    def setPfExpectedReturn(self, expectedReturn):
+        self.expectedReturn = expectedReturn
 
     def setPfVolatility(self, volatility):
         self.volatility = volatility
 
     # functions to compute quantities
-    def compPfMeans(self):
-        # computes the means of the stock return of investments
-        # in the given portfolio
-        return self.getPfRoiData().mean().values
+    def compPfDailyReturns(self):
+        '''
+        Computes the daily returns of all stocks in the portfolio.
+        '''
+        return dailyReturns(self.getPfStockData())
+
+    def compPfMeanReturns(self, freq=252):
+        '''
+        Computes the mean return based on historical stock price data.
+        Input:
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+        '''
+        return historicalMeanReturn(self.getPfStockData(), freq=freq)
 
     def compPfWeights(self):
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
         return self.portfolio['FMV']/self.getTotalFMV()
 
-    def compPfExpectedRoi(self):
-        # computing portfolio ROI
-        expectedRoi = weightedMean(self.compPfMeans(),
-                                   self.compPfWeights())
-        # set instance variable
-        self.setPfExpectedRoi(expectedRoi)
-        return expectedRoi
+    def compPfExpectedReturn(self, freq=252):
+        '''
+        Computes the expected return of the portfolio.
+        '''
+        pf_return_means = historicalMeanReturn(self.getPfStockData(), freq=freq)
+        weights = self.compPfWeights()
+        expectedReturn = weightedMean(pf_return_means.values, weights)
+        return expectedReturn
 
-    def compPfVolatility(self):
+    def compPfVolatility(self, freq=252):
+        '''
+        Computes the volatility of the given portfolio.
+
+        Input:
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+        '''
         # computing the volatility of a portfolio
         volatility = weightedStd(self.compCovPf(),
-                                 self.compPfWeights())
-        # set instance variable
-        self.setPfVolatility(volatility)
+                                 self.compPfWeights()) * np.sqrt(freq)
         return volatility
 
     def compCovPf(self):
-        # get the covariance matrix of the roi of the portfolio
-        return self.pf_roi_data.cov()
+        # get the covariance matrix of the mean returns of the portfolio
+        returns = dailyReturns(self.getPfStockData())
+        return returns.cov()
 
-    def compSharpe(self, riskfreerate):
+    def compSharpe(self, riskFreeRate):
         # compute the Sharpe Ratio of the portfolio
-        return SharpeRatio(self.getPfExpectedRoi(),
-                           riskfreerate,
-                           self.getPfVolatility())
+        return SharpeRatio(self.getPfExpectedReturn(),
+                           self.getPfVolatility(),
+                           riskFreeRate)
 
-    def compSkew(self):
-        # compute the skewness of the portfolio
-        return self.getPfRoiData().skew()
+    def compPfSkew(self):
+        return self.getPfStockData().skew()
 
-    def compKurtosis(self):
-        # compute the Kurtosis of the portfolio
-        return self.getPfRoiData().kurt()
+    def compPfKurtosis(self):
+        return self.getPfStockData().kurt()
 
     # optimising the investments based on volatility and sharpe ratio
-    def optimisePortfolio(self, total_investment=None,
-                          num_trials=10000, riskfreerate=0.005,
-                          period=252, plot=True):
+    def optimisePortfolio(self,
+                          total_investment=None,
+                          num_trials=10000,
+                          riskFreeRate=0.005,
+                          freq=252,
+                          plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
 
@@ -227,20 +198,23 @@ class Portfolio(object):
          * num_trials: Integer (default: 10000), number of portfolios to be
              computed, each with a random distribution of weights/investments
              in each stock
-         * riskfreerate: Float (default: 0.005), the risk free rate as required
+         * riskFreeRate: Float (default: 0.005), the risk free rate as required
              for the Sharpe Ratio
-         * period: Integer (default: 252), number of trading days, default
+         * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
          * plot: Boolean (default: True), if True, a plot of the Monte Carlo
              simulation is shown
         '''
+        # if total_investment is not set, use total FMV of given portfolio
         if (total_investment is None):
             total_investment = self.getTotalFMV()
 
-        return optimisePfMC(self.getPfRoiData(), num_trials=num_trials,
-                                 total_investment=total_investment,
-                                 riskfreerate=riskfreerate, period=period,
-                                 plot=plot)
+        return optimisePfMC(self.pf_stock_data,
+                            num_trials=num_trials,
+                            total_investment=total_investment,
+                            riskFreeRate=riskFreeRate,
+                            freq=freq,
+                            plot=plot)
 
     def __str__(self):
         return str(self.getPortfolio())
@@ -316,23 +290,41 @@ def _getStocksDataColumns(stock_data, names, cols):
     reqnames = _correctQuandlRequestStockName(names)
     # get current column labels and replacement labels
     reqcolnames = []
-    for name in reqnames:
+    for i in range(len(names)):
         for col in cols:
+            # differ between dataframe directly from quandl and
+            # possibly previously processed dataframe, e.g.
+            # read in from disk with slightly modified column labels
+            if (_getQuandlDataColumnLabel(reqnames[i], col) in stock_data.columns):
+                name = reqnames[i]
+            elif (_getQuandlDataColumnLabel(names[i], col) in stock_data.columns):
+                name = names[i]
+            else:
+                raise ValueError("Could not find column labels in given "
+                                 + "dataframe.")
+            # append correct name to list of correct names
             reqcolnames.append(_getQuandlDataColumnLabel(name, col))
+
     stock_data = stock_data.loc[:, reqcolnames]
-    # now rename the columns:
+    # now rename the columns (removing "WIKI/" from column labels):
     newcolnames = {}
     for i in reqcolnames:
         newcolnames.update({i: i.replace('WIKI/', '')})
     stock_data.rename(columns=newcolnames, inplace=True)
+    # if only one data column per stock exists, rename column labels
+    # to the name of the corresponding stock
+    newcolnames = {}
+    if (len(cols) == 1):
+        for i in range(len(names)):
+            newcolnames.update({_getQuandlDataColumnLabel(names[i], cols[0]): names[i]})
+        stock_data.rename(columns=newcolnames, inplace=True)
     return stock_data
 
 
 def _buildPortfolioFromQuandl(pf_information,
                               names,
                               start_date=None,
-                              end_date=None,
-                              datacolumns=["Close"]):
+                              end_date=None):
     ''' Returns a portfolio based on input in form of a list of
         strings/names of stocks.
 
@@ -345,8 +337,6 @@ def _buildPortfolioFromQuandl(pf_information,
              to be requested through quandl (default: None)
          * end_date (optional): String/datetime end date of stock data to
              be requested through quandl (default: None)
-         * datacolumns (optional): A list of strings of data column labels
-             to be extracted and returned (default: ["Close"]).
         Output:
          * pf: Instance of Portfolio which contains all the information
              requested by the user.
@@ -355,12 +345,9 @@ def _buildPortfolioFromQuandl(pf_information,
     pf = Portfolio()
     # request data from quandl:
     stock_data = _quandlRequest(names, start_date, end_date)
-    # extract only certain columns:
-    stock_data = _getStocksDataColumns(stock_data, names, datacolumns)
     # build portfolio:
-    pf = _buildPortfolioFromDf(pf_information, stock_data=stock_data)
+    pf = _buildPortfolioFromDf(pf_information, stock_data)
     return pf
-
 
 def _stocknamesInDataColumns(names, df):
     ''' Returns True if at least one element of names was found as a
@@ -369,47 +356,44 @@ def _stocknamesInDataColumns(names, df):
     return any((name in label for name in names for label in df.columns))
 
 
-def _buildPortfolioFromDf(pf_information, stock_data=None, roi_data=None):
+def _buildPortfolioFromDf(pf_information,
+                          stock_data,
+                          datacolumns=["Adj. Close"]):
     ''' Returns a portfolio based on input in form of pandas.DataFrame.
 
         Input:
          * pf_information: DataFrame with the required data column labels
              "Name" and "FMV" of the stocks.
-         * stock_data (optional): A DataFrame which contains quantities of
-             the stocks listed in pf_information
-         * roi_data (optional): A DataFrame which contains the return of
-             investment (ROI) data of the stocks listed in pf_information
+         * stock_data: A DataFrame which contains prices of the stocks
+             listed in pf_information
+         * datacolumns (optional): A list of strings of data column labels
+             to be extracted and returned (default: ["Adj. Close"]).
         Output:
          * pf: Instance of Portfolio which contains all the information
              requested by the user.
     '''
-    if ((stock_data is None and roi_data is None) or
-       ((stock_data is not None) and (roi_data is not None))):
-        raise ValueError("One of the two inpurt arguments stock_data,"
-                         + "roi_data must be set.")
     # make sure stock names are in data dataframe
-    if (stock_data is None):
-        data = roi_data
-    elif (roi_data is None):
-        data = stock_data
-    if (not _stocknamesInDataColumns(pf_information.Name.values, data)):
+    if (not _stocknamesInDataColumns(pf_information.Name.values,
+                                     stock_data)):
         raise ValueError("Error: None of the provided stock names were"
                          + "found in the provided dataframe.")
+    # extract only 'Adj. Close' column from DataFrame:
+    stock_data = _getStocksDataColumns(stock_data,
+                                       pf_information.Name.values,
+                                       datacolumns)
     # building portfolio:
-    # better to use stocks function here than the below
-    # build portfolio at once:
-    # build portfolio stock by stock:
     pf = Portfolio()
     for i in range(len(pf_information)):
+        # get name of stock
         name = pf_information.loc[i].Name
-        if (roi_data is None):
-            pf.addStock(Stock(pf_information.loc[i],
-                              stock_data=stock_data.filter(regex=name))
-                        )
-        else:
-            pf.addStock(Stock(pf_information.loc[i],
-                              roi_data=roi_data.filter(regex=name))
-                        )
+        # extract data column(s) of said stock
+        stock_stock_data = stock_data.filter(regex=name)
+        # if only one data column per stock exists, give dataframe a name
+        if (len(datacolumns) == 1):
+            stock_stock_data.name = datacolumns[0]
+        # create Stock instance and add it to portfolio
+        pf.addStock(Stock(pf_information.loc[i],
+                          stock_data=stock_stock_data))
     return pf
 
 
@@ -447,28 +431,20 @@ def buildPortfolio(pf_information, **kwargs):
              requested through quandl (default: None)
          * stock_data (optional): A DataFrame which contains quantities
              of the stocks listed in pf_information
-         * roi_data (optional): A DataFrame which contains the return of
-             investment (ROI) data of the stocks listed in pf_information
-         * datacolumns (optional): A list of strings of data column labels
-             to be extracted and returned.
         Output:
          * pf: Instance of Portfolio which contains all the information
              requested by the user.
 
         Only the following combinations of inputs are allowed:
          * pf_information, names, start_date (optional), end_date
-             (optional), datacolumns (optional)
+             (optional)
          * pf_information, stock_data
-         * pf_information, roi_data
-        In the latter case, stock data (e.g. prices) are not present in
-        the resulting portfolio, as the roi_data was given by user.
 
-        Moreover, the three different ways this function can be used are
+        Moreover, the two different ways this function can be used are
         useful for
          1. building a portfolio by pulling data from quandl,
          2. building a portfolio by providing stock data which was obtained
              otherwise, e.g. from data files
-         3. building a portfolio by providing return data.
     '''
     docstringMsg = "Please read through the docstring, " \
                    "'buildPortfolio.__doc__'."
@@ -484,15 +460,12 @@ def buildPortfolio(pf_information, **kwargs):
     allInputArgs = ['names',
                     'start_date',
                     'end_date',
-                    'datacolumns',
-                    'stock_data',
-                    'roi_data']
+                    'stock_data']
 
     # 1. names, start_date, end_date
     allowedInputArgs = ['names',
                         'start_date',
-                        'end_date',
-                        'datacolumns']
+                        'end_date']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
     if (_allListEleInOther(['names'], kwargs.keys())):
         # check that no input argument conflict arises:
@@ -506,18 +479,6 @@ def buildPortfolio(pf_information, **kwargs):
     allowedInputArgs = ['stock_data']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
     if (_allListEleInOther(['stock_data'], kwargs.keys())):
-        # check that no input argument conflict arises:
-        if (_anyListEleInOther(_listComplement(
-             allowedInputArgs, allInputArgs), kwargs.keys())):
-            raise ValueError(inputError.format(
-                complementInputArgs, allowedInputArgs))
-        # get portfolio:
-        pf = _buildPortfolioFromDf(pf_information, **kwargs)
-
-    # 3. roi_data
-    allowedInputArgs = ['roi_data']
-    complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
-    if (_allListEleInOther(['roi_data'], kwargs.keys())):
         # check that no input argument conflict arises:
         if (_anyListEleInOther(_listComplement(
              allowedInputArgs, allInputArgs), kwargs.keys())):
