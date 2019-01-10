@@ -83,6 +83,7 @@ def optimisePfMC(roi_data, total_investment, num_trials=10000,
                         df_results['ROI'],
                         c=df_results['Sharpe Ratio'],
                         cmap='RdYlBu',
+                        s=10,
                         label=None)
             cbar = plt.colorbar()
             # mark in red the highest sharpe ratio
@@ -90,16 +91,16 @@ def optimisePfMC(roi_data, total_investment, num_trials=10000,
                         pf_opt.loc['Max Sharpe Ratio']['ROI'],
                         marker='^',
                         color='r',
-                        s=250,
+                        s=200,
                         label='max Sharpe Ratio')
             # mark in green the minimum volatility
             plt.scatter(pf_opt.loc['Min Volatility']['Volatility'],
                         pf_opt.loc['Min Volatility']['ROI'],
                         marker='^',
                         color='g',
-                        s=250,
+                        s=200,
                         label='min Volatility')
-            plt.title('Monte Carlo simulation to optimise the portfolio')
+            plt.title('Monte Carlo simulation to optimise the portfolio based on Efficient Frontier')
             plt.xlabel('Volatility')
             plt.ylabel('ROI [period='+str(period)+']')
             cbar.ax.set_ylabel('Sharpe Ratio [period='+str(period)+']', rotation=90)
