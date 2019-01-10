@@ -129,7 +129,6 @@ pf.getPfStockData().head(3)
 
 # <codecell>
 
-pf.getPfRoiData().head(3)
 
 # <markdowncell>
 
