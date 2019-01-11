@@ -296,15 +296,21 @@ def _getStocksDataColumns(stock_data, names, cols):
             # differ between dataframe directly from quandl and
             # possibly previously processed dataframe, e.g.
             # read in from disk with slightly modified column labels
-            if (_getQuandlDataColumnLabel(reqnames[i], col) in stock_data.columns):
-                name = reqnames[i]
+            # 1. if <stock_name> in column labels
+            if (names[i] in stock_data.columns):
+                colname = names[i]
+            # 2. if "WIKI/<stock_name> - <col>" in column labels
+            elif (_getQuandlDataColumnLabel(reqnames[i], col) in stock_data.columns):
+                colname = _getQuandlDataColumnLabel(reqnames[i], col)
+            # 3. if "<stock_name> - <col>" in column labels
             elif (_getQuandlDataColumnLabel(names[i], col) in stock_data.columns):
-                name = names[i]
+                colname = _getQuandlDataColumnLabel(names[i], col)
+            # else, error
             else:
                 raise ValueError("Could not find column labels in given "
                                  + "dataframe.")
             # append correct name to list of correct names
-            reqcolnames.append(_getQuandlDataColumnLabel(name, col))
+            reqcolnames.append(colname)
 
     stock_data = stock_data.loc[:, reqcolnames]
     # now rename the columns (removing "WIKI/" from column labels):
