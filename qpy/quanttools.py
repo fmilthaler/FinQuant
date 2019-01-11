@@ -83,6 +83,7 @@ def optimisePfMC(data,
                  num_trials=10000,
                  riskFreeRate=0.005,
                  freq=252,
+                 initial_weights=None,
                  plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
@@ -99,12 +100,19 @@ def optimisePfMC(data,
              required for the Sharpe Ratio
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
+         * initial_weights: List/Array (default: None), weights of
+             initial/given portfolio, only used to plot a marker for the
+             initial portfolio in the optimisation plot.
          * plot: Boolean (default: True), if True, a plot showing the results
              is produced
         Output:
          * pf_opt: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
         '''
+        if (initial_weights is not None and
+            not isinstance(initial_weights, np.ndarray)):
+            raise ValueError("If given, optional argument 'initial_weights' "
+                             + "must be of type numpy.ndarray")
         # set number of stocks in the portfolio
         num_stocks = len(data.columns)
         # set up array to hold results
@@ -115,6 +123,13 @@ def optimisePfMC(data,
         returns = dailyReturns(data)
         pf_return_means = returns.mean()
         cov_matrix = returns.cov()
+
+        # computed expected return and volatility of initial portfolio
+        if (initial_weights is not None):
+            initial_pf_return = weightedMean(pf_return_means,
+                                             initial_weights) * freq
+            initial_pf_volatility = weightedStd(cov_matrix,
+                                                initial_weights) * np.sqrt(freq)
 
         # Monte Carlo simulation
         for i in range(num_trials):
@@ -170,8 +185,17 @@ def optimisePfMC(data,
                         color='g',
                         s=200,
                         label='min Volatility')
-            plt.title('Monte Carlo simulation to optimise the portfolio based on Efficient Frontier')
-            plt.xlabel('Volatility')
+            # also set marker for initial portfolio, if weights were given
+            if (initial_weights is not None):
+                plt.scatter(initial_pf_volatility,
+                            initial_pf_return,
+                            marker='^',
+                            color='k',
+                            s=200,
+                            label='Initial Portfolio')
+            plt.title('Monte Carlo simulation to optimise the portfolio based '
+                      + 'on the Efficient Frontier')
+            plt.xlabel('Volatility [period='+str(freq)+']')
             plt.ylabel('Returns [period='+str(freq)+']')
             cbar.ax.set_ylabel('Sharpe Ratio [period='+str(freq)+']', rotation=90)
             plt.legend()
