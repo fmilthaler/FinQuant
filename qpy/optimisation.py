@@ -1,105 +1,7 @@
 import numpy as np
 import pandas as pd
-
-
-def weightedMean(means, weights):
-    '''
-    Computes the weighted mean/average, or in the case of a
-    financial portfolio, it can be used for the expected return
-    of said portfolio.
-
-    Input:
-     * means: List/Array of mean/average values
-     * weights: List/Array of weights
-
-    Output: Array: (np.sum(means*weights))
-    '''
-    return np.sum(means * weights)
-
-
-def weightedStd(cov_matrix, weights):
-    '''
-    Computes the weighted standard deviation, or volatility of
-    a portfolio, which contains several stocks.
-
-    Input:
-     * cov_matrix: Array, covariance matrix
-     * weights: List/Array of weights
-
-    Output: Array: np.sqrt(np.dot(weights.T,
-        np.dot(cov_matrix, weights)))
-    '''
-    return np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
-
-
-def SharpeRatio(expReturn, volatility, riskFreeRate=0.005):
-    '''
-    Computes the Sharpe Ratio
-
-    Input:
-     * expReturn: Float, expected return of a portfolio
-     * volatility: Float, volatility of a portfolio
-     * riskFreeRate: Float (default=0.005), risk free rate
-
-    Output: Float: (expReturn - riskFreeRate)/float(volatility)
-    '''
-    return (expReturn - riskFreeRate)/float(volatility)
-
-
-def simpleReturns(data):
-    '''
-    Returns DataFrame with returns
-    price_{t} / price_{t=0}
-
-    Input:
-     * data: DataFrame with daily stock prices
-
-    Output: DataFrame of daily percentage change of returns
-    of given stock prices
-    '''
-    return data.apply(lambda x: x / x[0])
-
-
-def dailyReturns(data):
-    '''
-    Returns DataFrame with daily returns
-
-    Input:
-     * data: DataFrame with daily stock prices
-
-    Output: DataFrame of daily percentage change of returns
-    of given stock prices
-    '''
-    return data.pct_change().dropna(how="all")
-
-
-def dailyLogReturns(data):
-    '''
-    Returns DataFrame with daily log returns
-
-    Input:
-     * data: DataFrame with daily stock prices
-
-    Output: DataFrame of log(1 + daily percentage change of returns)
-    '''
-    return np.log(1 + dailyReturns(data)).dropna(how="all")
-
-
-def historicalMeanReturn(data, freq=252):
-    '''
-    Returns the mean return based on historical stock price data.
-
-    Input:
-     * data: DataFrame with daily stock prices
-     * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
-
-    Output: DataFrame of mean daily * freq
-    '''
-    if (not isinstance(data, pd.DataFrame)):
-        raise ValueError("data must be a pandas.DataFrame")
-    daily_returns = dailyReturns(data)
-    return daily_returns.mean() * freq
+from qpy.pf_returns import dailyReturns
+from qpy.pf_quants import weightedMean, weightedStd, sharpeRatio
 
 
 def optimisePfMC(data,
@@ -172,7 +74,7 @@ def optimisePfMC(data,
         # store results in results array
         results[num_stocks, i] = pf_return
         results[num_stocks+1, i] = pf_volatility
-        results[num_stocks+2, i] = SharpeRatio(pf_return,
+        results[num_stocks+2, i] = sharpeRatio(pf_return,
                                                pf_volatility,
                                                riskFreeRate)
 
