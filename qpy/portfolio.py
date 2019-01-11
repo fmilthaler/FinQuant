@@ -6,7 +6,8 @@ from qpy.quanttools import dailyReturns
 
 
 class Stock(object):
-    ''' Object that contains information about a stock/fund.
+    '''
+    Object that contains information about a stock/fund.
     To initialise the object, it requires a name, information about
     the stock/fund given as one of the following data structures:
      - pandas.Series
@@ -60,6 +61,7 @@ class Stock(object):
     def compExpectedReturn(self, freq=252):
         '''
         Computes the expected return of the stock.
+
         Input:
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
@@ -86,8 +88,10 @@ class Stock(object):
         # nicely printing out information and quantities of the stock
         string = "-"*50
         string += "\nStock: {}".format(self.name)
-        string += "\nExpected return: {:0.3f}".format(self.getExpectedReturn().values[0])
-        string += "\nVolatility: {:0.3f}".format(self.getVolatility().values[0])
+        string += "\nExpected return:{:0.3f}".format(
+            self.getExpectedReturn().values[0])
+        string += "\nVolatility: {:0.3f}".format(
+            self.getVolatility().values[0])
         string += "\nSkewness: {:0.5f}".format(self.compSkew())
         string += "\nKurtosis: {:0.5f}".format(self.compKurtosis())
         string += "\nInformation:"
@@ -98,12 +102,13 @@ class Stock(object):
 
 
 class Portfolio(object):
-    ''' Object that contains information about a investment portfolio.
-        To initialise the object, it does not require any input.
-        To fill the portfolio with investment information, the
-        function addStock(stock) should be used, in which `stock` is
-        a `Stock` object, a pandas.DataFrame of the portfolio investment
-        information.
+    '''
+    Object that contains information about a investment portfolio.
+    To initialise the object, it does not require any input.
+    To fill the portfolio with investment information, the
+    function addStock(stock) should be used, in which `stock` is
+    a `Stock` object, a pandas.DataFrame of the portfolio investment
+    information.
     '''
     def __init__(self):
         # initilisating instance variables
@@ -189,6 +194,7 @@ class Portfolio(object):
     def compPfMeanReturns(self, freq=252):
         '''
         Computes the mean return based on historical stock price data.
+
         Input:
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
@@ -203,11 +209,13 @@ class Portfolio(object):
     def compPfExpectedReturn(self, freq=252):
         '''
         Computes the expected return of the portfolio.
+
         Input:
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         '''
-        pf_return_means = historicalMeanReturn(self.getPfStockData(), freq=freq)
+        pf_return_means = historicalMeanReturn(self.getPfStockData(),
+                                               freq=freq)
         weights = self.compPfWeights()
         expectedReturn = weightedMean(pf_return_means.values, weights)
         self.setPfExpectedReturn(expectedReturn)
@@ -235,8 +243,8 @@ class Portfolio(object):
     def compPfSharpe(self, riskFreeRate=0.005):
         # compute the Sharpe Ratio of the portfolio
         sharpe = SharpeRatio(self.getPfExpectedReturn(),
-                           self.getPfVolatility(),
-                           riskFreeRate)
+                             self.getPfVolatility(),
+                             riskFreeRate)
         self.setPfSharpe(sharpe)
         return sharpe
 
@@ -286,9 +294,12 @@ class Portfolio(object):
         string = "-"*50
         stocknames = self.portfolio.Name.values.tolist()
         string += "\nStocks: {}".format(", ".join(stocknames))
-        string += "\nPortfolio expected return: {:0.3f}".format(self.getPfExpectedReturn())
-        string += "\nPortfolio volatility: {:0.3f}".format(self.getPfVolatility())
-        string += "\nPortfolio Sharpe ratio: {:0.3f}".format(self.getPfSharpe())
+        string += "\nPortfolio expected return: {:0.3f}".format(
+            self.getPfExpectedReturn())
+        string += "\nPortfolio volatility: {:0.3f}".format(
+            self.getPfVolatility())
+        string += "\nPortfolio Sharpe ratio: {:0.3f}".format(
+            self.getPfSharpe())
         string += "\nSkewness:"
         string += "\n"+str(self.compPfSkew().to_frame().transpose())
         string += "\nKurtosis:"
@@ -301,13 +312,13 @@ class Portfolio(object):
 
 
 def _correctQuandlRequestStockName(names):
-    ''' This function makes sure that all strings in the given list of
-        stock names are leading with "WIKI/" as required by quandl to
-        request data.
+    '''
+    This function makes sure that all strings in the given list of
+    stock names are leading with "WIKI/" as required by quandl to
+    request data.
 
-        Example: If an element of names is "GOOG" (which stands for
-        Google), this function modifies the element of names to
-        "WIKI/GOOG".
+    Example: If an element of names is "GOOG" (which stands for
+    Google), this function modifies the element of names to "WIKI/GOOG".
     '''
     # make sure names is a list of names:
     if (isinstance(names, str)):
@@ -322,15 +333,16 @@ def _correctQuandlRequestStockName(names):
 
 
 def _quandlRequest(names, start_date=None, end_date=None):
-    ''' This function performs a simple request from quandl and returns
-        a DataFrame containing stock data.
+    '''
+    This function performs a simple request from quandl and returns
+    a DataFrame containing stock data.
 
-        Input:
-         * names: List of strings of stock names to be requested
-         * start_date (optional): String/datetime of the start date
-             of relevant stock data
-         * end_date (optional): String/datetime of the end date of
-             relevant stock data
+    Input:
+     * names: List of strings of stock names to be requested
+     * start_date (optional): String/datetime of the start date of
+         relevant stock data
+     * end_date (optional): String/datetime of the end date of
+         relevant stock data
     '''
     try:
         import quandl
@@ -344,9 +356,10 @@ def _quandlRequest(names, start_date=None, end_date=None):
 
 
 def _getQuandlDataColumnLabel(stock_name, data_label):
-    ''' Given stock name and label of a data column, this function returns
-        the string "<stock_name> - <data_label>" as it can be found in a
-        DataFrame returned by quandl.
+    '''
+    Given stock name and label of a data column, this function returns
+    the string "<stock_name> - <data_label>" as it can be found in a
+    DataFrame returned by quandl.
     '''
     return stock_name+' - '+data_label
 
@@ -379,10 +392,12 @@ def _getStocksDataColumns(stock_data, names, cols):
             if (names[i] in stock_data.columns):
                 colname = names[i]
             # 2. if "WIKI/<stock_name> - <col>" in column labels
-            elif (_getQuandlDataColumnLabel(reqnames[i], col) in stock_data.columns):
+            elif (_getQuandlDataColumnLabel(reqnames[i], col) in
+                  stock_data.columns):
                 colname = _getQuandlDataColumnLabel(reqnames[i], col)
             # 3. if "<stock_name> - <col>" in column labels
-            elif (_getQuandlDataColumnLabel(names[i], col) in stock_data.columns):
+            elif (_getQuandlDataColumnLabel(names[i], col) in
+                  stock_data.columns):
                 colname = _getQuandlDataColumnLabel(names[i], col)
             # else, error
             else:
@@ -402,7 +417,8 @@ def _getStocksDataColumns(stock_data, names, cols):
     newcolnames = {}
     if (len(cols) == 1):
         for i in range(len(names)):
-            newcolnames.update({_getQuandlDataColumnLabel(names[i], cols[0]): names[i]})
+            newcolnames.update({_getQuandlDataColumnLabel(
+                names[i], cols[0]): names[i]})
         stock_data.rename(columns=newcolnames, inplace=True)
     return stock_data
 
@@ -411,21 +427,22 @@ def _buildPortfolioFromQuandl(pf_information,
                               names,
                               start_date=None,
                               end_date=None):
-    ''' Returns a portfolio based on input in form of a list of
-        strings/names of stocks.
+    '''
+    Returns a portfolio based on input in form of a list of strings/names
+    of stocks.
 
-        Input:
-         * pf_information: DataFrame with the required data column
-             labels "Name" and "FMV" of the stocks.
-         * names: A string or list of strings, containing the names of
-             the stocks, e.g. 'GOOG' for Google.
-         * start_date (optional): String/datetime start date of stock data
-             to be requested through quandl (default: None)
-         * end_date (optional): String/datetime end date of stock data to
-             be requested through quandl (default: None)
-        Output:
-         * pf: Instance of Portfolio which contains all the information
-             requested by the user.
+    Input:
+     * pf_information: DataFrame with the required data column
+         labels "Name" and "FMV" of the stocks.
+     * names: A string or list of strings, containing the names of the
+         stocks, e.g. 'GOOG' for Google.
+     * start_date (optional): String/datetime start date of stock data to
+         be requested through quandl (default: None)
+     * end_date (optional): String/datetime end date of stock data to be
+         requested through quandl (default: None)
+    Output:
+     * pf: Instance of Portfolio which contains all the information
+         requested by the user.
     '''
     # create an empty portfolio
     pf = Portfolio()
@@ -435,9 +452,11 @@ def _buildPortfolioFromQuandl(pf_information,
     pf = _buildPortfolioFromDf(pf_information, stock_data)
     return pf
 
+
 def _stocknamesInDataColumns(names, df):
-    ''' Returns True if at least one element of names was found as a
-        column label in the dataframe df.
+    '''
+    Returns True if at least one element of names was found as a column
+    label in the dataframe df.
     '''
     return any((name in label for name in names for label in df.columns))
 
@@ -445,18 +464,19 @@ def _stocknamesInDataColumns(names, df):
 def _buildPortfolioFromDf(pf_information,
                           stock_data,
                           datacolumns=["Adj. Close"]):
-    ''' Returns a portfolio based on input in form of pandas.DataFrame.
+    '''
+    Returns a portfolio based on input in form of pandas.DataFrame.
 
-        Input:
-         * pf_information: DataFrame with the required data column labels
-             "Name" and "FMV" of the stocks.
-         * stock_data: A DataFrame which contains prices of the stocks
-             listed in pf_information
-         * datacolumns (optional): A list of strings of data column labels
-             to be extracted and returned (default: ["Adj. Close"]).
-        Output:
-         * pf: Instance of Portfolio which contains all the information
-             requested by the user.
+    Input:
+     * pf_information: DataFrame with the required data column labels
+         "Name" and "FMV" of the stocks.
+     * stock_data: A DataFrame which contains prices of the stocks
+         listed in pf_information
+     * datacolumns (optional): A list of strings of data column labels
+         to be extracted and returned (default: ["Adj. Close"]).
+    Output:
+     * pf: Instance of Portfolio which contains all the information
+         requested by the user.
     '''
     # make sure stock names are in data dataframe
     if (not _stocknamesInDataColumns(pf_information.Name.values,
@@ -484,53 +504,55 @@ def _buildPortfolioFromDf(pf_information,
 
 
 def _allListEleInOther(l1, l2):
-    ''' Returns True if all elements of list l1 are found in list l2.
+    '''
+    Returns True if all elements of list l1 are found in list l2.
     '''
     return all(ele in l2 for ele in l1)
 
 
 def _anyListEleInOther(l1, l2):
-    ''' Returns True if any element of list l1 is found in list l2.
+    '''
+    Returns True if any element of list l1 is found in list l2.
     '''
     return any(ele in l2 for ele in l1)
 
 
 def _listComplement(A, B):
-    ''' Returns the relative complement of A in B (also denoted as A\\B)
+    '''
+    Returns the relative complement of A in B (also denoted as A\\B)
     '''
     return list(set(B) - set(A))
 
 
 def buildPortfolio(pf_information, **kwargs):
-    ''' This function builds and returns a portfolio given a set of
-        input arguments.
+    '''
+    This function builds and returns a portfolio given a set ofinput
+    arguments.
 
-        Input:
-         * pf_information: This input is always required. DataFrame
-             with the required data column labels "Name" and "FMV"
-             of the stocks.
-         * names: A string or list of strings, containing the names of
-             the stocks, e.g. 'GOOG' for Google.
-         * start (optional): String/datetime start date of stock data
-             to be requested through quandl (default: None)
-         * end (optional): String/datetime end date of stock data to be
-             requested through quandl (default: None)
-         * stock_data (optional): A DataFrame which contains quantities
-             of the stocks listed in pf_information
-        Output:
-         * pf: Instance of Portfolio which contains all the information
-             requested by the user.
+    Input:
+     * pf_information: This input is always required. DataFrame with
+         the required data column labels "Name" and "FMV" of the stocks.
+     * names: A string or list of strings, containing the names of the
+         stocks, e.g. 'GOOG' for Google.
+     * start (optional): String/datetime start date of stock data to be
+         requested through quandl (default: None)
+     * end (optional): String/datetime end date of stock data to be
+         requested through quandl (default: None)
+     * stock_data (optional): A DataFrame which contains quantities of
+         the stocks listed in pf_information
+    Output:
+     * pf: Instance of Portfolio which contains all the information
+         requested by the user.
 
-        Only the following combinations of inputs are allowed:
-         * pf_information, names, start_date (optional), end_date
-             (optional)
-         * pf_information, stock_data
+    Only the following combinations of inputs are allowed:
+     * pf_information, names, start_date (optional), end_date (optional)
+     * pf_information, stock_data
 
-        Moreover, the two different ways this function can be used are
-        useful for
-         1. building a portfolio by pulling data from quandl,
-         2. building a portfolio by providing stock data which was obtained
-             otherwise, e.g. from data files
+    Moreover, the two different ways this function can be used are useful
+    for
+     1. building a portfolio by pulling data from quandl,
+     2. building a portfolio by providing stock data which was obtained
+         otherwise, e.g. from data files
     '''
     docstringMsg = "Please read through the docstring, " \
                    "'buildPortfolio.__doc__'."
