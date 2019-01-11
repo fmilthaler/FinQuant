@@ -46,6 +46,20 @@ def SharpeRatio(expReturn, volatility, riskFreeRate=0.005):
     return (expReturn - riskFreeRate)/float(volatility)
 
 
+def simpleReturns(data):
+    '''
+    Returns DataFrame with returns
+    price_{t} / price_{t=0}
+
+    Input:
+     * data: DataFrame with daily stock prices
+
+    Output: DataFrame of daily percentage change of returns
+    of given stock prices
+    '''
+    return data.apply(lambda x: x / x[0])
+
+
 def dailyReturns(data):
     '''
     Returns DataFrame with daily returns
