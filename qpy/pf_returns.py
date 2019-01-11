@@ -1,5 +1,5 @@
 '''
-Providing functions to compute daily returns of stock data
+Provides functions to compute daily returns of stock data
 '''
 import numpy as np
 import pandas as pd
