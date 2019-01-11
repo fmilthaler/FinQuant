@@ -30,12 +30,51 @@ class Stock(object):
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
         self.stock_data = stock_data
+        # compute expected return and volatility of stock
+        self.setExpectedReturn(self.compExpectedReturn())
+        self.setVolatility(self.compVolatility())
 
     def getInvestmentInfo(self):
         return self.investmentinfo
 
     def getStockData(self):
         return self.stock_data
+
+    def getExpectedReturn(self):
+        return self.expectedReturn
+
+    def getVolatility(self):
+        return self.volatility
+
+    # set functions
+    def setExpectedReturn(self, expectedReturn):
+        self.expectedReturn = expectedReturn
+
+    def setVolatility(self, volatility):
+        self.volatility = volatility
+
+    # functions to compute quantities
+    def compDailyReturns(self):
+        return dailyReturns(self.getStockData())
+
+    def compExpectedReturn(self, freq=252):
+        '''
+        Computes the expected return of the stock.
+        Input:
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+        '''
+        return historicalMeanReturn(self.getStockData(), freq=freq)
+
+    def compVolatility(self, freq=252):
+        '''
+        Computes the volatility of the stock.
+
+        Input:
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+        '''
+        return self.compDailyReturns().std() * np.sqrt(freq)
 
     def compSkew(self):
         return self.stock_data.skew().values[0]
@@ -62,6 +101,7 @@ class Portfolio(object):
         self.pf_stock_data = pd.DataFrame()
         self.expectedReturn = None
         self.volatility = None
+        self.sharpe = None
 
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
@@ -75,10 +115,10 @@ class Portfolio(object):
         # also add stock data of stock to the dataframe
         self._addStockData(stock.stock_data)
 
-        # compute expected return of investment and volatility of portfolio
-        # and set corresponding instance variables:
+        # compute expected return, volatility and Sharpe ratio of portfolio
         self.setPfExpectedReturn(self.compPfExpectedReturn())
         self.setPfVolatility(self.compPfVolatility())
+        self.setPfSharpe(self.compPfSharpe())
 
     def _addStockData(self, df):
         # loop over columns in given dataframe
@@ -115,12 +155,18 @@ class Portfolio(object):
     def getPfVolatility(self):
         return self.volatility
 
+    def getPfSharpe(self):
+        return self.sharpe
+
     # set functions:
     def setPfExpectedReturn(self, expectedReturn):
         self.expectedReturn = expectedReturn
 
     def setPfVolatility(self, volatility):
         self.volatility = volatility
+
+    def setPfSharpe(self, sharpe):
+        self.sharpe = sharpe
 
     # functions to compute quantities
     def compPfDailyReturns(self):
@@ -146,10 +192,14 @@ class Portfolio(object):
     def compPfExpectedReturn(self, freq=252):
         '''
         Computes the expected return of the portfolio.
+        Input:
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
         '''
         pf_return_means = historicalMeanReturn(self.getPfStockData(), freq=freq)
         weights = self.compPfWeights()
         expectedReturn = weightedMean(pf_return_means.values, weights)
+        self.setPfExpectedReturn(expectedReturn)
         return expectedReturn
 
     def compPfVolatility(self, freq=252):
@@ -163,6 +213,7 @@ class Portfolio(object):
         # computing the volatility of a portfolio
         volatility = weightedStd(self.compCovPf(),
                                  self.compPfWeights()) * np.sqrt(freq)
+        self.setPfVolatility(volatility)
         return volatility
 
     def compCovPf(self):
@@ -170,11 +221,13 @@ class Portfolio(object):
         returns = dailyReturns(self.getPfStockData())
         return returns.cov()
 
-    def compSharpe(self, riskFreeRate):
+    def compPfSharpe(self, riskFreeRate=0.005):
         # compute the Sharpe Ratio of the portfolio
-        return SharpeRatio(self.getPfExpectedReturn(),
+        sharpe = SharpeRatio(self.getPfExpectedReturn(),
                            self.getPfVolatility(),
                            riskFreeRate)
+        self.setPfSharpe(sharpe)
+        return sharpe
 
     def compPfSkew(self):
         return self.getPfStockData().skew()
