@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
-from qpy.quanttools import historicalMeanReturn, optimisePfMC
-from qpy.quanttools import dailyReturns, simpleReturns, dailyLogReturns
+from qpy.pf_quants import weightedMean, weightedStd, sharpeRatio
+from qpy.optimisation import optimisePfMC
+from qpy.pf_returns import historicalMeanReturn
+from qpy.pf_returns import dailyReturns, simpleReturns, dailyLogReturns
 
 
 class Stock(object):
@@ -256,7 +257,7 @@ class Portfolio(object):
 
     def compPfSharpe(self, riskFreeRate=0.005):
         # compute the Sharpe Ratio of the portfolio
-        sharpe = SharpeRatio(self.getPfExpectedReturn(),
+        sharpe = sharpeRatio(self.getPfExpectedReturn(),
                              self.getPfVolatility(),
                              riskFreeRate)
         self.setPfSharpe(sharpe)
