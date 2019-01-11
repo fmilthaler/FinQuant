@@ -1,3 +1,6 @@
+'''
+Provides optimisation functions
+'''
 import numpy as np
 import pandas as pd
 from qpy.pf_returns import dailyReturns
