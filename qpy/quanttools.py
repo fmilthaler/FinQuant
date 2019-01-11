@@ -53,10 +53,22 @@ def dailyReturns(data):
     Input:
      * data: DataFrame with daily stock prices
 
-    Output: DataFrame of daily percentage change/returns
+    Output: DataFrame of daily percentage change of returns
     of given stock prices
     '''
     return data.pct_change().dropna(how="all")
+
+
+def dailyLogReturns(data):
+    '''
+    Returns DataFrame with daily log returns
+
+    Input:
+     * data: DataFrame with daily stock prices
+
+    Output: DataFrame of log(1 + daily percentage change of returns)
+    '''
+    return np.log(1 + dailyReturns(data)).dropna(how="all")
 
 
 def historicalMeanReturn(data, freq=252):
