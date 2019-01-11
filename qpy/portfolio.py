@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from qpy.quanttools import weightedMean, weightedStd, SharpeRatio
 from qpy.quanttools import historicalMeanReturn, optimisePfMC
-from qpy.quanttools import dailyReturns
+from qpy.quanttools import dailyReturns, simpleReturns, dailyLogReturns
 
 
 class Stock(object):
@@ -185,11 +185,25 @@ class Portfolio(object):
         self.sharpe = sharpe
 
     # functions to compute quantities
+    def compPfSimpleReturns(self):
+        '''
+        Computes the returns of all stocks in the portfolio.
+        price_{t} / price_{t=0}
+        '''
+        return simpleReturns(self.getPfStockData())
+
     def compPfDailyReturns(self):
         '''
-        Computes the daily returns of all stocks in the portfolio.
+        Computes the daily returns (percentage change) of all
+        stocks in the portfolio.
         '''
         return dailyReturns(self.getPfStockData())
+
+    def compPfDailyLogReturns(self):
+        '''
+        Computes the daily log returns of all stocks in the portfolio.
+        '''
+        return dailyLogReturns(self.getPfStockData())
 
     def compPfMeanReturns(self, freq=252):
         '''
