@@ -214,6 +214,7 @@ class Portfolio(object):
                             total_investment=total_investment,
                             riskFreeRate=riskFreeRate,
                             freq=freq,
+                            initial_weights=self.compPfWeights().values,
                             plot=plot)
 
     def __str__(self):
