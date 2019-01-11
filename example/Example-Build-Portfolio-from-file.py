@@ -102,17 +102,36 @@ pf.getPfStockData().head(3)
 # <markdowncell>
 
 # ## Daily returns and log returns
+# `QPY` provides functions to compute daily returns of a given DataFrame in various ways.
 
 # <codecell>
 
-# daily returns
+# daily returns (percentage change)
 pf.compPfDailyReturns().head(3)
 
 # <codecell>
 
-# daily log returns
-from qpy.quanttools import dailyLogReturns
-dailyLogReturns(pf.getPfStockData()).head(3)
+pf.compPfDailyLogReturns().head(3)
+
+# <codecell>
+
+# plotting stock data of portfolio
+pf.getPfStockData().plot()
+
+# <codecell>
+
+# plotting returns (price_{t} / price_{t=0})
+pf.compPfSimpleReturns().plot()
+
+# <codecell>
+
+# plotting daily percentage changes of returns
+pf.compPfDailyReturns().plot()
+
+# <codecell>
+
+# plotting daily log returns
+pf.compPfDailyLogReturns().plot()
 
 # <markdowncell>
 
