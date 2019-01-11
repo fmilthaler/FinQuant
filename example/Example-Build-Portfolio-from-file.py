@@ -3,8 +3,8 @@
 
 # <markdowncell>
 
-# # This example shows how to build a portfolio with the provided function `buildPortfolio()`
-# ## In this example with data obtained from data files.
+# # Example:
+# ## Building a portfolio with `buildPortfolio()` with data obtained from data files.
 # 
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
@@ -14,6 +14,7 @@
 
 # <codecell>
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
 
@@ -21,6 +22,21 @@ import datetime
 
 # importing QPY's function to automatically build the portfolio
 from qpy.portfolio import buildPortfolio
+
+# <codecell>
+
+# plotting style:
+plt.style.use('seaborn-darkgrid')
+#set line width
+plt.rcParams['lines.linewidth'] = 2
+#set font size for titles
+plt.rcParams['axes.titlesize'] = 14
+#set font size for labels on axes
+plt.rcParams['axes.labelsize'] = 12
+#set size of numbers on x-axis
+plt.rcParams['xtick.labelsize'] = 10
+#set size of numbers on y-axis
+plt.rcParams['ytick.labelsize'] = 10
 
 # <markdowncell>
 
@@ -31,7 +47,6 @@ from qpy.portfolio import buildPortfolio
 
 # stock data was previously pulled from quandl and stored in ex1-stockdata.csv
 # commands used to save data:
-# # write data to disk:
 # pf.getPortfolio().to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
 # pf.getPfStockData().to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
 # read data from files:
@@ -68,27 +83,160 @@ pf = buildPortfolio(df_pf, stock_data=df_data)
 
 # <markdowncell>
 
-# ## Examining the portfolio
+# ## Portfolio is successfully built
+# Getting data from the portfolio
 
 # <codecell>
 
-pf.portfolio
+# the portfolio information DataFrame
+print(pf.getPortfolio().name)
+pf.getPortfolio()
 
 # <codecell>
 
-pf.getPfStockData().head(2)
-
-# <codecell>
-
-df = pf.getPfStockData()
+# the portfolio stock data, prices DataFrame
+pf.getPfStockData().head(3)
 
 # <markdowncell>
 
-# ### Extracting stock data by date
+# ## Daily returns and log returns
+
+# <codecell>
+
+# daily returns
+pf.compPfDailyReturns().head(3)
+
+# <codecell>
+
+# daily log returns
+from qpy.quanttools import dailyLogReturns
+dailyLogReturns(pf.getPfStockData()).head(3)
+
+# <markdowncell>
+
+# ## Annualised mean returns
+
+# <codecell>
+
+# annualised mean returns
+pf.compPfMeanReturns()
+
+# <markdowncell>
+
+# ## Expected Return, Volatility and Sharpe Ratio of Portfolio
+# The annualised expected return and volatility as well as the Sharpe Ratio are automatically computed. They are obtained as shown below.
+# 
+# The expected return and volatility are based on 252 trading days by default. The Sharpe Ratio is computed with a risk free rate of 0.005 by default.
+
+# <codecell>
+
+# expected (annualised) return
+pf.getPfExpectedReturn()
+
+# <codecell>
+
+# volatility
+pf.getPfVolatility()
+
+# <codecell>
+
+# Sharpe ratio (computed with a risk free rate of 0.005 by default)
+pf.getPfSharpe()
+
+# <markdowncell>
+
+# ## Getting Skewness and Kurtosis of the stocks
+
+# <codecell>
+
+pf.compPfSkew()
+
+# <codecell>
+
+pf.compPfKurtosis()
+
+# <markdowncell>
+
+# ## Nicely printing out portfolio quantities
+# To print the expected annualised return, volatility, Sharpe ratio, skewness and Kurtosis of the portfolio and its stocks, one can simply do `print(pf)`.
+
+# <codecell>
+
+print(pf)
+
+# <markdowncell>
+
+# ## Portfolio optimisation
+# Perform a Monte Carlo simulation to find the portfolio with the minimum volatility and maximum Sharpe Ratio.
+
+# <codecell>
+
+opt = pf.optimisePortfolio(num_trials=25000)
+opt
+
+# <markdowncell>
+
+# ## Recomputing expected return, volatility and Sharpe ratio
+# Note: When doing so, the instance variables are being reset by doing so.
+
+# <codecell>
+
+# If the return, volatility and Sharpe ratio need to be computed based on a different time window and/or risk free rate, one can recompute those values as shown below
+freq = 100
+rfr = 0.02
+exret = pf.compPfExpectedReturn(freq=freq)
+vol = pf.compPfVolatility(freq=freq)
+sharpe = pf.compPfSharpe(riskFreeRate=rfr)
+print("For {} trading days and a risk free rate of {}:".format(freq, rfr))
+print("Expected return: {:0.3f}".format(exret))
+print("Volatility: {:0.3f}".format(vol))
+print("Sharpe Ratio: {:0.3f}".format(sharpe))
+
+# <markdowncell>
+
+# ## Extracting data of stocks individually
+# Each stock (its information and data) of the portfolio is stored as a `Stock` data structure. If needed, one can of course extract the relevant data from the portfolio DataFrame, or access the `Stock` instance. The commands are very similar to the once for `Portfolio`. See below how it can be used.
+
+# <codecell>
+
+# getting Stock object from portfolio, for Google's stock
+goog = pf.getStock("GOOG")
+# getting the stock prices
+goog_prices = goog.getStockData()
+goog_prices.head(3)
+
+# <codecell>
+
+goog.compDailyReturns().head(3)
+
+# <codecell>
+
+goog.getExpectedReturn()
+
+# <codecell>
+
+goog.getVolatility()
+
+# <codecell>
+
+goog.compSkew()
+
+# <codecell>
+
+goog.compKurtosis()
+
+# <codecell>
+
+print(goog)
+
+# <markdowncell>
+
+# ## Extracting stock data by date
 # Since quandl provides a DataFrame with an index of dates, it is easy to extract data from the portfolio for a given time frame. Three examples are shown below.
 
 # <codecell>
 
+df = pf.getPfStockData()
 df.loc[str(datetime.datetime(2015,1,2))]
 
 # <codecell>
@@ -98,72 +246,3 @@ df.loc[df.index>datetime.datetime(2016,1,2)].head(3)
 # <codecell>
 
 df.loc[df.index.year==2017].head(3)
-
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-import numpy as np
-
-#take log return
-#goog = pf.getPfStockData()#['GOOG - Adj. Close'].to_frame()
-
-goog = pf.getStock('GOOG').getStockData().copy(deep=True)#['GOOG - Adj. Close']
-goog
-#goog['test'] = goog.pct_change(1)
-goog['return'] = goog['GOOG - Adj. Close'].pct_change(1).fillna(0)
-# log return:
-goog['log-return1'] = np.log(goog['GOOG - Adj. Close']) - np.log(goog['GOOG - Adj. Close'].shift(1)).fillna(0)
-goog['log-return2'] = np.log(1 + goog['return']).fillna(0)
-goog['log-return3'] = np.log(goog['GOOG - Adj. Close']).diff().fillna(0)
-
-goog
-
-for i in range(1,4):
-    print(all(goog['log-return2'] - goog['log-return'+str(i)] < 1e-15))
-goog.head(3)
-
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-
-
-# <codecell>
-
-pf.getStock('GOOG').getStockData().head(3)
-
-'Adj. Close' in pf.getStock('GOOG').getStockData().columns
-pf.getStock('GOOG').getStockData().columns
-
-# <codecell>
-
-
-
-# <codecell>
-
-
