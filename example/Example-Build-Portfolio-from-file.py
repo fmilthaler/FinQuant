@@ -101,49 +101,6 @@ pf.getPfStockData().head(3)
 
 # <markdowncell>
 
-# ## Daily returns and log returns
-# `QPY` provides functions to compute daily returns of a given DataFrame in various ways.
-
-# <codecell>
-
-# daily returns (percentage change)
-pf.compPfDailyReturns().head(3)
-
-# <codecell>
-
-pf.compPfDailyLogReturns().head(3)
-
-# <codecell>
-
-# plotting stock data of portfolio
-pf.getPfStockData().plot()
-
-# <codecell>
-
-# plotting returns (price_{t} / price_{t=0})
-pf.compPfSimpleReturns().plot()
-
-# <codecell>
-
-# plotting daily percentage changes of returns
-pf.compPfDailyReturns().plot()
-
-# <codecell>
-
-# plotting daily log returns
-pf.compPfDailyLogReturns().plot()
-
-# <markdowncell>
-
-# ## Annualised mean returns
-
-# <codecell>
-
-# annualised mean returns
-pf.compPfMeanReturns()
-
-# <markdowncell>
-
 # ## Expected Return, Volatility and Sharpe Ratio of Portfolio
 # The annualised expected return and volatility as well as the Sharpe Ratio are automatically computed. They are obtained as shown below.
 # 
@@ -184,6 +141,68 @@ pf.compPfKurtosis()
 # <codecell>
 
 print(pf)
+
+# <markdowncell>
+
+# ## Daily returns and log returns
+# `QPY` provides functions to compute daily returns and annualised mean returns of a given DataFrame in various ways.
+
+# <codecell>
+
+# annualised mean returns
+pf.compPfMeanReturns()
+
+# <codecell>
+
+# daily returns (percentage change)
+pf.compPfSimpleReturns().head(3)
+
+# <codecell>
+
+pf.compPfDailyLogReturns().head(3)
+
+# <codecell>
+
+# plotting stock data of portfolio
+pf.getPfStockData().plot()
+
+# <markdowncell>
+
+# The stock prices of Google and Amazon are much higher than those for McDonald's and Disney. Hence the fluctuations of the latter ones are barely seen in the above plot. One can use pandas.plot() method to create a secondary y axis.
+
+# <codecell>
+
+pf.getPfStockData().plot(secondary_y = ["MCD", "DIS"], grid = True)
+
+# <codecell>
+
+# plotting returns (price_{t} / price_{t=0})
+pf.compPfSimpleReturns().plot().axhline(y = 1, color = "black", lw = 3)
+
+# <codecell>
+
+# plotting daily percentage changes of returns
+pf.compPfDailyReturns().plot().axhline(y = 0, color = "black")
+
+# <codecell>
+
+# plotting daily log returns
+pf.compPfDailyLogReturns().plot().axhline(y = 0, color = "black")
+
+# <markdowncell>
+
+
+# <codecell>
+
+
+# <codecell>
+
+
+# <markdowncell>
+
+
+# <codecell>
+
 
 # <markdowncell>
 
