@@ -37,6 +37,8 @@ plt.rcParams['axes.labelsize'] = 12
 plt.rcParams['xtick.labelsize'] = 10
 #set size of numbers on y-axis
 plt.rcParams['ytick.labelsize'] = 10
+#set figure size
+plt.rcParams['figure.figsize'] = (10, 6)
 
 # <markdowncell>
 
