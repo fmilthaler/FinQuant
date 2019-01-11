@@ -83,7 +83,18 @@ class Stock(object):
         return self.stock_data.kurt().values[0]
 
     def __str__(self):
-        return str(self.investmentinfo.to_frame().transpose())
+        # nicely printing out information and quantities of the stock
+        string = "-"*50
+        string += "\nStock: {}".format(self.name)
+        string += "\nExpected return: {:0.3f}".format(self.getExpectedReturn().values[0])
+        string += "\nVolatility: {:0.3f}".format(self.getVolatility().values[0])
+        string += "\nSkewness: {:0.5f}".format(self.compSkew())
+        string += "\nKurtosis: {:0.5f}".format(self.compKurtosis())
+        string += "\nInformation:"
+        string += "\n"+str(self.investmentinfo.to_frame().transpose())
+        string += "\n"
+        string += "-"*50
+        return string
 
 
 class Portfolio(object):
@@ -271,7 +282,22 @@ class Portfolio(object):
                             plot=plot)
 
     def __str__(self):
-        return str(self.getPortfolio())
+        # nicely printing out information and quantities of the portfolio
+        string = "-"*50
+        stocknames = self.portfolio.Name.values.tolist()
+        string += "\nStocks: {}".format(", ".join(stocknames))
+        string += "\nPortfolio expected return: {:0.3f}".format(self.getPfExpectedReturn())
+        string += "\nPortfolio volatility: {:0.3f}".format(self.getPfVolatility())
+        string += "\nPortfolio Sharpe ratio: {:0.3f}".format(self.getPfSharpe())
+        string += "\nSkewness:"
+        string += "\n"+str(self.compPfSkew().to_frame().transpose())
+        string += "\nKurtosis:"
+        string += "\n"+str(self.compPfKurtosis().to_frame().transpose())
+        string += "\nInformation:"
+        string += "\n"+str(self.getPortfolio())
+        string += "\n"
+        string += "-"*50
+        return string
 
 
 def _correctQuandlRequestStockName(names):
