@@ -5,11 +5,11 @@
 
 # # Example:
 # ## Building a portfolio with `buildPortfolio()` by downloading relevant data through quandl with stock names, start and end date and column labels
+# This example only focuses on how to use `buildPortfolio()` to get an instance of `Portfolio` by providing minimal information that is passed on to `quandl`. For a more exhaustive description of this package and example, please try `Example-Build-Portfolio-from-file.py`.
 
 # <codecell>
 
 import matplotlib.pyplot as plt
-#import numpy as np
 import pandas as pd
 
 # <codecell>
@@ -34,7 +34,6 @@ import datetime
 # <codecell>
 
 # importing some custom functions/objects
-#from qpy.portfolio import Portfolio, Stock, buildPortfolio
 from qpy.portfolio import buildPortfolio
 
 # <codecell>
@@ -42,21 +41,10 @@ from qpy.portfolio import buildPortfolio
 import quandl
 import os
 
-# <codecell>
-
-filename = os.environ['HOME']+'/.quandl/api_key'
-with open(filename) as f:
-    lines = f.readlines()
-if (len(lines) != 1):
-    raise ValueError('Could not get the quandl api key from '+filename)
-quandl_api_key = ''.join(lines).strip()
-
-# setting api key:
-quandl.ApiConfig.api_key = quandl_api_key
-
 # <markdowncell>
 
 # ## Get data from quandl and build portfolio
+# First we need to build a pandas.DataFrame that holds relevant data for our portfolio. The minimal information needed are stock names and the amount of money to be invested in them, e.g. FMV.
 
 # <codecell>
 
@@ -79,21 +67,21 @@ quandl.ApiConfig.api_key = quandl_api_key
 # <codecell>
 
 d = {0 : {'Name':'GOOG', 'FMV':20},
-     1: {'Name':'AMZN', 'FMV':33},
+     1: {'Name':'AMZN', 'FMV':10},
      2: {'Name':'MCD', 'FMV':15},
-     3: {'Name':'DIS', 'FMV':9},
+     3: {'Name':'DIS', 'FMV':18},
     }
 pf_information = pd.DataFrame.from_dict(d, orient='index')
 
 # <markdowncell>
 
 # ### User friendly interface to quandl
-# As mentioned above, in this example `buildPortfolio()` is used to build a portfolio by performing a query through `quandl`.
+# As mentioned above, in this example `buildPortfolio()` is used to build a portfolio by performing a query to `quandl`.
 # 
-# To download Google's stock data, `quandl` requires the string "WIKI/GOOG". For simplicity, `QPY` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `QPY`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
+# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `QPY` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `QPY`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
 # 
-# For example, all three lists as shown below are valid input for
-# `QPY`'s function `buildPortfolio(pfinfo, names=names)`:
+# For example, all three lists of tickers/names as shown below are valid input for
+# `QPY`'s function `buildPortfolio(pf_information, names=names)`:
 #  * `names = ['WIKI/GOOG', 'WIKI/AMZN']`
 #  * `names = ['GOOG', 'AMZN']`
 #  * `names = ['WIKI/GOOG', 'AMZN']`
@@ -108,34 +96,35 @@ names = pf_information['Name'].values.tolist()
 start_date = datetime.datetime(2015,1,1)
 end_date = '2017-12-31'
 
-# The user can also provide a list of column labels to extract from
-# the data obtained from quandl. If none is set, QPY will extract
-# the column 'Adj. Close' for each stock.
-datacolumns = ['Adj. Close', 'High', 'Low']
+# While quandl will download lots of different prices for each stock,
+# e.g. high, low, close, etc, QPY will extract the column "Adj. Close".
 
 pf = buildPortfolio(pf_information,
                     names=names,
                     start_date=start_date,
-                    end_date=end_date,
-                    datacolumns=datacolumns)
+                    end_date=end_date)
+
+# <markdowncell>
+
+# ## Portfolio is successfully built
+# Getting data from the portfolio
 
 # <codecell>
 
-pf_information
+# the portfolio information DataFrame
+pf.getPortfolio()
 
 # <codecell>
 
+# the portfolio stock data, prices DataFrame
 pf.getPfStockData().head(3)
 
 # <codecell>
 
+# print out information and quantities of given portfolio
+print(pf)
 
 # <markdowncell>
 
-# ## Portfolio optimisation
-
-# <codecell>
-
-# pf.optimisePortfolio(1000000, plot=True)
-opt = pf.optimisePortfolio()
-opt
+# ## Please continue with `Example-Build-Portfolio-from-file.py`.
+# As mentioned above, this example only shows how to use `buildPortfolio()` to get an instance of `Portfolio` by downloading data through `quandl`.
