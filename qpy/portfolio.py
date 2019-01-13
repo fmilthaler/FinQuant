@@ -112,6 +112,22 @@ class Portfolio(object):
         self.sharpe = None
         self.skew = None
         self.kurtosis = None
+        self.totalinvestment = None
+
+    @property
+    def totalinvestment(self):
+        return self.__totalinvestment
+
+    @totalinvestment.setter
+    def totalinvestment(self, val):
+        if (not val is None):
+            # treat "None" as initialisation
+            if (not isinstance(val, (float, int))):
+                raise ValueError("Total investment must be a float or integer.")
+            elif (val <= 0):
+                raise ValueError("The money to be invested in the portfolio must be > 0.")
+            else:
+                self.__totalinvestment = val
 
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
@@ -126,6 +142,7 @@ class Portfolio(object):
         self._addStockData(stock.stock_data)
 
         # compute expected return, volatility and Sharpe ratio of portfolio
+        self.totalinvestment = self.portfolio.FMV.sum()
         self.expectedReturn = self.compPfExpectedReturn()
         self.volatility = self.compPfVolatility()
         self.sharpe = self.compPfSharpe()
@@ -151,8 +168,6 @@ class Portfolio(object):
     def getStocks(self):
         return self.stocks
 
-    def getTotalFMV(self):
-        return self.portfolio.FMV.sum()
 
     # functions to compute quantities
     def compPfSimpleReturns(self):
@@ -188,7 +203,7 @@ class Portfolio(object):
     def compPfWeights(self):
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
-        return self.portfolio['FMV']/self.getTotalFMV()
+        return self.portfolio['FMV']/self.totalinvestment
 
     def compPfExpectedReturn(self, freq=252):
         '''
@@ -263,7 +278,7 @@ class Portfolio(object):
         '''
         # if total_investment is not set, use total FMV of given portfolio
         if (total_investment is None):
-            total_investment = self.getTotalFMV()
+            total_investment = self.totalinvestment
 
         return optimisePfMC(self.pf_stock_data,
                             num_trials=num_trials,
