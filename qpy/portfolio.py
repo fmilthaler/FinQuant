@@ -364,20 +364,21 @@ def _getQuandlDataColumnLabel(stock_name, data_label):
     return stock_name+' - '+data_label
 
 
-def _getStocksDataColumns(stock_data, names, cols):
-    ''' This function returns a subset of the given DataFrame stock_data,
-        which contains only the data columns as specified in the input cols.
+def _getStocksDataColumns(data, names, cols):
+    '''
+    This function returns a subset of the given DataFrame data, which
+    contains only the data columns as specified in the input cols.
 
         Input:
-         * stock_data: A DataFrame which contains quantities of the stocks
+         * data: A DataFrame which contains quantities of the stocks
              listed in pf_information
          * names: A string or list of strings, containing the names of the
              stocks, e.g. 'GOOG' for Google.
-         * cols: A list of strings of column labels of stock_data to be
+         * cols: A list of strings of column labels of data to be
              extracted.
         Output:
-         * stock_data: A DataFrame which contains only the data columns of
-             stock_data as specified in cols.
+         * data: A DataFrame which contains only the data columns of
+             data as specified in cols.
     '''
     # get correct stock names that quandl get request
     reqnames = _correctQuandlRequestStockName(names)
@@ -389,15 +390,15 @@ def _getStocksDataColumns(stock_data, names, cols):
             # possibly previously processed dataframe, e.g.
             # read in from disk with slightly modified column labels
             # 1. if <stock_name> in column labels
-            if (names[i] in stock_data.columns):
+            if (names[i] in data.columns):
                 colname = names[i]
             # 2. if "WIKI/<stock_name> - <col>" in column labels
             elif (_getQuandlDataColumnLabel(reqnames[i], col) in
-                  stock_data.columns):
+                  data.columns):
                 colname = _getQuandlDataColumnLabel(reqnames[i], col)
             # 3. if "<stock_name> - <col>" in column labels
             elif (_getQuandlDataColumnLabel(names[i], col) in
-                  stock_data.columns):
+                  data.columns):
                 colname = _getQuandlDataColumnLabel(names[i], col)
             # else, error
             else:
@@ -406,12 +407,12 @@ def _getStocksDataColumns(stock_data, names, cols):
             # append correct name to list of correct names
             reqcolnames.append(colname)
 
-    stock_data = stock_data.loc[:, reqcolnames]
+    data = data.loc[:, reqcolnames]
     # now rename the columns (removing "WIKI/" from column labels):
     newcolnames = {}
     for i in reqcolnames:
         newcolnames.update({i: i.replace('WIKI/', '')})
-    stock_data.rename(columns=newcolnames, inplace=True)
+    data.rename(columns=newcolnames, inplace=True)
     # if only one data column per stock exists, rename column labels
     # to the name of the corresponding stock
     newcolnames = {}
@@ -419,8 +420,8 @@ def _getStocksDataColumns(stock_data, names, cols):
         for i in range(len(names)):
             newcolnames.update({_getQuandlDataColumnLabel(
                 names[i], cols[0]): names[i]})
-        stock_data.rename(columns=newcolnames, inplace=True)
-    return stock_data
+        data.rename(columns=newcolnames, inplace=True)
+    return data
 
 
 def _buildPortfolioFromQuandl(pf_information,
@@ -447,9 +448,9 @@ def _buildPortfolioFromQuandl(pf_information,
     # create an empty portfolio
     pf = Portfolio()
     # request data from quandl:
-    stock_data = _quandlRequest(names, start_date, end_date)
+    data = _quandlRequest(names, start_date, end_date)
     # build portfolio:
-    pf = _buildPortfolioFromDf(pf_information, stock_data)
+    pf = _buildPortfolioFromDf(pf_information, data)
     return pf
 
 
@@ -462,7 +463,7 @@ def _stocknamesInDataColumns(names, df):
 
 
 def _buildPortfolioFromDf(pf_information,
-                          stock_data,
+                          data,
                           datacolumns=["Adj. Close"]):
     '''
     Returns a portfolio based on input in form of pandas.DataFrame.
@@ -470,8 +471,8 @@ def _buildPortfolioFromDf(pf_information,
     Input:
      * pf_information: DataFrame with the required data column labels
          "Name" and "FMV" of the stocks.
-     * stock_data: A DataFrame which contains prices of the stocks
-         listed in pf_information
+     * data: A DataFrame which contains prices of the stocks listed in
+         pf_information
      * datacolumns (optional): A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
     Output:
@@ -480,26 +481,26 @@ def _buildPortfolioFromDf(pf_information,
     '''
     # make sure stock names are in data dataframe
     if (not _stocknamesInDataColumns(pf_information.Name.values,
-                                     stock_data)):
+                                     data)):
         raise ValueError("Error: None of the provided stock names were"
                          + "found in the provided dataframe.")
     # extract only 'Adj. Close' column from DataFrame:
-    stock_data = _getStocksDataColumns(stock_data,
-                                       pf_information.Name.values,
-                                       datacolumns)
+    data = _getStocksDataColumns(data,
+                                 pf_information.Name.values,
+                                 datacolumns)
     # building portfolio:
     pf = Portfolio()
     for i in range(len(pf_information)):
         # get name of stock
         name = pf_information.loc[i].Name
         # extract data column(s) of said stock
-        stock_stock_data = stock_data.filter(regex=name).copy(deep=True)
+        stock_data = data.filter(regex=name).copy(deep=True)
         # if only one data column per stock exists, give dataframe a name
         if (len(datacolumns) == 1):
-            stock_stock_data.name = datacolumns[0]
+            stock_data.name = datacolumns[0]
         # create Stock instance and add it to portfolio
         pf.addStock(Stock(pf_information.loc[i],
-                          data=stock_stock_data))
+                          data=stock_data))
     return pf
 
 
@@ -538,7 +539,7 @@ def buildPortfolio(pf_information, **kwargs):
          requested through quandl (default: None)
      * end (optional): String/datetime end date of stock data to be
          requested through quandl (default: None)
-     * stock_data (optional): A DataFrame which contains quantities of
+     * data (optional): A DataFrame which contains quantities of
          the stocks listed in pf_information
     Output:
      * pf: Instance of Portfolio which contains all the information
@@ -546,7 +547,7 @@ def buildPortfolio(pf_information, **kwargs):
 
     Only the following combinations of inputs are allowed:
      * pf_information, names, start_date (optional), end_date (optional)
-     * pf_information, stock_data
+     * pf_information, data
 
     Moreover, the two different ways this function can be used are useful
     for
@@ -568,7 +569,7 @@ def buildPortfolio(pf_information, **kwargs):
     allInputArgs = ['names',
                     'start_date',
                     'end_date',
-                    'stock_data']
+                    'data']
 
     # 1. names, start_date, end_date
     allowedInputArgs = ['names',
@@ -583,10 +584,10 @@ def buildPortfolio(pf_information, **kwargs):
         # get portfolio:
         pf = _buildPortfolioFromQuandl(pf_information, **kwargs)
 
-    # 2. stock_data
-    allowedInputArgs = ['stock_data']
+    # 2. data
+    allowedInputArgs = ['data']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
-    if (_allListEleInOther(['stock_data'], kwargs.keys())):
+    if (_allListEleInOther(['data'], kwargs.keys())):
         # check that no input argument conflict arises:
         if (_anyListEleInOther(_listComplement(
              allowedInputArgs, allInputArgs), kwargs.keys())):
