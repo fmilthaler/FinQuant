@@ -163,11 +163,7 @@ class Portfolio(object):
         self.pf_stock_data.index.rename('Date', inplace=True)
 
     def getStock(self, name):
-        return self.getStocks()[name]
-
-    def getStocks(self):
-        return self.stocks
-
+        return self.stocks[name]
 
     # functions to compute quantities
     def compPfSimpleReturns(self):
