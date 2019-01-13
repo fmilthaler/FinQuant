@@ -127,11 +127,11 @@ pf.sharpe
 
 # <codecell>
 
-pf.compPfSkew()
+pf.skew
 
 # <codecell>
 
-pf.compPfKurtosis()
+pf.kurtosis
 
 # <markdowncell>
 
@@ -260,11 +260,11 @@ goog.volatility
 
 # <codecell>
 
-goog.compSkew()
+goog.skew
 
 # <codecell>
 
-goog.compKurtosis()
+goog.kurtosis
 
 # <codecell>
 

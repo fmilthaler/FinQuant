@@ -35,6 +35,8 @@ class Stock(object):
         # compute expected return and volatility of stock
         self.expectedReturn = self.compExpectedReturn()
         self.volatility = self.compVolatility()
+        self.skew = self.__compSkew()
+        self.kurtosis = self.__compKurtosis()
 
     def getInvestmentInfo(self):
         return self.investmentinfo
@@ -63,10 +65,10 @@ class Stock(object):
         '''
         return self.compDailyReturns().std() * np.sqrt(freq)
 
-    def compSkew(self):
+    def __compSkew(self):
         return self.stock_data.skew().values[0]
 
-    def compKurtosis(self):
+    def __compKurtosis(self):
         return self.stock_data.kurt().values[0]
 
     def properties(self):
@@ -77,8 +79,8 @@ class Stock(object):
             self.expectedReturn.values[0])
         string += "\nVolatility: {:0.3f}".format(
             self.volatility.values[0])
-        string += "\nSkewness: {:0.5f}".format(self.compSkew())
-        string += "\nKurtosis: {:0.5f}".format(self.compKurtosis())
+        string += "\nSkewness: {:0.5f}".format(self.skew)
+        string += "\nKurtosis: {:0.5f}".format(self.kurtosis)
         string += "\nInformation:"
         string += "\n"+str(self.investmentinfo.to_frame().transpose())
         string += "\n"
@@ -108,6 +110,8 @@ class Portfolio(object):
         self.expectedReturn = None
         self.volatility = None
         self.sharpe = None
+        self.skew = None
+        self.kurtosis = None
 
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
@@ -125,6 +129,8 @@ class Portfolio(object):
         self.expectedReturn = self.compPfExpectedReturn()
         self.volatility = self.compPfVolatility()
         self.sharpe = self.compPfSharpe()
+        self.skew = self.__compPfSkew()
+        self.kurtosis = self.__compPfKurtosis()
 
     def _addStockData(self, df):
         # loop over columns in given dataframe
@@ -226,10 +232,10 @@ class Portfolio(object):
         self.sharpe = sharpe
         return sharpe
 
-    def compPfSkew(self):
+    def __compPfSkew(self):
         return self.pf_stock_data.skew()
 
-    def compPfKurtosis(self):
+    def __compPfKurtosis(self):
         return self.pf_stock_data.kurt()
 
     # optimising the investments based on volatility and sharpe ratio
@@ -279,9 +285,9 @@ class Portfolio(object):
         string += "\nPortfolio Sharpe ratio: {:0.3f}".format(
             self.sharpe)
         string += "\nSkewness:"
-        string += "\n"+str(self.compPfSkew().to_frame().transpose())
+        string += "\n"+str(self.skew.to_frame().transpose())
         string += "\nKurtosis:"
-        string += "\n"+str(self.compPfKurtosis().to_frame().transpose())
+        string += "\n"+str(self.kurtosis.to_frame().transpose())
         string += "\nInformation:"
         string += "\n"+str(self.portfolio)
         string += "\n"
