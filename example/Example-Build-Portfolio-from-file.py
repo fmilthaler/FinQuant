@@ -91,13 +91,13 @@ pf = buildPortfolio(df_pf, stock_data=df_data)
 # <codecell>
 
 # the portfolio information DataFrame
-print(pf.getPortfolio().name)
-pf.getPortfolio()
+print(pf.portfolio.name)
+pf.portfolio
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.getPfStockData().head(3)
+pf.pf_stock_data.head(3)
 
 # <markdowncell>
 
@@ -109,17 +109,17 @@ pf.getPfStockData().head(3)
 # <codecell>
 
 # expected (annualised) return
-pf.getPfExpectedReturn()
+pf.expectedReturn
 
 # <codecell>
 
 # volatility
-pf.getPfVolatility()
+pf.volatility
 
 # <codecell>
 
 # Sharpe ratio (computed with a risk free rate of 0.005 by default)
-pf.getPfSharpe()
+pf.sharpe
 
 # <markdowncell>
 
@@ -165,7 +165,7 @@ pf.compPfDailyLogReturns().head(3)
 # <codecell>
 
 # plotting stock data of portfolio
-pf.getPfStockData().plot()
+pf.pf_stock_data.plot()
 
 # <markdowncell>
 
@@ -173,7 +173,7 @@ pf.getPfStockData().plot()
 
 # <codecell>
 
-pf.getPfStockData().plot(secondary_y = ["MCD", "DIS"], grid = True)
+pf.pf_stock_data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 
 # <codecell>
 
@@ -243,7 +243,7 @@ print("Sharpe Ratio: {:0.3f}".format(sharpe))
 # getting Stock object from portfolio, for Google's stock
 goog = pf.getStock("GOOG")
 # getting the stock prices
-goog_prices = goog.getStockData()
+goog_prices = goog.stock_data
 goog_prices.head(3)
 
 # <codecell>
@@ -252,11 +252,11 @@ goog.compDailyReturns().head(3)
 
 # <codecell>
 
-goog.getExpectedReturn()
+goog.expectedReturn
 
 # <codecell>
 
-goog.getVolatility()
+goog.volatility
 
 # <codecell>
 
@@ -278,7 +278,7 @@ goog.properties()
 
 # <codecell>
 
-df = pf.getPfStockData()
+df = pf.pf_stock_data
 df.loc[str(datetime.datetime(2015,1,2))]
 
 # <codecell>
