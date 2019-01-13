@@ -106,7 +106,7 @@ class Portfolio(object):
         # initilisating instance variables
         self.portfolio = pd.DataFrame()
         self.stocks = {}
-        self.pf_stock_data = pd.DataFrame()
+        self.data = pd.DataFrame()
         self.expectedReturn = None
         self.volatility = None
         self.sharpe = None
@@ -152,15 +152,15 @@ class Portfolio(object):
     def _addStockData(self, df):
         # loop over columns in given dataframe
         for datacol in df.columns:
-            cols = len(self.pf_stock_data.columns)
-            self.pf_stock_data.insert(loc=cols,
-                                      column=datacol,
-                                      value=df[datacol].values
-                                      )
+            cols = len(self.data.columns)
+            self.data.insert(loc=cols,
+                             column=datacol,
+                             value=df[datacol].values
+            )
         # set index correctly
-        self.pf_stock_data.set_index(df.index.values, inplace=True)
+        self.data.set_index(df.index.values, inplace=True)
         # set index name:
-        self.pf_stock_data.index.rename('Date', inplace=True)
+        self.data.index.rename('Date', inplace=True)
 
     def getStock(self, name):
         return self.stocks[name]
@@ -171,20 +171,20 @@ class Portfolio(object):
         Computes the returns of all stocks in the portfolio.
         price_{t} / price_{t=0}
         '''
-        return simpleReturns(self.pf_stock_data)
+        return simpleReturns(self.data)
 
     def compPfDailyReturns(self):
         '''
         Computes the daily returns (percentage change) of all
         stocks in the portfolio.
         '''
-        return dailyReturns(self.pf_stock_data)
+        return dailyReturns(self.data)
 
     def compPfDailyLogReturns(self):
         '''
         Computes the daily log returns of all stocks in the portfolio.
         '''
-        return dailyLogReturns(self.pf_stock_data)
+        return dailyLogReturns(self.data)
 
     def compPfMeanReturns(self, freq=252):
         '''
@@ -194,7 +194,7 @@ class Portfolio(object):
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         '''
-        return historicalMeanReturn(self.pf_stock_data, freq=freq)
+        return historicalMeanReturn(self.data, freq=freq)
 
     def compPfWeights(self):
         # computes the weights of the stocks in the given portfolio
@@ -209,7 +209,7 @@ class Portfolio(object):
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         '''
-        pf_return_means = historicalMeanReturn(self.pf_stock_data,
+        pf_return_means = historicalMeanReturn(self.data,
                                                freq=freq)
         weights = self.compPfWeights()
         expectedReturn = weightedMean(pf_return_means.values, weights)
@@ -232,7 +232,7 @@ class Portfolio(object):
 
     def compCovPf(self):
         # get the covariance matrix of the mean returns of the portfolio
-        returns = dailyReturns(self.pf_stock_data)
+        returns = dailyReturns(self.data)
         return returns.cov()
 
     def compPfSharpe(self, riskFreeRate=0.005):
@@ -244,10 +244,10 @@ class Portfolio(object):
         return sharpe
 
     def __compPfSkew(self):
-        return self.pf_stock_data.skew()
+        return self.data.skew()
 
     def __compPfKurtosis(self):
-        return self.pf_stock_data.kurt()
+        return self.data.kurt()
 
     # optimising the investments based on volatility and sharpe ratio
     def optimisePortfolio(self,
@@ -276,7 +276,7 @@ class Portfolio(object):
         if (total_investment is None):
             total_investment = self.totalinvestment
 
-        return optimisePfMC(self.pf_stock_data,
+        return optimisePfMC(self.data,
                             num_trials=num_trials,
                             total_investment=total_investment,
                             riskFreeRate=riskFreeRate,
