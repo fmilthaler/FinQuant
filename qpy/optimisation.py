@@ -3,8 +3,8 @@ Provides optimisation functions
 '''
 import numpy as np
 import pandas as pd
-from qpy.pf_returns import dailyReturns
-from qpy.pf_quants import weightedMean, weightedStd, sharpeRatio
+from qpy.returns import dailyReturns
+from qpy.quants import weightedMean, weightedStd, sharpeRatio
 
 
 def optimisePfMC(data,
