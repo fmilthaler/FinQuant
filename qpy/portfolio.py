@@ -20,18 +20,18 @@ class Stock(object):
      - Strategy
      - CCY
      - etc
-    It also requires either stock_data, e.g. daily closing prices as a
+    It also requires either data, e.g. daily closing prices as a
     pandas.DataFrame or pandas.Series.
-    "stock_data" must be given as a DataFrame, and at least one data column
+    "data" must be given as a DataFrame, and at least one data column
     is required to containing the closing price, hence it is required to
     contain one column label "<stock_name> - Adj. Close" which is used to
-    compute the return of investment. However, "stock_data" can contain more
+    compute the return of investment. However, "data" can contain more
     data in additional columns.
     '''
-    def __init__(self, investmentinfo, stock_data):
+    def __init__(self, investmentinfo, data):
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
-        self.stock_data = stock_data
+        self.data = data
         # compute expected return and volatility of stock
         self.expectedReturn = self.compExpectedReturn()
         self.volatility = self.compVolatility()
@@ -43,7 +43,7 @@ class Stock(object):
 
     # functions to compute quantities
     def compDailyReturns(self):
-        return dailyReturns(self.stock_data)
+        return dailyReturns(self.data)
 
     def compExpectedReturn(self, freq=252):
         '''
@@ -53,7 +53,7 @@ class Stock(object):
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         '''
-        return historicalMeanReturn(self.stock_data, freq=freq)
+        return historicalMeanReturn(self.data, freq=freq)
 
     def compVolatility(self, freq=252):
         '''
@@ -66,10 +66,10 @@ class Stock(object):
         return self.compDailyReturns().std() * np.sqrt(freq)
 
     def __compSkew(self):
-        return self.stock_data.skew().values[0]
+        return self.data.skew().values[0]
 
     def __compKurtosis(self):
-        return self.stock_data.kurt().values[0]
+        return self.data.kurt().values[0]
 
     def properties(self):
         # nicely printing out information and quantities of the stock
@@ -139,7 +139,7 @@ class Portfolio(object):
         # setting an appropriate name for the portfolio
         self.portfolio.name = "Portfolio information"
         # also add stock data of stock to the dataframe
-        self._addStockData(stock.stock_data)
+        self._addStockData(stock.data)
 
         # compute expected return, volatility and Sharpe ratio of portfolio
         self.totalinvestment = self.portfolio.FMV.sum()
@@ -493,13 +493,13 @@ def _buildPortfolioFromDf(pf_information,
         # get name of stock
         name = pf_information.loc[i].Name
         # extract data column(s) of said stock
-        stock_stock_data = stock_data.filter(regex=name)
+        stock_stock_data = stock_data.filter(regex=name).copy(deep=True)
         # if only one data column per stock exists, give dataframe a name
         if (len(datacolumns) == 1):
             stock_stock_data.name = datacolumns[0]
         # create Stock instance and add it to portfolio
         pf.addStock(Stock(pf_information.loc[i],
-                          stock_data=stock_stock_data))
+                          data=stock_stock_data))
     return pf
 
 

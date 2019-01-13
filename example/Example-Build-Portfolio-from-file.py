@@ -243,7 +243,7 @@ print("Sharpe Ratio: {:0.3f}".format(sharpe))
 # getting Stock object from portfolio, for Google's stock
 goog = pf.getStock("GOOG")
 # getting the stock prices
-goog_prices = goog.stock_data
+goog_prices = goog.data
 goog_prices.head(3)
 
 # <codecell>
