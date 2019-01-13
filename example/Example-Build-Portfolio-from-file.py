@@ -97,7 +97,7 @@ pf.portfolio
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.pf_stock_data.head(3)
+pf.data.head(3)
 
 # <markdowncell>
 
@@ -165,7 +165,7 @@ pf.compPfDailyLogReturns().head(3)
 # <codecell>
 
 # plotting stock data of portfolio
-pf.pf_stock_data.plot()
+pf.data.plot()
 
 # <markdowncell>
 
@@ -173,7 +173,7 @@ pf.pf_stock_data.plot()
 
 # <codecell>
 
-pf.pf_stock_data.plot(secondary_y = ["MCD", "DIS"], grid = True)
+pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 
 # <codecell>
 
@@ -278,7 +278,7 @@ goog.properties()
 
 # <codecell>
 
-df = pf.pf_stock_data
+df = pf.data
 df.loc[str(datetime.datetime(2015,1,2))]
 
 # <codecell>
