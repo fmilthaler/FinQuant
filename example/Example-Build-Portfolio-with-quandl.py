@@ -123,6 +123,7 @@ pf.getPfStockData().head(3)
 
 # print out information and quantities of given portfolio
 print(pf)
+pf.properties()
 
 # <markdowncell>
 
