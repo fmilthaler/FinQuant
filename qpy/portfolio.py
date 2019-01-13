@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
-from qpy.pf_quants import weightedMean, weightedStd, sharpeRatio
+from qpy.quants import weightedMean, weightedStd, sharpeRatio
 from qpy.optimisation import optimisePfMC
-from qpy.pf_returns import historicalMeanReturn
-from qpy.pf_returns import dailyReturns, simpleReturns, dailyLogReturns
+from qpy.returns import historicalMeanReturn
+from qpy.returns import dailyReturns, simpleReturns, dailyLogReturns
 
 
 class Stock(object):
