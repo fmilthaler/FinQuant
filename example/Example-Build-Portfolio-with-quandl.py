@@ -117,7 +117,7 @@ pf.portfolio
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.pf_stock_data.head(3)
+pf.data.head(3)
 
 # <codecell>
 
