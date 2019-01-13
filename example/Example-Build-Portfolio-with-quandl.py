@@ -112,12 +112,12 @@ pf = buildPortfolio(pf_information,
 # <codecell>
 
 # the portfolio information DataFrame
-pf.getPortfolio()
+pf.portfolio
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.getPfStockData().head(3)
+pf.pf_stock_data.head(3)
 
 # <codecell>
 
