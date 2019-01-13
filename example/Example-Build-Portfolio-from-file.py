@@ -136,11 +136,12 @@ pf.compPfKurtosis()
 # <markdowncell>
 
 # ## Nicely printing out portfolio quantities
-# To print the expected annualised return, volatility, Sharpe ratio, skewness and Kurtosis of the portfolio and its stocks, one can simply do `print(pf)`.
+# To print the expected annualised return, volatility, Sharpe ratio, skewness and Kurtosis of the portfolio and its stocks, one can simply do `pf.properties()`.
 
 # <codecell>
 
 print(pf)
+pf.properties()
 
 # <markdowncell>
 
@@ -268,6 +269,7 @@ goog.compKurtosis()
 # <codecell>
 
 print(goog)
+goog.properties()
 
 # <markdowncell>
 

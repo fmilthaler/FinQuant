@@ -85,7 +85,7 @@ class Stock(object):
     def compKurtosis(self):
         return self.stock_data.kurt().values[0]
 
-    def __str__(self):
+    def properties(self):
         # nicely printing out information and quantities of the stock
         string = "-"*50
         string += "\nStock: {}".format(self.name)
@@ -99,6 +99,11 @@ class Stock(object):
         string += "\n"+str(self.investmentinfo.to_frame().transpose())
         string += "\n"
         string += "-"*50
+        print(string)
+
+    def __str__(self):
+        # print short description
+        string = "Contains information about "+str(self.name)+"."
         return string
 
 
@@ -304,7 +309,7 @@ class Portfolio(object):
                             initial_weights=self.compPfWeights().values,
                             plot=plot)
 
-    def __str__(self):
+    def properties(self):
         # nicely printing out information and quantities of the portfolio
         string = "-"*50
         stocknames = self.portfolio.Name.values.tolist()
@@ -323,6 +328,11 @@ class Portfolio(object):
         string += "\n"+str(self.getPortfolio())
         string += "\n"
         string += "-"*50
+        print(string)
+
+    def __str__(self):
+        # print short description
+        string = "Contains information about a portfolio."
         return string
 
 
