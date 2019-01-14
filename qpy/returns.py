@@ -5,18 +5,17 @@ import numpy as np
 import pandas as pd
 
 
-def simpleReturns(data):
+def cumulativeReturns(data):
     '''
-    Returns DataFrame with returns
-    price_{t} / price_{t=0}
+    Returns DataFrame with cumulative returns
+    (price_{t} - price_{t=0}) / price_{t=0}
 
     Input:
      * data: DataFrame with daily stock prices
 
-    Output: DataFrame of daily percentage change of returns
-    of given stock prices
+    Output: DataFrame of cumulative returns of given stock prices
     '''
-    return data.apply(lambda x: x / x[0])
+    return data.apply(lambda x: (x - x[0]) / x[0])
 
 
 def dailyReturns(data):

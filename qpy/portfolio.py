@@ -3,7 +3,7 @@ import pandas as pd
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
 from qpy.optimisation import optimisePfMC
 from qpy.returns import historicalMeanReturn
-from qpy.returns import dailyReturns, simpleReturns, dailyLogReturns
+from qpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
 
 
 class Stock(object):
@@ -165,13 +165,13 @@ class Portfolio(object):
     def getStock(self, name):
         return self.stocks[name]
 
-    # functions to compute quantities
-    def compPfSimpleReturns(self):
+    def compPfCumulativeReturns(self):
         '''
-        Computes the returns of all stocks in the portfolio.
-        price_{t} / price_{t=0}
+        Computes the cumulative returns of all stocks in the
+        portfolio.
+        (price_{t} - price_{t=0})/ price_{t=0}
         '''
-        return simpleReturns(self.data)
+        return cumulativeReturns(self.data)
 
     def compPfDailyReturns(self):
         '''

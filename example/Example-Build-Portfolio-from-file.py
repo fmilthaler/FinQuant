@@ -156,7 +156,7 @@ pf.compPfMeanReturns()
 # <codecell>
 
 # daily returns (percentage change)
-pf.compPfSimpleReturns().head(3)
+pf.compPfCumulativeReturns().head(3)
 
 # <codecell>
 
@@ -177,8 +177,8 @@ pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 
 # <codecell>
 
-# plotting returns (price_{t} / price_{t=0})
-pf.compPfSimpleReturns().plot().axhline(y = 1, color = "black", lw = 3)
+# plotting cumulative returns (price_{t} - price_{t=0}) / price_{t=0}
+pf.compPfCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
 
 # <codecell>
 
@@ -189,6 +189,11 @@ pf.compPfDailyReturns().plot().axhline(y = 0, color = "black")
 
 # plotting daily log returns
 pf.compPfDailyLogReturns().plot().axhline(y = 0, color = "black")
+
+# <codecell>
+
+# cumulative log returns
+pf.compPfDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
 
 # <markdowncell>
 
