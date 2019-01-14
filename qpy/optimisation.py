@@ -8,12 +8,12 @@ from qpy.quants import weightedMean, weightedStd, sharpeRatio
 
 
 def optimiseMC(data,
-                 total_investment,
-                 num_trials=10000,
-                 riskFreeRate=0.005,
-                 freq=252,
-                 initial_weights=None,
-                 plot=True):
+               total_investment,
+               num_trials=10000,
+               riskFreeRate=0.005,
+               freq=252,
+               initial_weights=None,
+               plot=True):
     '''
     Optimisation of the portfolio by performing a Monte Carlo simulation.
 
