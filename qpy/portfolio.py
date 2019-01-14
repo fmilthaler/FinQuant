@@ -120,12 +120,14 @@ class Portfolio(object):
 
     @totalinvestment.setter
     def totalinvestment(self, val):
-        if (not val is None):
+        if (val is not None):
             # treat "None" as initialisation
             if (not isinstance(val, (float, int))):
-                raise ValueError("Total investment must be a float or integer.")
+                raise ValueError("Total investment must be a float or "
+                                 + "integer.")
             elif (val <= 0):
-                raise ValueError("The money to be invested in the portfolio must be > 0.")
+                raise ValueError("The money to be invested in the "
+                                 + "portfolio must be > 0.")
             else:
                 self.__totalinvestment = val
 
@@ -155,8 +157,7 @@ class Portfolio(object):
             cols = len(self.data.columns)
             self.data.insert(loc=cols,
                              column=datacol,
-                             value=df[datacol].values
-            )
+                             value=df[datacol].values)
         # set index correctly
         self.data.set_index(df.index.values, inplace=True)
         # set index name:
@@ -277,12 +278,12 @@ class Portfolio(object):
             total_investment = self.totalinvestment
 
         return optimiseMC(self.data,
-                            num_trials=num_trials,
-                            total_investment=total_investment,
-                            riskFreeRate=riskFreeRate,
-                            freq=freq,
-                            initial_weights=self.compWeights().values,
-                            plot=plot)
+                          num_trials=num_trials,
+                          total_investment=total_investment,
+                          riskFreeRate=riskFreeRate,
+                          freq=freq,
+                          initial_weights=self.compWeights().values,
+                          plot=plot)
 
     def properties(self):
         # nicely printing out information and quantities of the portfolio

@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def computeMA(data, fun, spans, plot=True):
     '''
     Computes the moving average (SMA or EWM, depends on the input argument
@@ -43,15 +44,16 @@ def computeMA(data, fun, spans, plot=True):
         # Generate trading orders
         signals['signal'] = signals['diff'].diff()
         # marker for buy signal
-        ax.plot(signals.loc[signals['signal'] == 1.0].index, 
-                 signals[minlabel][signals['signal'] == 1.0],
-                 '^', markersize=8, color='r')
+        ax.plot(signals.loc[signals['signal'] == 1.0].index,
+                signals[minlabel][signals['signal'] == 1.0],
+                '^', markersize=8, color='r')
         # marker for sell signal
-        ax.plot(signals.loc[signals['signal'] == -1.0].index, 
-                 signals[minlabel][signals['signal'] == -1.0],
-                 'v', markersize=8, color='b')
+        ax.plot(signals.loc[signals['signal'] == -1.0].index,
+                signals[minlabel][signals['signal'] == -1.0],
+                'v', markersize=8, color='b')
         plt.show()
     return ma
+
 
 def SMA(data, span=100):
     '''
