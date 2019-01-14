@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
-from qpy.optimisation import optimisePfMC
+from qpy.optimisation import optimiseMC
 from qpy.returns import historicalMeanReturn
 from qpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
 
@@ -143,11 +143,11 @@ class Portfolio(object):
 
         # compute expected return, volatility and Sharpe ratio of portfolio
         self.totalinvestment = self.portfolio.FMV.sum()
-        self.expectedReturn = self.compPfExpectedReturn()
-        self.volatility = self.compPfVolatility()
-        self.sharpe = self.compPfSharpe()
-        self.skew = self.__compPfSkew()
-        self.kurtosis = self.__compPfKurtosis()
+        self.expectedReturn = self.compExpectedReturn()
+        self.volatility = self.compVolatility()
+        self.sharpe = self.compSharpe()
+        self.skew = self.__compSkew()
+        self.kurtosis = self.__compKurtosis()
 
     def _addStockData(self, df):
         # loop over columns in given dataframe
@@ -165,7 +165,7 @@ class Portfolio(object):
     def getStock(self, name):
         return self.stocks[name]
 
-    def compPfCumulativeReturns(self):
+    def compCumulativeReturns(self):
         '''
         Computes the cumulative returns of all stocks in the
         portfolio.
@@ -173,20 +173,20 @@ class Portfolio(object):
         '''
         return cumulativeReturns(self.data)
 
-    def compPfDailyReturns(self):
+    def compDailyReturns(self):
         '''
         Computes the daily returns (percentage change) of all
         stocks in the portfolio.
         '''
         return dailyReturns(self.data)
 
-    def compPfDailyLogReturns(self):
+    def compDailyLogReturns(self):
         '''
         Computes the daily log returns of all stocks in the portfolio.
         '''
         return dailyLogReturns(self.data)
 
-    def compPfMeanReturns(self, freq=252):
+    def compMeanReturns(self, freq=252):
         '''
         Computes the mean return based on historical stock price data.
 
@@ -196,12 +196,12 @@ class Portfolio(object):
         '''
         return historicalMeanReturn(self.data, freq=freq)
 
-    def compPfWeights(self):
+    def compWeights(self):
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
         return self.portfolio['FMV']/self.totalinvestment
 
-    def compPfExpectedReturn(self, freq=252):
+    def compExpectedReturn(self, freq=252):
         '''
         Computes the expected return of the portfolio.
 
@@ -211,12 +211,12 @@ class Portfolio(object):
         '''
         pf_return_means = historicalMeanReturn(self.data,
                                                freq=freq)
-        weights = self.compPfWeights()
+        weights = self.compWeights()
         expectedReturn = weightedMean(pf_return_means.values, weights)
         self.expectedReturn = expectedReturn
         return expectedReturn
 
-    def compPfVolatility(self, freq=252):
+    def compVolatility(self, freq=252):
         '''
         Computes the volatility of the given portfolio.
 
@@ -225,17 +225,17 @@ class Portfolio(object):
              value corresponds to trading days in a year
         '''
         # computing the volatility of a portfolio
-        volatility = weightedStd(self.compCovPf(),
-                                 self.compPfWeights()) * np.sqrt(freq)
+        volatility = weightedStd(self.compCov(),
+                                 self.compWeights()) * np.sqrt(freq)
         self.volatility = volatility
         return volatility
 
-    def compCovPf(self):
+    def compCov(self):
         # get the covariance matrix of the mean returns of the portfolio
         returns = dailyReturns(self.data)
         return returns.cov()
 
-    def compPfSharpe(self, riskFreeRate=0.005):
+    def compSharpe(self, riskFreeRate=0.005):
         # compute the Sharpe Ratio of the portfolio
         sharpe = sharpeRatio(self.expectedReturn,
                              self.volatility,
@@ -243,10 +243,10 @@ class Portfolio(object):
         self.sharpe = sharpe
         return sharpe
 
-    def __compPfSkew(self):
+    def __compSkew(self):
         return self.data.skew()
 
-    def __compPfKurtosis(self):
+    def __compKurtosis(self):
         return self.data.kurt()
 
     # optimising the investments based on volatility and sharpe ratio
@@ -276,12 +276,12 @@ class Portfolio(object):
         if (total_investment is None):
             total_investment = self.totalinvestment
 
-        return optimisePfMC(self.data,
+        return optimiseMC(self.data,
                             num_trials=num_trials,
                             total_investment=total_investment,
                             riskFreeRate=riskFreeRate,
                             freq=freq,
-                            initial_weights=self.compPfWeights().values,
+                            initial_weights=self.compWeights().values,
                             plot=plot)
 
     def properties(self):
