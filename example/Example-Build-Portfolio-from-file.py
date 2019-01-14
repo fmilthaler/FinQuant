@@ -197,8 +197,11 @@ pf.compPfDailyLogReturns().plot().axhline(y = 0, color = "black")
 
 # <codecell>
 
+from qpy.moving_average import computeMA, SMA, EMA
+
+# <codecell>
+
 # simple moving average
-from qpy.moving_average import SMA, EWM
 ax=pf.data.plot(secondary_y = ["KO", "MCD", "DIS"], grid = True)
 SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"], grid = True)
 
@@ -206,7 +209,7 @@ SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"], grid = Tru
 
 # exponential moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
-EWM(pf.data).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"])
+EMA(pf.data).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"])
 
 # <markdowncell>
 
@@ -214,17 +217,10 @@ EWM(pf.data).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"])
 
 # <codecell>
 
-# get stock data for amazon
-goog = pf.getStock("GOOG").data.copy(deep=True)
-
-movingavg = [10, 50, 100, 200]
-for i in movingavg:
-    print("i = {}".format(i))
-    goog[str(i)+"d"] = SMA(goog["GOOG"], span=i)
-
-# <codecell>
-
-goog.plot()
+# get stock data for disney
+dis = pf.getStock("DIS").data.copy(deep=True)
+spans = [10, 50, 100, 200]
+dis_ma = computeMA(dis, EMA, spans, plot=True)
 
 # <markdowncell>
 
