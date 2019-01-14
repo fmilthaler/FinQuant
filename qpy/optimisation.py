@@ -7,7 +7,7 @@ from qpy.returns import dailyReturns
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
 
 
-def optimisePfMC(data,
+def optimiseMC(data,
                  total_investment,
                  num_trials=10000,
                  riskFreeRate=0.005,

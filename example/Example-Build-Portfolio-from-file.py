@@ -151,16 +151,16 @@ pf.properties()
 # <codecell>
 
 # annualised mean returns
-pf.compPfMeanReturns()
+pf.compMeanReturns()
 
 # <codecell>
 
 # daily returns (percentage change)
-pf.compPfCumulativeReturns().head(3)
+pf.compCumulativeReturns().head(3)
 
 # <codecell>
 
-pf.compPfDailyLogReturns().head(3)
+pf.compDailyLogReturns().head(3)
 
 # <codecell>
 
@@ -178,22 +178,22 @@ pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # <codecell>
 
 # plotting cumulative returns (price_{t} - price_{t=0}) / price_{t=0}
-pf.compPfCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
+pf.compCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
 
 # <codecell>
 
 # plotting daily percentage changes of returns
-pf.compPfDailyReturns().plot().axhline(y = 0, color = "black")
+pf.compDailyReturns().plot().axhline(y = 0, color = "black")
 
 # <codecell>
 
 # plotting daily log returns
-pf.compPfDailyLogReturns().plot().axhline(y = 0, color = "black")
+pf.compDailyLogReturns().plot().axhline(y = 0, color = "black")
 
 # <codecell>
 
 # cumulative log returns
-pf.compPfDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
+pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
 
 # <markdowncell>
 
@@ -247,9 +247,9 @@ opt
 # If the return, volatility and Sharpe ratio need to be computed based on a different time window and/or risk free rate, one can recompute those values as shown below
 freq = 100
 rfr = 0.02
-exret = pf.compPfExpectedReturn(freq=freq)
-vol = pf.compPfVolatility(freq=freq)
-sharpe = pf.compPfSharpe(riskFreeRate=rfr)
+exret = pf.compExpectedReturn(freq=freq)
+vol = pf.compVolatility(freq=freq)
+sharpe = pf.compSharpe(riskFreeRate=rfr)
 print("For {} trading days and a risk free rate of {}:".format(freq, rfr))
 print("Expected return: {:0.3f}".format(exret))
 print("Volatility: {:0.3f}".format(vol))
