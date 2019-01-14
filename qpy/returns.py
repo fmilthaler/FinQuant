@@ -5,17 +5,18 @@ import numpy as np
 import pandas as pd
 
 
-def cumulativeReturns(data):
+def cumulativeReturns(data, dividend=0):
     '''
     Returns DataFrame with cumulative returns
-    (price_{t} - price_{t=0}) / price_{t=0}
+    (price_{t} - price_{t=0} + dividend) / price_{t=0}
 
     Input:
      * data: DataFrame with daily stock prices
+     * dividend: Float (default: 0), paid dividend
 
     Output: DataFrame of cumulative returns of given stock prices
     '''
-    return data.apply(lambda x: (x - x[0]) / x[0])
+    return data.apply(lambda x: (x - x[0] + dividend) / x[0])
 
 
 def dailyReturns(data):
