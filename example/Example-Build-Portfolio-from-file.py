@@ -204,15 +204,15 @@ pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
 
 from qpy.moving_average import SMA
 # simple moving average
-ax=pf.data.plot(secondary_y = ["KO", "MCD", "DIS"], grid = True)
-SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"], grid = True)
+ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
+SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["MCD", "DIS"], grid = True)
 
 # <codecell>
 
 from qpy.moving_average import EMA
 # exponential moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
-EMA(pf.data).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"])
+EMA(pf.data).plot(ax=ax, secondary_y = ["MCD", "DIS"])
 
 # <markdowncell>
 
