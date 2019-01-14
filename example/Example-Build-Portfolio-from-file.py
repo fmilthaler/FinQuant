@@ -202,16 +202,14 @@ pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
 
 # <codecell>
 
-from qpy.moving_average import computeMA, SMA, EMA
-
-# <codecell>
-
+from qpy.moving_average import SMA
 # simple moving average
 ax=pf.data.plot(secondary_y = ["KO", "MCD", "DIS"], grid = True)
 SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"], grid = True)
 
 # <codecell>
 
+from qpy.moving_average import EMA
 # exponential moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 EMA(pf.data).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"])
@@ -222,10 +220,25 @@ EMA(pf.data).plot(ax=ax, secondary_y = ["KO", "MCD", "DIS"])
 
 # <codecell>
 
+from qpy.moving_average import computeMA
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
 spans = [10, 50, 100, 200]
 dis_ma = computeMA(dis, EMA, spans, plot=True)
+dis_ma.head(3)
+
+# <markdowncell>
+
+# ## Plot the Bollinger Band of one stock
+
+# <codecell>
+
+# plot the bollinger band of the disney stock prices
+from qpy.moving_average import plotBollingerBand
+# get stock data for disney
+dis = pf.getStock("DIS").data.copy(deep=True)
+span=10
+plotBollingerBand(dis, SMA, span)
 
 # <markdowncell>
 
