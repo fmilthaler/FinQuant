@@ -25,7 +25,10 @@ def random_portfolios(data, num_trials, riskFreeRate, freq=252):
          required for the Sharpe Ratio
 
     Output:
-     * weights, results
+     * df_weights: pandas.DataFrame, holds the weights for each randomly
+         generated portfolio
+     * df_results: pandas.DataFrame, holds expected annualised return,
+         volatility and Sharpe ratio of each randomly generated portfolio
     '''
     # set number of stocks in the portfolio
     num_stocks = len(data.columns)
@@ -51,7 +54,10 @@ def random_portfolios(data, num_trials, riskFreeRate, freq=252):
         weights[:, i] = w
         # store results in results array
         results[:, i] = portfolio_values
-    return weights, results
+    # transpose and convert to pandas.DataFrame:
+    df_weights = pd.DataFrame(weights.T, columns=weights_columns)
+    df_results = pd.DataFrame(results.T, columns=result_columns)
+    return df_weights, df_results
 
 
 def optimiseMC(data,
