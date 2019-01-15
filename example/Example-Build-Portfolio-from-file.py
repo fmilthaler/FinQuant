@@ -237,7 +237,7 @@ dis_ma.head(3)
 from qpy.moving_average import plotBollingerBand
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
-span=10
+span=20
 plotBollingerBand(dis, SMA, span)
 
 # <markdowncell>
