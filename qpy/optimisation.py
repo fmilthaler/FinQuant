@@ -75,8 +75,10 @@ def optimiseMC(data,
         expectedReturn = weightedMean(return_means, weights) * freq
         volatility = weightedStd(cov_matrix, weights) * np.sqrt(freq)
 
-        # add weights times total_investments to results array
-        results[0:num_stocks, i] = weights*total_investment
+        # weights times total_investments = money to be invested
+        # in each stock, but here, weights should remain relative
+        # to the sum of weights
+        results[0:num_stocks, i] = weights#*total_investment
         # store results in results array
         results[num_stocks, i] = expectedReturn
         results[num_stocks+1, i] = volatility
