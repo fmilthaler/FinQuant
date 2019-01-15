@@ -99,12 +99,7 @@ def optimiseMC(data,
        not isinstance(initial_weights, np.ndarray)):
         raise ValueError("If given, optional argument 'initial_weights' "
                          + "must be of type numpy.ndarray")
-    # set number of stocks in the portfolio
-    num_stocks = len(data.columns)
-    # set up array to hold results
-    res_columns = list(data.columns)
-    res_columns.extend(['Expected Return', 'Volatility', 'Sharpe Ratio'])
-    results = np.zeros((len(res_columns), num_trials))
+
     # compute returns, means and covariance matrix
     returns = dailyReturns(data)
     return_means = returns.mean()
@@ -112,41 +107,28 @@ def optimiseMC(data,
 
     # computed expected return and volatility of initial portfolio
     if (initial_weights is not None):
-        initial_return = weightedMean(return_means,
-                                      initial_weights) * freq
-        initial_volatility = weightedStd(cov_matrix,
-                                         initial_weights
-                                         ) * np.sqrt(freq)
+        initial_values = annualised_portfolio_quantities(initial_weights,
+                                                         return_means,
+                                                         cov_matrix)
+        initial_return = initial_values[0]
+        initial_volatility = initial_values[1]
 
-    # Monte Carlo simulation
-    for i in range(num_trials):
-        # select random weights for portfolio
-        weights = np.array(np.random.random(num_stocks))
-        # rebalance weights
-        weights = weights/np.sum(weights)
-        # compute portfolio return and volatility
-        expectedReturn = weightedMean(return_means, weights) * freq
-        volatility = weightedStd(cov_matrix, weights) * np.sqrt(freq)
-
-        # weights times total_investments = money to be invested
-        # in each stock, but here, weights should remain relative
-        # to the sum of weights
-        results[0:num_stocks, i] = weights#*total_investment
-        # store results in results array
-        results[num_stocks, i] = expectedReturn
-        results[num_stocks+1, i] = volatility
-        results[num_stocks+2, i] = sharpeRatio(expectedReturn,
-                                               volatility,
+    # perform Monte Carlo run and get weights and results
+    df_weights, df_results = random_portfolios(data,
+                                               num_trials,
                                                riskFreeRate)
 
-    # transpose and convert to pandas.DataFrame:
-    df_results = pd.DataFrame(results.T, columns=res_columns)
-    # adding info of max Sharpe ratio and of min volatility
-    # to resulting df (with meaningful indices):
-    opt = pd.DataFrame([df_results.iloc[
-        df_results['Sharpe Ratio'].idxmax()],
-        df_results.iloc[df_results['Volatility'].idxmin()]],
-        index=['Max Sharpe Ratio', 'Min Volatility'])
+    # finding portfolios with the minimum volatility and maximum
+    # Sharpe ratio
+    index_min_volatility = df_results['Volatility'].idxmin()
+    index_max_sharpe = df_results['Sharpe Ratio'].idxmax()
+    # storing optimal results to DataFrames
+    opt_w = pd.DataFrame([df_weights.iloc[index_min_volatility],
+        df_weights.iloc[index_max_sharpe]],
+        index=['Min Volatility', 'Max Sharpe Ratio'])
+    opt_res = pd.DataFrame([df_results.iloc[index_min_volatility],
+        df_results.iloc[index_max_sharpe]],
+        index=['Min Volatility', 'Max Sharpe Ratio'])
 
     # print out results
     if (verbose):
@@ -156,9 +138,10 @@ def optimiseMC(data,
             string += "-"*70
             string += "\nOptimised portfolio for {}".format(val.replace('Min', 'Minimum').replace('Max', 'Maximum'))
             string += "\n\nTime period: {} days".format(freq)
-            string += "\nExpected return: {0:0.3f}".format(opt.loc[val]['Expected Return'])
-            string += "\nVolatility: {:0.3f}".format(opt.loc[val]['Volatility'])
-            string += "\n\n"+str(opt.loc[val].iloc[0:num_stocks].to_frame().transpose().rename(index={val: 'Allocation'}))
+            string += "\nExpected return: {0:0.3f}".format(opt_res.loc[val]['Expected Return'])
+            string += "\nVolatility: {:0.3f}".format(opt_res.loc[val]['Volatility'])
+            string += "\nSharpe Ratio: {:0.3f}".format(opt_res.loc[val]['Sharpe Ratio'])
+            string += "\n\n"+str(opt_w.loc[val].to_frame().transpose().rename(index={val: 'Allocation'}))
             string += "\n"
         string += "-"*70
         print(string)
@@ -175,20 +158,20 @@ def optimiseMC(data,
                     s=10,
                     label=None)
         cbar = plt.colorbar()
-        # mark in red the highest sharpe ratio
-        plt.scatter(opt.loc['Max Sharpe Ratio']['Volatility'],
-                    opt.loc['Max Sharpe Ratio']['Expected Return'],
-                    marker='^',
-                    color='r',
-                    s=200,
-                    label='max Sharpe Ratio')
         # mark in green the minimum volatility
-        plt.scatter(opt.loc['Min Volatility']['Volatility'],
-                    opt.loc['Min Volatility']['Expected Return'],
+        plt.scatter(opt_res.loc['Min Volatility']['Volatility'],
+                    opt_res.loc['Min Volatility']['Expected Return'],
                     marker='^',
                     color='g',
                     s=200,
                     label='min Volatility')
+        # mark in red the highest sharpe ratio
+        plt.scatter(opt_res.loc['Max Sharpe Ratio']['Volatility'],
+                    opt_res.loc['Max Sharpe Ratio']['Expected Return'],
+                    marker='^',
+                    color='r',
+                    s=200,
+                    label='max Sharpe Ratio')
         # also set marker for initial portfolio, if weights were given
         if (initial_weights is not None):
             plt.scatter(initial_volatility,
@@ -206,4 +189,4 @@ def optimiseMC(data,
         plt.legend()
         plt.show()
 
-    return opt
+    return opt_w, opt_res
