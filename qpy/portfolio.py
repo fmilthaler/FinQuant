@@ -256,6 +256,7 @@ class Portfolio(object):
                           num_trials=10000,
                           riskFreeRate=0.005,
                           freq=252,
+                          verbose=True,
                           plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
@@ -270,6 +271,8 @@ class Portfolio(object):
              for the Sharpe Ratio
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
+         * verbose: Boolean (default: True), if True, prints out optimised
+             portfolio allocations
          * plot: Boolean (default: True), if True, a plot of the Monte Carlo
              simulation is shown
         '''
@@ -283,6 +286,7 @@ class Portfolio(object):
                           riskFreeRate=riskFreeRate,
                           freq=freq,
                           initial_weights=self.compWeights().values,
+                          verbose=verbose,
                           plot=plot)
 
     def properties(self):
