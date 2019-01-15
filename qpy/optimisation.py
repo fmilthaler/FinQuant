@@ -36,7 +36,7 @@ def optimiseMC(data,
          is produced
 
     Output:
-     * pf_opt: DataFrame with optimised investment strategies for maximum
+     * opt: DataFrame with optimised investment strategies for maximum
          Sharpe Ratio and minimum volatility.
     '''
     if (initial_weights is not None and
@@ -47,20 +47,20 @@ def optimiseMC(data,
     num_stocks = len(data.columns)
     # set up array to hold results
     res_columns = list(data.columns)
-    res_columns.extend(['Return', 'Volatility', 'Sharpe Ratio'])
+    res_columns.extend(['Expected Return', 'Volatility', 'Sharpe Ratio'])
     results = np.zeros((len(res_columns), num_trials))
     # compute returns, means and covariance matrix
     returns = dailyReturns(data)
-    pf_return_means = returns.mean()
+    return_means = returns.mean()
     cov_matrix = returns.cov()
 
     # computed expected return and volatility of initial portfolio
     if (initial_weights is not None):
-        initial_pf_return = weightedMean(pf_return_means,
-                                         initial_weights) * freq
-        initial_pf_volatility = weightedStd(cov_matrix,
-                                            initial_weights
-                                            ) * np.sqrt(freq)
+        initial_return = weightedMean(return_means,
+                                      initial_weights) * freq
+        initial_volatility = weightedStd(cov_matrix,
+                                         initial_weights
+                                         ) * np.sqrt(freq)
 
     # Monte Carlo simulation
     for i in range(num_trials):
@@ -69,23 +69,23 @@ def optimiseMC(data,
         # rebalance weights
         weights = weights/np.sum(weights)
         # compute portfolio return and volatility
-        pf_return = weightedMean(pf_return_means, weights) * freq
-        pf_volatility = weightedStd(cov_matrix, weights) * np.sqrt(freq)
+        expectedReturn = weightedMean(return_means, weights) * freq
+        volatility = weightedStd(cov_matrix, weights) * np.sqrt(freq)
 
         # add weights times total_investments to results array
         results[0:num_stocks, i] = weights*total_investment
         # store results in results array
-        results[num_stocks, i] = pf_return
-        results[num_stocks+1, i] = pf_volatility
-        results[num_stocks+2, i] = sharpeRatio(pf_return,
-                                               pf_volatility,
+        results[num_stocks, i] = expectedReturn
+        results[num_stocks+1, i] = volatility
+        results[num_stocks+2, i] = sharpeRatio(expectedReturn,
+                                               volatility,
                                                riskFreeRate)
 
     # transpose and convert to pandas.DataFrame:
     df_results = pd.DataFrame(results.T, columns=res_columns)
     # adding info of max Sharpe ratio and of min volatility
     # to resulting df (with meaningful indices):
-    pf_opt = pd.DataFrame([df_results.iloc[
+    opt = pd.DataFrame([df_results.iloc[
         df_results['Sharpe Ratio'].idxmax()],
         df_results.iloc[df_results['Volatility'].idxmin()]],
         index=['Max Sharpe Ratio', 'Min Volatility'])
@@ -96,30 +96,30 @@ def optimiseMC(data,
         plt.figure()
         # create scatter plot coloured by Sharpe Ratio
         plt.scatter(df_results['Volatility'],
-                    df_results['Return'],
+                    df_results['Expected Return'],
                     c=df_results['Sharpe Ratio'],
                     cmap='RdYlBu',
                     s=10,
                     label=None)
         cbar = plt.colorbar()
         # mark in red the highest sharpe ratio
-        plt.scatter(pf_opt.loc['Max Sharpe Ratio']['Volatility'],
-                    pf_opt.loc['Max Sharpe Ratio']['Return'],
+        plt.scatter(opt.loc['Max Sharpe Ratio']['Volatility'],
+                    opt.loc['Max Sharpe Ratio']['Expected Return'],
                     marker='^',
                     color='r',
                     s=200,
                     label='max Sharpe Ratio')
         # mark in green the minimum volatility
-        plt.scatter(pf_opt.loc['Min Volatility']['Volatility'],
-                    pf_opt.loc['Min Volatility']['Return'],
+        plt.scatter(opt.loc['Min Volatility']['Volatility'],
+                    opt.loc['Min Volatility']['Expected Return'],
                     marker='^',
                     color='g',
                     s=200,
                     label='min Volatility')
         # also set marker for initial portfolio, if weights were given
         if (initial_weights is not None):
-            plt.scatter(initial_pf_volatility,
-                        initial_pf_return,
+            plt.scatter(initial_volatility,
+                        initial_return,
                         marker='^',
                         color='k',
                         s=200,
@@ -127,10 +127,10 @@ def optimiseMC(data,
         plt.title('Monte Carlo simulation to optimise the portfolio based '
                   + 'on the Efficient Frontier')
         plt.xlabel('Volatility [period='+str(freq)+']')
-        plt.ylabel('Returns [period='+str(freq)+']')
+        plt.ylabel('Expected Return [period='+str(freq)+']')
         cbar.ax.set_ylabel('Sharpe Ratio [period='
                            + str(freq)+']', rotation=90)
         plt.legend()
         plt.show()
 
-    return pf_opt
+    return opt
