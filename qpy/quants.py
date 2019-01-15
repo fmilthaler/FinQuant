@@ -48,3 +48,26 @@ def sharpeRatio(expReturn, volatility, riskFreeRate=0.005):
     Output: Float: (expReturn - riskFreeRate)/float(volatility)
     '''
     return (expReturn - riskFreeRate)/float(volatility)
+
+
+def annualised_portfolio_quantities(weights,
+                                    means,
+                                    cov_matrix,
+                                    riskFreeRate=0.005,
+                                    freq=252):
+    '''
+    Computes and returns the expected annualised return, volatility
+    and Sharpe Ratio of a portfolio.
+
+    Input:
+     * weights: List/Array of weights
+     * means: List/Array of mean/average values
+     * cov_matrix: Array, covariance matrix
+     * riskFreeRate: Float (default=0.005), risk free rate
+     * freq: Integer (default: 252), number of trading days, default
+         value corresponds to trading days in a year
+    '''
+    expectedReturn = weightedMean(means, weights) * freq
+    volatility = weightedStd(cov_matrix, weights) * np.sqrt(freq)
+    sharpe = sharpeRatio(expectedReturn, volatility, riskFreeRate)
+    return (expectedReturn, volatility, sharpe)
