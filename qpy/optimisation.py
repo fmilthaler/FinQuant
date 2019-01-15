@@ -13,6 +13,7 @@ def optimiseMC(data,
                riskFreeRate=0.005,
                freq=252,
                initial_weights=None,
+               verbose=True,
                plot=True):
     '''
     Optimisation of the portfolio by performing a Monte Carlo simulation.
@@ -32,6 +33,8 @@ def optimiseMC(data,
      * initial_weights: List/Array (default: None), weights of
          initial/given portfolio, only used to plot a marker for the
          initial portfolio in the optimisation plot.
+     * verbose: Boolean (default: True), if True, prints out optimised
+         portfolio allocations
      * plot: Boolean (default: True), if True, a plot showing the results
          is produced
 
@@ -89,6 +92,21 @@ def optimiseMC(data,
         df_results['Sharpe Ratio'].idxmax()],
         df_results.iloc[df_results['Volatility'].idxmin()]],
         index=['Max Sharpe Ratio', 'Min Volatility'])
+
+    # print out results
+    if (verbose):
+        opt_vals = ['Min Volatility', 'Max Sharpe Ratio']
+        string = ""
+        for val in opt_vals:
+            string += "-"*70
+            string += "\nOptimised portfolio for {}".format(val.replace('Min', 'Minimum').replace('Max', 'Maximum'))
+            string += "\n\nTime period: {} days".format(freq)
+            string += "\nExpected return: {0:0.3f}".format(opt.loc[val]['Expected Return'])
+            string += "\nVolatility: {:0.3f}".format(opt.loc[val]['Volatility'])
+            string += "\n\n"+str(opt.loc[val].iloc[0:num_stocks].to_frame().transpose().rename(index={val: 'Allocation'}))
+            string += "\n"
+        string += "-"*70
+        print(string)
 
     # plot results
     if (plot):
