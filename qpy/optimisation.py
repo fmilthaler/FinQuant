@@ -23,6 +23,8 @@ def random_portfolios(data, num_trials, riskFreeRate=0.005, freq=252):
          in each stock
      * riskFreeRate: Float (default: 0.005), the risk free rate as
          required for the Sharpe Ratio
+     * freq: Integer (default: 252), number of trading days, default
+         value corresponds to trading days in a year
 
     Output:
      * df_weights: pandas.DataFrame, holds the weights for each randomly
