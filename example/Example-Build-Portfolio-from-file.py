@@ -247,8 +247,17 @@ plotBollingerBand(dis, SMA, span)
 
 # <codecell>
 
-opt = pf.optimisePortfolio(num_trials=15000, verbose=True, plot=True)
-opt
+opt_w, opt_res = pf.optimisePortfolio(num_trials=15000,
+                                      verbose=True,
+                                      plot=True)
+
+# <codecell>
+
+opt_w
+
+# <codecell>
+
+opt_res
 
 # <markdowncell>
 
