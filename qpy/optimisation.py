@@ -5,6 +5,53 @@ import numpy as np
 import pandas as pd
 from qpy.returns import dailyReturns
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
+from qpy.quants import annualised_portfolio_quantities
+
+
+def random_portfolios(data, num_trials, riskFreeRate, freq=252):
+    '''
+    Generates and returns a number of random weights/portfolios
+    (sum of weights = 1), computes their expected annual return,
+    volatility and Sharpe ratio.
+
+    Input:
+     * data: A DataFrame which contains the stock data (e.g. prices) of
+         relevant stocks. Note, there should only be one data column
+         per stock, or else this will fail.
+     * num_trials: Integer (default: 10000), number of portfolios to be
+         computed, each with a random distribution of weights/investments
+         in each stock
+     * riskFreeRate: Float (default: 0.005), the risk free rate as
+         required for the Sharpe Ratio
+
+    Output:
+     * weights, results
+    '''
+    # set number of stocks in the portfolio
+    num_stocks = len(data.columns)
+    # set up array to hold results
+    weights_columns = list(data.columns)
+    result_columns = ['Expected Return', 'Volatility', 'Sharpe Ratio']
+    weights = np.zeros((num_stocks, num_trials))
+    results = np.zeros((len(result_columns), num_trials))
+    # compute returns, means and covariance matrix
+    returns = dailyReturns(data)
+    return_means = returns.mean()
+    cov_matrix = returns.cov()
+    # Monte Carlo simulation
+    for i in range(num_trials):
+        # select random weights for portfolio
+        w = np.array(np.random.random(num_stocks))
+        # rebalance weights
+        w = w/np.sum(w)
+        # compute portfolio return and volatility
+        portfolio_values = annualised_portfolio_quantities(
+            w, return_means, cov_matrix)
+        # store random weights
+        weights[:, i] = w
+        # store results in results array
+        results[:, i] = portfolio_values
+    return weights, results
 
 
 def optimiseMC(data,
