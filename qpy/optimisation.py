@@ -8,7 +8,7 @@ from qpy.quants import weightedMean, weightedStd, sharpeRatio
 from qpy.quants import annualised_portfolio_quantities
 
 
-def random_portfolios(data, num_trials, riskFreeRate, freq=252):
+def random_portfolios(data, num_trials, riskFreeRate=0.005, freq=252):
     '''
     Generates and returns a number of random weights/portfolios
     (sum of weights = 1), computes their expected annual return,
