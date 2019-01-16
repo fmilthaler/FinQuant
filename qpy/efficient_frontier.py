@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import scipy.optimize as sco
 import qpy.minimise_fun as min_fun
+from qpy.quants import annualised_portfolio_quantities
 
 
 class EfficientFrontier(object):
@@ -42,3 +43,14 @@ class EfficientFrontier(object):
 
         return pd.DataFrame(self.weights, index=self.names)
 
+
+    def properties(self, riskFreeRate=0.005):
+        expectedReturn, volatility, sharpe = annualised_portfolio_quantities(
+            self.weights,
+            self.meanReturns,
+            self.cov_matrix,
+            riskFreeRate=riskFreeRate)
+        print("Expected annual return: {:.3f}".format(expectedReturn))
+        print("Annual volatility: {:.3f}".format(volatility))
+        print("Sharpe Ratio: {:.3f}".format(sharpe))
+        return (expectedReturn, volatility, sharpe)
