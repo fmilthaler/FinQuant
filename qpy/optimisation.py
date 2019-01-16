@@ -3,6 +3,7 @@ Provides optimisation functions
 '''
 import numpy as np
 import pandas as pd
+import matplotlib.pylab as plt
 from qpy.returns import dailyReturns
 from qpy.quants import annualised_portfolio_quantities
 
@@ -154,7 +155,6 @@ def optimiseMC(data,
 
     # plot results
     if (plot):
-        import matplotlib.pylab as plt
         plt.figure()
         # create scatter plot coloured by Sharpe Ratio
         plt.scatter(df_results['Volatility'],
