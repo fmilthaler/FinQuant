@@ -10,8 +10,8 @@ This module is the heart of QuantPy. It provides
      For an example on how to use it, please read the corresponding docstring,
      or have a look at the examples in the sub-directory `example`.
 
-The classes "Stock" and "Portfolio" are designed to easily manage your financial
-portfolio, and make the most common quantitative calculations:
+The classes "Stock" and "Portfolio" are designed to easily manage your
+financial portfolio, and make the most common quantitative calculations:
  - cumulative returns of the portfolio's stocks
      ( (price_{t} - price_{t=0} + dividend) / price_{t=0} ),
  - daily returns of the portfolio's stocks (daily percentage change),
