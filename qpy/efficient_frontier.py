@@ -144,6 +144,36 @@ class EfficientFrontier(object):
         self.df_weights = self.dataframe_weights(self.weights)
         return self.df_weights
 
+    def efficient_volatility(self, target, riskFreeRate=0.005):
+        '''
+        Finds the portfolio with the maximum Sharpe ratio for a given
+        target volatility.
+
+        Input:
+         * target: Float, the target volatility of the optimised portfolio.
+         * riskFreeRate: Float (default: 0.005), the risk free rate as
+             required for the Sharpe Ratio
+        '''
+        if (not isinstance(target, (int, float))):
+            raise ValueError("target is required to be an integer or float.")
+        args = (self.meanReturns.values, self.cov_matrix.values, riskFreeRate)
+        # here we have an additional constraint:
+        constraints = (self.constraints,
+                       {'type': 'eq',
+                        'fun': lambda x: min_fun.portfolio_volatility(
+                            x, self.meanReturns, self.cov_matrix) - target})
+        # optimisation
+        result = sco.minimize(min_fun.negative_sharpe_ratio,
+                              args=args,
+                              x0=self.x0,
+                              method=self.method,
+                              bounds=self.bounds,
+                              constraints=constraints)
+        # set optimal weights
+        self.weights = result['x']
+        self.df_weights = self.dataframe_weights(self.weights)
+        return self.df_weights
+
     def dataframe_weights(self, weights):
         '''
         Generates and returns a pandas.DataFrame from given array weights.
@@ -166,7 +196,6 @@ class EfficientFrontier(object):
         '''
         if (self.weights is None):
             raise ValueError("Perform an optimisation first.")
-
         expectedReturn, volatility, sharpe = annualised_portfolio_quantities(
             self.weights,
             self.meanReturns,
