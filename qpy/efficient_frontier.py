@@ -73,6 +73,7 @@ class EfficientFrontier(object):
 
         # placeholder for optimised values/weights
         self.weights = None
+        self.df_weights = None
 
     def minimum_volatility(self):
         '''
@@ -87,7 +88,8 @@ class EfficientFrontier(object):
                               constraints=self.constraints)
         # set optimal weights
         self.weights = result['x']
-        return pd.DataFrame(self.weights, index=self.names).transpose()
+        self.df_weights = self.dataframe_weights(self.weights)
+        return self.df_weights
 
     def maximum_sharpe_ratio(self, riskFreeRate=0.005):
         '''
@@ -110,8 +112,18 @@ class EfficientFrontier(object):
                               constraints=self.constraints)
         # set optimal weights
         self.weights = result['x']
-        return pd.DataFrame(self.weights, index=self.names).transpose()
+        self.df_weights = self.dataframe_weights(self.weights)
+        return self.df_weights
 
+    def dataframe_weights(self, weights):
+        '''
+        Generates and returns a pandas.DataFrame from given array weights.
+
+        Input:
+         * weights: numpy.ndarray, weights of the stock of the portfolio
+        '''
+        return pd.DataFrame(self.weights,
+                            index=self.names).transpose().rename(index={0: 'Allocation'})
 
     def properties(self, riskFreeRate=0.005, verbose=True):
         '''
