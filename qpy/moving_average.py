@@ -1,5 +1,5 @@
 '''
-Provides functions to compute moving averages of data.
+Provides functions to compute and visualise moving averages and Bollinger Bands.
 '''
 import numpy as np
 import pandas as pd

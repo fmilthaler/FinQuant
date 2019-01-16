@@ -1,3 +1,43 @@
+'''
+This module is the heart of QuantPy. It provides
+ - a class "Stock" that holds and calculates quantities of a single stock,
+ - a class "Portfolio" that holds and calculates quantities of a financial
+     portfolio, which is a collection of Stock instances.
+ - a function "buildPortfolio()" that automatically constructs and returns
+     an instance of "Portfolio" and instances of "Stock". The relevant stock
+     data is either retrieved through `quandl` or provided by the user as a
+     pandas.DataFrame (after loading it manually from disk/reading from file).
+     For an example on how to use it, please read the corresponding docstring,
+     or have a look at the examples in the sub-directory `example`.
+
+The classes "Stock" and "Portfolio" are designed to easily manage your financial
+portfolio, and make the most common quantitative calculations:
+ - cumulative returns of the portfolio's stocks
+     ( (price_{t} - price_{t=0} + dividend) / price_{t=0} ),
+ - daily returns of the portfolio's stocks (daily percentage change),
+ - daily log returns of the portfolio's stocks,
+ - expected (annualised) return,
+ - volatility,
+ - Sharpe ratio,
+ - skewness of the portfolio's stocks,
+ - Kurtosis of the portfolio's stocks,
+ - the portfolio's covariance matrix.
+
+"Portfolio" also provides methods to easily compute and visualise
+ - simple moving averages of any given time window,
+ - exponential moving averages of any given time window,
+ - Bollinger Bands of any given time window,
+
+Furthermore, the constructed portfolio can be optimised for
+ - minimum volatility,
+ - maximum Sharpe ratio
+by either performing a numerical computation to based on the Efficient
+Frontier, or by simply performing a Monte Carlo simulation of n trials.
+The former method should be preferred for reasons of computational effort
+and accuracy. The latter is only included for the sake of completeness.
+'''
+
+
 import numpy as np
 import pandas as pd
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
@@ -39,10 +79,16 @@ class Stock(object):
         self.kurtosis = self.__compKurtosis()
 
     def getInvestmentInfo(self):
+        '''
+        Returns pandas.DataFrame of FMV and other information provided
+        '''
         return self.investmentinfo
 
     # functions to compute quantities
     def compDailyReturns(self):
+        '''
+        Computes the daily returns (percentage change)
+        '''
         return dailyReturns(self.data)
 
     def compExpectedReturn(self, freq=252):
@@ -66,12 +112,23 @@ class Stock(object):
         return self.compDailyReturns().std() * np.sqrt(freq)
 
     def __compSkew(self):
+        '''
+        Computes and returns the skewness of the stock.
+        '''
         return self.data.skew().values[0]
 
     def __compKurtosis(self):
+        '''
+        Computes and returns the Kurtosis of the stock.
+        '''
         return self.data.kurt().values[0]
 
     def properties(self):
+        '''
+        Nicely prints out the properties of the stock: expected return,
+        volatility, skewness, Kurtosis as well as the FMV (and other
+        information provided in investmentinfo.)
+        '''
         # nicely printing out information and quantities of the stock
         string = "-"*50
         string += "\nStock: {}".format(self.name)
@@ -164,6 +221,9 @@ class Portfolio(object):
         self.data.index.rename('Date', inplace=True)
 
     def getStock(self, name):
+        '''
+        Returns the instance of Stock with name <name>.
+        '''
         return self.stocks[name]
 
     def compCumulativeReturns(self):
@@ -198,6 +258,10 @@ class Portfolio(object):
         return historicalMeanReturn(self.data, freq=freq)
 
     def compWeights(self):
+        '''
+        Computes and returns a pandas.Series of the weights of the stocks
+        of the portfolio
+        '''
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
         return self.portfolio['FMV']/self.totalinvestment
@@ -232,11 +296,21 @@ class Portfolio(object):
         return volatility
 
     def compCov(self):
+        '''
+        Compute and return a pandas.DataFrame of the covariance matrix
+        of the portfolio.
+        '''
         # get the covariance matrix of the mean returns of the portfolio
         returns = dailyReturns(self.data)
         return returns.cov()
 
     def compSharpe(self, riskFreeRate=0.005):
+        '''
+        Compute and return the Sharpe ratio of the portfolio
+
+        Input:
+         * riskFreeRate: Float (default=0.005), risk free rate
+        '''
         # compute the Sharpe Ratio of the portfolio
         sharpe = sharpeRatio(self.expectedReturn,
                              self.volatility,
@@ -245,9 +319,15 @@ class Portfolio(object):
         return sharpe
 
     def __compSkew(self):
+        '''
+        Computes and returns the skewness of the stocks in the portfolio.
+        '''
         return self.data.skew()
 
     def __compKurtosis(self):
+        '''
+        Computes and returns the Kurtosis of the stocks in the portfolio.
+        '''
         return self.data.kurt()
 
     # optimising the investments based on volatility and sharpe ratio
@@ -290,6 +370,11 @@ class Portfolio(object):
                           plot=plot)
 
     def properties(self):
+        '''
+        Nicely prints out the properties of the portfolio: expected return,
+        volatility, Sharpe ratio, skewness, Kurtosis as well as the allocation
+        of the stocks across the portfolio.
+        '''
         # nicely printing out information and quantities of the portfolio
         string = "-"*50
         stocknames = self.portfolio.Name.values.tolist()
