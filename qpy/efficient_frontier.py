@@ -85,7 +85,9 @@ class EfficientFrontier(object):
                               method=self.method,
                               bounds=self.bounds,
                               constraints=self.constraints)
-        return result
+        # set optimal weights
+        self.weights = result['x']
+        return pd.DataFrame(self.weights, index=self.names).transpose()
 
     def maximum_sharpe_ratio(self, riskFreeRate=0.005):
         '''
