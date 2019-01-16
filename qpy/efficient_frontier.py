@@ -251,14 +251,14 @@ class EfficientFrontier(object):
         '''
         return pd.DataFrame(weights, index=self.names, columns=['Allocation'])
 
-    def properties(self, riskFreeRate=0.005, verbose=True):
+    def properties(self, riskFreeRate=0.005, verbose=False):
         '''
         Calculates and prints out expected annualised return, volatility and
         Sharpe ratio of optimised portfolio.
 
         Input:
          * riskFreeRate: Float (default=0.005), risk free rate
-         * verbose: Boolean (default: True), whether to print out properties
+         * verbose: Boolean (default: False), whether to print out properties
              or not
         '''
         if (self.weights is None):
