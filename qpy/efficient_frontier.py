@@ -1,5 +1,5 @@
 """
-This module facilitates a class (EfficientFrontier) that can be used to optimise
+This module facilitates a class EfficientFrontier that can be used to optimise
 a portfolio.
 """
 
