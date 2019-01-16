@@ -44,6 +44,7 @@ from qpy.quants import weightedMean, weightedStd, sharpeRatio
 from qpy.optimisation import optimiseMC
 from qpy.returns import historicalMeanReturn
 from qpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
+from qpy.efficient_frontier import EfficientFrontier
 
 
 class Stock(object):
@@ -164,6 +165,8 @@ class Portfolio(object):
         self.skew = None
         self.kurtosis = None
         self.totalinvestment = None
+        # instance variable for efficient frontier optimisations
+        self.ef = None
 
     @property
     def totalinvestment(self):
@@ -341,7 +344,110 @@ class Portfolio(object):
         '''
         return self.data.kurt()
 
-    # optimising the investments based on volatility and sharpe ratio
+    # optimising the investments with the efficient frontier class
+    def get_EF(self):
+        '''
+        If self.ef does not exist, create and return an instance of
+        qpy.efficient_frontier.EfficientFrontier, else, return the
+        existing instance
+        '''
+        if (self.ef is None):
+            # create instance of EfficientFrontier
+            self.ef = EfficientFrontier(self.compMeanReturns(freq=1),
+                                        self.compCov())
+        return self.ef
+
+    def ef_minimum_volatility(self):
+        '''
+        Interface to ef.minimum_volatility()
+        '''
+        # get instance of EfficientFrontier
+        ef = self.get_EF()
+        # perform optimisation
+        return ef.minimum_volatility()
+
+    def ef_minimum_volatility(self, verbose=False):
+        '''
+        Interface to ef.minimum_volatility()
+        Finds the portfolio with the minimum volatility.
+
+        Input:
+         * verbose: Boolean (default=False), whether to print out properties
+             or not
+        '''
+        # get instance of EfficientFrontier
+        ef = self.get_EF()
+        # perform optimisation
+        opt_weights = ef.minimum_volatility()
+        # if verbose==True, print out results
+        ef.properties(verbose=verbose)
+        return opt_weights
+
+    def ef_maximum_sharpe_ratio(self, riskFreeRate=0.005, verbose=False):
+        '''
+        Interface to ef.maximum_sharpe_ratio()
+        Finds the portfolio with the maximum Sharpe Ratio, also called the
+        tangency portfolio.
+
+        Input:
+         * riskFreeRate: Float (default: 0.005), the risk free rate as
+             required for the Sharpe Ratio
+         * verbose: Boolean (default=False), whether to print out properties
+             or not
+        '''
+        # get instance of EfficientFrontier
+        ef = self.get_EF()
+        # perform optimisation
+        opt_weights = ef.maximum_sharpe_ratio(riskFreeRate=riskFreeRate)
+        # if verbose==True, print out results
+        ef.properties(verbose=verbose)
+        return opt_weights
+
+    def ef_efficient_return(self, target, verbose=False):
+        '''
+        Interface to ef.efficient_return()
+        Finds the portfolio with the minimum volatility for a given target
+        return.
+
+        Input:
+         * target: Float, the target return of the optimised portfolio.
+         * verbose: Boolean (default=False), whether to print out properties
+             or not
+        '''
+        # get instance of EfficientFrontier
+        ef = self.get_EF()
+        # perform optimisation
+        opt_weights = ef.efficient_return(target)
+        # if verbose==True, print out results
+        ef.properties(verbose=verbose)
+        return opt_weights
+
+    def ef_efficient_volatility(self,
+                                target,
+                                riskFreeRate=0.005,
+                                verbose=False):
+        '''
+        Interface to ef.efficient_volatility()
+        Finds the portfolio with the maximum Sharpe ratio for a given
+        target volatility.
+
+        Input:
+         * target: Float, the target volatility of the optimised portfolio.
+         * riskFreeRate: Float (default: 0.005), the risk free rate as
+             required for the Sharpe Ratio
+         * verbose: Boolean (default=False), whether to print out properties
+             or not
+        '''
+        # get instance of EfficientFrontier
+        ef = self.get_EF()
+        # perform optimisation
+        opt_weights = ef.efficient_volatility(target, riskFreeRate=riskFreeRate)
+        # if verbose==True, print out results
+        ef.properties(verbose=verbose)
+        return opt_weights
+
+    # optimising the investments by performing a Monte Carlo run
+    # based on volatility and sharpe ratio
     def optimisePortfolio(self,
                           total_investment=None,
                           num_trials=10000,
