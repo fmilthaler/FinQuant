@@ -21,14 +21,14 @@ class EfficientFrontier(object):
      - maximum Sharpe ratio
     '''
 
-    def __init__(self, meanReturns, cov_matrix, solver='SLSQP'):
+    def __init__(self, meanReturns, cov_matrix, method='SLSQP'):
         '''
         Input:
          * meanReturns: pandas.Series, individual expected returns for all
              stocks in the portfolio
          * cov_matrix: pandas.DataFrame, covariance matrix of returns
-         * solver: string (default: "SLSQP"), type of solver to use, must be
-             one of:
+         * method: string (default: "SLSQP"), type of solver method to use,
+             must be one of:
              - 'Nelder-Mead'
              - 'Powell'
              - 'CG'
@@ -49,19 +49,19 @@ class EfficientFrontier(object):
             raise ValueError("meanReturns is expected to be a pandas.Series.")
         if (not isinstance(cov_matrix, pd.DataFrame)):
             raise ValueError("cov_matrix is expected to be a pandas.DataFrame")
-        supported_solvers = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
+        supported_methods = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
                              'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP',
                              'trust-constr', 'dogleg', 'trust-ncg',
                              'trust-exact', 'trust-krylov']
-        if (not isinstance(solver, str)):
-            raise ValueError("solver is expected to be a string.")
-        if (solver not in supported_solvers):
-            raise ValueError("solver is not supported by scipy.optimize.minimize.")
+        if (not isinstance(method, str)):
+            raise ValueError("method is expected to be a string.")
+        if (method not in supported_methods):
+            raise ValueError("method is not supported by scipy.optimize.minimize.")
 
         # instance variables
         self.meanReturns = meanReturns
         self.cov_matrix = cov_matrix
-        self.solver = solver
+        self.method = method
         self.names = list(meanReturns.index)
         self.num_stocks = len(self.names)
 
@@ -82,7 +82,7 @@ class EfficientFrontier(object):
         result = sco.minimize(min_fun.portfolio_volatility,
                               args=args,
                               x0=self.x0,
-                              method=self.solver,
+                              method=self.method,
                               bounds=self.bounds,
                               constraints=self.constraints)
         return result
@@ -103,7 +103,7 @@ class EfficientFrontier(object):
         result = sco.minimize(min_fun.negative_sharpe_ratio,
                               args=args,
                               x0=self.x0,
-                              method=self.solver,
+                              method=self.method,
                               bounds=self.bounds,
                               constraints=self.constraints)
         # set optimal weights
