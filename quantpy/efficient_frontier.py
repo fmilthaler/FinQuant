@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import scipy.optimize as sco
 import matplotlib.pylab as plt
-import qpy.minimise_fun as min_fun
-from qpy.quants import annualised_portfolio_quantities
+import quantpy.minimise_fun as min_fun
+from quantpy.quants import annualised_portfolio_quantities
 
 
 class EfficientFrontier(object):

@@ -52,11 +52,11 @@ Finally, methods are implemented to generated the following plots:
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
-from qpy.quants import weightedMean, weightedStd, sharpeRatio
-from qpy.optimisation import monte_carlo_optimisation
-from qpy.returns import historicalMeanReturn
-from qpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
-from qpy.efficient_frontier import EfficientFrontier
+from quantpy.quants import weightedMean, weightedStd, sharpeRatio
+from quantpy.optimisation import monte_carlo_optimisation
+from quantpy.returns import historicalMeanReturn
+from quantpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
+from quantpy.efficient_frontier import EfficientFrontier
 
 
 class Stock(object):
@@ -397,7 +397,7 @@ class Portfolio(object):
     def get_EF(self):
         '''
         If self.ef does not exist, create and return an instance of
-        qpy.efficient_frontier.EfficientFrontier, else, return the
+        quantpy.efficient_frontier.EfficientFrontier, else, return the
         existing instance
         '''
         if (self.ef is None):
