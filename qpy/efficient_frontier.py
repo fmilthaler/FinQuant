@@ -182,9 +182,13 @@ class EfficientFrontier(object):
 
         Input:
          * weights: numpy.ndarray, weights of the stock of the portfolio
+
+        Output:
+         * pandas.DataFrame(self.weights,
+             index=self.names,
+             columns=['Allocation'])
         '''
-        return pd.DataFrame(self.weights,
-                            index=self.names).transpose().rename(index={0: 'Allocation'})
+        return pd.DataFrame(weights, index=self.names, columns=['Allocation'])
 
     def properties(self, riskFreeRate=0.005, verbose=True):
         '''
