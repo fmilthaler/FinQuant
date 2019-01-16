@@ -74,8 +74,8 @@ class EfficientFrontier(object):
 
     def maximum_sharpe_ratio(self, riskFreeRate=0.005):
         '''
-        Uses the efficient frontier to find the maximum Sharpe Ratio,
-        also called the tangency portfolio.
+        Uses the efficient frontier to find the portfolio with the
+        maximum Sharpe Ratio, also called the tangency portfolio.
 
         Input:
          * riskFreeRate: Float (default: 0.005), the risk free rate as
