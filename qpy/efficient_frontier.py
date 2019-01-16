@@ -212,6 +212,6 @@ class EfficientFrontier(object):
             string += "\nAnnual volatility: {:.3f}".format(volatility)
             string += "\nSharpe Ratio: {:.3f}".format(sharpe)
             string += "\nOptimal weights:"
-            string += "\n"+str(self.df_weights)
+            string += "\n"+str(self.df_weights.transpose())
             print(string)
         return (expectedReturn, volatility, sharpe)
