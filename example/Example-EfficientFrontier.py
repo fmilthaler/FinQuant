@@ -87,7 +87,6 @@ opt_w
 # <codecell>
 
 from qpy.efficient_frontier import EfficientFrontier
-from qpy.quants import annualised_portfolio_quantities
 
 ef = EfficientFrontier(pf.compMeanReturns(freq=1),
                        pf.compCov())
@@ -95,7 +94,42 @@ ef.maximum_sharpe_ratio()
 
 # <codecell>
 
-(expectedReturn, volatility, sharpe) = ef.properties()
+ef.properties()
+
+# <codecell>
+
+# minimum volatility
+ef.minimum_volatility()
+ef.properties()
+
+# <codecell>
+
+ef.efficient_return(1.0)
+ef.properties()
+
+# <codecell>
+
+ef.efficient_return(0.2)
+
+# <codecell>
+
+ef.properties()
+
+# <codecell>
+
+
+
+# <codecell>
+
+ef.efficient_volatility(1, riskFreeRate=0.005)
+
+# <codecell>
+
+ef.properties()
+
+# <codecell>
+
+
 
 # <codecell>
 
