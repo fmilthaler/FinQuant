@@ -357,15 +357,6 @@ class Portfolio(object):
                                         self.compCov())
         return self.ef
 
-    def ef_minimum_volatility(self):
-        '''
-        Interface to ef.minimum_volatility()
-        '''
-        # get instance of EfficientFrontier
-        ef = self.get_EF()
-        # perform optimisation
-        return ef.minimum_volatility()
-
     def ef_minimum_volatility(self, verbose=False):
         '''
         Interface to ef.minimum_volatility()
@@ -441,7 +432,8 @@ class Portfolio(object):
         # get instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
-        opt_weights = ef.efficient_volatility(target, riskFreeRate=riskFreeRate)
+        opt_weights = ef.efficient_volatility(target,
+                                              riskFreeRate=riskFreeRate)
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights

@@ -1,11 +1,9 @@
 '''
-This module provides a set of function which can used by scipy.optimize.minimize
-in order to find the minimal/optimal value.
+This module provides a set of function which can used by
+scipy.optimize.minimize in order to find the minimal/optimal value.
 '''
 
 
-import numpy as np
-import pandas as pd
 from qpy.quants import annualised_portfolio_quantities
 
 
