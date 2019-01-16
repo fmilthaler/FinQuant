@@ -11,8 +11,14 @@ class EfficientFrontier(object):
             raise ValueError("meanReturns is expected to be a pandas.Series.")
         if (not isinstance(cov_matrix, pd.DataFrame)):
             raise ValueError("cov_matrix is expected to be a pandas.DataFrame")
+        supported_solvers = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
+                             'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP',
+                             'trust-constr', 'dogleg', 'trust-ncg',
+                             'trust-exact', 'trust-krylov']
         if (not isinstance(solver, str)):
             raise ValueError("solver is expected to be a string.")
+        if (solver not in supported_solvers):
+            raise ValueError("solver is not supported by scipy.optimize.minimize.")
         self.meanReturns = meanReturns
         self.cov_matrix = cov_matrix
         self.solver = solver
