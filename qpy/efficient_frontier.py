@@ -52,14 +52,15 @@ class EfficientFrontier(object):
             raise ValueError("meanReturns is expected to be a pandas.Series.")
         if (not isinstance(cov_matrix, pd.DataFrame)):
             raise ValueError("cov_matrix is expected to be a pandas.DataFrame")
-        supported_methods = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'Newton-CG',
-                             'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP',
+        supported_methods = ['Nelder-Mead', 'Powell', 'CG', 'BFGS',
+                             'Newton-CG', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP',
                              'trust-constr', 'dogleg', 'trust-ncg',
                              'trust-exact', 'trust-krylov']
         if (not isinstance(method, str)):
             raise ValueError("method is expected to be a string.")
         if (method not in supported_methods):
-            raise ValueError("method is not supported by scipy.optimize.minimize.")
+            raise ValueError("method is not supported by "
+                             + "scipy.optimize.minimize.")
 
         # instance variables
         self.meanReturns = meanReturns
@@ -106,7 +107,8 @@ class EfficientFrontier(object):
              required for the Sharpe Ratio
         '''
         if (not isinstance(riskFreeRate, (int, float))):
-            raise ValueError("riskFreeRate is required to be an integer or float.")
+            raise ValueError("riskFreeRate is required to be an integer "
+                             + "or float.")
         args = (self.meanReturns.values, self.cov_matrix.values, riskFreeRate)
         # optimisation
         result = sco.minimize(min_fun.negative_sharpe_ratio,
@@ -224,8 +226,8 @@ class EfficientFrontier(object):
              or not. Useful if more data should be plotted in the same
              figure.
         '''
-        plt.plot(self.efrontier[:,0],
-                 self.efrontier[:,1],
+        plt.plot(self.efrontier[:, 0],
+                 self.efrontier[:, 1],
                  linestyle='-.',
                  color='black',
                  lw=2,
