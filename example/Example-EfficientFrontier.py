@@ -95,36 +95,42 @@ opt_w
 
 # <codecell>
 
+pf.ef_minimum_volatility()
+
+# <codecell>
+
+# optimisation for maximum Sharpe ratio
+pf.ef_maximum_sharpe_ratio(verbose=True)
+
+# <codecell>
+
+# minimum volatility for a given target return of 0.26
+pf.ef_efficient_return(0.26, verbose=True)
+
+# <codecell>
+
+# maximum Sharpe ratio for a given target volatility of 0.22
+pf.ef_efficient_volatility(0.22, riskFreeRate=0.005, verbose=True)
+
+# <markdowncell>
+
+# ## Manually creating an instance of EfficientFrontier
+# If required, or preferred, the below code shows how the same is achieved by manually creating an instance of EfficientFrontier, passing it the mean returns and covariance matrix of the previously assembled portfolio.
+
+# <codecell>
+
 from qpy.efficient_frontier import EfficientFrontier
 
 # creating an instance of EfficientFrontier
 ef = EfficientFrontier(pf.compMeanReturns(freq=1),
                        pf.compCov())
-# optimisation for maximum Sharpe ratio
-ef.maximum_sharpe_ratio()
+# optimisation for minimum volatility
+ef.minimum_volatility()
 
 # <codecell>
 
 # printing out relevant quantities of the optimised portfolio
-(expectedReturn, volatility, sharpe) = ef.properties()
-
-# <codecell>
-
-# minimum volatility
-ef.minimum_volatility()
-ef.properties()
-
-# <codecell>
-
-# minimum volatility for a given target return of 0.26
-ef.efficient_return(0.26)
-ef.properties()
-
-# <codecell>
-
-# maximum Sharpe ratio for a given target volatility of 0.22
-ef.efficient_return(0.22)
-ef.properties()
+(expectedReturn, volatility, sharpe) = ef.properties(verbose=True)
 
 # <markdowncell>
 
