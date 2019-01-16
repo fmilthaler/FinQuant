@@ -254,6 +254,20 @@ class Portfolio(object):
         '''
         return historicalMeanReturn(self.data, freq=freq)
 
+    def compStockVolatility(self, freq=252):
+        '''
+        Computes the volatilities of all the stocks individually
+
+        Input:
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+
+        Output:
+         * pandas.DataFrame with the individual volatilities of all stocks
+             of the portfolio
+        '''
+        return self.compDailyReturns().std() * np.sqrt(freq)
+
     def compWeights(self):
         '''
         Computes and returns a pandas.Series of the weights of the stocks
