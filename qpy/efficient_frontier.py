@@ -80,6 +80,7 @@ class EfficientFrontier(object):
         Finds the portfolio with the minimum volatility.
         '''
         args = (self.meanReturns.values, self.cov_matrix.values)
+        # optimisation
         result = sco.minimize(min_fun.portfolio_volatility,
                               args=args,
                               x0=self.x0,
