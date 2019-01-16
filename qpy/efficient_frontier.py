@@ -41,7 +41,7 @@ class EfficientFrontier(object):
         # set optimal weights
         self.weights = result['x']
 
-        return pd.DataFrame(self.weights, index=self.names)
+        return pd.DataFrame(self.weights, index=self.names).transpose()
 
 
     def properties(self, riskFreeRate=0.005):
