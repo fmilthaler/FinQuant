@@ -7,6 +7,7 @@ a portfolio.
 import numpy as np
 import pandas as pd
 import scipy.optimize as sco
+import matplotlib.pylab as plt
 import qpy.minimise_fun as min_fun
 from qpy.quants import annualised_portfolio_quantities
 
@@ -213,6 +214,29 @@ class EfficientFrontier(object):
                  target])
         self.efrontier = np.array(efrontier)
         return efrontier
+
+    def plot_efrontier(self, show=True):
+        '''
+        Plots the Efficient Frontier.
+
+        Input:
+         * show: Boolean (default: True) whether to do plt.show()
+             or not. Useful if more data should be plotted in the same
+             figure.
+        '''
+        plt.plot(self.efrontier[:,0],
+                 self.efrontier[:,1],
+                 linestyle='-.',
+                 color='black',
+                 lw=2,
+                 label='Efficient Frontier')
+        plt.title('Efficient Frontier')
+        plt.xlabel('Volatility')
+        plt.ylabel('Expected Return')
+        plt.legend()
+        if (show):
+            plt.show()
+
     def dataframe_weights(self, weights):
         '''
         Generates and returns a pandas.DataFrame from given array weights.
