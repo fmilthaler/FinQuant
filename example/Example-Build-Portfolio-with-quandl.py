@@ -35,7 +35,7 @@ import datetime
 # <codecell>
 
 # importing some custom functions/objects
-from qpy.portfolio import buildPortfolio
+from quantpy.portfolio import buildPortfolio
 
 # <codecell>
 
