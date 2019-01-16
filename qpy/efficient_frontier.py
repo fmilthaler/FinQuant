@@ -115,6 +115,34 @@ class EfficientFrontier(object):
         self.df_weights = self.dataframe_weights(self.weights)
         return self.df_weights
 
+    def efficient_return(self, target):
+        '''
+        Finds the portfolio with the minimum volatility for a given target
+        return.
+
+        Input:
+         * target: Float, the target return of the optimised portfolio.
+        '''
+        if (not isinstance(target, (int, float))):
+            raise ValueError("target is required to be an integer or float.")
+        args = (self.meanReturns.values, self.cov_matrix.values)
+        # here we have an additional constraint:
+        constraints = (self.constraints,
+                       {'type': 'eq',
+                        'fun': lambda x: min_fun.portfolio_return(
+                            x, self.meanReturns, self.cov_matrix) - target})
+        # optimisation
+        result = sco.minimize(min_fun.portfolio_volatility,
+                              args=args,
+                              x0=self.x0,
+                              method=self.method,
+                              bounds=self.bounds,
+                              constraints=constraints)
+        # set optimal weights
+        self.weights = result['x']
+        self.df_weights = self.dataframe_weights(self.weights)
+        return self.df_weights
+
     def dataframe_weights(self, weights):
         '''
         Generates and returns a pandas.DataFrame from given array weights.
