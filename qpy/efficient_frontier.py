@@ -19,6 +19,8 @@ class EfficientFrontier(object):
     It can find parameters for portfolios with
      - minimum volatility
      - maximum Sharpe ratio
+     - minimum volatility for a given target return
+     - maximum Sharpe ratio for a given target volatility
     '''
 
     def __init__(self, meanReturns, cov_matrix, method='SLSQP'):
