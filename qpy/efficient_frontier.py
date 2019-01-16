@@ -20,6 +20,7 @@ class EfficientFrontier(object):
      - minimum volatility
      - maximum Sharpe ratio
     '''
+
     def __init__(self, meanReturns, cov_matrix, solver='SLSQP'):
         '''
         Input:
@@ -75,8 +76,7 @@ class EfficientFrontier(object):
 
     def minimum_volatility(self):
         '''
-        Uses the efficient frontier to find the portfolio with the
-        minimum volatility.
+        Finds the portfolio with the minimum volatility.
         '''
         args = (self.meanReturns.values, self.cov_matrix.values)
         result = sco.minimize(min_fun.portfolio_volatility,
@@ -89,8 +89,8 @@ class EfficientFrontier(object):
 
     def maximum_sharpe_ratio(self, riskFreeRate=0.005):
         '''
-        Uses the efficient frontier to find the portfolio with the
-        maximum Sharpe Ratio, also called the tangency portfolio.
+        Finds the portfolio with the maximum Sharpe Ratio, also called the
+        tangency portfolio.
 
         Input:
          * riskFreeRate: Float (default: 0.005), the risk free rate as
