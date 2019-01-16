@@ -1,3 +1,9 @@
+"""
+This module facilitates a class (EfficientFrontier) that can be used to optimise
+a portfolio.
+"""
+
+
 import numpy as np
 import pandas as pd
 import scipy.optimize as sco
@@ -6,7 +12,37 @@ from qpy.quants import annualised_portfolio_quantities
 
 
 class EfficientFrontier(object):
+    '''
+    An object designed to perform optimisations based on the efficient frontier
+    of a given portfolio.
+
+    It can find parameters for portfolios of
+     - maximum Sharpe ratio
+    '''
     def __init__(self, meanReturns, cov_matrix, solver='SLSQP'):
+        '''
+        Input:
+         * meanReturns: pandas.Series, individual expected returns for all
+             stocks in the portfolio
+         * cov_matrix: pandas.DataFrame, covariance matrix of returns
+         * solver: string (default: "SLSQP"), type of solver to use, must be
+             one of:
+             - 'Nelder-Mead'
+             - 'Powell'
+             - 'CG'
+             - 'BFGS'
+             - 'Newton-CG'
+             - 'L-BFGS-B'
+             - 'TNC'
+             - 'COBYLA'
+             - 'SLSQP'
+             - 'trust-constr'
+             - 'dogleg'
+             - 'trust-ncg'
+             - 'trust-exact'
+             - 'trust-krylov'
+             all of which are officially supported by scipy.optimize.minimize
+        '''
         if (not isinstance(meanReturns, pd.Series)):
             raise ValueError("meanReturns is expected to be a pandas.Series.")
         if (not isinstance(cov_matrix, pd.DataFrame)):
@@ -19,6 +55,8 @@ class EfficientFrontier(object):
             raise ValueError("solver is expected to be a string.")
         if (solver not in supported_solvers):
             raise ValueError("solver is not supported by scipy.optimize.minimize.")
+
+        # instance variables
         self.meanReturns = meanReturns
         self.cov_matrix = cov_matrix
         self.solver = solver
@@ -35,9 +73,18 @@ class EfficientFrontier(object):
         self.weights = None
 
     def maximum_sharpe_ratio(self, riskFreeRate=0.005):
+        '''
+        Uses the efficient frontier to find the maximum Sharpe Ratio,
+        also called the tangency portfolio.
+
+        Input:
+         * riskFreeRate: Float (default: 0.005), the risk free rate as
+             required for the Sharpe Ratio
+        '''
         if (not isinstance(riskFreeRate, (int, float))):
             raise ValueError("riskFreeRate is required to be an integer or float.")
         args = (self.meanReturns.values, self.cov_matrix.values, riskFreeRate)
+        # optimisation
         result = sco.minimize(min_fun.negative_sharpe_ratio,
                               args=args,
                               x0=self.x0,
@@ -46,11 +93,19 @@ class EfficientFrontier(object):
                               constraints=self.constraints)
         # set optimal weights
         self.weights = result['x']
-
         return pd.DataFrame(self.weights, index=self.names).transpose()
 
 
     def properties(self, riskFreeRate=0.005, verbose=True):
+        '''
+        Calculates and prints out expected annualised return, volatility and
+        Sharpe ratio of optimised portfolio.
+
+        Input:
+         * riskFreeRate: Float (default=0.005), risk free rate
+         * verbose: Boolean (default: True), whether to print out properties
+             or not
+        '''
         if (self.weights is None):
             raise ValueError("Perform an optimisation first.")
 
