@@ -4,7 +4,6 @@ Provides optimisation functions
 import numpy as np
 import pandas as pd
 from qpy.returns import dailyReturns
-from qpy.quants import weightedMean, weightedStd, sharpeRatio
 from qpy.quants import annualised_portfolio_quantities
 
 
@@ -126,11 +125,11 @@ def optimiseMC(data,
     index_max_sharpe = df_results['Sharpe Ratio'].idxmax()
     # storing optimal results to DataFrames
     opt_w = pd.DataFrame([df_weights.iloc[index_min_volatility],
-        df_weights.iloc[index_max_sharpe]],
-        index=['Min Volatility', 'Max Sharpe Ratio'])
+                          df_weights.iloc[index_max_sharpe]],
+                         index=['Min Volatility', 'Max Sharpe Ratio'])
     opt_res = pd.DataFrame([df_results.iloc[index_min_volatility],
-        df_results.iloc[index_max_sharpe]],
-        index=['Min Volatility', 'Max Sharpe Ratio'])
+                            df_results.iloc[index_max_sharpe]],
+                           index=['Min Volatility', 'Max Sharpe Ratio'])
 
     # print out results
     if (verbose):
@@ -138,12 +137,17 @@ def optimiseMC(data,
         string = ""
         for val in opt_vals:
             string += "-"*70
-            string += "\nOptimised portfolio for {}".format(val.replace('Min', 'Minimum').replace('Max', 'Maximum'))
+            string += "\nOptimised portfolio for {}".format(
+                val.replace('Min', 'Minimum').replace('Max', 'Maximum'))
             string += "\n\nTime period: {} days".format(freq)
-            string += "\nExpected return: {0:0.3f}".format(opt_res.loc[val]['Expected Return'])
-            string += "\nVolatility: {:0.3f}".format(opt_res.loc[val]['Volatility'])
-            string += "\nSharpe Ratio: {:0.3f}".format(opt_res.loc[val]['Sharpe Ratio'])
-            string += "\n\n"+str(opt_w.loc[val].to_frame().transpose().rename(index={val: 'Allocation'}))
+            string += "\nExpected return: {0:0.3f}".format(
+                opt_res.loc[val]['Expected Return'])
+            string += "\nVolatility: {:0.3f}".format(
+                opt_res.loc[val]['Volatility'])
+            string += "\nSharpe Ratio: {:0.3f}".format(
+                opt_res.loc[val]['Sharpe Ratio'])
+            string += "\n\n"+str(opt_w.loc[val].to_frame().transpose().rename(
+                    index={val: 'Allocation'}))
             string += "\n"
         string += "-"*70
         print(string)
