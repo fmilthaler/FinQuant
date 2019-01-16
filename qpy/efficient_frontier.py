@@ -1,5 +1,7 @@
 import numpy as np
 import pandas as pd
+import scipy.optimize as sco
+import qpy.minimise_fun as min_fun
 
 
 class EfficientFrontier(object):
@@ -24,3 +26,19 @@ class EfficientFrontier(object):
 
         # placeholder for optimised values/weights
         self.weights = None
+
+    def maximum_sharpe_ratio(self, riskFreeRate=0.005):
+        if (not isinstance(riskFreeRate, (int, float))):
+            raise ValueError("riskFreeRate is required to be an integer or float.")
+        args = (self.meanReturns.values, self.cov_matrix.values, riskFreeRate)
+        result = sco.minimize(min_fun.negative_sharpe_ratio,
+                              args=args,
+                              x0=self.x0,
+                              method=self.solver,
+                              bounds=self.bounds,
+                              constraints=self.constraints)
+        # set optimal weights
+        self.weights = result['x']
+
+        return pd.DataFrame(self.weights, index=self.names)
+
