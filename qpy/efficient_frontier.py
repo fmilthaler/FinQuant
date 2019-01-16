@@ -16,7 +16,8 @@ class EfficientFrontier(object):
     An object designed to perform optimisations based on the efficient frontier
     of a given portfolio.
 
-    It can find parameters for portfolios of
+    It can find parameters for portfolios with
+     - minimum volatility
      - maximum Sharpe ratio
     '''
     def __init__(self, meanReturns, cov_matrix, solver='SLSQP'):
@@ -71,6 +72,20 @@ class EfficientFrontier(object):
 
         # placeholder for optimised values/weights
         self.weights = None
+
+    def minimum_volatility(self):
+        '''
+        Uses the efficient frontier to find the portfolio with the
+        minimum volatility.
+        '''
+        args = (self.meanReturns.values, self.cov_matrix.values)
+        result = sco.minimize(min_fun.portfolio_volatility,
+                              args=args,
+                              x0=self.x0,
+                              method=self.solver,
+                              bounds=self.bounds,
+                              constraints=self.constraints)
+        return result
 
     def maximum_sharpe_ratio(self, riskFreeRate=0.005):
         '''
