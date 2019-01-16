@@ -76,6 +76,7 @@ class EfficientFrontier(object):
         # placeholder for optimised values/weights
         self.weights = None
         self.df_weights = None
+        self.efrontier = None
 
     def minimum_volatility(self):
         '''
@@ -118,13 +119,23 @@ class EfficientFrontier(object):
         self.df_weights = self.dataframe_weights(self.weights)
         return self.df_weights
 
-    def efficient_return(self, target):
+    def efficient_return(self, target, save_weights=True):
         '''
         Finds the portfolio with the minimum volatility for a given target
         return.
 
         Input:
          * target: Float, the target return of the optimised portfolio.
+         * save_weights: Boolean (default: True), whether to save the optimised
+             weights in the instance variable weights (and df_weights). Useful
+             for the case of computing the efficient frontier after doing a
+             optimisation, else the optimal weights would be overwritten by the
+             efficient frontier computations.
+
+        Output:
+         * df_weights/weights:
+          - if "save_weights" is True: returning pandas.DataFrame of weights
+          - if "save_weights" is False: returning numpy.ndarray of weights
         '''
         if (not isinstance(target, (int, float))):
             raise ValueError("target is required to be an integer or float.")
@@ -142,9 +153,14 @@ class EfficientFrontier(object):
                               bounds=self.bounds,
                               constraints=constraints)
         # set optimal weights
-        self.weights = result['x']
-        self.df_weights = self.dataframe_weights(self.weights)
-        return self.df_weights
+        if (save_weights):
+            self.weights = result['x']
+            self.df_weights = self.dataframe_weights(self.weights)
+            return self.df_weights
+        else:
+            # not setting instance variables, and returning array instead
+            # of pandas.DataFrame
+            return result['x']
 
     def efficient_volatility(self, target, riskFreeRate=0.005):
         '''
@@ -176,6 +192,27 @@ class EfficientFrontier(object):
         self.df_weights = self.dataframe_weights(self.weights)
         return self.df_weights
 
+    def efficient_frontier(self, targets):
+        '''
+        Gets portfolios for a range of given target returns.
+        Results in the Efficient Frontier.
+
+        Input:
+         * targets: list of floats, range of target returns
+
+        Output:
+         * array of (volatility, return) values
+        '''
+        efrontier = []
+        for target in targets:
+            weights = self.efficient_return(target, save_weights=False)
+            efrontier.append(
+                [annualised_portfolio_quantities(weights,
+                                                 self.meanReturns,
+                                                 self.cov_matrix)[1],
+                 target])
+        self.efrontier = np.array(efrontier)
+        return efrontier
     def dataframe_weights(self, weights):
         '''
         Generates and returns a pandas.DataFrame from given array weights.
