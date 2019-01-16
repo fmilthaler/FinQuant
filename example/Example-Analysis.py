@@ -17,7 +17,7 @@ import datetime
 # <codecell>
 
 # importing QPY's function to automatically build the portfolio
-from qpy.portfolio import buildPortfolio
+from quantpy.portfolio import buildPortfolio
 
 # <codecell>
 
@@ -147,11 +147,11 @@ pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
 # <markdowncell>
 
 # ## Moving Averages
-# `QPY` provides a module `qpy.moving_average` to compute moving averages. See below.
+# `QPY` provides a module `quantpy.moving_average` to compute moving averages. See below.
 
 # <codecell>
 
-from qpy.moving_average import SMA
+from quantpy.moving_average import SMA
 # simple moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # computing simple moving average over a span of 50 (trading) days
@@ -160,7 +160,7 @@ SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["MCD", "DIS"], grid = True)
 
 # <codecell>
 
-from qpy.moving_average import EMA
+from quantpy.moving_average import EMA
 # exponential moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # computing exponential moving average and plotting it
@@ -169,13 +169,13 @@ EMA(pf.data).plot(ax=ax, secondary_y = ["MCD", "DIS"])
 # <markdowncell>
 
 # ## Band of moving averages and Buy/Sell signals
-# `QPY` also provides a method `qpy.moving_average.computeMA` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
+# `QPY` also provides a method `quantpy.moving_average.computeMA` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
 # 
 # To learn more about it and its input arguments, read its docstring and see the example below.
 
 # <codecell>
 
-from qpy.moving_average import computeMA
+from quantpy.moving_average import computeMA
 print(computeMA.__doc__)
 
 # <codecell>
@@ -191,12 +191,12 @@ dis_ma.head(3)
 # <markdowncell>
 
 # ## Plot the Bollinger Band of one stock
-# The Bollinger Band can be automatically computed and plotted with the method `qpy.moving_average.plotBollingerBand`. See below for an example.
+# The Bollinger Band can be automatically computed and plotted with the method `quantpy.moving_average.plotBollingerBand`. See below for an example.
 
 # <codecell>
 
 # plot the bollinger band of the disney stock prices
-from qpy.moving_average import plotBollingerBand
+from quantpy.moving_average import plotBollingerBand
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
 span=20

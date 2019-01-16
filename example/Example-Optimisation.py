@@ -41,7 +41,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
 # importing QPY's function to automatically build the portfolio
-from qpy.portfolio import buildPortfolio
+from quantpy.portfolio import buildPortfolio
 
 # <codecell>
 
@@ -119,7 +119,7 @@ pf.ef_efficient_volatility(0.22)
 
 # <codecell>
 
-from qpy.efficient_frontier import EfficientFrontier
+from quantpy.efficient_frontier import EfficientFrontier
 
 # creating an instance of EfficientFrontier
 ef = EfficientFrontier(pf.compMeanReturns(freq=1),

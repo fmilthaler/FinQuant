@@ -1,6 +1,6 @@
 include common.mk
 
-PYDIR=qpy
+PYDIR=quantpy
 DATADIR=data
 EXAMPLEDIR=example
 CLEANDIRS = $(PYDIR:%=clean-%) $(EXAMPLEDIR:%=clean-%)
