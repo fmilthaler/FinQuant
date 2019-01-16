@@ -3,14 +3,13 @@
 
 # <markdowncell>
 
-# # Example:
-# ## Building a portfolio with `buildPortfolio()` with data obtained from data files.
+# # Example: Portfolio optimisation
 # 
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
 # <markdowncell>
 
-# ## Getting stock data
+# ### Getting stock data
 
 # <codecell>
 
@@ -42,15 +41,12 @@ plt.rcParams['figure.figsize'] = (10, 6)
 
 # <markdowncell>
 
-# ## Get data from disk/file
+# ### Get data from disk/file
 # Here we use `pandas.read_cvs()` method to read in the data.
 
 # <codecell>
 
 # stock data was previously pulled from quandl and stored in ex1-stockdata.csv
-# commands used to save data:
-# pf.getPortfolio().to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
-# pf.getPfStockData().to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
 # read data from files:
 df_pf = pd.read_csv("../data/ex1-portfolio.csv")
 df_data = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
@@ -67,7 +63,8 @@ pf.properties()
 
 # <markdowncell>
 
-# ## Portfolio optimisation
+# # Portfolio optimisation
+# ## Monte Carlo
 # Perform a Monte Carlo simulation to find the portfolio with the minimum volatility and maximum Sharpe Ratio.
 
 # <codecell>
@@ -84,17 +81,32 @@ opt_res
 
 opt_w
 
+# <markdowncell>
+
+# # Portfolio optimisation
+# ## Efficient Frontier
+# Based on the __Efficient Frontier__, the portfolio can be optimised for
+#  - minimum volatility
+#  - maximum Sharpe ratio
+#  - minimum volatility for a given target return
+#  - maximum Sharpe ratio for a given target volatility
+# 
+# See below for an example for each optimisation.
+
 # <codecell>
 
 from qpy.efficient_frontier import EfficientFrontier
 
+# creating an instance of EfficientFrontier
 ef = EfficientFrontier(pf.compMeanReturns(freq=1),
                        pf.compCov())
+# optimisation for maximum Sharpe ratio
 ef.maximum_sharpe_ratio()
 
 # <codecell>
 
-ef.properties()
+# printing out relevant quantities of the optimised portfolio
+(expectedReturn, volatility, sharpe) = ef.properties()
 
 # <codecell>
 
@@ -104,35 +116,49 @@ ef.properties()
 
 # <codecell>
 
-ef.efficient_return(1.0)
+# minimum volatility for a given target return of 0.26
+ef.efficient_return(0.26)
 ef.properties()
 
 # <codecell>
 
-ef.efficient_return(0.2)
-
-# <codecell>
-
+# maximum Sharpe ratio for a given target volatility of 0.22
+ef.efficient_return(0.22)
 ef.properties()
 
-# <codecell>
+# <markdowncell>
 
-
-
-# <codecell>
-
-ef.efficient_volatility(1, riskFreeRate=0.005)
+# # Computing and visualising the Efficient Frontier
 
 # <codecell>
 
-ef.properties()
+import numpy as np
+targets = np.linspace(0.12, 0.45, 50)
 
-# <codecell>
+# computing efficient frontier
+efficient_frontier = ef.efficient_frontier(targets)
+# plotting efficient frontier
+ef.plot_efrontier(show=False)
 
+# adding stocks of the portfolio to the plot
+stock_returns = pf.compMeanReturns()
+stock_volatility = pf.compStockVolatility()
 
+# adding stocks of the portfolio to the plot
+# plot stocks individually:
+plt.scatter(stock_volatility,
+            stock_returns,
+            marker='o',
+            s=200)
+# adding text to stocks in plot:
+for i, txt in enumerate(stock_returns.index):
+    plt.annotate(txt,
+                 (stock_volatility[i], stock_returns[i]),
+                 xytext=(10,0),
+                 textcoords='offset points',
+                 label=i)
 
-# <codecell>
-
+plt.legend(['efficient frontier', 'Stocks'])
 
 
 # <codecell>
