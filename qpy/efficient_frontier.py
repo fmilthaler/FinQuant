@@ -144,7 +144,10 @@ class EfficientFrontier(object):
             self.cov_matrix,
             riskFreeRate=riskFreeRate)
         if (verbose):
-            print("Expected annual return: {:.3f}".format(expectedReturn))
-            print("Annual volatility: {:.3f}".format(volatility))
-            print("Sharpe Ratio: {:.3f}".format(sharpe))
+            string = "Expected annual return: {:.3f}".format(expectedReturn)
+            string += "\nAnnual volatility: {:.3f}".format(volatility)
+            string += "\nSharpe Ratio: {:.3f}".format(sharpe)
+            string += "\nOptimal weights:"
+            string += "\n"+str(self.df_weights)
+            print(string)
         return (expectedReturn, volatility, sharpe)
