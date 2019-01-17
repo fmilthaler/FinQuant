@@ -71,7 +71,8 @@ def optimiseMC(data,
                freq=252,
                initial_weights=None,
                verbose=True,
-               plot=True):
+               plot=True,
+               show=False):
     '''
     Optimisation of the portfolio by performing a Monte Carlo simulation.
 
@@ -94,6 +95,9 @@ def optimiseMC(data,
          portfolio allocations
      * plot: Boolean (default: True), if True, a plot showing the results
          is produced
+     * show: Boolean (default: False) whether to do plt.show()
+        or not. Useful if more data should be plotted in the same
+        figure.
 
     Output:
      * opt: DataFrame with optimised investment strategies for maximum
@@ -157,7 +161,6 @@ def optimiseMC(data,
 
     # plot results
     if (plot):
-        plt.figure()
         # create scatter plot coloured by Sharpe Ratio
         plt.scatter(df_results['Volatility'],
                     df_results['Expected Return'],
@@ -195,6 +198,7 @@ def optimiseMC(data,
         cbar.ax.set_ylabel('Sharpe Ratio [period='
                            + str(freq)+']', rotation=90)
         plt.legend()
-        plt.show()
+        if (show):
+            plt.show()
 
     return opt_w, opt_res
