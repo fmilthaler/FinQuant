@@ -509,7 +509,7 @@ class Portfolio(object):
         plt.scatter(stock_volatility,
                     stock_returns,
                     marker='o',
-                    s=150,
+                    s=100,
                     label="Stocks")
         # adding text to stocks in plot:
         for i, txt in enumerate(stock_returns.index):
