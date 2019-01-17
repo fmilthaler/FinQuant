@@ -83,10 +83,24 @@ class EfficientFrontier(object):
         self.df_weights = None
         self.efrontier = None
 
-    def minimum_volatility(self):
+    def minimum_volatility(self, save_weights=True):
         '''
         Finds the portfolio with the minimum volatility.
+
+        Input:
+        * save_weights: Boolean (default: True), whether to save the optimised
+             weights in the instance variable weights (and df_weights). Useful
+             for the case of computing the efficient frontier after doing a
+             optimisation, else the optimal weights would be overwritten by the
+             efficient frontier computations.
+
+        Output:
+         * df_weights/weights:
+          - if "save_weights" is True: returning pandas.DataFrame of weights
+          - if "save_weights" is False: returning numpy.ndarray of weights
         '''
+        if (not isinstance(save_weights, bool)):
+            raise ValueError("save_weights is expected to be a boolean.")
         args = (self.meanReturns.values, self.cov_matrix.values)
         # optimisation
         result = sco.minimize(min_fun.portfolio_volatility,
@@ -96,22 +110,39 @@ class EfficientFrontier(object):
                               bounds=self.bounds,
                               constraints=self.constraints)
         # set optimal weights
-        self.weights = result['x']
-        self.df_weights = self.dataframe_weights(self.weights)
-        return self.df_weights
+        if (save_weights):
+            self.weights = result['x']
+            self.df_weights = self.dataframe_weights(self.weights)
+            return self.df_weights
+        else:
+            # not setting instance variables, and returning array instead
+            # of pandas.DataFrame
+            return result['x']
 
-    def maximum_sharpe_ratio(self, riskFreeRate=0.005):
+    def maximum_sharpe_ratio(self, riskFreeRate=0.005, save_weights=True):
         '''
         Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
         Input:
-         * riskFreeRate: Float (default: 0.005), the risk free rate as
+        * riskFreeRate: Float (default: 0.005), the risk free rate as
              required for the Sharpe Ratio
+        * save_weights: Boolean (default: True), whether to save the optimised
+             weights in the instance variable weights (and df_weights). Useful
+             for the case of computing the efficient frontier after doing a
+             optimisation, else the optimal weights would be overwritten by the
+             efficient frontier computations.
+
+        Output:
+         * df_weights/weights:
+          - if "save_weights" is True: returning pandas.DataFrame of weights
+          - if "save_weights" is False: returning numpy.ndarray of weights
         '''
         if (not isinstance(riskFreeRate, (int, float))):
-            raise ValueError("riskFreeRate is required to be an integer "
+            raise ValueError("riskFreeRate is expected to be an integer "
                              + "or float.")
+        if (not isinstance(save_weights, bool)):
+            raise ValueError("save_weights is expected to be a boolean.")
         args = (self.meanReturns.values, self.cov_matrix.values, riskFreeRate)
         # optimisation
         result = sco.minimize(min_fun.negative_sharpe_ratio,
@@ -121,9 +152,14 @@ class EfficientFrontier(object):
                               bounds=self.bounds,
                               constraints=self.constraints)
         # set optimal weights
-        self.weights = result['x']
-        self.df_weights = self.dataframe_weights(self.weights)
-        return self.df_weights
+        if (save_weights):
+            self.weights = result['x']
+            self.df_weights = self.dataframe_weights(self.weights)
+            return self.df_weights
+        else:
+            # not setting instance variables, and returning array instead
+            # of pandas.DataFrame
+            return result['x']
 
     def efficient_return(self, target, save_weights=True):
         '''
@@ -144,7 +180,9 @@ class EfficientFrontier(object):
           - if "save_weights" is False: returning numpy.ndarray of weights
         '''
         if (not isinstance(target, (int, float))):
-            raise ValueError("target is required to be an integer or float.")
+            raise ValueError("target is expected to be an integer or float.")
+        if (not isinstance(save_weights, bool)):
+            raise ValueError("save_weights is expected to be a boolean.")
         args = (self.meanReturns.values, self.cov_matrix.values)
         # here we have an additional constraint:
         constraints = (self.constraints,
@@ -179,7 +217,9 @@ class EfficientFrontier(object):
              required for the Sharpe Ratio
         '''
         if (not isinstance(target, (int, float))):
-            raise ValueError("target is required to be an integer or float.")
+            raise ValueError("target is expected to be an integer or float.")
+        if (not isinstance(riskFreeRate, (int, float))):
+            raise ValueError("riskFreeRate is expected to be an integer or float.")
         args = (self.meanReturns.values, self.cov_matrix.values, riskFreeRate)
         # here we have an additional constraint:
         constraints = (self.constraints,
