@@ -199,6 +199,34 @@ class Portfolio(object):
             else:
                 self.__totalinvestment = val
 
+    @property
+    def freq(self):
+        return self.__freq
+
+    @freq.setter
+    def freq(self, val):
+        if (not isinstance(val, int)):
+            raise ValueError("Time window/frequency must be an integer.")
+        elif (val <= 0):
+            raise ValueError("freq must be > 0.")
+        else:
+            self.__freq = val
+            # now that this changed, update other quantities
+            self._update()
+
+    @property
+    def riskFreeRate(self):
+        return self.__riskFreeRate
+
+    @riskFreeRate.setter
+    def riskFreeRate(self, val):
+        if (not isinstance(val, (float, int))):
+            raise ValueError("Risk free rate must be a float or an integer.")
+        else:
+            self.__riskFreeRate = val
+            # now that this changed, update other quantities
+            self._update()
+
     def addStock(self, stock):
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
@@ -227,12 +255,16 @@ class Portfolio(object):
         self.data.index.rename('Date', inplace=True)
 
     def _update(self):
-        self.totalinvestment = self.portfolio.FMV.sum()
-        self.expectedReturn = self.compExpectedReturn()
-        self.volatility = self.compVolatility()
-        self.sharpe = self.compSharpe()
-        self.skew = self._compSkew()
-        self.kurtosis = self._compKurtosis()
+        # sanity check (only update values if none of the below is empty):
+        if (not (self.portfolio.empty or
+                 self.stocks == {} or
+                 self.data.empty)):
+            self.totalinvestment = self.portfolio.FMV.sum()
+            self.expectedReturn = self.compExpectedReturn(freq=self.freq)
+            self.volatility = self.compVolatility(freq=self.freq)
+            self.sharpe = self.compSharpe()
+            self.skew = self._compSkew()
+            self.kurtosis = self._compKurtosis()
 
     def getStock(self, name):
         '''
