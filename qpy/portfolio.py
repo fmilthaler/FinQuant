@@ -75,8 +75,8 @@ class Stock(object):
         # compute expected return and volatility of stock
         self.expectedReturn = self.compExpectedReturn()
         self.volatility = self.compVolatility()
-        self.skew = self.__compSkew()
-        self.kurtosis = self.__compKurtosis()
+        self.skew = self._compSkew()
+        self.kurtosis = self._compKurtosis()
 
     # functions to compute quantities
     def compDailyReturns(self):
@@ -194,13 +194,8 @@ class Portfolio(object):
         # also add stock data of stock to the dataframe
         self._addStockData(stock.data)
 
-        # compute expected return, volatility and Sharpe ratio of portfolio
-        self.totalinvestment = self.portfolio.FMV.sum()
-        self.expectedReturn = self.compExpectedReturn()
-        self.volatility = self.compVolatility()
-        self.sharpe = self.compSharpe()
-        self.skew = self.__compSkew()
-        self.kurtosis = self.__compKurtosis()
+        # update quantities of portfolio
+        self._update()
 
     def _addStockData(self, df):
         # loop over columns in given dataframe
@@ -213,6 +208,14 @@ class Portfolio(object):
         self.data.set_index(df.index.values, inplace=True)
         # set index name:
         self.data.index.rename('Date', inplace=True)
+
+    def _update(self):
+        self.totalinvestment = self.portfolio.FMV.sum()
+        self.expectedReturn = self.compExpectedReturn()
+        self.volatility = self.compVolatility()
+        self.sharpe = self.compSharpe()
+        self.skew = self._compSkew()
+        self.kurtosis = self._compKurtosis()
 
     def getStock(self, name):
         '''
