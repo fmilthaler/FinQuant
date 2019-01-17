@@ -281,6 +281,8 @@ class Portfolio(object):
          * pandas.DataFrame with the individual volatilities of all stocks
              of the portfolio
         '''
+        if (not isinstance(freq, int)):
+            raise ValueError("freq is expected to be an integer.")
         return self.compDailyReturns().std() * np.sqrt(freq)
 
     def compWeights(self):
@@ -300,6 +302,8 @@ class Portfolio(object):
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         '''
+        if (not isinstance(freq, int)):
+            raise ValueError("freq is expected to be an integer.")
         pf_return_means = historicalMeanReturn(self.data,
                                                freq=freq)
         weights = self.compWeights()
@@ -315,6 +319,8 @@ class Portfolio(object):
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         '''
+        if (not isinstance(freq, int)):
+            raise ValueError("freq is expected to be an integer.")
         # computing the volatility of a portfolio
         volatility = weightedStd(self.compCov(),
                                  self.compWeights()) * np.sqrt(freq)
