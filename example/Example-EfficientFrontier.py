@@ -64,26 +64,6 @@ pf.properties()
 # <markdowncell>
 
 # # Portfolio optimisation
-# ## Monte Carlo
-# Perform a Monte Carlo simulation to find the portfolio with the minimum volatility and maximum Sharpe Ratio.
-
-# <codecell>
-
-opt_w, opt_res = pf.optimisePortfolio(num_trials=5000,
-                                      verbose=True,
-                                      plot=True)
-
-# <codecell>
-
-opt_res
-
-# <codecell>
-
-opt_w
-
-# <markdowncell>
-
-# # Portfolio optimisation
 # ## Efficient Frontier
 # Based on the __Efficient Frontier__, the portfolio can be optimised for
 #  - minimum volatility
@@ -92,6 +72,12 @@ opt_w
 #  - maximum Sharpe ratio for a given target volatility
 # 
 # See below for an example for each optimisation.
+
+# <codecell>
+
+# if needed, change risk free rate and frequency/time window of the portfolio
+print("pf.riskFreeRate = {}".format(pf.riskFreeRate))
+print("pf.freq = {}".format(pf.freq))
 
 # <codecell>
 
@@ -110,7 +96,7 @@ pf.ef_efficient_return(0.26, verbose=True)
 # <codecell>
 
 # maximum Sharpe ratio for a given target volatility of 0.22
-pf.ef_efficient_volatility(0.22, riskFreeRate=0.005, verbose=True)
+pf.ef_efficient_volatility(0.22, verbose=False)
 
 # <markdowncell>
 
@@ -145,40 +131,43 @@ targets = np.linspace(0.12, 0.45, 50)
 efficient_frontier = ef.efficient_frontier(targets)
 # plotting efficient frontier
 ef.plot_efrontier(show=False)
+# adding markers to optimal solutions
+pf.ef.plot_optimal_portfolios()
 
-# adding stocks of the portfolio to the plot
-stock_returns = pf.compMeanReturns()
-stock_volatility = pf.compStockVolatility()
+# bonus:
+# and adding the individual stocks to the plot
+pf.plot_stocks(show=False)
 
-# adding stocks of the portfolio to the plot
-# plot stocks individually:
-plt.scatter(stock_volatility,
-            stock_returns,
-            marker='o',
-            s=200)
-# adding text to stocks in plot:
-for i, txt in enumerate(stock_returns.index):
-    plt.annotate(txt,
-                 (stock_volatility[i], stock_returns[i]),
-                 xytext=(10,0),
-                 textcoords='offset points',
-                 label=i)
+# <markdowncell>
 
-plt.legend(['efficient frontier', 'Stocks'])
-
+# # Portfolio optimisation
+# ## Monte Carlo
+# Perform a Monte Carlo simulation to find the portfolio with the minimum volatility and maximum Sharpe Ratio.
 
 # <codecell>
 
-
-
-# <codecell>
-
-
+opt_w, opt_res = pf.optimisePortfolio(num_trials=5000,
+                                      verbose=True,
+                                      plot=True)
 
 # <codecell>
 
-
+opt_res
 
 # <codecell>
 
+opt_w
 
+# <markdowncell>
+
+# # Optimisation overlay
+# ## Overlay of Monte Carlo portfolios and Efficient Frontier solutions
+
+# <codecell>
+
+opt_w, opt_res = pf.optimisePortfolio(num_trials=5000,
+                                      verbose=False,
+                                      plot=True)
+pf.ef_plot_efrontier(show=False)
+pf.ef.plot_optimal_portfolios()
+pf.plot_stocks(show=False)
