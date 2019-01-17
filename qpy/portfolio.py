@@ -78,12 +78,6 @@ class Stock(object):
         self.skew = self.__compSkew()
         self.kurtosis = self.__compKurtosis()
 
-    def getInvestmentInfo(self):
-        '''
-        Returns pandas.DataFrame of FMV and other information provided
-        '''
-        return self.investmentinfo
-
     # functions to compute quantities
     def compDailyReturns(self):
         '''
@@ -193,7 +187,7 @@ class Portfolio(object):
         self.stocks.update({stock.name: stock})
         # adding information of stock to the portfolio
         self.portfolio = self.portfolio.append(
-            stock.getInvestmentInfo(),
+            stock.investmentinfo,
             ignore_index=True)
         # setting an appropriate name for the portfolio
         self.portfolio.name = "Portfolio information"
