@@ -322,13 +322,12 @@ goog.properties()
 
 # <codecell>
 
-df = pf.data
-df.loc[str(datetime.datetime(2015,1,2))]
+pf.data.loc[str(datetime.datetime(2015,1,2))]
 
 # <codecell>
 
-df.loc[df.index>datetime.datetime(2016,1,2)].head(3)
+pf.data.loc[pf.data.index>datetime.datetime(2016,1,2)].head(3)
 
 # <codecell>
 
-df.loc[df.index.year==2017].head(3)
+pf.data.loc[pf.data.index.year==2017].head(3)
