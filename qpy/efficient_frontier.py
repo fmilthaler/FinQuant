@@ -24,12 +24,14 @@ class EfficientFrontier(object):
      - maximum Sharpe ratio for a given target volatility
     '''
 
-    def __init__(self, meanReturns, cov_matrix, method='SLSQP'):
+    def __init__(self, meanReturns, cov_matrix, freq=252, method='SLSQP'):
         '''
         Input:
          * meanReturns: pandas.Series, individual expected returns for all
              stocks in the portfolio
          * cov_matrix: pandas.DataFrame, covariance matrix of returns
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
          * method: string (default: "SLSQP"), type of solver method to use,
              must be one of:
              - 'Nelder-Mead'
@@ -65,6 +67,7 @@ class EfficientFrontier(object):
         # instance variables
         self.meanReturns = meanReturns
         self.cov_matrix = cov_matrix
+        self.freq = freq
         self.method = method
         self.names = list(meanReturns.index)
         self.num_stocks = len(self.names)
@@ -212,7 +215,8 @@ class EfficientFrontier(object):
             efrontier.append(
                 [annualised_portfolio_quantities(weights,
                                                  self.meanReturns,
-                                                 self.cov_matrix)[1],
+                                                 self.cov_matrix,
+                                                 freq=self.freq)[1],
                  target])
         self.efrontier = np.array(efrontier)
         return efrontier
@@ -269,7 +273,8 @@ class EfficientFrontier(object):
             self.weights,
             self.meanReturns,
             self.cov_matrix,
-            riskFreeRate=riskFreeRate)
+            riskFreeRate=riskFreeRate,
+            freq=self.freq)
         if (verbose):
             string = "Expected annual return: {:.3f}".format(expectedReturn)
             string += "\nAnnual volatility: {:.3f}".format(volatility)
