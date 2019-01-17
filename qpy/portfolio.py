@@ -177,6 +177,8 @@ class Portfolio(object):
         self.skew = None
         self.kurtosis = None
         self.totalinvestment = None
+        self.riskFreeRate = 0.005
+        self.freq = 252
         # instance variable for efficient frontier optimisations
         self.ef = None
 
@@ -336,17 +338,14 @@ class Portfolio(object):
         returns = dailyReturns(self.data)
         return returns.cov()
 
-    def compSharpe(self, riskFreeRate=0.005):
+    def compSharpe(self):
         '''
         Compute and return the Sharpe ratio of the portfolio
-
-        Input:
-         * riskFreeRate: Float (default=0.005), risk free rate
         '''
         # compute the Sharpe Ratio of the portfolio
         sharpe = sharpeRatio(self.expectedReturn,
                              self.volatility,
-                             riskFreeRate)
+                             self.riskFreeRate)
         self.sharpe = sharpe
         return sharpe
 
@@ -372,7 +371,9 @@ class Portfolio(object):
         if (self.ef is None):
             # create instance of EfficientFrontier
             self.ef = EfficientFrontier(self.compMeanReturns(freq=1),
-                                        self.compCov())
+                                        self.compCov(),
+                                        riskFreeRate=self.riskFreeRate,
+                                        freq=self.freq)
         return self.ef
 
     def ef_minimum_volatility(self, verbose=False):
@@ -392,22 +393,20 @@ class Portfolio(object):
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_maximum_sharpe_ratio(self, riskFreeRate=0.005, verbose=False):
+    def ef_maximum_sharpe_ratio(self, verbose=False):
         '''
         Interface to ef.maximum_sharpe_ratio()
         Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
         Input:
-         * riskFreeRate: Float (default: 0.005), the risk free rate as
-             required for the Sharpe Ratio
          * verbose: Boolean (default=False), whether to print out properties
              or not
         '''
         # get instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
-        opt_weights = ef.maximum_sharpe_ratio(riskFreeRate=riskFreeRate)
+        opt_weights = ef.maximum_sharpe_ratio()
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
@@ -431,10 +430,7 @@ class Portfolio(object):
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_volatility(self,
-                                target,
-                                riskFreeRate=0.005,
-                                verbose=False):
+    def ef_efficient_volatility(self, target, verbose=False):
         '''
         Interface to ef.efficient_volatility()
         Finds the portfolio with the maximum Sharpe ratio for a given
@@ -442,16 +438,13 @@ class Portfolio(object):
 
         Input:
          * target: Float, the target volatility of the optimised portfolio.
-         * riskFreeRate: Float (default: 0.005), the risk free rate as
-             required for the Sharpe Ratio
          * verbose: Boolean (default=False), whether to print out properties
              or not
         '''
         # get instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
-        opt_weights = ef.efficient_volatility(target,
-                                              riskFreeRate=riskFreeRate)
+        opt_weights = ef.efficient_volatility(target)
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
@@ -527,7 +520,6 @@ class Portfolio(object):
     def optimisePortfolio(self,
                           total_investment=None,
                           num_trials=10000,
-                          riskFreeRate=0.005,
                           freq=252,
                           verbose=True,
                           plot=True):
@@ -540,8 +532,6 @@ class Portfolio(object):
          * num_trials: Integer (default: 10000), number of portfolios to be
              computed, each with a random distribution of weights/investments
              in each stock
-         * riskFreeRate: Float (default: 0.005), the risk free rate as required
-             for the Sharpe Ratio
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
          * verbose: Boolean (default: True), if True, prints out optimised
@@ -556,7 +546,7 @@ class Portfolio(object):
         return optimiseMC(self.data,
                           num_trials=num_trials,
                           total_investment=total_investment,
-                          riskFreeRate=riskFreeRate,
+                          riskFreeRate=self.riskFreeRate,
                           freq=freq,
                           initial_weights=self.compWeights().values,
                           verbose=verbose,
