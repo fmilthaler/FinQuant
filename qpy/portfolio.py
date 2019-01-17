@@ -559,9 +559,11 @@ class Portfolio(object):
         of the stocks across the portfolio.
         '''
         # nicely printing out information and quantities of the portfolio
-        string = "-"*50
+        string = "-"*70
         stocknames = self.portfolio.Name.values.tolist()
         string += "\nStocks: {}".format(", ".join(stocknames))
+        string += "\nTime window/frequency: {}".format(self.freq)
+        string += "\nRisk free rate: {}".format(self.riskFreeRate)
         string += "\nPortfolio expected return: {:0.3f}".format(
             self.expectedReturn)
         string += "\nPortfolio volatility: {:0.3f}".format(
@@ -575,7 +577,7 @@ class Portfolio(object):
         string += "\nInformation:"
         string += "\n"+str(self.portfolio)
         string += "\n"
-        string += "-"*50
+        string += "-"*70
         print(string)
 
     def __str__(self):

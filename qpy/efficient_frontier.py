@@ -375,10 +375,15 @@ class EfficientFrontier(object):
             riskFreeRate=self.riskFreeRate,
             freq=self.freq)
         if (verbose):
-            string = "Expected annual return: {:.3f}".format(expectedReturn)
+            string = "-"*70
+            string += "\nTime window/frequency: {}".format(self.freq)
+            string += "\nRisk free rate: {}".format(self.riskFreeRate)
+            string += "\nExpected annual return: {:.3f}".format(expectedReturn)
             string += "\nAnnual volatility: {:.3f}".format(volatility)
             string += "\nSharpe Ratio: {:.3f}".format(sharpe)
-            string += "\nOptimal weights:"
+            string += "\n\nOptimal weights:"
             string += "\n"+str(self.df_weights.transpose())
+            string += "\n"
+            string += "-"*70
             print(string)
         return (expectedReturn, volatility, sharpe)
