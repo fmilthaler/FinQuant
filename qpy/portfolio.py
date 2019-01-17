@@ -489,13 +489,12 @@ class Portfolio(object):
         '''
         self.ef.plot_efrontier(show=show)
 
-    def plot_stocks(self, riskFreeRate=0.005, freq=252, show=True):
+    def plot_stocks(self, freq=252, show=True):
         '''
         Plots the expected annual returns over annual volatility of
         the stocks of the portfolio.
 
         Input:
-         * riskFreeRate: Float (default=0.005), risk free rate
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
          * show: Boolean (default: True) whether to do plt.show()
