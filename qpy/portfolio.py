@@ -602,11 +602,11 @@ class Portfolio(object):
             self.volatility)
         string += "\nPortfolio Sharpe ratio: {:0.3f}".format(
             self.sharpe)
-        string += "\nSkewness:"
+        string += "\n\nSkewness:"
         string += "\n"+str(self.skew.to_frame().transpose())
-        string += "\nKurtosis:"
+        string += "\n\nKurtosis:"
         string += "\n"+str(self.kurtosis.to_frame().transpose())
-        string += "\nInformation:"
+        string += "\n\nInformation:"
         string += "\n"+str(self.portfolio)
         string += "\n"
         string += "-"*70
