@@ -111,13 +111,13 @@ class Stock(object):
         '''
         return self.compDailyReturns().std() * np.sqrt(freq)
 
-    def __compSkew(self):
+    def _compSkew(self):
         '''
         Computes and returns the skewness of the stock.
         '''
         return self.data.skew().values[0]
 
-    def __compKurtosis(self):
+    def _compKurtosis(self):
         '''
         Computes and returns the Kurtosis of the stock.
         '''
@@ -318,13 +318,13 @@ class Portfolio(object):
         self.sharpe = sharpe
         return sharpe
 
-    def __compSkew(self):
+    def _compSkew(self):
         '''
         Computes and returns the skewness of the stocks in the portfolio.
         '''
         return self.data.skew()
 
-    def __compKurtosis(self):
+    def _compKurtosis(self):
         '''
         Computes and returns the Kurtosis of the stocks in the portfolio.
         '''
