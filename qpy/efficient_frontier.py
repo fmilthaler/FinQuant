@@ -238,17 +238,33 @@ class EfficientFrontier(object):
         self.df_weights = self.dataframe_weights(self.weights)
         return self.df_weights
 
-    def efficient_frontier(self, targets):
+    def efficient_frontier(self, targets=None):
         '''
         Gets portfolios for a range of given target returns.
+        If no targets were provided, the algorithm will find the minimum
+        and maximum returns of the portfolio's individual stocks, and set
+        the target range according to those values.
         Results in the Efficient Frontier.
 
         Input:
-         * targets: list of floats, range of target returns
+         * targets: list/numpy.ndarray (default: None) of floats,
+             range of target returns.
 
         Output:
-         * array of (volatility, return) values
+         * numpy.array of (volatility, return) values
         '''
+        if (targets is not None and
+            not isinstance(targets, (list, np.ndarray))):
+            raise ValueError("targets is expected to be a list or numpy.array")
+        elif (targets is None):
+            # set range of target returns from the individual expected
+            # returns of the stocks in the portfolio.
+            min_return = self.meanReturns.min() * self.freq
+            max_return = self.meanReturns.max() * self.freq
+            targets = np.linspace(round(min_return,3),
+                                  round(max_return,3), 100)
+ 
+        # compute the efficient frontier
         efrontier = []
         for target in targets:
             weights = self.efficient_return(target, save_weights=False)
@@ -259,7 +275,7 @@ class EfficientFrontier(object):
                                                  freq=self.freq)[1],
                  target])
         self.efrontier = np.array(efrontier)
-        return efrontier
+        return self.efrontier
 
     def plot_efrontier(self, show=True):
         '''
