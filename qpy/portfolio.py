@@ -438,6 +438,38 @@ class Portfolio(object):
         ef.properties(verbose=verbose)
         return opt_weights
 
+    def ef_efficient_frontier(self, targets=None):
+        '''
+        Gets portfolios for a range of given target returns.
+        If no targets were provided, the algorithm will find the minimum
+        and maximum returns of the portfolio's individual stocks, and set
+        the target range according to those values.
+        Results in the Efficient Frontier.
+
+        Input:
+         * targets: list/numpy.ndarray (default: None) of floats,
+             range of target returns
+
+        Output:
+         * array of (volatility, return) values
+        '''
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get instance of EfficientFrontier
+        ef = self.get_EF()
+        # perform optimisation
+        efrontier = ef.efficient_frontier(targets)
+        return efrontier
+
+    def ef_plot_efrontier(self, show=True):
+        '''
+        Plots the Efficient Frontier.
+
+        Input:
+         * show: boolean (default: True) whether to do plt.show()
+             or not. Useful if more data should be plotted in the same
+             figure.
+        '''
+        self.ef.plot_efrontier(show=show)
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
     def optimisePortfolio(self,
