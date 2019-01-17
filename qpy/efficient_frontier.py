@@ -304,6 +304,44 @@ class EfficientFrontier(object):
         if (show):
             plt.show()
 
+    def plot_optimal_portfolios(self):
+        '''
+        Plots the Efficient Frontier and a marker for the minimum volatility
+        and maximum Sharpe ratio.
+        '''
+        #if (self.efrontier is None):
+        #    # compute efficient frontier first
+        #    efrontier = efficient_frontier()
+        # compute optimal portfolios
+        min_vol_weights = self.minimum_volatility(save_weights=False)
+        max_sharpe_weights = self.maximum_sharpe_ratio(save_weights=False)
+        # compute return and volatility for each portfolio
+        min_vol_vals = \
+            list(annualised_portfolio_quantities(min_vol_weights,
+                                                 self.meanReturns,
+                                                 self.cov_matrix,
+                                                 freq=self.freq))[0:2]
+        min_vol_vals.reverse()
+        max_sharpe_vals = \
+            list(annualised_portfolio_quantities(max_sharpe_weights,
+                                                 self.meanReturns,
+                                                 self.cov_matrix,
+                                                 freq=self.freq))[0:2]
+        max_sharpe_vals.reverse()
+        plt.scatter(min_vol_vals[0],
+                 min_vol_vals[1],
+                 marker='X',
+                 color='g',
+                 s=150,
+                 label='EF min Volatility')
+        plt.scatter(max_sharpe_vals[0],
+                 max_sharpe_vals[1],
+                 marker='X',
+                 color='r',
+                 s=150,
+                 label='EF max Sharpe Ratio')
+        plt.legend()
+
     def dataframe_weights(self, weights):
         '''
         Generates and returns a pandas.DataFrame from given array weights.
