@@ -3,6 +3,8 @@ Provides functions to compute quantities relevant to financial portfolios,
 e.g. a weighted average, which is the expected value/return, a weighted
 standard deviation (volatility), and the Sharpe ratio.
 '''
+
+
 import numpy as np
 
 
