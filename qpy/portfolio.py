@@ -31,10 +31,21 @@ financial portfolio, and make the most common quantitative calculations:
 Furthermore, the constructed portfolio can be optimised for
  - minimum volatility,
  - maximum Sharpe ratio
+ - minimum volatility for a given expected return
+ - maximum Sharpe ratio for a given target volatility
 by either performing a numerical computation to based on the Efficient
-Frontier, or by simply performing a Monte Carlo simulation of n trials.
-The former method should be preferred for reasons of computational effort
+Frontier, or by performing a Monte Carlo simulation of `n` trials.
+The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
+
+Finally, methods are implemented to generated the following plots:
+ - Monte Carlo run to find optimal portfolio(s)
+ - Efficient Frontier
+ - Portfolio with the minimum volatility based on an Efficient Frontier optimisation
+ - Portfolio with the maximum Sharpe ratio based on an Efficient Frontier optimisation
+ - Portfolio with the minimum volatility for a given expected return based on an Efficient Frontier optimisation
+ - Portfolio with the maximum Sharpe ratio for a given target volatility based on an Efficient Frontier optimisation
+ - Individual stocks of the portfolio (expected return over volatility)
 '''
 
 
