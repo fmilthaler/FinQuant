@@ -40,6 +40,7 @@ and accuracy. The latter is only included for the sake of completeness.
 
 import numpy as np
 import pandas as pd
+import matplotlib.pylab as plt
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
 from qpy.optimisation import optimiseMC
 from qpy.returns import historicalMeanReturn
@@ -470,6 +471,39 @@ class Portfolio(object):
              figure.
         '''
         self.ef.plot_efrontier(show=show)
+
+    def plot_stocks(self, riskFreeRate=0.005, freq=252, show=True):
+        '''
+        Plots the expected annual returns over annual volatility of
+        the stocks of the portfolio.
+
+        Input:
+         * riskFreeRate: Float (default=0.005), risk free rate
+         * freq: Integer (default: 252), number of trading days, default
+             value corresponds to trading days in a year
+         * show: Boolean (default: True) whether to do plt.show()
+             or not. Useful if more data should be plotted in the same
+             figure.
+        '''
+        # annual mean returns of all stocks
+        stock_returns = self.compMeanReturns(freq=freq)
+        stock_volatility = self.compStockVolatility(freq=freq)
+        # adding stocks of the portfolio to the plot
+        # plot stocks individually:
+        plt.scatter(stock_volatility,
+                    stock_returns,
+                    marker='o',
+                    s=150)
+        # adding text to stocks in plot:
+        for i, txt in enumerate(stock_returns.index):
+            plt.annotate(txt,
+                         (stock_volatility[i], stock_returns[i]),
+                         xytext=(10,0),
+                         textcoords='offset points',
+                         label=i)
+        if (show):
+            plt.show()
+
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
     def optimisePortfolio(self,
