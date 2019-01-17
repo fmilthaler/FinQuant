@@ -286,6 +286,8 @@ class EfficientFrontier(object):
              or not. Useful if more data should be plotted in the same
              figure.
         '''
+        if (not isinstance(show, bool)):
+            raise ValueError("show is expected to be a boolean.")
         plt.plot(self.efrontier[:, 0],
                  self.efrontier[:, 1],
                  linestyle='-.',
@@ -311,6 +313,8 @@ class EfficientFrontier(object):
              index=self.names,
              columns=['Allocation'])
         '''
+        if (not isinstance(weights, np.ndarray)):
+            raise ValueError("weights is expected to be a numpy.array")
         return pd.DataFrame(weights, index=self.names, columns=['Allocation'])
 
     def properties(self, riskFreeRate=0.005, verbose=False):
@@ -323,6 +327,10 @@ class EfficientFrontier(object):
          * verbose: Boolean (default: False), whether to print out properties
              or not
         '''
+        if (not isinstance(riskFreeRate, (int, float))):
+            raise ValueError("riskFreeRate is expected to be an integer or float.")
+        if (not isinstance(verbose, bool)):
+            raise ValueError("verbose is expected to be a boolean.")
         if (self.weights is None):
             raise ValueError("Perform an optimisation first.")
         expectedReturn, volatility, sharpe = annualised_portfolio_quantities(
