@@ -174,14 +174,14 @@ def optimiseMC(data,
                     opt_res.loc['Min Volatility']['Expected Return'],
                     marker='^',
                     color='g',
-                    s=200,
+                    s=100,
                     label='min Volatility')
         # mark in red the highest sharpe ratio
         plt.scatter(opt_res.loc['Max Sharpe Ratio']['Volatility'],
                     opt_res.loc['Max Sharpe Ratio']['Expected Return'],
                     marker='^',
                     color='r',
-                    s=200,
+                    s=100,
                     label='max Sharpe Ratio')
         # also set marker for initial portfolio, if weights were given
         if (initial_weights is not None):
@@ -189,7 +189,7 @@ def optimiseMC(data,
                         initial_return,
                         marker='^',
                         color='k',
-                        s=200,
+                        s=100,
                         label='Initial Portfolio')
         plt.title('Monte Carlo simulation to optimise the portfolio based '
                   + 'on the Efficient Frontier')
