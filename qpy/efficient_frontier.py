@@ -288,6 +288,9 @@ class EfficientFrontier(object):
         '''
         if (not isinstance(show, bool)):
             raise ValueError("show is expected to be a boolean.")
+        if (self.efrontier is None):
+            # compute efficient frontier first
+            self.efficient_frontier()
         plt.plot(self.efrontier[:, 0],
                  self.efrontier[:, 1],
                  linestyle='-.',
