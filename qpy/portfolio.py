@@ -509,7 +509,8 @@ class Portfolio(object):
         plt.scatter(stock_volatility,
                     stock_returns,
                     marker='o',
-                    s=150)
+                    s=150,
+                    label="Stocks")
         # adding text to stocks in plot:
         for i, txt in enumerate(stock_returns.index):
             plt.annotate(txt,
@@ -517,6 +518,7 @@ class Portfolio(object):
                          xytext=(10,0),
                          textcoords='offset points',
                          label=i)
+            plt.legend()
         if (show):
             plt.show()
 
