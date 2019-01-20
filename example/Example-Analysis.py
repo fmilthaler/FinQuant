@@ -16,7 +16,7 @@ import datetime
 
 # <codecell>
 
-# importing QPY's function to automatically build the portfolio
+# importing QuantPy's function to automatically build the portfolio
 from quantpy.portfolio import buildPortfolio
 
 # <codecell>
@@ -95,7 +95,7 @@ pf.properties()
 # <markdowncell>
 
 # ## Daily returns and log returns
-# `QPY` provides functions to compute daily returns and annualised mean returns of a given DataFrame in various ways.
+# `QuantPy` provides functions to compute daily returns and annualised mean returns of a given DataFrame in various ways.
 
 # <codecell>
 
@@ -147,7 +147,7 @@ pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
 # <markdowncell>
 
 # ## Moving Averages
-# `QPY` provides a module `quantpy.moving_average` to compute moving averages. See below.
+# `QuantPy` provides a module `quantpy.moving_average` to compute moving averages. See below.
 
 # <codecell>
 
@@ -169,7 +169,7 @@ EMA(pf.data).plot(ax=ax, secondary_y = ["MCD", "DIS"])
 # <markdowncell>
 
 # ## Band of moving averages and Buy/Sell signals
-# `QPY` also provides a method `quantpy.moving_average.computeMA` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
+# `QuantPy` also provides a method `quantpy.moving_average.computeMA` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
 # 
 # To learn more about it and its input arguments, read its docstring and see the example below.
 
