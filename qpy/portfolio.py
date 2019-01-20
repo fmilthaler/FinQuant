@@ -458,7 +458,7 @@ def _getStocksDataColumns(data, names, cols):
 
         Input:
          * data: A DataFrame which contains quantities of the stocks
-             listed in pf_information
+             listed in pf_allocation
          * names: A string or list of strings, containing the names of the
              stocks, e.g. 'GOOG' for Google.
          * cols: A list of strings of column labels of data to be
@@ -511,8 +511,8 @@ def _getStocksDataColumns(data, names, cols):
     return data
 
 
-def _buildPortfolioFromQuandl(pf_information,
-                              names,
+def _buildPortfolioFromQuandl(names,
+                              pf_allocation,
                               start_date=None,
                               end_date=None):
     '''
@@ -520,10 +520,10 @@ def _buildPortfolioFromQuandl(pf_information,
     of stocks.
 
     Input:
-     * pf_information: DataFrame with the required data column
-         labels "Name" and "FMV" of the stocks.
      * names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
+     * pf_allocation: DataFrame with the required data column
+         labels "Name" and "FMV" of the stocks.
      * start_date (optional): String/datetime start date of stock data to
          be requested through quandl (default: None)
      * end_date (optional): String/datetime end date of stock data to be
@@ -537,7 +537,7 @@ def _buildPortfolioFromQuandl(pf_information,
     # request data from quandl:
     data = _quandlRequest(names, start_date, end_date)
     # build portfolio:
-    pf = _buildPortfolioFromDf(pf_information, data)
+    pf = _buildPortfolioFromDf(data, pf_allocation)
     return pf
 
 
@@ -549,17 +549,17 @@ def _stocknamesInDataColumns(names, df):
     return any((name in label for name in names for label in df.columns))
 
 
-def _buildPortfolioFromDf(pf_information,
-                          data,
+def _buildPortfolioFromDf(data,
+                          pf_allocation=None,
                           datacolumns=["Adj. Close"]):
     '''
     Returns a portfolio based on input in form of pandas.DataFrame.
 
     Input:
-     * pf_information: DataFrame with the required data column labels
-         "Name" and "FMV" of the stocks.
      * data: A DataFrame which contains prices of the stocks listed in
-         pf_information
+         pf_allocation
+     * pf_allocation: DataFrame with the required data column labels
+         "Name" and "FMV" of the stocks.
      * datacolumns (optional): A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
     Output:
@@ -567,26 +567,26 @@ def _buildPortfolioFromDf(pf_information,
          requested by the user.
     '''
     # make sure stock names are in data dataframe
-    if (not _stocknamesInDataColumns(pf_information.Name.values,
+    if (not _stocknamesInDataColumns(pf_allocation.Name.values,
                                      data)):
         raise ValueError("Error: None of the provided stock names were"
                          + "found in the provided dataframe.")
     # extract only 'Adj. Close' column from DataFrame:
     data = _getStocksDataColumns(data,
-                                 pf_information.Name.values,
+                                 pf_allocation.Name.values,
                                  datacolumns)
     # building portfolio:
     pf = Portfolio()
-    for i in range(len(pf_information)):
+    for i in range(len(pf_allocation)):
         # get name of stock
-        name = pf_information.loc[i].Name
+        name = pf_allocation.loc[i].Name
         # extract data column(s) of said stock
         stock_data = data.filter(regex=name).copy(deep=True)
         # if only one data column per stock exists, give dataframe a name
         if (len(datacolumns) == 1):
             stock_data.name = datacolumns[0]
         # create Stock instance and add it to portfolio
-        pf.addStock(Stock(pf_information.loc[i],
+        pf.addStock(Stock(pf_allocation.loc[i],
                           data=stock_data))
     return pf
 
@@ -612,14 +612,16 @@ def _listComplement(A, B):
     return list(set(B) - set(A))
 
 
-def buildPortfolio(pf_information, **kwargs):
+def buildPortfolio(**kwargs):
     '''
-    This function builds and returns a portfolio given a set ofinput
+    This function builds and returns a portfolio given a set of input
     arguments.
 
     Input:
-     * pf_information: This input is always required. DataFrame with
-         the required data column labels "Name" and "FMV" of the stocks.
+     * pf_allocation (optional): DataFrame with the required data column
+         labels "Name" and "FMV" of the stocks. If not given, it is
+         automatically generated with an equal weights for all stocks
+         in the resulting portfolio
      * names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      * start (optional): String/datetime start date of stock data to be
@@ -627,14 +629,14 @@ def buildPortfolio(pf_information, **kwargs):
      * end (optional): String/datetime end date of stock data to be
          requested through quandl (default: None)
      * data (optional): A DataFrame which contains quantities of
-         the stocks listed in pf_information
+         the stocks listed in pf_allocation
     Output:
      * pf: Instance of Portfolio which contains all the information
          requested by the user.
 
     Only the following combinations of inputs are allowed:
-     * pf_information, names, start_date (optional), end_date (optional)
-     * pf_information, data
+     * pf_allocation (optional), names, start_date (optional), end_date (optional)
+     * pf_allocation (optional), data
 
     Moreover, the two different ways this function can be used are useful
     for
@@ -653,13 +655,15 @@ def buildPortfolio(pf_information, **kwargs):
     pf = Portfolio()
 
     # list of all valid optional input arguments
-    allInputArgs = ['names',
+    allInputArgs = ['pf_allocation',
+                    'names',
                     'start_date',
                     'end_date',
                     'data']
 
-    # 1. names, start_date, end_date
-    allowedInputArgs = ['names',
+    # 1. pf_allocation, names, start_date, end_date
+    allowedInputArgs = ['pf_allocation',
+                        'names',
                         'start_date',
                         'end_date']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
@@ -669,10 +673,11 @@ def buildPortfolio(pf_information, **kwargs):
             raise ValueError(inputError.format(
                 complementInputArgs, allowedInputArgs))
         # get portfolio:
-        pf = _buildPortfolioFromQuandl(pf_information, **kwargs)
+        pf = _buildPortfolioFromQuandl(**kwargs)
 
-    # 2. data
-    allowedInputArgs = ['data']
+    # 2. pf_allocation, data
+    allowedInputArgs = ['pf_allocation',
+                        'data']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
     if (_allListEleInOther(['data'], kwargs.keys())):
         # check that no input argument conflict arises:
@@ -681,6 +686,6 @@ def buildPortfolio(pf_information, **kwargs):
             raise ValueError(inputError.format(
                 complementInputArgs, allowedInputArgs))
         # get portfolio:
-        pf = _buildPortfolioFromDf(pf_information, **kwargs)
+        pf = _buildPortfolioFromDf(**kwargs)
 
     return pf
