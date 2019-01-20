@@ -77,6 +77,7 @@ class EfficientFrontier(object):
         self.method = method
         self.names = list(meanReturns.index)
         self.num_stocks = len(self.names)
+        self.last_optimisation = ''
 
         # set numerical parameters
         bound = (0, 1)
@@ -115,6 +116,8 @@ class EfficientFrontier(object):
                               method=self.method,
                               bounds=self.bounds,
                               constraints=self.constraints)
+        # if successful, set self.last_optimisation
+        self.last_optimisation = 'Minimum Volatility'
         # set optimal weights
         if (save_weights):
             self.weights = result['x']
@@ -152,6 +155,8 @@ class EfficientFrontier(object):
                               method=self.method,
                               bounds=self.bounds,
                               constraints=self.constraints)
+        # if successful, set self.last_optimisation
+        self.last_optimisation = 'Maximum Sharpe Ratio'
         # set optimal weights
         if (save_weights):
             self.weights = result['x']
@@ -197,6 +202,8 @@ class EfficientFrontier(object):
                               method=self.method,
                               bounds=self.bounds,
                               constraints=constraints)
+        # if successful, set self.last_optimisation
+        self.last_optimisation = 'Efficient Return'
         # set optimal weights
         if (save_weights):
             self.weights = result['x']
@@ -230,6 +237,8 @@ class EfficientFrontier(object):
                               method=self.method,
                               bounds=self.bounds,
                               constraints=constraints)
+        # if successful, set self.last_optimisation
+        self.last_optimisation = 'Efficient Volatility'
         # set optimal weights
         self.weights = result['x']
         self.df_weights = self.dataframe_weights(self.weights)
@@ -376,7 +385,8 @@ class EfficientFrontier(object):
             freq=self.freq)
         if (verbose):
             string = "-"*70
-            string += "\nTime window/frequency: {}".format(self.freq)
+            string += "\nOptimised portfolio for {}".format(self.last_optimisation)
+            string += "\n\nTime window/frequency: {}".format(self.freq)
             string += "\nRisk free rate: {}".format(self.riskFreeRate)
             string += "\nExpected annual return: {:.3f}".format(expectedReturn)
             string += "\nAnnual volatility: {:.3f}".format(volatility)
