@@ -8,13 +8,9 @@ CLEANDIRS = $(PYDIR:%=clean-%) $(EXAMPLEDIR:%=clean-%)
 SEARCH=
 
 .PHONY: cleandirs $(CLEANDIRS)
-.PHONY: data
 .PHONY: clean
 
 all: clean
-
-data:
-	@$(MAKE) -C data convert
 
 clean: $(CLEANDIRS)
 $(CLEANDIRS):
