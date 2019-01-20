@@ -153,7 +153,8 @@ def optimiseMC(data,
                 opt_res.loc[val]['Volatility'])
             string += "\nSharpe Ratio: {:0.3f}".format(
                 opt_res.loc[val]['Sharpe Ratio'])
-            string += "\n\n"+str(opt_w.loc[val].to_frame().transpose().rename(
+            string += "\n\nOptimal weights:"
+            string += "\n"+str(opt_w.loc[val].to_frame().transpose().rename(
                     index={val: 'Allocation'}))
             string += "\n"
         string += "-"*70
