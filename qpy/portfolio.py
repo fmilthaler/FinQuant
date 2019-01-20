@@ -549,6 +549,51 @@ def _stocknamesInDataColumns(names, df):
     return any((name in label for name in names for label in df.columns))
 
 
+def _generatePfAllocation(data):
+    '''
+    Takes column names of provided DataFrame "data", and generates a
+    DataFrame with columns "Name" and "FMV" which contain the names found
+    in input "data" and 1./len(data.columns) respectively.
+
+    Input:
+     * data: A DataFrame which contains prices of the stocks
+
+    Output:
+     * pf_allocation: pandas.DataFrame with columns 'Name' and 'FMV', which
+         contain the names and weights of the stocks
+    '''
+    names = data.columns
+    # sanity check: split names at '-' and take the leading part of the
+    # split string, and check if this occurs in any of the other names.
+    # if so, we treat this as a duplication, and ask the user to provide
+    # a DataFrame with one data column per stock.
+    splitnames = [name.split('-')[0].strip() for name in names]
+    for i in range(len(splitnames)):
+            splitname = splitnames[i]
+            reducedlist = [elt for num, elt in enumerate(splitnames)
+                            if not num == i]
+            if (splitname in reducedlist):
+                errormsg = "'data' DataFrame contains conflicting "\
+                        + "column labels."\
+                        + "\nMultiple columns with a substring of "\
+                        + "\n "+str(splitname)+"\n"\
+                        + "were found. You have two options:"\
+                        + "\n 1. call 'buildPortfolio' and pass a "\
+                        + "DataFrame 'pf_allocation' that contains the "\
+                        + "weights/allocation of stocks within your "\
+                        + "portfolio. 'buildPortfolio' will then extract "\
+                        + "the columns from 'data' that match the values of "\
+                        + "the column 'Name' in the DataFrame 'pf_allocation'."\
+                        + "\n 2. call 'buildPortfolio' and pass a DataFrame "\
+                        + "'data' that does not have conflicting column labels, "\
+                        + "e.g. 'GOOG' and 'GOOG - Adj. Close' are considered "\
+                        + "conflicting column headers."
+                raise ValueError(errormsg)
+    # compute equal weights
+    weights = [1./len(names) for i in range(len(names))]
+    return pd.DataFrame({'FMV' : weights, 'Name': names})
+
+
 def _buildPortfolioFromDf(data,
                           pf_allocation=None,
                           datacolumns=["Adj. Close"]):
@@ -566,6 +611,9 @@ def _buildPortfolioFromDf(data,
      * pf: Instance of Portfolio which contains all the information
          requested by the user.
     '''
+    # if pf_allocation is None, automatically generate it
+    if (pf_allocation is None):
+        pf_allocation = _generatePfAllocation(data)
     # make sure stock names are in data dataframe
     if (not _stocknamesInDataColumns(pf_allocation.Name.values,
                                      data)):
