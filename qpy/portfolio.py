@@ -190,7 +190,7 @@ class Portfolio(object):
             stock.investmentinfo,
             ignore_index=True)
         # setting an appropriate name for the portfolio
-        self.portfolio.name = "Portfolio information"
+        self.portfolio.name = "Allocation of stocks"
         # also add stock data of stock to the dataframe
         self._addStockData(stock.data)
 
