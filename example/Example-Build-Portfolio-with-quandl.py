@@ -62,7 +62,7 @@ import os
 #     10: {'Name':'YHOO', 'FMV':7},   # Yahoo
 #     11: {'Name':'GS', 'FMV':9},     # Goldman Sachs
 #     }
-# pf_information = pd.DataFrame.from_dict(d, orient='index')
+# pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
 # <codecell>
 
@@ -71,7 +71,7 @@ d = {0 : {'Name':'GOOG', 'FMV':20},
      2: {'Name':'MCD', 'FMV':15},
      3: {'Name':'DIS', 'FMV':18},
     }
-pf_information = pd.DataFrame.from_dict(d, orient='index')
+pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
 # <markdowncell>
 
@@ -81,7 +81,7 @@ pf_information = pd.DataFrame.from_dict(d, orient='index')
 # To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `QPY` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `QPY`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
 # 
 # For example, all three lists of tickers/names as shown below are valid input for
-# `QPY`'s function `buildPortfolio(pf_information, names=names)`:
+# `QPY`'s function `buildPortfolio(names=names)`:
 #  * `names = ['WIKI/GOOG', 'WIKI/AMZN']`
 #  * `names = ['GOOG', 'AMZN']`
 #  * `names = ['WIKI/GOOG', 'AMZN']`
@@ -89,8 +89,8 @@ pf_information = pd.DataFrame.from_dict(d, orient='index')
 # <codecell>
 
 # here we set the list of names based on the names in
-# the DataFrame pf_information
-names = pf_information['Name'].values.tolist()
+# the DataFrame pf_allocation
+names = pf_allocation['Name'].values.tolist()
 
 # dates can be set as datetime or string, as shown below:
 start_date = datetime.datetime(2015,1,1)
@@ -99,8 +99,8 @@ end_date = '2017-12-31'
 # While quandl will download lots of different prices for each stock,
 # e.g. high, low, close, etc, QPY will extract the column "Adj. Close".
 
-pf = buildPortfolio(pf_information,
-                    names=names,
+pf = buildPortfolio(names=names,
+                    pf_allocation=pf_allocation,
                     start_date=start_date,
                     end_date=end_date)
 
