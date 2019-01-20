@@ -33,7 +33,7 @@ Furthermore, the constructed portfolio can be optimised for
  - maximum Sharpe ratio
  - minimum volatility for a given expected return
  - maximum Sharpe ratio for a given target volatility
-by either performing a numerical computation to based on the Efficient
+by either performing a numerical computation based on the Efficient
 Frontier, or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
@@ -53,7 +53,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
 from qpy.quants import weightedMean, weightedStd, sharpeRatio
-from qpy.optimisation import optimiseMC
+from qpy.optimisation import monte_carlo_optimisation
 from qpy.returns import historicalMeanReturn
 from qpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
 from qpy.efficient_frontier import EfficientFrontier
@@ -549,12 +549,12 @@ class Portfolio(object):
 
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
-    def optimisePortfolio(self,
-                          total_investment=None,
-                          num_trials=10000,
-                          freq=252,
-                          verbose=True,
-                          plot=True):
+    def mc_optimisation(self,
+                      total_investment=None,
+                      num_trials=10000,
+                      freq=252,
+                      verbose=True,
+                      plot=True):
         '''
         Optimisation of the portfolio by performing a Monte Carlo simulation.
 
@@ -575,7 +575,7 @@ class Portfolio(object):
         if (total_investment is None):
             total_investment = self.totalinvestment
 
-        return optimiseMC(self.data,
+        return monte_carlo_optimisation(self.data,
                           num_trials=num_trials,
                           total_investment=total_investment,
                           riskFreeRate=self.riskFreeRate,

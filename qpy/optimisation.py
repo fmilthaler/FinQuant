@@ -64,7 +64,7 @@ def random_portfolios(data, num_trials, riskFreeRate=0.005, freq=252):
     return df_weights, df_results
 
 
-def optimiseMC(data,
+def monte_carlo_optimisation(data,
                total_investment,
                num_trials=10000,
                riskFreeRate=0.005,
