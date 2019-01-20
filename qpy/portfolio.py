@@ -670,7 +670,7 @@ def buildPortfolio(**kwargs):
          labels "Name" and "FMV" of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio
-     * names: A string or list of strings, containing the names of the
+     * names (optional): A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      * start (optional): String/datetime start date of stock data to be
          requested through quandl (default: None)
