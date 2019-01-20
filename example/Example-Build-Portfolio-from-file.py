@@ -3,7 +3,8 @@
 
 # <markdowncell>
 
-# # Example:
+# # Building a portfolio with data from disk
+# 
 # ## Building a portfolio with `buildPortfolio()` with data obtained from data files.
 # 
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
