@@ -134,7 +134,7 @@ ef.minimum_volatility()
 
 # <markdowncell>
 
-# ## Computing and visualising the Efficient Frontier
+# ### Computing and visualising the Efficient Frontier
 # `QPY` offers several ways to compute the *Efficient Frontier*.
 #  1. Through the opject `pf`
 #   - with automatically setting limits of the *Efficient Frontier*
@@ -142,29 +142,27 @@ ef.minimum_volatility()
 #   - with automatically setting limits of the *Efficient Frontier*
 #   - by providing a range of target expected return values
 # 
-# As before, let `pf` and `ef` be instances of `Portfolio` and `EfficientFrontier` respectively. The following code snippets compute and plot an *Efficient Frontier* of a portfolio.
+# As before, let `pf` and be an instance of `Portfolio`. The following code snippets compute and plot an *Efficient Frontier* of a portfolio, its optimised portfolios and individual stocks within the portfolio.
 #  - `pf.ef_plot_efrontier()`
-#  - ```targets = numpy.linspace(0.12, 0.45, 50)
-#    efficient_frontier = ef.efficient_frontier(targets)
-#    ef.plot_efrontier()
-#    ```
+#  - `pf.ef_plot_optimal_portfolios()`
+#  - `pf.plot_stocks()`
 
 # <markdowncell>
 
-# ### Efficient frontier of `pf`
+# #### Efficient Frontier of `pf`
 
 # <codecell>
 
 # computing and plotting efficient frontier of pf
 pf.ef_plot_efrontier(show=False)
 # adding markers to optimal solutions
-pf.ef.plot_optimal_portfolios()
+pf.ef_plot_optimal_portfolios()
 # and adding the individual stocks to the plot
 pf.plot_stocks(show=True)
 
 # <markdowncell>
 
-# ### Efficient Frontier with target return values
+# #### Manually creating an Efficient Frontier with target return values
 
 # <codecell>
 
@@ -181,26 +179,22 @@ pf.plot_stocks(show=True)
 
 # <markdowncell>
 
-# # Portfolio optimisation
 # ## Monte Carlo
-# Perform a Monte Carlo simulation to find the portfolio with the minimum volatility and maximum Sharpe Ratio.
+# Perform a Monte Carlo run to find the portfolio with the minimum volatility and maximum Sharpe Ratio.
 
 # <codecell>
 
 opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
-                                             verbose=True,
-                                             plot=True)
-
+                                    verbose=True,
+                                    plot=True)
 # again, the individual stocks can be added to the plot
 pf.plot_stocks(show=False)
 
 # <codecell>
 
-opt_res
-
-# <codecell>
-
-opt_w
+print(opt_res)
+print()
+print(opt_w)
 
 # <markdowncell>
 
