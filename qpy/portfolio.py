@@ -522,6 +522,18 @@ class Portfolio(object):
         # plot efficient frontier
         ef.plot_efrontier(show=show)
 
+    def ef_plot_optimal_portfolios(self):
+        '''
+        Plots the optimised portfolios for
+         - minimum volatility, and
+         - maximum Sharpe ratio
+        '''
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get/create instance of EfficientFrontier
+        ef = self.get_EF()
+        # plot efficient frontier
+        ef.plot_optimal_portfolios()
+
     def plot_stocks(self, freq=252, show=True):
         '''
         Plots the expected annual returns over annual volatility of
