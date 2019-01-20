@@ -516,7 +516,11 @@ class Portfolio(object):
              or not. Useful if more data should be plotted in the same
              figure.
         '''
-        self.ef.plot_efrontier(show=show)
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get/create instance of EfficientFrontier
+        ef = self.get_EF()
+        # plot efficient frontier
+        ef.plot_efrontier(show=show)
 
     def plot_stocks(self, freq=252, show=True):
         '''
