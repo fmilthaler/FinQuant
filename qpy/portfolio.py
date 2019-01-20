@@ -690,7 +690,7 @@ def buildPortfolio(**kwargs):
     for
      1. building a portfolio by pulling data from quandl,
      2. building a portfolio by providing stock data which was obtained
-         otherwise, e.g. from data files
+         otherwise, e.g. from data files.
     '''
     docstringMsg = "Please read through the docstring, " \
                    "'buildPortfolio.__doc__'."
