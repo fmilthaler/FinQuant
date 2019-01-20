@@ -96,7 +96,7 @@ pf.ef_efficient_return(0.26, verbose=True)
 # <codecell>
 
 # maximum Sharpe ratio for a given target volatility of 0.22
-pf.ef_efficient_volatility(0.22, verbose=False)
+pf.ef_efficient_volatility(0.22)
 
 # <markdowncell>
 
@@ -134,7 +134,6 @@ ef.plot_efrontier(show=False)
 # adding markers to optimal solutions
 pf.ef.plot_optimal_portfolios()
 
-# bonus:
 # and adding the individual stocks to the plot
 pf.plot_stocks(show=False)
 
@@ -149,6 +148,9 @@ pf.plot_stocks(show=False)
 opt_w, opt_res = pf.optimisePortfolio(num_trials=5000,
                                       verbose=True,
                                       plot=True)
+
+# again, the individual stocks can be added to the plot
+pf.plot_stocks(show=False)
 
 # <codecell>
 
