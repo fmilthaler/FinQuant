@@ -17,7 +17,7 @@ import datetime
 
 # <codecell>
 
-# importing QPY's function to automatically build the portfolio
+# importing QuantPy's function to automatically build the portfolio
 from quantpy.portfolio import buildPortfolio
 
 # <codecell>

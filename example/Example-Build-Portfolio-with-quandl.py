@@ -79,10 +79,10 @@ pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 # ### User friendly interface to quandl
 # As mentioned above, in this example `buildPortfolio()` is used to build a portfolio by performing a query to `quandl`.
 # 
-# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `QPY` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `QPY`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
+# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `QuantPy` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `QuantPy`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
 # 
 # For example, all three lists of tickers/names as shown below are valid input for
-# `QPY`'s function `buildPortfolio(names=names)`:
+# `QuantPy`'s function `buildPortfolio(names=names)`:
 #  * `names = ['WIKI/GOOG', 'WIKI/AMZN']`
 #  * `names = ['GOOG', 'AMZN']`
 #  * `names = ['WIKI/GOOG', 'AMZN']`
@@ -98,7 +98,7 @@ start_date = datetime.datetime(2015,1,1)
 end_date = '2017-12-31'
 
 # While quandl will download lots of different prices for each stock,
-# e.g. high, low, close, etc, QPY will extract the column "Adj. Close".
+# e.g. high, low, close, etc, QuantPy will extract the column "Adj. Close".
 
 pf = buildPortfolio(names=names,
                     pf_allocation=pf_allocation,
