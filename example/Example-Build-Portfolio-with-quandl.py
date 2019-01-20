@@ -3,7 +3,8 @@
 
 # <markdowncell>
 
-# # Example:
+# # Building a portfolio with data from `quandl`
+# 
 # ## Building a portfolio with `buildPortfolio()` by downloading relevant data through quandl with stock names, start and end date and column labels
 # This example only focuses on how to use `buildPortfolio()` to get an instance of `Portfolio` by providing minimal information that is passed on to `quandl`. For a more exhaustive description of this package and example, please try `Example-Build-Portfolio-from-file.py`.
 
