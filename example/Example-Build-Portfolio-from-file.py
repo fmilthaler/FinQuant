@@ -262,20 +262,26 @@ opt_res
 # <markdowncell>
 
 # ## Recomputing expected return, volatility and Sharpe ratio
-# Note: When doing so, the instance variables are being reset by doing so.
+# **Note**: When doing so, the instance variables are being reset.
 
 # <codecell>
 
 # If the return, volatility and Sharpe ratio need to be computed based on a different time window and/or risk free rate, one can recompute those values as shown below
-freq = 100
-rfr = 0.02
-exret = pf.compExpectedReturn(freq=freq)
-vol = pf.compVolatility(freq=freq)
-sharpe = pf.compSharpe(riskFreeRate=rfr)
-print("For {} trading days and a risk free rate of {}:".format(freq, rfr))
+# 1. set the new value(s)
+pf.freq = 100
+pf.riskFreeRate = 0.02
+
+# compute new values based on above new freq/riskFreeRate
+# 2.a compute and get new values
+exret = pf.compExpectedReturn(freq=100)
+vol = pf.compVolatility(freq=100)
+sharpe = pf.compSharpe()
+print("For {} trading days and a risk free rate of {}:".format(pf.freq, pf.riskFreeRate))
 print("Expected return: {:0.3f}".format(exret))
 print("Volatility: {:0.3f}".format(vol))
 print("Sharpe Ratio: {:0.3f}".format(sharpe))
+# 2.b print out properties of portfolio (which is based on new freq/riskFreeRate)
+pf.properties()
 
 # <markdowncell>
 
