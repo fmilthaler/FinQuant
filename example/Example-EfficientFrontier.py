@@ -5,7 +5,24 @@
 
 # # Example: Portfolio optimisation
 # 
-# Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
+# This example shows how `QPY` can be used to optimise a portfolio.
+# 
+# Two different approaches are implemented in `QPY`:
+#  1. Efficient Frontier
+#  2. Monte Carlo run
+# 
+# With the *Efficient Frontier* approach, the portfolio can be optimised for
+#  - minimum volatility,
+#  - maximum Sharpe ratio
+#  - minimum volatility for a given expected return
+#  - maximum Sharpe ratio for a given target volatility
+# by performing a numerical solve to minimise/maximise an objective function.
+# 
+# Alternatively a *Monte Carlo* run of `n` trials can be performed to find the optimal portfolios for
+#  - minimum volatility,
+#  - maximum Sharpe ratio
+# 
+# The approach branded as *Efficient Frontier* should be the preferred method for reasons of computational effort and accuracy. The latter approach is only included for the sake of completeness, and creation of beautiful plots.
 
 # <markdowncell>
 
@@ -49,14 +66,8 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # stock data was previously pulled from quandl and stored in ex1-stockdata.csv
 # read data from files:
 df_data = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
-
-# <codecell>
-
 # building a portfolio by providing stock data
 pf = buildPortfolio(data=df_data)
-
-# <codecell>
-
 print(pf)
 pf.properties()
 
@@ -144,9 +155,9 @@ pf.plot_stocks(show=False)
 
 # <codecell>
 
-opt_w, opt_res = pf.optimisePortfolio(num_trials=5000,
-                                      verbose=True,
-                                      plot=True)
+opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
+                                             verbose=True,
+                                             plot=True)
 
 # again, the individual stocks can be added to the plot
 pf.plot_stocks(show=False)
@@ -166,7 +177,7 @@ opt_w
 
 # <codecell>
 
-opt_w, opt_res = pf.optimisePortfolio(num_trials=5000,
+opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
                                       verbose=False,
                                       plot=True)
 pf.ef_plot_efrontier(show=False)
