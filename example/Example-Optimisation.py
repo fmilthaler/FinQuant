@@ -16,6 +16,7 @@
 #  - maximum Sharpe ratio
 #  - minimum volatility for a given expected return
 #  - maximum Sharpe ratio for a given target volatility
+# 
 # by performing a numerical solve to minimise/maximise an objective function.
 # 
 # Alternatively a *Monte Carlo* run of `n` trials can be performed to find the optimal portfolios for
