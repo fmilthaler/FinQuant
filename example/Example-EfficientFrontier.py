@@ -48,13 +48,12 @@ plt.rcParams['figure.figsize'] = (10, 6)
 
 # stock data was previously pulled from quandl and stored in ex1-stockdata.csv
 # read data from files:
-df_pf = pd.read_csv("../data/ex1-portfolio.csv")
 df_data = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
 
 # <codecell>
 
 # building a portfolio by providing stock data
-pf = buildPortfolio(df_pf, data=df_data)
+pf = buildPortfolio(data=df_data)
 
 # <codecell>
 
