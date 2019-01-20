@@ -81,7 +81,7 @@ print(buildPortfolio.__doc__)
 # <codecell>
 
 # building a portfolio by providing stock data
-pf = buildPortfolio(df_pf, data=df_data)
+pf = buildPortfolio(data=df_data, pf_allocation=df_pf)
 
 # <markdowncell>
 
