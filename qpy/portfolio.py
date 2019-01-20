@@ -417,7 +417,8 @@ class Portfolio(object):
          * verbose: Boolean (default=False), whether to print out properties
              or not
         '''
-        # get instance of EfficientFrontier
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get/create instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
         opt_weights = ef.minimum_volatility()
@@ -435,7 +436,8 @@ class Portfolio(object):
          * verbose: Boolean (default=False), whether to print out properties
              or not
         '''
-        # get instance of EfficientFrontier
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get/create instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
         opt_weights = ef.maximum_sharpe_ratio()
@@ -454,7 +456,8 @@ class Portfolio(object):
          * verbose: Boolean (default=False), whether to print out properties
              or not
         '''
-        # get instance of EfficientFrontier
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get/create instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
         opt_weights = ef.efficient_return(target)
@@ -473,7 +476,8 @@ class Portfolio(object):
          * verbose: Boolean (default=False), whether to print out properties
              or not
         '''
-        # get instance of EfficientFrontier
+        # let EfficientFrontier.efficient_frontier handle input arguments
+        # get/create instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
         opt_weights = ef.efficient_volatility(target)
@@ -497,7 +501,7 @@ class Portfolio(object):
          * array of (volatility, return) values
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
-        # get instance of EfficientFrontier
+        # get/create instance of EfficientFrontier
         ef = self.get_EF()
         # perform optimisation
         efrontier = ef.efficient_frontier(targets)
