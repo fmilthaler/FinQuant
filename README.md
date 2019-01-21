@@ -33,4 +33,3 @@ and  allows for an optimisation of the given portfolio.
 
 For more information about the project and details on how to use it, please
 look at the examples provided in `./example`.
-

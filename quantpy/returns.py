@@ -10,7 +10,7 @@ import pandas as pd
 def cumulativeReturns(data, dividend=0):
     '''
     Returns DataFrame with cumulative returns
-    (price_{t} - price_{t=0} + dividend) / price_{t=0}
+    R = (price_{t_i} - price_{t_0} + dividend) / price_{t_0}
 
     Input:
      * data: DataFrame with daily stock prices
@@ -23,7 +23,8 @@ def cumulativeReturns(data, dividend=0):
 
 def dailyReturns(data):
     '''
-    Returns DataFrame with daily returns
+    Returns DataFrame with daily returns (percentage change)
+    R = (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}}
 
     Input:
      * data: DataFrame with daily stock prices
@@ -37,6 +38,7 @@ def dailyReturns(data):
 def dailyLogReturns(data):
     '''
     Returns DataFrame with daily log returns
+    R_{\log} = \log(1 + (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}})
 
     Input:
      * data: DataFrame with daily stock prices

@@ -299,7 +299,7 @@ class Portfolio(object):
 
         Input:
          * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
+             value corresponds to trading days in a year.
         '''
         return historicalMeanReturn(self.data, freq=freq)
 
@@ -309,11 +309,11 @@ class Portfolio(object):
 
         Input:
          * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
+             value corresponds to trading days in a year.
 
         Output:
          * pandas.DataFrame with the individual volatilities of all stocks
-             of the portfolio
+             of the portfolio.
         '''
         if (not isinstance(freq, int)):
             raise ValueError("freq is expected to be an integer.")
@@ -322,7 +322,7 @@ class Portfolio(object):
     def compWeights(self):
         '''
         Computes and returns a pandas.Series of the weights of the stocks
-        of the portfolio
+        of the portfolio.
         '''
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
@@ -334,7 +334,7 @@ class Portfolio(object):
 
         Input:
          * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
+             value corresponds to trading days in a year.
         '''
         if (not isinstance(freq, int)):
             raise ValueError("freq is expected to be an integer.")
@@ -351,7 +351,7 @@ class Portfolio(object):
 
         Input:
          * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
+             value corresponds to trading days in a year.
         '''
         if (not isinstance(freq, int)):
             raise ValueError("freq is expected to be an integer.")
@@ -372,7 +372,7 @@ class Portfolio(object):
 
     def compSharpe(self):
         '''
-        Compute and return the Sharpe ratio of the portfolio
+        Compute and return the Sharpe ratio of the portfolio.
         '''
         # compute the Sharpe Ratio of the portfolio
         sharpe = sharpeRatio(self.expectedReturn,
@@ -398,7 +398,7 @@ class Portfolio(object):
         '''
         If self.ef does not exist, create and return an instance of
         quantpy.efficient_frontier.EfficientFrontier, else, return the
-        existing instance
+        existing instance.
         '''
         if (self.ef is None):
             # create instance of EfficientFrontier
@@ -415,7 +415,7 @@ class Portfolio(object):
 
         Input:
          * verbose: Boolean (default=False), whether to print out properties
-             or not
+             or not.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -434,7 +434,7 @@ class Portfolio(object):
 
         Input:
          * verbose: Boolean (default=False), whether to print out properties
-             or not
+             or not.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -454,7 +454,7 @@ class Portfolio(object):
         Input:
          * target: Float, the target return of the optimised portfolio.
          * verbose: Boolean (default=False), whether to print out properties
-             or not
+             or not.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -474,7 +474,7 @@ class Portfolio(object):
         Input:
          * target: Float, the target volatility of the optimised portfolio.
          * verbose: Boolean (default=False), whether to print out properties
-             or not
+             or not.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -495,10 +495,10 @@ class Portfolio(object):
 
         Input:
          * targets: list/numpy.ndarray (default: None) of floats,
-             range of target returns
+             range of target returns.
 
         Output:
-         * array of (volatility, return) values
+         * array of (volatility, return) values.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -526,7 +526,7 @@ class Portfolio(object):
         '''
         Plots the optimised portfolios for
          - minimum volatility, and
-         - maximum Sharpe ratio
+         - maximum Sharpe ratio.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -541,7 +541,7 @@ class Portfolio(object):
 
         Input:
          * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
+             value corresponds to trading days in a year.
          * show: Boolean (default: True) whether to do plt.show()
              or not. Useful if more data should be plotted in the same
              figure.
@@ -583,13 +583,13 @@ class Portfolio(object):
              FMV of the portfolio information), money to be invested.
          * num_trials: Integer (default: 10000), number of portfolios to be
              computed, each with a random distribution of weights/investments
-             in each stock
+             in each stock.
          * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year
+             value corresponds to trading days in a year.
          * verbose: Boolean (default: True), if True, prints out optimised
-             portfolio allocations
+             portfolio allocations.
          * plot: Boolean (default: True), if True, a plot of the Monte Carlo
-             simulation is shown
+             simulation is shown.
         '''
         # if total_investment is not set, use total FMV of given portfolio
         if (total_investment is None):
@@ -667,9 +667,9 @@ def _quandlRequest(names, start_date=None, end_date=None):
     Input:
      * names: List of strings of stock names to be requested
      * start_date (optional): String/datetime of the start date of
-         relevant stock data
+         relevant stock data.
      * end_date (optional): String/datetime of the end date of
-         relevant stock data
+         relevant stock data.
     '''
     try:
         import quandl
@@ -698,7 +698,7 @@ def _getStocksDataColumns(data, names, cols):
 
         Input:
          * data: A DataFrame which contains quantities of the stocks
-             listed in pf_allocation
+             listed in pf_allocation.
          * names: A string or list of strings, containing the names of the
              stocks, e.g. 'GOOG' for Google.
          * cols: A list of strings of column labels of data to be
@@ -909,15 +909,15 @@ def buildPortfolio(**kwargs):
      * pf_allocation (optional): DataFrame with the required data column
          labels "Name" and "FMV" of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
-         in the resulting portfolio
+         in the resulting portfolio.
      * names (optional): A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      * start (optional): String/datetime start date of stock data to be
-         requested through quandl (default: None)
+         requested through quandl (default: None).
      * end (optional): String/datetime end date of stock data to be
-         requested through quandl (default: None)
+         requested through quandl (default: None).
      * data (optional): A DataFrame which contains quantities of
-         the stocks listed in pf_allocation
+         the stocks listed in pf_allocation.
     Output:
      * pf: Instance of Portfolio which contains all the information
          requested by the user.

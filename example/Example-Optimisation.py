@@ -205,8 +205,8 @@ print(opt_w)
 # <codecell>
 
 opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
-                                      verbose=False,
-                                      plot=True)
+                                    verbose=False,
+                                    plot=True)
 pf.ef_plot_efrontier(show=False)
 pf.ef.plot_optimal_portfolios()
 pf.plot_stocks(show=False)
