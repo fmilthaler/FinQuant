@@ -742,7 +742,7 @@ def _getStocksDataColumns(data, names, cols):
 
 
 def _buildPortfolioFromQuandl(names,
-                              pf_allocation,
+                              pf_allocation=None,
                               start_date=None,
                               end_date=None):
     '''
@@ -752,7 +752,7 @@ def _buildPortfolioFromQuandl(names,
     Input:
      * names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
-     * pf_allocation: DataFrame with the required data column
+     * pf_allocation (optional): DataFrame with the required data column
          labels "Name" and "FMV" of the stocks.
      * start_date (optional): String/datetime start date of stock data to
          be requested through quandl (default: None)
@@ -766,6 +766,9 @@ def _buildPortfolioFromQuandl(names,
     pf = Portfolio()
     # request data from quandl:
     data = _quandlRequest(names, start_date, end_date)
+    # check pf_allocation:
+    if (pf_allocation is None):
+        pf_allocation = _generatePfAllocation(names=names)
     # build portfolio:
     pf = _buildPortfolioFromDf(data, pf_allocation)
     return pf
@@ -779,7 +782,7 @@ def _stocknamesInDataColumns(names, df):
     return any((name in label for name in names for label in df.columns))
 
 
-def _generatePfAllocation(data):
+def _generatePfAllocation(names=None, data=None):
     '''
     Takes column names of provided DataFrame "data", and generates a
     DataFrame with columns "Name" and "FMV" which contain the names found
@@ -792,33 +795,45 @@ def _generatePfAllocation(data):
      * pf_allocation: pandas.DataFrame with columns 'Name' and 'FMV', which
          contain the names and weights of the stocks
     '''
-    names = data.columns
-    # sanity check: split names at '-' and take the leading part of the
-    # split string, and check if this occurs in any of the other names.
-    # if so, we treat this as a duplication, and ask the user to provide
-    # a DataFrame with one data column per stock.
-    splitnames = [name.split('-')[0].strip() for name in names]
-    for i in range(len(splitnames)):
-            splitname = splitnames[i]
-            reducedlist = [elt for num, elt in enumerate(splitnames)
-                            if not num == i]
-            if (splitname in reducedlist):
-                errormsg = "'data' DataFrame contains conflicting "\
-                        + "column labels."\
-                        + "\nMultiple columns with a substring of "\
-                        + "\n "+str(splitname)+"\n"\
-                        + "were found. You have two options:"\
-                        + "\n 1. call 'buildPortfolio' and pass a "\
-                        + "DataFrame 'pf_allocation' that contains the "\
-                        + "weights/allocation of stocks within your "\
-                        + "portfolio. 'buildPortfolio' will then extract "\
-                        + "the columns from 'data' that match the values of "\
-                        + "the column 'Name' in the DataFrame 'pf_allocation'."\
-                        + "\n 2. call 'buildPortfolio' and pass a DataFrame "\
-                        + "'data' that does not have conflicting column labels, "\
-                        + "e.g. 'GOOG' and 'GOOG - Adj. Close' are considered "\
-                        + "conflicting column headers."
-                raise ValueError(errormsg)
+    # checking input arguments
+    if (names is not None and data is not None or
+       names is None and data is None):
+        raise ValueError("Pass one of the two: 'names' or 'data'.")
+    if (names is not None and not isinstance(names, list)):
+        raise ValueError("names is expected to be of type 'list'.")
+    if (data is not None and not isinstance(data, pd.DataFrame)):
+        raise ValueError("data is expected to be of type 'pandas.DataFrame'.")
+    # if data is given:
+    if (data is not None):
+        # this case is more complex, as we need to check for column labels in data
+        names = data.columns
+        # sanity check: split names at '-' and take the leading part of the
+        # split string, and check if this occurs in any of the other names.
+        # if so, we treat this as a duplication, and ask the user to provide
+        # a DataFrame with one data column per stock.
+        splitnames = [name.split('-')[0].strip() for name in names]
+        for i in range(len(splitnames)):
+                splitname = splitnames[i]
+                reducedlist = [elt for num, elt in enumerate(splitnames)
+                                if not num == i]
+                if (splitname in reducedlist):
+                    errormsg = "'data' DataFrame contains conflicting "\
+                            + "column labels."\
+                            + "\nMultiple columns with a substring of "\
+                            + "\n "+str(splitname)+"\n"\
+                            + "were found. You have two options:"\
+                            + "\n 1. call 'buildPortfolio' and pass a "\
+                            + "DataFrame 'pf_allocation' that contains the "\
+                            + "weights/allocation of stocks within your "\
+                            + "portfolio. 'buildPortfolio' will then extract "\
+                            + "the columns from 'data' that match the values of "\
+                            + "the column 'Name' in the DataFrame 'pf_allocation'."\
+                            + "\n 2. call 'buildPortfolio' and pass a DataFrame "\
+                            + "'data' that does not have conflicting column labels, "\
+                            + "e.g. 'GOOG' and 'GOOG - Adj. Close' are considered "\
+                            + "conflicting column headers."
+                    raise ValueError(errormsg)
+    # if names is given, we go directly to the below:
     # compute equal weights
     weights = [1./len(names) for i in range(len(names))]
     return pd.DataFrame({'FMV' : weights, 'Name': names})
@@ -833,8 +848,10 @@ def _buildPortfolioFromDf(data,
     Input:
      * data: A DataFrame which contains prices of the stocks listed in
          pf_allocation
-     * pf_allocation: DataFrame with the required data column labels
-         "Name" and "FMV" of the stocks.
+     * pf_allocation (optional): DataFrame with the required data column
+         labels "Name" and "FMV" of the stocks. If not given, it is
+         automatically generated with an equal weights for all stocks
+         in the resulting portfolio.
      * datacolumns (optional): A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
     Output:

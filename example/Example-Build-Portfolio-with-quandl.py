@@ -37,11 +37,6 @@ import datetime
 # importing some custom functions/objects
 from quantpy.portfolio import buildPortfolio
 
-# <codecell>
-
-import quandl
-import os
-
 # <markdowncell>
 
 # ## Get data from quandl and build portfolio
