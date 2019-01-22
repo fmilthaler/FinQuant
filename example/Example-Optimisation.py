@@ -155,11 +155,12 @@ ef.minimum_volatility()
 # <codecell>
 
 # computing and plotting efficient frontier of pf
-pf.ef_plot_efrontier(show=False)
+pf.ef_plot_efrontier()
 # adding markers to optimal solutions
 pf.ef_plot_optimal_portfolios()
 # and adding the individual stocks to the plot
-pf.plot_stocks(show=True)
+pf.plot_stocks()
+plt.show()
 
 # <markdowncell>
 
@@ -172,11 +173,12 @@ targets = np.linspace(0.12, 0.45, 50)
 # computing efficient frontier
 efficient_frontier = ef.efficient_frontier(targets)
 # plotting efficient frontier
-ef.plot_efrontier(show=False)
+ef.plot_efrontier()
 # adding markers to optimal solutions
 pf.ef.plot_optimal_portfolios()
 # and adding the individual stocks to the plot
-pf.plot_stocks(show=True)
+pf.plot_stocks()
+plt.show()
 
 # <markdowncell>
 
@@ -186,10 +188,10 @@ pf.plot_stocks(show=True)
 # <codecell>
 
 opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
-                                    verbose=True,
-                                    plot=True)
+                                    verbose=True)
 # again, the individual stocks can be added to the plot
-pf.plot_stocks(show=False)
+pf.plot_stocks()
+plt.show()
 
 # <codecell>
 
@@ -205,8 +207,8 @@ print(opt_w)
 # <codecell>
 
 opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
-                                    verbose=False,
-                                    plot=True)
-pf.ef_plot_efrontier(show=False)
+                                    verbose=False)
+pf.ef_plot_efrontier()
 pf.ef.plot_optimal_portfolios()
-pf.plot_stocks(show=False)
+pf.plot_stocks()
+plt.show()
