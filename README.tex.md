@@ -9,10 +9,41 @@
 ## Motivation
 Within a few lines of code, `QuantPy` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kind of *Returns*, Moving Averages*, bands of *Moving Averages* with buy/sell signals, *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
 
-Example image (centred)
+Let `pf` be an instance of `quantpy.portfolio.Portfolio`, which contains the prices of the stocks in your portfolio.
+### Cumulative Return
+```
+pf.compCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
+```
+yields
 <p align="center">
   <img src="images/cumulative-return.svg" style="width:50%;"/>
 </p>
+
+
+### Band Moving Average (Buy/Sell Signals)
+```
+from quantpy.moving_average import computeMA, EMA
+dis = pf.getStock("DIS").data.copy(deep=True)
+spans = [10, 50, 100, 150, 200]
+ma = computeMA(dis, EMA, spans, plot=True)
+```
+yields
+<p align="center">
+  <img src="images/ma-band-buysell-signals.svg" style="width:50%;"/>
+</p>
+
+### Bollinger Band
+<p align="center">
+  <img src="images/bollinger-band.svg" style="width:50%;"/>
+</p>
+
+### Portfolio Optimisation
+<p align="center">
+  <img src="images/ef-mc-overlay.svg" style="width:50%;"/>
+</p>
+
+
+
 
 ## Table of contents
  - [Dependencies](#Dependencies)
