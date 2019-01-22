@@ -115,6 +115,7 @@ pf.compDailyLogReturns().head(3)
 
 # plotting stock data of portfolio
 pf.data.plot()
+plt.show()
 
 # <markdowncell>
 
@@ -123,26 +124,31 @@ pf.data.plot()
 # <codecell>
 
 pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
+plt.show()
 
 # <codecell>
 
 # plotting cumulative returns (price_{t} - price_{t=0}) / price_{t=0}
 pf.compCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
+plt.show()
 
 # <codecell>
 
 # plotting daily percentage changes of returns
 pf.compDailyReturns().plot().axhline(y = 0, color = "black")
+plt.show()
 
 # <codecell>
 
 # plotting daily log returns
 pf.compDailyLogReturns().plot().axhline(y = 0, color = "black")
+plt.show()
 
 # <codecell>
 
 # cumulative log returns
 pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
+plt.show()
 
 # <markdowncell>
 
@@ -157,6 +163,7 @@ ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # computing simple moving average over a span of 50 (trading) days
 # and plotting it
 SMA(pf.data, span=50).plot(ax=ax, secondary_y = ["MCD", "DIS"], grid = True)
+plt.show()
 
 # <codecell>
 
@@ -165,6 +172,7 @@ from quantpy.moving_average import EMA
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # computing exponential moving average and plotting it
 EMA(pf.data).plot(ax=ax, secondary_y = ["MCD", "DIS"])
+plt.show()
 
 # <markdowncell>
 
@@ -183,10 +191,11 @@ print(computeMA.__doc__)
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
 # we want moving averages of 10, 50, 100, and 200 days.
-spans = [10, 50, 100, 200]
+spans = [10, 50, 100, 150, 200]
 # compute and plot moving averages
 dis_ma = computeMA(dis, EMA, spans, plot=True)
 dis_ma.head(3)
+plt.show()
 
 # <markdowncell>
 
@@ -202,8 +211,10 @@ dis = pf.getStock("DIS").data.copy(deep=True)
 span=20
 # for simple moving average:
 plotBollingerBand(dis, SMA, span)
+plt.show()
 # for exponential moving average:
 plotBollingerBand(dis, EMA, span)
+plt.show()
 
 # <markdowncell>
 
