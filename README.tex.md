@@ -9,6 +9,11 @@
 ## Motivation
 Within a few lines of code, `QuantPy` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kind of *Returns*, Moving Averages*, bands of *Moving Averages* with buy/sell signals, *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
 
+Example image (centred)
+<p align="center">
+  <img src="images/cumulative-return.svg" style="width:50%;"/>
+</p>
+
 ## Table of contents
  - [Dependencies](#Dependencies)
  - [Usage](#Usage)
