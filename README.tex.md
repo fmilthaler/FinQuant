@@ -74,7 +74,7 @@ The module `quantpy.moving_average` allows the computation and visualisation of 
  - `EMA`: Exponential Moving Average.
  - `computeMA`: a Band of Moving Averages (of different time windows/spans) including Buy/Sell signals
  - `plotBollingerBand`: a Bollinger Band for
-   - `SMA`, 
+   - `SMA`,
    - `EMA`.
 
 ## Portfolio Optimisation
@@ -107,7 +107,7 @@ look at the examples provided in `./example`.
 **Note**: In the below examples, `pf` refers to an instance of `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make `QuantPy` a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./quantpy/` and are discussed throughout this README.
 
 ### Building a portfolio with `quandl`
-`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use `QuantPy` to build a financial portfolio by downloading stock price data through the Python package `quandl`. 
+`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use `QuantPy` to build a financial portfolio by downloading stock price data through the Python package `quandl`.
 
 ### Building a portfolio with preset data
 `./example/Example-Build-Portfolio-from-file.py`: Shows how to use `QuantPy` to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
