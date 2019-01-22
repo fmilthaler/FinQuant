@@ -71,8 +71,7 @@ def monte_carlo_optimisation(data,
                freq=252,
                initial_weights=None,
                verbose=True,
-               plot=True,
-               show=False):
+               plot=True):
     '''
     Optimisation of the portfolio by performing a Monte Carlo simulation.
 
@@ -95,9 +94,6 @@ def monte_carlo_optimisation(data,
          portfolio allocations
      * plot: Boolean (default: True), if True, a plot showing the results
          is produced
-     * show: Boolean (default: False) whether to do plt.show()
-        or not. Useful if more data should be plotted in the same
-        figure.
 
     Output:
      * opt: DataFrame with optimised investment strategies for maximum
@@ -199,7 +195,5 @@ def monte_carlo_optimisation(data,
         cbar.ax.set_ylabel('Sharpe Ratio [period='
                            + str(freq)+']', rotation=90)
         plt.legend()
-        if (show):
-            plt.show()
 
     return opt_w, opt_res
