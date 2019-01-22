@@ -507,20 +507,15 @@ class Portfolio(object):
         efrontier = ef.efficient_frontier(targets)
         return efrontier
 
-    def ef_plot_efrontier(self, show=True):
+    def ef_plot_efrontier(self):
         '''
         Plots the Efficient Frontier.
-
-        Input:
-         * show: boolean (default: True) whether to do plt.show()
-             or not. Useful if more data should be plotted in the same
-             figure.
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
         ef = self.get_EF()
         # plot efficient frontier
-        ef.plot_efrontier(show=show)
+        ef.plot_efrontier()
 
     def ef_plot_optimal_portfolios(self):
         '''
@@ -534,7 +529,7 @@ class Portfolio(object):
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
-    def plot_stocks(self, freq=252, show=True):
+    def plot_stocks(self, freq=252):
         '''
         Plots the expected annual returns over annual volatility of
         the stocks of the portfolio.
@@ -542,9 +537,6 @@ class Portfolio(object):
         Input:
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year.
-         * show: Boolean (default: True) whether to do plt.show()
-             or not. Useful if more data should be plotted in the same
-             figure.
         '''
         # annual mean returns of all stocks
         stock_returns = self.compMeanReturns(freq=freq)
@@ -564,8 +556,6 @@ class Portfolio(object):
                          textcoords='offset points',
                          label=i)
             plt.legend()
-        if (show):
-            plt.show()
 
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio

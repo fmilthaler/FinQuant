@@ -54,7 +54,6 @@ def computeMA(data, fun, spans, plot=True):
         ax.plot(signals.loc[signals['signal'] == -1.0].index,
                 signals[minlabel][signals['signal'] == -1.0],
                 'v', markersize=8, color='b')
-        plt.show()
     return ma
 
 
@@ -144,4 +143,3 @@ def plotBollingerBand(data, fun, span):
     bol[collabel].plot(ax=ax)
     bol[str(span)+"d"].plot(ax=ax)
     plt.legend()
-    plt.show()
