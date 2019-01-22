@@ -1,8 +1,13 @@
 # QuantPy
 
-`QuantPy` is a program for financial portfolio management. It combines various stocks/funds to form a portfolio. Most common quantities, such as Expected annual Return, annual Volatility, and Sharpe Ratio are computed as the portfolio object is being created.
+`QuantPy` is a program for financial portfolio management. It combines various stocks/funds to form a portfolio. Most common quantities, such as Expected annual Return, annual Volatility, and Sharpe Ratio are computed as the portfolio object is being created. It also facilitates modules for quick and easy computations and visualisations of risk analysis, buy/sell signals and optimised portfolios for a set of optimisation functions.
+
+`QuantPy` was designed to be an user-friendly program. While it provides the user with a set of useful modules that can be used manually, it also provides an object that holds the data -- stock prices of the portfolio -- including interfaces to the aforementioned modules.
 
 **Note**: Throughout this README, `pf` refers to the object `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make `QuantPy` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./quantpy/` and are discussed below.
+
+## Motivation
+Within a few lines of code, `QuantPy` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kind of *Returns*, Moving Averages*, bands of *Moving Averages* with buy/sell signals, *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
 
 ## Table of contents
  - [Dependencies](#Dependencies)
