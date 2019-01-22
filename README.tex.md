@@ -21,11 +21,12 @@
 
 ## Dependencies
 `QuantPy` depends on the following Python packages:
- - numpy==1.11.0
- - pandas==0.17.1
- - matplotlib==1.5.1
- - quandl==3.4.5
- - scipy==1.2.0
+ - python>=3.5.0
+ - numpy>=1.11.0
+ - pandas>=0.17.1
+ - matplotlib>=1.5.1
+ - quandl>=3.4.5
+ - scipy>=1.2.0
 
 ## Usage
 Download the code:
