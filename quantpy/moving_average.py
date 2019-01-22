@@ -54,6 +54,14 @@ def computeMA(data, fun, spans, plot=True):
         ax.plot(signals.loc[signals['signal'] == -1.0].index,
                 signals[minlabel][signals['signal'] == -1.0],
                 'v', markersize=10, color='b', label='sell signal')
+        # title
+        title = 'Band of Moving Averages ('+str(fun.__name__)+')'
+        plt.title(title)
+        # legend
+        plt.legend(ncol=2)
+        # axis labels
+        plt.xlabel(data.index.name)
+        plt.ylabel('Price')
     return ma
 
 
@@ -142,4 +150,12 @@ def plotBollingerBand(data, fun, span):
     # plot data and moving average
     bol[collabel].plot(ax=ax)
     bol[str(span)+"d"].plot(ax=ax)
+    # title
+    title = 'Bollinger Band of +/- 2$\sigma$, Moving Average of '\
+            + str(fun.__name__)+' over '+str(span)+' days'
+    plt.title(title)
+    # legend
     plt.legend()
+    # axis labels
+    plt.xlabel(data.index.name)
+    plt.ylabel('Price')
