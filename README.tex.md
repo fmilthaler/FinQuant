@@ -1,13 +1,117 @@
 # QuantPy
 
-`QuantPy` is a program for financial portfolio management. It combines various stocks/funds to form a portfolio. Most common quantities, such as Expected annual Return, annual Volatility, and Sharpe Ratio are computed as the portfolio object is being created. It also facilitates modules for quick and easy computations and visualisations of risk analysis, buy/sell signals and optimised portfolios for a set of optimisation functions.
+`QuantPy` is a program for financial **portfolio management, analysis and optimisation**.
 
-`QuantPy` was designed to be an user-friendly program. While it provides the user with a set of useful modules that can be used manually, it also provides an object that holds the data -- stock prices of the portfolio -- including interfaces to the aforementioned modules.
-
-**Note**: Throughout this README, `pf` refers to the object `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make `QuantPy` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./quantpy/` and are discussed below.
+**Note**: Throughout this README, `pf` refers to the object `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities, such as Expected Return, Volatility, and Sharpe Ratio, automatically. To make `QuantPy` an user-friendly program, that combines data analysis, optimisation and visualisation, the object provides interfaces to the main features that are provided in a number of modules in `./quantpy/` and are discussed below.
 
 ## Motivation
-Within a few lines of code, `QuantPy` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kind of *Returns*, Moving Averages*, bands of *Moving Averages* with buy/sell signals, *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
+Within a few lines of code, `QuantPy` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, Moving Averages*,  *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
+
+### Automatically generating an instance of `Portfolio`
+`quantpy.portfolio.buildPortfolio` is a function that eases the creating of your portfolio. See below for one of several ways of using `buildPortfolio`.
+```
+from quantpy.portfolio import buildPortfolio
+names = ['GOOG', 'AMZN', 'MCD', 'DIS']
+start_date = '2015-01-01'
+end_date = '2017-12-31'
+pf = buildPortfolio(names=names,
+                    start_date=start_date,
+                    end_date=end_date)
+```
+`pf` is an instance of `quantpy.portfolio.Portfolio`, which contains the prices of the stocks in your portfolio. Then...
+```
+pf.data.head(3)
+```
+yields
+```
+              GOOG    AMZN        MCD        DIS
+Date
+2015-01-02  524.81  308.52  85.783317  90.586146
+2015-01-05  513.87  302.19  84.835892  89.262380
+2015-01-06  501.96  295.29  84.992263  88.788916
+```
+
+### Portfolio properties
+Nicely printing out the portfolio's properties
+```
+pf.properties()
+```
+Depending on the stocks within your portfolio, the output looks something like the below.
+```
+----------------------------------------------------------------------
+Stocks: GOOG, AMZN, MCD, DIS
+Time window/frequency: 252
+Risk free rate: 0.005
+Portfolio expected return: 0.266
+Portfolio volatility: 0.156
+Portfolio Sharpe ratio: 1.674
+
+Skewness:
+       GOOG      AMZN      MCD       DIS
+0  0.124184  0.087516  0.58698  0.040569
+
+Kurtosis:
+       GOOG      AMZN       MCD       DIS
+0 -0.751818 -0.856101 -0.602008 -0.892666
+
+Information:
+    FMV  Name
+0  0.25  GOOG
+1  0.25  AMZN
+2  0.25   MCD
+3  0.25   DIS
+----------------------------------------------------------------------
+```
+
+### Cumulative Return
+```
+pf.compCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
+```
+yields
+<p align="center">
+  <img src="images/cumulative-return.svg" style="width:50%;"/>
+</p>
+
+### Band Moving Average (Buy/Sell Signals)
+```
+from quantpy.moving_average import computeMA, EMA
+# get stock data for disney
+dis = pf.getStock("DIS").data.copy(deep=True)
+spans = [10, 50, 100, 150, 200]
+ma = computeMA(dis, EMA, spans, plot=True)
+```
+yields
+<p align="center">
+  <img src="images/ma-band-buysell-signals.svg" style="width:50%;"/>
+</p>
+
+### Bollinger Band
+```
+from quantpy.moving_average import plotBollingerBand
+# get stock data for disney
+dis = pf.getStock("DIS").data.copy(deep=True)
+span=20
+plotBollingerBand(dis, SMA, span)
+```
+yields
+<p align="center">
+  <img src="images/bollinger-band.svg" style="width:50%;"/>
+</p>
+
+### Portfolio Optimisation
+```
+# performs and plots results of Monte Carlo run (5000 iterations)
+opt_w, opt_res = pf.mc_optimisation(num_trials=5000)
+# plots the Efficient Frontier
+pf.ef_plot_efrontier()
+# plots optimal portfolios based on Efficient Frontier
+pf.ef.plot_optimal_portfolios()
+# plots individual plots of the portfolio
+pf.plot_stocks()
+```
+<p align="center">
+  <img src="images/ef-mc-overlay.svg" style="width:50%;"/>
+</p>
 
 ## Table of contents
  - [Dependencies](#Dependencies)
@@ -45,7 +149,20 @@ This is the heart of `QuantPy`. `quantpy.portfolio.Portfolio` provides an object
 
 To learn more about the object, please read through the docstring of the module, and have a look at the examples.
 
-Here is an incomplete list of functions provided within `pf`:
+Here is a list of instance variables the user has access to:
+ - `portfolio`: a `pandas.DataFrame` which contains the weights/FMV (and possibly more information) about the portfolio
+ - `stocks`: a `dict` of instances of `Stock`, meaning a `dict` of individual stocks
+ - `data`: a `pandas.DataFrame` with the stock prices of all stocks
+ - `expectedReturn`: the portfolio's expected return
+ - `volatility`: the portfolio's volatility
+ - `sharpe`: the portfolio's Sharpe Ratio
+ - `skew`: a `pandas.Series` with the skewness of all stocks
+ - `kurtosis`: a `pandas.Series` with the Kurtosis of all stocks
+ - `riskFreeRate`: the risk free rate associated with the portfolio
+ - `freq`: the time window/frequency of/over which the expected return and volatility are computed
+ - `ef`: instance of `quantpy.efficient_frontier.EfficientFrontier` which is used for finding optimial portfolios (see more below)
+
+And here is an incomplete list of functions provided within `pf`:
  - `getStock`: Returns the instance of a Stock
  - `compCumulativeReturns`: Cumulative Returns
  - `compDailyReturns`: Percentage change of daily Returns
