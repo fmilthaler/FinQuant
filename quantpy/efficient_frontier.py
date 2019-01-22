@@ -283,17 +283,10 @@ class EfficientFrontier(object):
         self.efrontier = np.array(efrontier)
         return self.efrontier
 
-    def plot_efrontier(self, show=True):
+    def plot_efrontier(self):
         '''
         Plots the Efficient Frontier.
-
-        Input:
-         * show: Boolean (default: True) whether to do plt.show()
-             or not. Useful if more data should be plotted in the same
-             figure.
         '''
-        if (not isinstance(show, bool)):
-            raise ValueError("show is expected to be a boolean.")
         if (self.efrontier is None):
             # compute efficient frontier first
             self.efficient_frontier()
@@ -307,8 +300,6 @@ class EfficientFrontier(object):
         plt.xlabel('Volatility')
         plt.ylabel('Expected Return')
         plt.legend()
-        if (show):
-            plt.show()
 
     def plot_optimal_portfolios(self):
         '''
