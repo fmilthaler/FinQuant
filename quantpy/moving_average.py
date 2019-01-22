@@ -49,11 +49,11 @@ def computeMA(data, fun, spans, plot=True):
         # marker for buy signal
         ax.plot(signals.loc[signals['signal'] == 1.0].index,
                 signals[minlabel][signals['signal'] == 1.0],
-                '^', markersize=8, color='r')
+                '^', markersize=10, color='r', label='buy signal')
         # marker for sell signal
         ax.plot(signals.loc[signals['signal'] == -1.0].index,
                 signals[minlabel][signals['signal'] == -1.0],
-                'v', markersize=8, color='b')
+                'v', markersize=10, color='b', label='sell signal')
     return ma
 
 
