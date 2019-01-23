@@ -3,14 +3,28 @@ include common.mk
 PYDIR=quantpy
 DATADIR=data
 EXAMPLEDIR=example
-CLEANDIRS = $(PYDIR:%=clean-%) $(EXAMPLEDIR:%=clean-%)
+EXAMPLEFILES=$(wildcard example/Example*.py)
+TESTDIR=tests
+CLEANDIRS = $(PYDIR:%=clean-%) \
+$(EXAMPLEDIR:%=clean-%) \
+$(TESTDIR:%=clean-%)
 
 SEARCH=
 
+.PHONY: test
+.PHONY: EXAMPLEFILES $(EXAMPLEFILES)
 .PHONY: cleandirs $(CLEANDIRS)
 .PHONY: clean
 
 all: clean
+
+test:
+	@echo "Running tests"
+	@$(MAKE) -C tests
+
+copyexamples: $(EXAMPLEFILES)
+$(EXAMPLEFILES):
+	@cp $(@) $(subst example/,tests/test_,$(@))
 
 clean: $(CLEANDIRS)
 $(CLEANDIRS):
