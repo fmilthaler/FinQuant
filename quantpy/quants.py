@@ -16,15 +16,15 @@ def weightedMean(means, weights):
     of said portfolio.
 
     Input:
-     * means: List/Array/pd.Series of mean/average values
-     * weights: List/Array/pd.Series of weights
+     * means: Array/pd.Series of mean/average values
+     * weights: Array/pd.Series of weights
 
     Output: Array: (np.sum(means*weights))
     '''
-    if (not isinstance(weights, (list, pd.Series, np.ndarray))):
+    if (not isinstance(weights, (pd.Series, np.ndarray))):
             raise ValueError("weights is expected to be a "
                              + "list/pandas.Series, np.array")
-    if (not isinstance(means, (list, pd.Series, np.ndarray))):
+    if (not isinstance(means, (pd.Series, np.ndarray))):
             raise ValueError("means is expected to be a "
                              + "list/pandas.Series/np.ndarray")
     return np.sum(means * weights)
@@ -62,13 +62,13 @@ def sharpeRatio(expReturn, volatility, riskFreeRate=0.005):
 
     Output: Float: (expReturn - riskFreeRate)/float(volatility)
     '''
-    if (not isinstance(expReturn, (int, float))):
+    if (not isinstance(expReturn, (int, float, np.int64, np.float64))):
             raise ValueError("expReturn is expected to be an integer "
                              + "or float.")
-    if (not isinstance(volatility, (int, float))):
+    if (not isinstance(volatility, (int, float, np.int64, np.float64))):
             raise ValueError("volatility is expected to be an integer "
                              + "or float.")
-    if (not isinstance(riskFreeRate, (int, float))):
+    if (not isinstance(riskFreeRate, (int, float, np.int64, np.float64))):
             raise ValueError("riskFreeRate is expected to be an integer "
                              + "or float.")
     return (expReturn - riskFreeRate)/float(volatility)
@@ -93,7 +93,6 @@ def annualised_portfolio_quantities(weights,
     '''
     if (not isinstance(freq, int)):
             raise ValueError("freq is expected to be an integer.")
-
     expectedReturn = weightedMean(means, weights) * freq
     volatility = weightedStd(cov_matrix, weights) * np.sqrt(freq)
     sharpe = sharpeRatio(expectedReturn, volatility, riskFreeRate)
