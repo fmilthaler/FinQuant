@@ -941,9 +941,9 @@ def buildPortfolio(**kwargs):
     '''
     docstringMsg = "Please read through the docstring, " \
                    "'buildPortfolio.__doc__'."
-    inputError = "Error: None of the input arguments {} are allowed " \
-                 "in combination with {}. "+docstringMsg
 
+    inputCombError = "Error: None of the input arguments {} are allowed " \
+                     "in combination with {}.\n" + docstringMsg
 
     # list of all valid optional input arguments
     allInputArgs = ['pf_allocation',
@@ -968,7 +968,7 @@ def buildPortfolio(**kwargs):
     if (_allListEleInOther(['names'], kwargs.keys())):
         # check that no input argument conflict arises:
         if (_anyListEleInOther(complementInputArgs, kwargs.keys())):
-            raise ValueError(inputError.format(
+            raise ValueError(inputCombError.format(
                 complementInputArgs, allowedInputArgs))
         # get portfolio:
         pf = _buildPortfolioFromQuandl(**kwargs)
@@ -981,8 +981,8 @@ def buildPortfolio(**kwargs):
         # check that no input argument conflict arises:
         if (_anyListEleInOther(_listComplement(
              allowedInputArgs, allInputArgs), kwargs.keys())):
-            raise ValueError(inputError.format(
                 complementInputArgs, allowedInputArgs))
+            raise ValueError(inputCombError.format(
         # get portfolio:
         pf = _buildPortfolioFromDf(**kwargs)
 
