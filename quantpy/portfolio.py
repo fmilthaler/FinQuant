@@ -943,11 +943,7 @@ def buildPortfolio(**kwargs):
                    "'buildPortfolio.__doc__'."
     inputError = "Error: None of the input arguments {} are allowed " \
                  "in combination with {}. "+docstringMsg
-    if (kwargs is None):
-        raise ValueError("Error: "+docstringMsg)
 
-    # create an empty portfolio
-    pf = Portfolio()
 
     # list of all valid optional input arguments
     allInputArgs = ['pf_allocation',
@@ -955,6 +951,13 @@ def buildPortfolio(**kwargs):
                     'start_date',
                     'end_date',
                     'data']
+
+    # check if no input argument was passed
+    if (kwargs == {}):
+        raise ValueError("Error:\nbuildPortfolio() requires input arguments.\n" \
+                         + docstringMsg)
+    # create an empty portfolio
+    pf = Portfolio()
 
     # 1. pf_allocation, names, start_date, end_date
     allowedInputArgs = ['pf_allocation',
