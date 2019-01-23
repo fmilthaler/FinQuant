@@ -940,8 +940,8 @@ def buildPortfolio(**kwargs):
          otherwise, e.g. from data files.
     '''
     docstringMsg = "Please read through the docstring, " \
-                   "'buildPortfolio.__doc__'."
-
+                   "'buildPortfolio.__doc__' and/or have a look at the " \
+                   "examples in `examples/`."
     inputError = "You passed an unsupported argument to " \
                  "buildPortfolio. The following arguments are not supported:" \
                  "\n {}\nOnly the following arguments are allowed:\n " \
