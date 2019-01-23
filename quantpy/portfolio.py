@@ -997,4 +997,11 @@ def buildPortfolio(**kwargs):
         # get portfolio:
         pf = _buildPortfolioFromDf(**kwargs)
 
+    # final check
+    if (pf.portfolio.empty or pf.data.empty or pf.stocks == {} or
+       pf.expectedReturn is None or pf.volatility is None or
+       pf.sharpe is None or pf.skew is None or pf.kurtosis is None):
+        raise ValueError("Should not get here. Something went wrong while "
+                         + "creating an instance of Portfolio." + docstringMsg)
+
     return pf
