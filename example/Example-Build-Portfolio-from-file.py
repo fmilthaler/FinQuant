@@ -110,15 +110,15 @@ pf.data.head(3)
 
 # building a portfolio by providing stock data
 # and a desired allocation
-pf = buildPortfolio(data=df_data, pf_allocation=df_pf)
+pf2 = buildPortfolio(data=df_data, pf_allocation=df_pf)
 
 # <codecell>
 
 # the portfolio information DataFrame
-print(pf.portfolio.name)
-pf.portfolio
+print(pf2.portfolio.name)
+pf2.portfolio
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.data.head(3)
+pf2.data.head(3)
