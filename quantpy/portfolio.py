@@ -860,7 +860,7 @@ def _buildPortfolioFromDf(data,
     '''
     # if pf_allocation is None, automatically generate it
     if (pf_allocation is None):
-        pf_allocation = _generatePfAllocation(data)
+        pf_allocation = _generatePfAllocation(data=data)
     # make sure stock names are in data dataframe
     if (not _stocknamesInDataColumns(pf_allocation.Name.values,
                                      data)):
