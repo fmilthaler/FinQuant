@@ -970,29 +970,30 @@ def buildPortfolio(**kwargs):
     pf = Portfolio()
 
     # 1. pf_allocation, names, start_date, end_date
-    allowedInputArgs = ['pf_allocation',
-                        'names',
+    allowedMandatoryArgs = ['names']
+    allowedInputArgs = ['names',
+                        'pf_allocation',
                         'start_date',
                         'end_date']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
-    if (_allListEleInOther(['names'], kwargs.keys())):
+    if (_allListEleInOther(allowedMandatoryArgs, kwargs.keys())):
         # check that no input argument conflict arises:
         if (_anyListEleInOther(complementInputArgs, kwargs.keys())):
             raise ValueError(inputCombError.format(
-                complementInputArgs, allowedInputArgs))
+                complementInputArgs, allowedMandatoryArgs))
         # get portfolio:
         pf = _buildPortfolioFromQuandl(**kwargs)
 
     # 2. pf_allocation, data
-    allowedInputArgs = ['pf_allocation',
-                        'data']
+    allowedMandatoryArgs = ['data']
+    allowedInputArgs = ['data',
+                        'pf_allocation']
     complementInputArgs = _listComplement(allowedInputArgs, allInputArgs)
-    if (_allListEleInOther(['data'], kwargs.keys())):
+    if (_allListEleInOther(allowedMandatoryArgs, kwargs.keys())):
         # check that no input argument conflict arises:
-        if (_anyListEleInOther(_listComplement(
-             allowedInputArgs, allInputArgs), kwargs.keys())):
-                complementInputArgs, allowedInputArgs))
+        if (_anyListEleInOther(complementInputArgs, kwargs.keys())):
             raise ValueError(inputCombError.format(
+                complementInputArgs, allowedMandatoryArgs))
         # get portfolio:
         pf = _buildPortfolioFromDf(**kwargs)
 
