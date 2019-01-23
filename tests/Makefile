@@ -1,8 +1,6 @@
 default: test
 
-test: rempltshow runtests clean
-
-runtests:
+test:
 	@pytest .
 
 rempltshow:
