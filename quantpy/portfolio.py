@@ -942,6 +942,10 @@ def buildPortfolio(**kwargs):
     docstringMsg = "Please read through the docstring, " \
                    "'buildPortfolio.__doc__'."
 
+    inputError = "You passed an unsupported argument to " \
+                 "buildPortfolio. The following arguments are not supported:" \
+                 "\n {}\nOnly the following arguments are allowed:\n " \
+                 "{}\n" + docstringMsg
     inputCombError = "Error: None of the input arguments {} are allowed " \
                      "in combination with {}.\n" + docstringMsg
 
@@ -956,6 +960,12 @@ def buildPortfolio(**kwargs):
     if (kwargs == {}):
         raise ValueError("Error:\nbuildPortfolio() requires input arguments.\n" \
                          + docstringMsg)
+    # check for valid input arguments
+    if (not _allListEleInOther(kwargs.keys(), allInputArgs)):
+        unsupportedInput = _listComplement(allInputArgs, kwargs.keys())
+        raise ValueError("Error:\n"+inputError.format(unsupportedInput,
+                                                     allInputArgs))
+
     # create an empty portfolio
     pf = Portfolio()
 
