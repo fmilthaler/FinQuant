@@ -1,5 +1,8 @@
 # QuantPy
 
+<a href='https://travis-ci.org/fmilthaler/QuantPy'>
+  <img src='https://travis-ci.org/fmilthaler/QuantPy.svg?branch=feature/tests' alt='travis'></a>
+
 `QuantPy` is a program for financial **portfolio management, analysis and optimisation**.
 
 **Note**: Throughout this README, `pf` refers to the object `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities, such as Expected Return, Volatility, and Sharpe Ratio, automatically. To make `QuantPy` an user-friendly program, that combines data analysis, optimisation and visualisation, the object provides interfaces to the main features that are provided in a number of modules in `./quantpy/` and are discussed below.
