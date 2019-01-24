@@ -88,7 +88,7 @@ def EMA(data, span=100):
      * span: Integer (defaul: 100), number of days/values over which
          the average is computed
     '''
-    return data.ewm(span=span, adjust=False).mean()
+    return data.ewm(span=span, adjust=False, min_periods=span).mean()
 
 
 def SMAstd(data, span=100):
@@ -114,7 +114,7 @@ def EMAstd(data, span=100):
      * span: Integer (defaul: 100), number of days/values over which
          the average is computed
     '''
-    return data.ewm(span=span, adjust=False).std()
+    return data.ewm(span=span, adjust=False, min_periods=span).std()
 
 
 def plotBollingerBand(data, fun, span):
