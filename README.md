@@ -139,6 +139,7 @@ pf.plot_stocks()
  - matplotlib>=1.5.1
  - quandl>=3.4.5
  - scipy>=1.2.0
+ - pytest>=2.8.7
 
 ## Usage
 Download the code:
