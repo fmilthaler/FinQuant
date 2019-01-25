@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
 import datetime
+import quandl
 import pytest
 from quantpy.portfolio import buildPortfolio, Stock, Portfolio
 from quantpy.efficient_frontier import EfficientFrontier
@@ -14,6 +15,9 @@ from quantpy.efficient_frontier import EfficientFrontier
 # comparisons
 strong_abse = 1e-15
 weak_abse = 1e-8
+
+# setting quandl api key
+quandl.ApiConfig.api_key = os.getenv('QUANDLAPIKEY')
 
 # read data from file
 df_pf = pd.read_csv("../data/ex1-portfolio.csv")
