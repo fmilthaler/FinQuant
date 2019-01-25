@@ -11,6 +11,7 @@
 
 # <codecell>
 
+import pathlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
@@ -49,8 +50,10 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # pf.getPortfolio().to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
 # pf.getPfStockData().to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
 # read data from files:
-df_pf = pd.read_csv("../data/ex1-portfolio.csv")
-df_data = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
+df_pf_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-portfolio.csv'
+df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
+df_pf = pd.read_csv(df_pf_path)
+df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
 
 # <markdowncell>
 
