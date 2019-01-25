@@ -10,6 +10,7 @@
 
 # <codecell>
 
+import pathlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
@@ -44,7 +45,8 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # <codecell>
 
 # read data from files:
-df_data = pd.read_csv("../data/ex1-stockdata.csv", index_col='Date', parse_dates=True)
+df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
+df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
 # building a portfolio by providing stock data
 pf = buildPortfolio(data=df_data)
 
