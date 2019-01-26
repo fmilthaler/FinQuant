@@ -4,13 +4,13 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='QuantPy-fmilthaler',
+    name='FinQuant',
     version='0.0.1',
     author='Frank Milthaler',
     description='A program for financial portfolio management, analysis and optimisation',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/fmilthaler/QuantPy',
+    url='https://github.com/fmilthaler/FinQuant',
     packages=setuptools.find_packages(),
     classifiers=[
         'Development Status :: 1 - Alpha',

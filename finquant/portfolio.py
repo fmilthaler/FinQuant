@@ -1,5 +1,5 @@
 '''
-This module is the heart of QuantPy. It provides
+This module is the heart of FinQuant. It provides
  - a class "Stock" that holds and calculates quantities of a single stock,
  - a class "Portfolio" that holds and calculates quantities of a financial
      portfolio, which is a collection of Stock instances.
@@ -52,11 +52,11 @@ Finally, methods are implemented to generated the following plots:
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
-from quantpy.quants import weightedMean, weightedStd, sharpeRatio
-from quantpy.optimisation import monte_carlo_optimisation
-from quantpy.returns import historicalMeanReturn
-from quantpy.returns import dailyReturns, cumulativeReturns, dailyLogReturns
-from quantpy.efficient_frontier import EfficientFrontier
+from finquant.quants import weightedMean, weightedStd, sharpeRatio
+from finquant.optimisation import monte_carlo_optimisation
+from finquant.returns import historicalMeanReturn
+from finquant.returns import dailyReturns, cumulativeReturns, dailyLogReturns
+from finquant.efficient_frontier import EfficientFrontier
 
 
 class Stock(object):
@@ -397,7 +397,7 @@ class Portfolio(object):
     def get_EF(self):
         '''
         If self.ef does not exist, create and return an instance of
-        quantpy.efficient_frontier.EfficientFrontier, else, return the
+        finquant.efficient_frontier.EfficientFrontier, else, return the
         existing instance.
         '''
         if (self.ef is None):

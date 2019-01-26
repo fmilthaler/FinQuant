@@ -4,7 +4,7 @@ scipy.optimize.minimize in order to find the minimal/optimal value.
 '''
 
 
-from quantpy.quants import annualised_portfolio_quantities
+from finquant.quants import annualised_portfolio_quantities
 
 
 def portfolio_volatility(weights, mean_returns, cov_matrix):
