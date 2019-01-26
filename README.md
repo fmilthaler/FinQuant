@@ -1,19 +1,19 @@
-# QuantPy
+# FinQuant
 
-<a href='https://travis-ci.org/fmilthaler/QuantPy'>
-  <img src='https://travis-ci.org/fmilthaler/QuantPy.svg?branch=feature/tests' alt='travis'></a>
+<a href='https://travis-ci.org/fmilthaler/FinQuant'>
+  <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=feature/tests' alt='travis'></a>
 
-`QuantPy` is a program for financial **portfolio management, analysis and optimisation**.
+`FinQuant` is a program for financial **portfolio management, analysis and optimisation**.
 
-**Note**: Throughout this README, `pf` refers to the object `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities, such as Expected Return, Volatility, and Sharpe Ratio, automatically. To make `QuantPy` an user-friendly program, that combines data analysis, optimisation and visualisation, the object provides interfaces to the main features that are provided in a number of modules in `./quantpy/` and are discussed below.
+**Note**: Throughout this README, `pf` refers to the object `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities, such as Expected Return, Volatility, and Sharpe Ratio, automatically. To make `FinQuant` an user-friendly program, that combines data analysis, optimisation and visualisation, the object provides interfaces to the main features that are provided in a number of modules in `./finquant/` and are discussed below.
 
 ## Motivation
-Within a few lines of code, `QuantPy` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
+Within a few lines of code, `FinQuant` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
 
 ### Automatically generating an instance of `Portfolio`
-`quantpy.portfolio.buildPortfolio` is a function that eases the creating of your portfolio. See below for one of several ways of using `buildPortfolio`.
+`finquant.portfolio.buildPortfolio` is a function that eases the creating of your portfolio. See below for one of several ways of using `buildPortfolio`.
 ```
-from quantpy.portfolio import buildPortfolio
+from finquant.portfolio import buildPortfolio
 names = ['GOOG', 'AMZN', 'MCD', 'DIS']
 start_date = '2015-01-01'
 end_date = '2017-12-31'
@@ -21,7 +21,7 @@ pf = buildPortfolio(names=names,
                     start_date=start_date,
                     end_date=end_date)
 ```
-`pf` is an instance of `quantpy.portfolio.Portfolio`, which contains the prices of the stocks in your portfolio. Then...
+`pf` is an instance of `finquant.portfolio.Portfolio`, which contains the prices of the stocks in your portfolio. Then...
 ```
 pf.data.head(3)
 ```
@@ -77,7 +77,7 @@ yields
 
 ### Band Moving Average (Buy/Sell Signals)
 ```
-from quantpy.moving_average import computeMA, EMA
+from finquant.moving_average import computeMA, EMA
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
 spans = [10, 50, 100, 150, 200]
@@ -90,7 +90,7 @@ yields
 
 ### Bollinger Band
 ```
-from quantpy.moving_average import plotBollingerBand
+from finquant.moving_average import plotBollingerBand
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
 span=20
@@ -132,7 +132,7 @@ pf.plot_stocks()
    - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
 
 ## Dependencies
-`QuantPy` depends on the following Python packages:
+`FinQuant` depends on the following Python packages:
  - python>=3.5.0
  - numpy>=1.11.0
  - pandas>=0.17.1
@@ -144,12 +144,12 @@ pf.plot_stocks()
 ## Usage
 Download the code:
 
-```git clone https://github.com/fmilthaler/QuantPy.git```
+```git clone https://github.com/fmilthaler/FinQuant.git```
 
-And make sure to add the directory `QuantPy` to your `PYTHONPATH`.
+And make sure to add the directory `FinQuant` to your `PYTHONPATH`.
 
 ## Portfolio
-This is the heart of `QuantPy`. `quantpy.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `QuantPy` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./quantpy/` and are discussed below.
+This is the heart of `FinQuant`. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `FinQuant` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed below.
 
 To learn more about the object, please read through the docstring of the module, and have a look at the examples.
 
@@ -164,7 +164,7 @@ Here is a list of instance variables the user has access to:
  - `kurtosis`: a `pandas.Series` with the Kurtosis of all stocks
  - `riskFreeRate`: the risk free rate associated with the portfolio
  - `freq`: the time window/frequency of/over which the expected return and volatility are computed
- - `ef`: instance of `quantpy.efficient_frontier.EfficientFrontier` which is used for finding optimial portfolios (see more below)
+ - `ef`: instance of `finquant.efficient_frontier.EfficientFrontier` which is used for finding optimial portfolios (see more below)
 
 And here is an incomplete list of functions provided within `pf`:
  - `getStock`: Returns the instance of a Stock
@@ -185,10 +185,10 @@ And here is an incomplete list of functions provided within `pf`:
  - `mc_optimisation`: performs a Monte Carlo run and finds optimised portfolios
  - `properties`: nicely prints out the portfolio's properties
 
-`quantpy.portfolio.Portfolio` also provides a function `buildPortfolio` which is designed to automatically generate `pf` for the user's convenience. For more information on how to use `buildPortfolio`, please read its `docstring` (do `print(quantpy.portfolio.buildPortfolio.__doc__)`) and have a look at the examples.
+`finquant.portfolio.Portfolio` also provides a function `buildPortfolio` which is designed to automatically generate `pf` for the user's convenience. For more information on how to use `buildPortfolio`, please read its `docstring` (do `print(finquant.portfolio.buildPortfolio.__doc__)`) and have a look at the examples.
 
 ## Returns
-Daily returns of stocks are often computed in different ways. `QuantPy` provides three different ways of computing the daily returns in `quantpy.returns`:
+Daily returns of stocks are often computed in different ways. `FinQuant` provides three different ways of computing the daily returns in `finquant.returns`:
 1. The cumulative return: <img src="/tex/738645698dc3073b4bb52a0c078ae829.svg?invert_in_darkmode&sanitize=true" align=middle width=194.52263655pt height=46.976899200000005pt/>
 2. Percentage change of daily returns: <img src="/tex/27215e5f36fd0308b51ab510444edf0d.svg?invert_in_darkmode&sanitize=true" align=middle width=126.07712039999997pt height=48.84266309999997pt/>
 3. Log Return: <img src="/tex/ef37c00ad58fe657a64041c3093e0640.svg?invert_in_darkmode&sanitize=true" align=middle width=208.3327686pt height=57.53473439999999pt/>
@@ -196,7 +196,7 @@ Daily returns of stocks are often computed in different ways. `QuantPy` provides
 In addition to those, the module provides the function `historicalMeanReturn(data, freq=252)`, which computes the historical mean of the daily returns over a time period `freq`.
 
 ## Moving Averages
-The module `quantpy.moving_average` allows the computation and visualisation of Moving Averages of the stocks listed in the portfolio is also provided. It entails functions to compute and visualise the
+The module `finquant.moving_average` allows the computation and visualisation of Moving Averages of the stocks listed in the portfolio is also provided. It entails functions to compute and visualise the
  - `SMA`: Simple Moving Average, and
  - `EMA`: Exponential Moving Average.
  - `computeMA`: a Band of Moving Averages (of different time windows/spans) including Buy/Sell signals
@@ -206,7 +206,7 @@ The module `quantpy.moving_average` allows the computation and visualisation of 
 
 ## Portfolio Optimisation
 ### Efficient Frontier
-An implementation of the Efficient Frontier (`quantpy.efficient_frontier.EfficientFrontier`) allows for the optimisation of the portfolio for
+An implementation of the Efficient Frontier (`finquant.efficient_frontier.EfficientFrontier`) allows for the optimisation of the portfolio for
  - `minimum_volatility` Minimum Volatility,
  - `maximum_sharpe_ratio` Maximum Sharpe Ratio
  - `efficient_return` Minimum Volatility for a given expected return
@@ -231,26 +231,26 @@ The approach branded as *Efficient Frontier* should be the preferred method for 
 For more information about the project and details on how to use it, please
 look at the examples provided in `./example`.
 
-**Note**: In the below examples, `pf` refers to an instance of `quantpy.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make `QuantPy` a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./quantpy/` and are discussed throughout this README.
+**Note**: In the below examples, `pf` refers to an instance of `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make `FinQuant` a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed throughout this README.
 
 ### Building a portfolio with `quandl`
-`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use `QuantPy` to build a financial portfolio by downloading stock price data through the Python package `quandl`.
+`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use `FinQuant` to build a financial portfolio by downloading stock price data through the Python package `quandl`.
 
 ### Building a portfolio with preset data
-`./example/Example-Build-Portfolio-from-file.py`: Shows how to use `QuantPy` to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
+`./example/Example-Build-Portfolio-from-file.py`: Shows how to use `FinQuant` to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
 
 ### Analysis of a portfolio
-`./example/Example-Analysis.py`: This example shows how to use an instance of `quantpy.portfolio.Portfolio`, get the portfolio's quantities, such as
+`./example/Example-Analysis.py`: This example shows how to use an instance of `finquant.portfolio.Portfolio`, get the portfolio's quantities, such as
  - Expected Returns,
  - Volatility,
  - Sharpe Ratio.
 
 It also shows how to extract individual stocks from the given portfolio. Moreover it shows how to compute and visualise:
- - the different Returns provided by the module `quantpy.returns`,
+ - the different Returns provided by the module `finquant.returns`,
  - *Moving Averages*, a band of *Moving Averages*, and a *Bollinger Band*.
 
 ### Optimisation of a portfolio
-`./example/Example-Optimisation.py`: This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of `quantpy.efficient_frontier.EfficientFrontier` for optimising the portfolio. To make `QuantPy` more user-friendly,  for the
+`./example/Example-Optimisation.py`: This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of `finquant.efficient_frontier.EfficientFrontier` for optimising the portfolio. To make `FinQuant` more user-friendly,  for the
  - Minimum Volatility
  - Maximum Sharpe Ratio
  - Minimum Volatility for a given target Return
@@ -260,4 +260,4 @@ Furthermore, it is also shown how the entire *Efficient Frontier* and the optima
 
 Also, the optimisation of a portfolio and its visualisation based on a *Monte Carlo* is shown.
 
-Finally, `QuantPy`'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
+Finally, `FinQuant`'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
