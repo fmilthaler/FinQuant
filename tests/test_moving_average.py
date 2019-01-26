@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from quantpy.moving_average import computeMA, SMA, EMA, SMAstd, EMAstd
-from quantpy.moving_average import plotBollingerBand
+from finquant.moving_average import computeMA, SMA, EMA, SMAstd, EMAstd
+from finquant.moving_average import plotBollingerBand
 
 
 def test_SMA():

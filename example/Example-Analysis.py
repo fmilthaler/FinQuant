@@ -17,8 +17,8 @@ import datetime
 
 # <codecell>
 
-# importing QuantPy's function to automatically build the portfolio
-from quantpy.portfolio import buildPortfolio
+# importing FinQuant's function to automatically build the portfolio
+from finquant.portfolio import buildPortfolio
 
 # <codecell>
 
@@ -97,7 +97,7 @@ pf.properties()
 # <markdowncell>
 
 # ## Daily returns and log returns
-# `QuantPy` provides functions to compute daily returns and annualised mean returns of a given DataFrame in various ways.
+# `FinQuant` provides functions to compute daily returns and annualised mean returns of a given DataFrame in various ways.
 
 # <codecell>
 
@@ -155,11 +155,11 @@ plt.show()
 # <markdowncell>
 
 # ## Moving Averages
-# `QuantPy` provides a module `quantpy.moving_average` to compute moving averages. See below.
+# `FinQuant` provides a module `finquant.moving_average` to compute moving averages. See below.
 
 # <codecell>
 
-from quantpy.moving_average import SMA
+from finquant.moving_average import SMA
 # simple moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # computing simple moving average over a span of 50 (trading) days
@@ -169,7 +169,7 @@ plt.show()
 
 # <codecell>
 
-from quantpy.moving_average import EMA
+from finquant.moving_average import EMA
 # exponential moving average
 ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
 # computing exponential moving average and plotting it
@@ -179,13 +179,13 @@ plt.show()
 # <markdowncell>
 
 # ## Band of moving averages and Buy/Sell signals
-# `QuantPy` also provides a method `quantpy.moving_average.computeMA` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
+# `FinQuant` also provides a method `finquant.moving_average.computeMA` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
 # 
 # To learn more about it and its input arguments, read its docstring and see the example below.
 
 # <codecell>
 
-from quantpy.moving_average import computeMA
+from finquant.moving_average import computeMA
 print(computeMA.__doc__)
 
 # <codecell>
@@ -202,12 +202,12 @@ plt.show()
 # <markdowncell>
 
 # ## Plot the Bollinger Band of one stock
-# The Bollinger Band can be automatically computed and plotted with the method `quantpy.moving_average.plotBollingerBand`. See below for an example.
+# The Bollinger Band can be automatically computed and plotted with the method `finquant.moving_average.plotBollingerBand`. See below for an example.
 
 # <codecell>
 
 # plot the bollinger band of the disney stock prices
-from quantpy.moving_average import plotBollingerBand
+from finquant.moving_average import plotBollingerBand
 # get stock data for disney
 dis = pf.getStock("DIS").data.copy(deep=True)
 span=20

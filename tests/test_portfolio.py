@@ -10,8 +10,8 @@ import matplotlib.pylab as plt
 import datetime
 import quandl
 import pytest
-from quantpy.portfolio import buildPortfolio, Stock, Portfolio
-from quantpy.efficient_frontier import EfficientFrontier
+from finquant.portfolio import buildPortfolio, Stock, Portfolio
+from finquant.efficient_frontier import EfficientFrontier
 
 # comparisons
 strong_abse = 1e-15

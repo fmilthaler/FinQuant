@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from quantpy.quants import weightedMean, weightedStd
-from quantpy.quants import sharpeRatio, annualised_portfolio_quantities
+from finquant.quants import weightedMean, weightedStd
+from finquant.quants import sharpeRatio, annualised_portfolio_quantities
 
 
 def test_weightedMean():

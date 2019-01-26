@@ -18,8 +18,8 @@ import datetime
 
 # <codecell>
 
-# importing QuantPy's function to automatically build the portfolio
-from quantpy.portfolio import buildPortfolio
+# importing FinQuant's function to automatically build the portfolio
+from finquant.portfolio import buildPortfolio
 
 # <codecell>
 

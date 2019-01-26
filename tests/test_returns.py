@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from quantpy.returns import cumulativeReturns, dailyReturns
-from quantpy.returns import dailyLogReturns, historicalMeanReturn
+from finquant.returns import cumulativeReturns, dailyReturns
+from finquant.returns import dailyLogReturns, historicalMeanReturn
 
 
 def test_cumulativeReturns():

@@ -6,8 +6,8 @@ Provides optimisation functions
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
-from quantpy.returns import dailyReturns
-from quantpy.quants import annualised_portfolio_quantities
+from finquant.returns import dailyReturns
+from finquant.quants import annualised_portfolio_quantities
 
 
 def random_portfolios(data, num_trials, riskFreeRate=0.005, freq=252):
