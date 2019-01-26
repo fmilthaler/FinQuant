@@ -5,9 +5,9 @@
 
 # # Example: Portfolio optimisation
 # 
-# This example shows how `QuantPy` can be used to optimise a portfolio.
+# This example shows how `FinQuant` can be used to optimise a portfolio.
 # 
-# Two different approaches are implemented in `QuantPy`:
+# Two different approaches are implemented in `FinQuant`:
 #  1. Efficient Frontier
 #  2. Monte Carlo run
 # 
@@ -26,11 +26,11 @@
 # The approach branded as *Efficient Frontier* should be the preferred method for reasons of computational effort and accuracy. The latter approach is only included for the sake of completeness, and creation of beautiful plots.
 # 
 # ## Visualisation
-# Not only does `QuantPy` allow for the optimisation of a portfolio with the above mentioned methods and objectives, `QuantPy` also allows for the computation and visualisation of an *Efficient Frontier* and *Monte Carlo* run.
+# Not only does `FinQuant` allow for the optimisation of a portfolio with the above mentioned methods and objectives, `FinQuant` also allows for the computation and visualisation of an *Efficient Frontier* and *Monte Carlo* run.
 # 
 # Let `pf` be an instance of `Portfolio`. The *Efficient Frontier* can be computed and visualised with `pf.ef_plot_efrontier()`. The optimal portfolios for *minimum volatility* and *maximum Sharpe ratio* can be visualised with `pf.ef_plot_optimal_portfolios()`. And if required, the individual stocks of the portfolio can be visualised with `pf.plot_stocks(show=False)`. An overlay of these three commands is shown below.
 # 
-# Finally, the entire result of a *Monte Carlo* run can also be visualised automatically by `QuantPy`. An example is shown below.
+# Finally, the entire result of a *Monte Carlo* run can also be visualised automatically by `FinQuant`. An example is shown below.
 
 # <markdowncell>
 
@@ -42,8 +42,8 @@ import pathlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
-# importing QuantPy's function to automatically build the portfolio
-from quantpy.portfolio import buildPortfolio
+# importing FinQuant's function to automatically build the portfolio
+from finquant.portfolio import buildPortfolio
 
 # <codecell>
 
@@ -122,7 +122,7 @@ pf.ef_efficient_volatility(0.22)
 
 # <codecell>
 
-from quantpy.efficient_frontier import EfficientFrontier
+from finquant.efficient_frontier import EfficientFrontier
 
 # creating an instance of EfficientFrontier
 ef = EfficientFrontier(pf.compMeanReturns(freq=1),
@@ -138,7 +138,7 @@ ef.minimum_volatility()
 # <markdowncell>
 
 # ### Computing and visualising the Efficient Frontier
-# `QuantPy` offers several ways to compute the *Efficient Frontier*.
+# `FinQuant` offers several ways to compute the *Efficient Frontier*.
 #  1. Through the opject `pf`
 #   - with automatically setting limits of the *Efficient Frontier*
 #  2. By manually creating an instance of `EfficientFrontier` and providing the data from the portfolio

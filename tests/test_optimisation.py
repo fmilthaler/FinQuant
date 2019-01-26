@@ -1,4 +1,4 @@
 ###################################################
-# for now, the corresponding module in quantpy is #
+# for now, the corresponding module in finquant is #
 # tested through portfolio                        #
 ###################################################
