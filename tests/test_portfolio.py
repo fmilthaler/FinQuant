@@ -355,8 +355,15 @@ def test_mc_optimisation():
     xlabel_orig = 'Volatility [period=252]'
     ylabel_orig = 'Expected Return [period=252]'
     # run Monte Carlo optimisation through pf
+    opt_w, opt_res = pf.mc_optimisation(num_trials=500)
+    # tests
+    assert((minvol_res_orig - opt_res.iloc[0].values <= strong_abse).all())
+    assert((maxsharpe_res_orig - opt_res.iloc[1].values <= strong_abse).all())
+    assert((minvol_w_orig - opt_w.iloc[0].values <= strong_abse).all())
+    assert((maxsharpe_w_orig - opt_w.iloc[1].values <= strong_abse).all())
+    # also test the plot
     plt.figure()
-    opt_w, opt_res = pf.mc_optimisation(num_trials=500, verbose=False)
+    pf.mc_plot_results()
     # get axis object
     ax = plt.gca()
     # only checking legend and axis labels, and assume that the plot
@@ -364,11 +371,6 @@ def test_mc_optimisation():
     labels_plot = ax.get_legend_handles_labels()[1]
     xlabel_plot = ax.get_xlabel()
     ylabel_plot = ax.get_ylabel()
-    # tests
-    assert((minvol_res_orig - opt_res.iloc[0].values <= strong_abse).all())
-    assert((maxsharpe_res_orig - opt_res.iloc[1].values <= strong_abse).all())
-    assert((minvol_w_orig - opt_w.iloc[0].values <= strong_abse).all())
-    assert((maxsharpe_w_orig - opt_w.iloc[1].values <= strong_abse).all())
     assert(labels_orig == labels_plot)
     assert(xlabel_orig == xlabel_plot)
     assert(ylabel_orig == ylabel_plot)
