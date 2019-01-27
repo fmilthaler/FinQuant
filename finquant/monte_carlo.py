@@ -43,18 +43,18 @@ class MonteCarloOpt(MonteCarlo):
     optimised financial portfolios.
     '''
 
-    def __init__(self, returns, num_trials=1000, riskFreeRate=0.005,
-    freq=252, initial_weights=None):
+    def __init__(self, returns, num_trials=1000, risk_free_rate=0.005,
+                 freq=252, initial_weights=None):
         '''
         Input:
          * returns: A DataFrame which contains the returns of stocks.
              Note: If applicable, the given returns should be computed with the
              same risk free rate and time window/frequency (arguments
-             "riskFreeRate" and "freq" as passed down here.
+             "risk_free_rate" and "freq" as passed down here.
          * num_trials: Integer (default: 10000), number of portfolios to be
              computed, each with a random distribution of weights/investments
              in each stock
-         * riskFreeRate: Float (default: 0.005), the risk free rate as
+         * risk_free_rate: Float (default: 0.005), the risk free rate as
              required for the Sharpe Ratio
          * freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
@@ -74,14 +74,14 @@ class MonteCarloOpt(MonteCarlo):
             raise ValueError("returns is expected to be a pandas.DataFrame")
         if (not isinstance(num_trials, int)):
             raise ValueError("num_trials is expected to be an integer")
-        if (not isinstance(riskFreeRate, (int, float))):
-            raise ValueError("riskFreeRate is expected to be an integer "
+        if (not isinstance(risk_free_rate, (int, float))):
+            raise ValueError("risk_free_rate is expected to be an integer "
                              + "or float.")
         if (not isinstance(freq, int)):
             raise ValueError("freq is expected to be an integer.")
         self.returns = returns
         self.num_trials = num_trials
-        self.riskFreeRate = riskFreeRate
+        self.risk_free_rate = risk_free_rate
         self.freq = freq
         self.initial_weights = initial_weights
         # initiate super class
@@ -102,7 +102,8 @@ class MonteCarloOpt(MonteCarlo):
         corresponding Expected Return, Volatility and Sharpe Ratio.
 
         Output:
-         * (weights, quantities): Tuple of weights (np.ndarray) and a list of [expected return, volatility, sharpe ratio].
+         * (weights, quantities): Tuple of weights (np.ndarray) and a
+             list of [expected return, volatility, sharpe ratio].
         '''
         # select random weights for portfolio
         w = np.array(np.random.random(self.num_stocks))
@@ -110,7 +111,7 @@ class MonteCarloOpt(MonteCarlo):
         w = w/np.sum(w)
         # compute portfolio return and volatility
         portfolio_values = annualised_portfolio_quantities(
-            w, self.return_means, self.cov_matrix, self.riskFreeRate,
+            w, self.return_means, self.cov_matrix, self.risk_free_rate,
             self.freq)
         return (w, list(portfolio_values))
 
@@ -175,9 +176,9 @@ class MonteCarloOpt(MonteCarlo):
         Sharpe Ratio.
         '''
         if (self.df_results is None or self.df_weights is None or
-            self.opt_weights is None or self.opt_results is None):
-            raise Exception('Error: Cannot plot, run the Monte Carlo '\
-                            'optimisation first.')
+                self.opt_weights is None or self.opt_results is None):
+            raise Exception('Error: Cannot plot, run the Monte Carlo '
+                            + 'optimisation first.')
         # create scatter plot coloured by Sharpe Ratio
         plt.scatter(self.df_results['Volatility'],
                     self.df_results['Expected Return'],
@@ -194,20 +195,22 @@ class MonteCarloOpt(MonteCarlo):
                     s=100,
                     label='min Volatility')
         # mark in red the highest sharpe ratio
-        plt.scatter(self.opt_results.loc['Max Sharpe Ratio']['Volatility'],
-                    self.opt_results.loc['Max Sharpe Ratio']['Expected Return'],
-                    marker='^',
-                    color='r',
-                    s=100,
-                    label='max Sharpe Ratio')
+        plt.scatter(
+            self.opt_results.loc['Max Sharpe Ratio']['Volatility'],
+            self.opt_results.loc['Max Sharpe Ratio']['Expected Return'],
+            marker='^',
+            color='r',
+            s=100,
+            label='max Sharpe Ratio')
         # also set marker for initial portfolio, if weights were given
         if (self.initial_weights is not None):
             # computed expected return and volatility of initial portfolio
-            initial_values = annualised_portfolio_quantities(self.initial_weights,
-                                                             self.return_means,
-                                                             self.cov_matrix,
-                                                             self.riskFreeRate,
-                                                             self.freq)
+            initial_values = annualised_portfolio_quantities(
+                self.initial_weights,
+                self.return_means,
+                self.cov_matrix,
+                self.risk_free_rate,
+                self.freq)
             initial_return = initial_values[0]
             initial_volatility = initial_values[1]
             plt.scatter(initial_volatility,
@@ -240,8 +243,8 @@ class MonteCarloOpt(MonteCarlo):
             string += "\nSharpe Ratio: {:0.3f}".format(
                 self.opt_results.loc[val]['Sharpe Ratio'])
             string += "\n\nOptimal weights:"
-            string += "\n"+str(self.opt_weights.loc[val].to_frame().transpose().rename(
-                    index={val: 'Allocation'}))
+            string += "\n"+str(self.opt_weights.loc[val].to_frame().
+                               transpose().rename(index={val: 'Allocation'}))
             string += "\n"
         string += "-"*70
         print(string)

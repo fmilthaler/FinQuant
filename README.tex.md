@@ -11,13 +11,13 @@
 Within a few lines of code, `FinQuant` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
 
 ### Automatically generating an instance of `Portfolio`
-`finquant.portfolio.buildPortfolio` is a function that eases the creating of your portfolio. See below for one of several ways of using `buildPortfolio`.
+`finquant.portfolio.build_portfolio` is a function that eases the creating of your portfolio. See below for one of several ways of using `build_portfolio`.
 ```
-from finquant.portfolio import buildPortfolio
+from finquant.portfolio import build_portfolio
 names = ['GOOG', 'AMZN', 'MCD', 'DIS']
 start_date = '2015-01-01'
 end_date = '2017-12-31'
-pf = buildPortfolio(names=names,
+pf = build_portfolio(names=names,
                     start_date=start_date,
                     end_date=end_date)
 ```
@@ -68,7 +68,7 @@ Information:
 
 ### Cumulative Return
 ```
-pf.compCumulativeReturns().plot().axhline(y = 0, color = "black", lw = 3)
+pf.comp_cumulative_returns().plot().axhline(y = 0, color = "black", lw = 3)
 ```
 yields
 <p align="center">
@@ -77,11 +77,11 @@ yields
 
 ### Band Moving Average (Buy/Sell Signals)
 ```
-from finquant.moving_average import computeMA, EMA
+from finquant.moving_average import compute_ma, ema
 # get stock data for disney
-dis = pf.getStock("DIS").data.copy(deep=True)
+dis = pf.get_stock("DIS").data.copy(deep=True)
 spans = [10, 50, 100, 150, 200]
-ma = computeMA(dis, EMA, spans, plot=True)
+ma = compute_ma(dis, ema, spans, plot=True)
 ```
 yields
 <p align="center">
@@ -90,11 +90,11 @@ yields
 
 ### Bollinger Band
 ```
-from finquant.moving_average import plotBollingerBand
+from finquant.moving_average import plot_bollinger_band
 # get stock data for disney
-dis = pf.getStock("DIS").data.copy(deep=True)
+dis = pf.get_stock("DIS").data.copy(deep=True)
 span=20
-plotBollingerBand(dis, SMA, span)
+plot_bollinger_band(dis, sma, span)
 ```
 yields
 <p align="center">
@@ -159,24 +159,24 @@ Here is a list of instance variables the user has access to:
  - `portfolio`: a `pandas.DataFrame` which contains the weights/FMV (and possibly more information) about the portfolio
  - `stocks`: a `dict` of instances of `Stock`, meaning a `dict` of individual stocks
  - `data`: a `pandas.DataFrame` with the stock prices of all stocks
- - `expectedReturn`: the portfolio's expected return
+ - `expected_return`: the portfolio's expected return
  - `volatility`: the portfolio's volatility
  - `sharpe`: the portfolio's Sharpe Ratio
  - `skew`: a `pandas.Series` with the skewness of all stocks
  - `kurtosis`: a `pandas.Series` with the Kurtosis of all stocks
- - `riskFreeRate`: the risk free rate associated with the portfolio
+ - `risk_free_rate`: the risk free rate associated with the portfolio
  - `freq`: the time window/frequency of/over which the expected return and volatility are computed
  - `ef`: instance of `finquant.efficient_frontier.EfficientFrontier` which is used for finding optimial portfolios (see more below)
 
 And here is an incomplete list of functions provided within `pf`:
- - `getStock`: Returns the instance of a Stock
- - `compCumulativeReturns`: Cumulative Returns
- - `compDailyReturns`: Percentage change of daily Returns
+ - `get_stock`: Returns the instance of a Stock
+ - `comp_cumulative_returns`: Cumulative Returns
+ - `comp_daily_returns`: Percentage change of daily Returns
  - `compDailyLogReturns`: Log Return
- - `compMeanReturns`: historical mean of the daily returns
- - `compExpectedReturn`: computes the Expected Return of the portfolio
- - `compVolatility`: computes the volatility of the given portfolio
- - `compSharpe`: computes and return the Sharpe ratio of the portfolio
+ - `comp_mean_returns`: historical mean of the daily returns
+ - `comp_expected_return`: computes the Expected Return of the portfolio
+ - `comp_volatility`: computes the volatility of the given portfolio
+ - `comp_sharpe`: computes and return the Sharpe ratio of the portfolio
  - `ef_minimum_volatility`: performs an optimisation for the portfolio with the minimum volatility
  - `ef_maximum_sharpe_ratio`: performs an optimisation for the portfolio with the maximum Sharpe Ratio
  - `ef_efficient_return`: performs an optimisation for the portfolio with the minimum volatility for a given target return.
@@ -189,7 +189,7 @@ And here is an incomplete list of functions provided within `pf`:
  - `mc_properties`: prints out the results of the Monte Carlo optimisation
  - `properties`: nicely prints out the portfolio's properties
 
-`finquant.portfolio.Portfolio` also provides a function `buildPortfolio` which is designed to automatically generate `pf` for the user's convenience. For more information on how to use `buildPortfolio`, please read its `docstring` (do `print(finquant.portfolio.buildPortfolio.__doc__)`) and have a look at the examples.
+`finquant.portfolio.Portfolio` also provides a function `build_portfolio` which is designed to automatically generate `pf` for the user's convenience. For more information on how to use `build_portfolio`, please read its `docstring` (do `print(finquant.portfolio.build_portfolio.__doc__)`) and have a look at the examples.
 
 ## Returns
 Daily returns of stocks are often computed in different ways. `FinQuant` provides three different ways of computing the daily returns in `finquant.returns`:
@@ -197,16 +197,16 @@ Daily returns of stocks are often computed in different ways. `FinQuant` provide
 2. Percentage change of daily returns: $\displaystyle\dfrac{\text{price}_{t_i} - \text{price}_{t_{i-1}}}{\text{price}_{t_{i-1}}}$
 3. Log Return: $\displaystyle\log\left(1 + \dfrac{\text{price}_{t_i} - \text{price}_{t_{i-1}}}{\text{price}_{t_{i-1}}}\right)$
 
-In addition to those, the module provides the function `historicalMeanReturn(data, freq=252)`, which computes the historical mean of the daily returns over a time period `freq`.
+In addition to those, the module provides the function `historical_mean_return(data, freq=252)`, which computes the historical mean of the daily returns over a time period `freq`.
 
 ## Moving Averages
 The module `finquant.moving_average` allows the computation and visualisation of Moving Averages of the stocks listed in the portfolio is also provided. It entails functions to compute and visualise the
- - `SMA`: Simple Moving Average, and
- - `EMA`: Exponential Moving Average.
- - `computeMA`: a Band of Moving Averages (of different time windows/spans) including Buy/Sell signals
- - `plotBollingerBand`: a Bollinger Band for
-   - `SMA`,
-   - `EMA`.
+ - `sma`: Simple Moving Average, and
+ - `ema`: Exponential Moving Average.
+ - `compute_ma`: a Band of Moving Averages (of different time windows/spans) including Buy/Sell signals
+ - `plot_bollinger_band`: a Bollinger Band for
+   - `sma`,
+   - `ema`.
 
 ## Portfolio Optimisation
 ### Efficient Frontier

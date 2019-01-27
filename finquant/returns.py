@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 
-def cumulativeReturns(data, dividend=0):
+def cumulative_returns(data, dividend=0):
     '''
     Returns DataFrame with cumulative returns
     R = (price_{t_i} - price_{t_0} + dividend) / price_{t_0}
@@ -21,7 +21,7 @@ def cumulativeReturns(data, dividend=0):
     return data.apply(lambda x: (x - x[0] + dividend) / x[0])
 
 
-def dailyReturns(data):
+def daily_returns(data):
     '''
     Returns DataFrame with daily returns (percentage change)
     R = (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}}
@@ -35,20 +35,20 @@ def dailyReturns(data):
     return data.pct_change().dropna(how="all")
 
 
-def dailyLogReturns(data):
+def daily_log_returns(data):
     '''
     Returns DataFrame with daily log returns
-    R_{\log} = \log(1 + (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}})
+    R_{log} = log(1 + (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}})
 
     Input:
      * data: DataFrame with daily stock prices
 
     Output: DataFrame of log(1 + daily percentage change of returns)
     '''
-    return np.log(1 + dailyReturns(data)).dropna(how="all")
+    return np.log(1 + daily_returns(data)).dropna(how="all")
 
 
-def historicalMeanReturn(data, freq=252):
+def historical_mean_return(data, freq=252):
     '''
     Returns the mean return based on historical stock price data.
 
@@ -61,5 +61,4 @@ def historicalMeanReturn(data, freq=252):
     '''
     if (not isinstance(data, pd.DataFrame)):
         raise ValueError("data must be a pandas.DataFrame")
-    daily_returns = dailyReturns(data)
-    return daily_returns.mean() * freq
+    return daily_returns(data).mean() * freq
