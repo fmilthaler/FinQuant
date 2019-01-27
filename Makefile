@@ -1,6 +1,6 @@
 include common.mk
 
-PYDIR=quantpy
+PYDIR=finquant
 DATADIR=data
 EXAMPLEDIR=example
 EXAMPLEFILES=$(wildcard example/Example*.py)
