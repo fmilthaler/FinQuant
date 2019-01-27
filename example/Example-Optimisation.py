@@ -189,8 +189,9 @@ plt.show()
 
 # <codecell>
 
-opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
-                                    verbose=True)
+opt_w, opt_res = pf.mc_optimisation(num_trials=5000)
+pf.mc_properties()
+pf.mc_plot_results()
 # again, the individual stocks can be added to the plot
 pf.plot_stocks()
 plt.show()
@@ -208,8 +209,8 @@ print(opt_w)
 
 # <codecell>
 
-opt_w, opt_res = pf.mc_optimisation(num_trials=5000,
-                                    verbose=False)
+opt_w, opt_res = pf.mc_optimisation(num_trials=5000)
+pf.mc_plot_results()
 pf.ef_plot_efrontier()
 pf.ef.plot_optimal_portfolios()
 pf.plot_stocks()
