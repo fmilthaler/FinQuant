@@ -53,10 +53,10 @@ import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
 from finquant.quants import weightedMean, weightedStd, sharpeRatio
-from finquant.optimisation import monte_carlo_optimisation
 from finquant.returns import historicalMeanReturn
 from finquant.returns import dailyReturns, cumulativeReturns, dailyLogReturns
 from finquant.efficient_frontier import EfficientFrontier
+from finquant.monte_carlo import MonteCarloOpt
 
 
 class Stock(object):
@@ -179,8 +179,9 @@ class Portfolio(object):
         self.totalinvestment = None
         self.riskFreeRate = 0.005
         self.freq = 252
-        # instance variable for efficient frontier optimisations
+        # instance variables for Efficient Frontier and Monte Carlo optimisations
         self.ef = None
+        self.mc = None
 
     @property
     def totalinvestment(self):
@@ -529,6 +530,63 @@ class Portfolio(object):
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
+
+    # optimising the investments with the efficient frontier class
+    def _get_MC(self, num_trials=1000):
+        '''
+        If self.mc does not exist, create and return an instance of
+        finquant.monte_carlo.MonteCarloOpt, else, return the
+        existing instance.
+        '''
+        if (self.mc is None):
+            # create instance of EfficientFrontier
+            self.mc = MonteCarloOpt(self.compDailyReturns(),
+                                    num_trials=num_trials,
+                                    riskFreeRate=self.riskFreeRate,
+                                    freq=self.freq,
+                                    initial_weights=self.compWeights().values)
+        return self.mc
+
+    # optimising the investments by performing a Monte Carlo run
+    # based on volatility and sharpe ratio
+    def mc_optimisation(self, num_trials=1000):
+        '''
+        Optimisation of the portfolio by performing a Monte Carlo simulation.
+
+        Input:
+         * num_trials: Integer (default: 1000), number of portfolios to be
+             computed, each with a random distribution of weights/investments
+             in each stock.
+
+        Output:
+         * opt_w: DataFrame with optimised investment strategies for maximum
+             Sharpe Ratio and minimum volatility.
+         * opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+             for portfolios with minimum Volatility and maximum Sharpe Ratio.
+        '''
+        # get instance of MonteCarloOpt
+        mc = self._get_MC(num_trials)
+        opt_weights, opt_results = mc.optimisation()
+        return opt_weights, opt_results
+
+    def mc_plot_results(self):
+        '''
+        Plots the optimised portfolios found by a Monte Carlo run for
+         - minimum volatility, and
+         - maximum Sharpe ratio.
+        '''
+        # get instance of MonteCarloOpt
+        mc = self._get_MC()
+        mc.plot_results()
+
+    def mc_properties(self):
+        '''
+        Prints out the results of the Monte Carlo optimisation.
+        '''
+        # get instance of MonteCarloOpt
+        mc = self._get_MC()
+        mc.properties()
+
     def plot_stocks(self, freq=252):
         '''
         Plots the expected annual returns over annual volatility of
@@ -556,43 +614,6 @@ class Portfolio(object):
                          textcoords='offset points',
                          label=i)
             plt.legend()
-
-    # optimising the investments by performing a Monte Carlo run
-    # based on volatility and sharpe ratio
-    def mc_optimisation(self,
-                      total_investment=None,
-                      num_trials=10000,
-                      freq=252,
-                      verbose=True,
-                      plot=True):
-        '''
-        Optimisation of the portfolio by performing a Monte Carlo simulation.
-
-        Input:
-         * total_investment: Float (default: None, which results in the sum of
-             FMV of the portfolio information), money to be invested.
-         * num_trials: Integer (default: 10000), number of portfolios to be
-             computed, each with a random distribution of weights/investments
-             in each stock.
-         * freq: Integer (default: 252), number of trading days, default
-             value corresponds to trading days in a year.
-         * verbose: Boolean (default: True), if True, prints out optimised
-             portfolio allocations.
-         * plot: Boolean (default: True), if True, a plot of the Monte Carlo
-             simulation is shown.
-        '''
-        # if total_investment is not set, use total FMV of given portfolio
-        if (total_investment is None):
-            total_investment = self.totalinvestment
-
-        return monte_carlo_optimisation(self.data,
-                          num_trials=num_trials,
-                          total_investment=total_investment,
-                          riskFreeRate=self.riskFreeRate,
-                          freq=freq,
-                          initial_weights=self.compWeights().values,
-                          verbose=verbose,
-                          plot=plot)
 
     def properties(self):
         '''
