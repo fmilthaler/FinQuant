@@ -151,7 +151,7 @@ Download the code:
 And make sure to add the directory `FinQuant` to your `PYTHONPATH`.
 
 ## Portfolio
-This is the heart of `FinQuant`. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `FinQuant` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed below.
+This is the core of `FinQuant`. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `FinQuant` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed below.
 
 To learn more about the object, please read through the docstring of the module, and have a look at the examples.
 

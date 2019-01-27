@@ -1,5 +1,5 @@
 '''
-This module is the heart of FinQuant. It provides
+This module is the core of FinQuant. It provides
  - a class "Stock" that holds and calculates quantities of a single stock,
  - a class "Portfolio" that holds and calculates quantities of a financial
      portfolio, which is a collection of Stock instances.
