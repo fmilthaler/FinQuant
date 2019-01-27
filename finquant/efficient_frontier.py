@@ -1,7 +1,6 @@
-'''
-This module facilitates a class EfficientFrontier that can be used to optimise
-a portfolio.
-'''
+"""This module facilitates a class EfficientFrontier that can be used to
+optimise a portfolio.
+"""
 
 
 import numpy as np
@@ -13,21 +12,18 @@ from finquant.quants import annualised_portfolio_quantities
 
 
 class EfficientFrontier(object):
-    '''
-    An object designed to perform optimisations based on the efficient frontier
-    of a given portfolio.
-
+    """An object designed to perform optimisations based on the
+    efficient frontier of a given portfolio.
     It can find parameters for portfolios with
      - minimum volatility
      - maximum Sharpe ratio
      - minimum volatility for a given target return
      - maximum Sharpe ratio for a given target volatility
-    '''
+    """
 
     def __init__(self, mean_returns, cov_matrix, risk_free_rate=0.005,
                  freq=252, method='SLSQP'):
-        '''
-        Input:
+        """Input:
          * mean_returns: pandas.Series, individual expected returns for all
              stocks in the portfolio
          * cov_matrix: pandas.DataFrame, covariance matrix of returns
@@ -51,7 +47,7 @@ class EfficientFrontier(object):
              - 'trust-exact'
              - 'trust-krylov'
              all of which are officially supported by scipy.optimize.minimize
-        '''
+        """
         if (not isinstance(mean_returns, pd.Series)):
             raise ValueError("mean_returns is expected to be a pandas.Series.")
         if (not isinstance(cov_matrix, pd.DataFrame)):
@@ -91,21 +87,18 @@ class EfficientFrontier(object):
         self.efrontier = None
 
     def minimum_volatility(self, save_weights=True):
-        '''
-        Finds the portfolio with the minimum volatility.
-
+        """Finds the portfolio with the minimum volatility.
         Input:
         * save_weights: Boolean (default: True), whether to save the optimised
              weights in the instance variable weights (and df_weights). Useful
              for the case of computing the efficient frontier after doing a
              optimisation, else the optimal weights would be overwritten by the
              efficient frontier computations.
-
         Output:
          * df_weights/weights:
           - if "save_weights" is True: returning pandas.DataFrame of weights
           - if "save_weights" is False: returning numpy.ndarray of weights
-        '''
+        """
         if (not isinstance(save_weights, bool)):
             raise ValueError("save_weights is expected to be a boolean.")
         args = (self.mean_returns.values, self.cov_matrix.values)
@@ -129,22 +122,19 @@ class EfficientFrontier(object):
             return result['x']
 
     def maximum_sharpe_ratio(self, save_weights=True):
-        '''
-        Finds the portfolio with the maximum Sharpe Ratio, also called the
+        """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
-
         Input:
         * save_weights: Boolean (default: True), whether to save the optimised
              weights in the instance variable weights (and df_weights). Useful
              for the case of computing the efficient frontier after doing a
              optimisation, else the optimal weights would be overwritten by the
              efficient frontier computations.
-
         Output:
          * df_weights/weights:
           - if "save_weights" is True: returning pandas.DataFrame of weights
           - if "save_weights" is False: returning numpy.ndarray of weights
-        '''
+        """
         if (not isinstance(save_weights, bool)):
             raise ValueError("save_weights is expected to be a boolean.")
         args = (self.mean_returns.values,
@@ -170,10 +160,8 @@ class EfficientFrontier(object):
             return result['x']
 
     def efficient_return(self, target, save_weights=True):
-        '''
-        Finds the portfolio with the minimum volatility for a given target
+        """Finds the portfolio with the minimum volatility for a given target
         return.
-
         Input:
          * target: Float, the target return of the optimised portfolio.
          * save_weights: Boolean (default: True), whether to save the optimised
@@ -181,12 +169,11 @@ class EfficientFrontier(object):
              for the case of computing the efficient frontier after doing a
              optimisation, else the optimal weights would be overwritten by the
              efficient frontier computations.
-
         Output:
          * df_weights/weights:
           - if "save_weights" is True: returning pandas.DataFrame of weights
           - if "save_weights" is False: returning numpy.ndarray of weights
-        '''
+        """
         if (not isinstance(target, (int, float))):
             raise ValueError("target is expected to be an integer or float.")
         if (not isinstance(save_weights, bool)):
@@ -217,13 +204,11 @@ class EfficientFrontier(object):
             return result['x']
 
     def efficient_volatility(self, target):
-        '''
-        Finds the portfolio with the maximum Sharpe ratio for a given
+        """Finds the portfolio with the maximum Sharpe ratio for a given
         target volatility.
-
         Input:
          * target: Float, the target volatility of the optimised portfolio.
-        '''
+        """
         if (not isinstance(target, (int, float))):
             raise ValueError("target is expected to be an integer or float.")
         args = (self.mean_returns.values,
@@ -249,23 +234,20 @@ class EfficientFrontier(object):
         return self.df_weights
 
     def efficient_frontier(self, targets=None):
-        '''
-        Gets portfolios for a range of given target returns.
+        """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
         and maximum returns of the portfolio's individual stocks, and set
         the target range according to those values.
         Results in the Efficient Frontier.
-
         Input:
          * targets: list/numpy.ndarray (default: None) of floats,
              range of target returns.
-
         Output:
-         * numpy.array of (volatility, return) values
-        '''
+         * numpy.ndarray of (volatility, return) values
+        """
         if (targets is not None and not isinstance(
                 targets, (list, np.ndarray))):
-            raise ValueError("targets is expected to be a list or numpy.array")
+            raise ValueError("targets is expected to be a list or numpy.ndarray")
         elif (targets is None):
             # set range of target returns from the individual expected
             # returns of the stocks in the portfolio.
@@ -287,9 +269,7 @@ class EfficientFrontier(object):
         return self.efrontier
 
     def plot_efrontier(self):
-        '''
-        Plots the Efficient Frontier.
-        '''
+        """Plots the Efficient Frontier."""
         if (self.efrontier is None):
             # compute efficient frontier first
             self.efficient_frontier()
@@ -305,10 +285,9 @@ class EfficientFrontier(object):
         plt.legend()
 
     def plot_optimal_portfolios(self):
-        '''
-        Plots the Efficient Frontier and a marker for the minimum volatility
-        and maximum Sharpe ratio.
-        '''
+        """Plots the Efficient Frontier and a marker for the minimum
+        volatility and maximum Sharpe ratio.
+        """
         # compute optimal portfolios
         min_vol_weights = self.minimum_volatility(save_weights=False)
         max_sharpe_weights = self.maximum_sharpe_ratio(save_weights=False)
@@ -340,30 +319,26 @@ class EfficientFrontier(object):
         plt.legend()
 
     def dataframe_weights(self, weights):
-        '''
-        Generates and returns a pandas.DataFrame from given array weights.
-
+        """Generates and returns a pandas.DataFrame from given
+        array weights.
         Input:
          * weights: numpy.ndarray, weights of the stock of the portfolio
-
         Output:
          * pandas.DataFrame(self.weights,
              index=self.names,
              columns=['Allocation'])
-        '''
+        """
         if (not isinstance(weights, np.ndarray)):
-            raise ValueError("weights is expected to be a numpy.array")
+            raise ValueError("weights is expected to be a numpy.ndarray")
         return pd.DataFrame(weights, index=self.names, columns=['Allocation'])
 
     def properties(self, verbose=False):
-        '''
-        Calculates and prints out expected annualised return, volatility and
-        Sharpe ratio of optimised portfolio.
-
+        """Calculates and prints out expected annualised return,
+        volatility and Sharpe ratio of optimised portfolio.
         Input:
          * verbose: Boolean (default: False), whether to print out properties
              or not
-        '''
+        """
         if (not isinstance(verbose, bool)):
             raise ValueError("verbose is expected to be a boolean.")
         if (self.weights is None):
