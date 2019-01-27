@@ -12,18 +12,21 @@ class MonteCarlo(object):
     """An object to perform a Monte Carlo run/simulation."""
 
     def __init__(self, num_trials=1000):
-        """Input:
-         * num_trials: Integer (default: 1000), number iterations of the
+        """
+        :Input:
+         :num_trials: Integer (default: 1000), number iterations of the
                  Monte Carlo run/simulation.
         """
         self.num_trials = num_trials
 
     def run(self, fun, **kwargs):
-        """Input:
-         * fun: Function to call at each iteration of the Monte Carlo run.
-         * kwargs: (optional) Additional arguments that are passed to `fun`.
-        Output:
-         * result: List of quantities returned from `fun` at each iteration.
+        """
+        :Input:
+         :fun: Function to call at each iteration of the Monte Carlo run.
+         :kwargs: (optional) Additional arguments that are passed to `fun`.
+
+        :Output:
+         :result: List of quantities returned from `fun` at each iteration.
         """
         result = []
         for i in range(self.num_trials):
@@ -39,23 +42,25 @@ class MonteCarloOpt(MonteCarlo):
 
     def __init__(self, returns, num_trials=1000, risk_free_rate=0.005,
                  freq=252, initial_weights=None):
-        """Input:
-         * returns: A DataFrame which contains the returns of stocks.
+        """
+        :Input:
+         :returns: A DataFrame which contains the returns of stocks.
              Note: If applicable, the given returns should be computed with the
              same risk free rate and time window/frequency (arguments
              "risk_free_rate" and "freq" as passed down here.
-         * num_trials: Integer (default: 10000), number of portfolios to be
+         :num_trials: Integer (default: 10000), number of portfolios to be
              computed, each with a random distribution of weights/investments
              in each stock
-         * risk_free_rate: Float (default: 0.005), the risk free rate as
+         :risk_free_rate: Float (default: 0.005), the risk free rate as
              required for the Sharpe Ratio
-         * freq: Integer (default: 252), number of trading days, default
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
-         * initial_weights: List/Array (default: None), weights of
+         :initial_weights: List/Array (default: None), weights of
              initial/given portfolio, only used to plot a marker for the
              initial portfolio in the optimisation plot.
-        Output:
-         * opt: DataFrame with optimised investment strategies for maximum
+
+        :Output:
+         :opt: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
         """
         if (initial_weights is not None and
@@ -91,8 +96,9 @@ class MonteCarloOpt(MonteCarlo):
     def _random_weights(self):
         """Computes random weights for the stocks of a portfolio and the
         corresponding Expected Return, Volatility and Sharpe Ratio.
-        Output:
-         * (weights, quantities): Tuple of weights (np.ndarray) and a
+
+        :Output:
+         :(weights, quantities): Tuple of weights (np.ndarray) and a
              list of [expected return, volatility, sharpe ratio].
         """
         # select random weights for portfolio
@@ -109,10 +115,11 @@ class MonteCarloOpt(MonteCarlo):
         """Performs a Monte Carlo run and gets a list of random portfolios
         and their corresponding quantities (Expected Return, Volatility,
         Sharpe Ratio). Returns pandas.DataFrame of weights and results.
-        Output:
-         * df_weights: pandas.DataFrame, holds the weights for each randomly
+
+        :Output:
+         :df_weights: pandas.DataFrame, holds the weights for each randomly
              generated portfolio
-         * df_results: pandas.DataFrame, holds Expected Annualised Return,
+         :df_results: pandas.DataFrame, holds Expected Annualised Return,
              Volatility and Sharpe Ratio of each randomly generated portfolio
         """
         # run Monte Carlo to get random weights and corresponding quantities
@@ -127,11 +134,13 @@ class MonteCarloOpt(MonteCarlo):
         return (df_weights, df_results)
 
     def optimisation(self):
-        """Optimisation of the portfolio by performing a Monte Carlo simulation.
-        Output:
-         * opt_w: DataFrame with optimised investment strategies for maximum
+        """Optimisation of the portfolio by performing a Monte Carlo
+        simulation.
+
+        :Output:
+         :opt_w: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
-         * opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+         :opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # perform Monte Carlo run and get weights and results

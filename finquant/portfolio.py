@@ -8,8 +8,7 @@
      pandas.DataFrame (after loading it manually from disk/reading from file).
      For an example on how to use it, please read the corresponding docstring,
      or have a look at the examples in the sub-directory `example`.
-
-The classes "yStock" and "Portfolio" are designed to easily manage your
+The classes "Stock" and "Portfolio" are designed to easily manage your
 financial portfolio, and make the most common quantitative calculations:
  - cumulative returns of the portfolio's stocks
      ( (price_{t} - price_{t=0} + dividend) / price_{t=0} ),
@@ -21,12 +20,10 @@ financial portfolio, and make the most common quantitative calculations:
  - skewness of the portfolio's stocks,
  - Kurtosis of the portfolio's stocks,
  - the portfolio's covariance matrix.
-
 "Portfolio" also provides methods to easily compute and visualise
  - simple moving averages of any given time window,
  - exponential moving averages of any given time window,
  - Bollinger Bands of any given time window,
-
 Furthermore, the constructed portfolio can be optimised for
  - minimum volatility,
  - maximum Sharpe ratio
@@ -36,7 +33,6 @@ by either performing a numerical computation based on the Efficient
 Frontier, or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
-
 Finally, methods are implemented to generated the following plots:
  - Monte Carlo run to find optimal portfolio(s)
  - Efficient Frontier
@@ -85,9 +81,10 @@ class Stock(object):
     data in additional columns.
     """
     def __init__(self, investmentinfo, data):
-        """Input:
-         * investmentinfo: pandas.DataFrame of investment information
-         * data: pandas.DataFrame of stock price
+        """
+        :Input:
+         :investmentinfo: pandas.DataFrame of investment information
+         :data: pandas.DataFrame of stock price
         """
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
@@ -105,16 +102,18 @@ class Stock(object):
 
     def comp_expected_return(self, freq=252):
         """Computes the expected return of the stock.
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         """
         return historical_mean_return(self.data, freq=freq)
 
     def comp_volatility(self, freq=252):
         """Computes the volatility of the stock.
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year
         """
         return self.comp_daily_returns().std() * np.sqrt(freq)
@@ -226,8 +225,9 @@ class Portfolio(object):
 
     def add_stock(self, stock):
         """Adds a stock of type `Stock` to the portfolio.
-        Input:
-         * stock: an object of `Stock`
+
+        :Input:
+         :stock: an object of `Stock`
         """
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
@@ -290,19 +290,22 @@ class Portfolio(object):
 
     def comp_mean_returns(self, freq=252):
         """Computes the mean return based on historical stock price data.
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year.
         """
         return historical_mean_return(self.data, freq=freq)
 
     def comp_stock_volatility(self, freq=252):
         """Computes the volatilities of all the stocks individually
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year.
-        Output:
-         * pandas.DataFrame with the individual volatilities of all stocks
+
+        :Output:
+         :pandas.DataFrame with the individual volatilities of all stocks
              of the portfolio.
         """
         if (not isinstance(freq, int)):
@@ -319,8 +322,9 @@ class Portfolio(object):
 
     def comp_expected_return(self, freq=252):
         """Computes the expected return of the portfolio.
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year.
         """
         if (not isinstance(freq, int)):
@@ -334,8 +338,9 @@ class Portfolio(object):
 
     def comp_volatility(self, freq=252):
         """Computes the volatility of the given portfolio.
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year.
         """
         if (not isinstance(freq, int)):
@@ -388,8 +393,9 @@ class Portfolio(object):
     def ef_minimum_volatility(self, verbose=False):
         """Interface to ef.minimum_volatility().
         Finds the portfolio with the minimum volatility.
-        Input:
-         * verbose: Boolean (default=False), whether to print out properties
+
+        :Input:
+         :verbose: Boolean (default=False), whether to print out properties
              or not.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -405,8 +411,9 @@ class Portfolio(object):
         """Interface to ef.maximum_sharpe_ratio().
         Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
-        Input:
-         * verbose: Boolean (default=False), whether to print out properties
+
+        :Input:
+         :verbose: Boolean (default=False), whether to print out properties
              or not.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -422,9 +429,10 @@ class Portfolio(object):
         """Interface to ef.efficient_return().
         Finds the portfolio with the minimum volatility for a given target
         return.
-        Input:
-         * target: Float, the target return of the optimised portfolio.
-         * verbose: Boolean (default=False), whether to print out properties
+
+        :Input:
+         :target: Float, the target return of the optimised portfolio.
+         :verbose: Boolean (default=False), whether to print out properties
              or not.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -440,9 +448,10 @@ class Portfolio(object):
         """Interface to ef.efficient_volatility().
         Finds the portfolio with the maximum Sharpe ratio for a given
         target volatility.
-        Input:
-         * target: Float, the target volatility of the optimised portfolio.
-         * verbose: Boolean (default=False), whether to print out properties
+
+        :Input:
+         :target: Float, the target volatility of the optimised portfolio.
+         :verbose: Boolean (default=False), whether to print out properties
              or not.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -460,11 +469,13 @@ class Portfolio(object):
         and maximum returns of the portfolio's individual stocks, and set
         the target range according to those values.
         Results in the Efficient Frontier.
-        Input:
-         * targets: list/numpy.ndarray (default: None) of floats,
+
+        :Input:
+         :targets: list/numpy.ndarray (default: None) of floats,
              range of target returns.
-        Output:
-         * array of (volatility, return) values.
+
+        :Output:
+         :array of (volatility, return) values.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -509,15 +520,18 @@ class Portfolio(object):
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
     def mc_optimisation(self, num_trials=1000):
-        """Optimisation of the portfolio by performing a Monte Carlo simulation.
-        Input:
-         * num_trials: Integer (default: 1000), number of portfolios to be
+        """Optimisation of the portfolio by performing a Monte Carlo
+        simulation.
+
+        :Input:
+         :num_trials: Integer (default: 1000), number of portfolios to be
              computed, each with a random distribution of weights/investments
              in each stock.
-        Output:
-         * opt_w: DataFrame with optimised investment strategies for maximum
+
+        :Output:
+         :opt_w: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
-         * opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+         :opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
@@ -543,8 +557,9 @@ class Portfolio(object):
     def plot_stocks(self, freq=252):
         """Plots the expected annual returns over annual volatility of
         the stocks of the portfolio.
-        Input:
-         * freq: Integer (default: 252), number of trading days, default
+
+        :Input:
+         :freq: Integer (default: 252), number of trading days, default
              value corresponds to trading days in a year.
         """
         # annual mean returns of all stocks
@@ -621,11 +636,12 @@ def _correct_quandl_request_stock_name(names):
 def _quandl_request(names, start_date=None, end_date=None):
     """This function performs a simple request from quandl and returns
     a DataFrame containing stock data.
-    Input:
-     * names: List of strings of stock names to be requested
-     * start_date (optional): String/datetime of the start date of
+
+    :Input:
+     :names: List of strings of stock names to be requested
+     :start_date (optional): String/datetime of the start date of
          relevant stock data.
-     * end_date (optional): String/datetime of the end date of
+     :end_date (optional): String/datetime of the end date of
          relevant stock data.
     """
     try:
@@ -650,14 +666,16 @@ def _get_quandl_data_column_label(stock_name, data_label):
 def _get_stocks_data_columns(data, names, cols):
     """This function returns a subset of the given DataFrame data, which
     contains only the data columns as specified in the input cols.
-    Input:
-     * data: A DataFrame which contains quantities of the stocks
+
+    :Input:
+     :data: A DataFrame which contains quantities of the stocks
          listed in pf_allocation.
-     * names: A string or list of strings, containing the names of the
+     :names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
-     * cols: A list of strings of column labels of data to be extracted.
-    Output:
-     * data: A DataFrame which contains only the data columns of
+     :cols: A list of strings of column labels of data to be extracted.
+
+    :Output:
+     :data: A DataFrame which contains only the data columns of
          data as specified in cols.
     """
     # get correct stock names that quandl get request
@@ -710,17 +728,19 @@ def _build_portfolio_from_quandl(names,
                                  end_date=None):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
-    Input:
-     * names: A string or list of strings, containing the names of the
+
+    :Input:
+     :names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
-     * pf_allocation (optional): DataFrame with the required data column
+     :pf_allocation (optional): DataFrame with the required data column
          labels "Name" and "Allocation" of the stocks.
-     * start_date (optional): String/datetime start date of stock data to
+     :start_date (optional): String/datetime start date of stock data to
          be requested through quandl (default: None)
-     * end_date (optional): String/datetime end date of stock data to be
+     :end_date (optional): String/datetime end date of stock data to be
          requested through quandl (default: None)
-    Output:
-     * pf: Instance of Portfolio which contains all the information
+
+    :Output:
+     :pf: Instance of Portfolio which contains all the information
          requested by the user.
     """
     # create an empty portfolio
@@ -746,10 +766,12 @@ def _generate_pf_allocation(names=None, data=None):
     """Takes column names of provided DataFrame "data", and generates a
     DataFrame with columns "Name" and "Allocation" which contain the names found
     in input "data" and 1./len(data.columns) respectively.
-    Input:
-     * data: A DataFrame which contains prices of the stocks
-    Output:
-     * pf_allocation: pandas.DataFrame with columns 'Name' and 'Allocation', which
+
+    :Input:
+     :data: A DataFrame which contains prices of the stocks
+
+    :Output:
+     :pf_allocation: pandas.DataFrame with columns 'Name' and 'Allocation', which
          contain the names and weights of the stocks
     """
     # checking input arguments
@@ -803,17 +825,19 @@ def _build_portfolio_from_df(data,
                              pf_allocation=None,
                              datacolumns=["Adj. Close"]):
     """Returns a portfolio based on input in form of pandas.DataFrame.
-    Input:
-     * data: A DataFrame which contains prices of the stocks listed in
+
+    :Input:
+     :data: A DataFrame which contains prices of the stocks listed in
          pf_allocation
-     * pf_allocation (optional): DataFrame with the required data column
+     :pf_allocation (optional): DataFrame with the required data column
          labels "Name" and "Allocation" of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     * datacolumns (optional): A list of strings of data column labels
+     :datacolumns (optional): A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
-    Output:
-     * pf: Instance of Portfolio which contains all the information
+
+    :Output:
+     :pf: Instance of Portfolio which contains all the information
          requested by the user.
     """
     # if pf_allocation is None, automatically generate it
@@ -862,26 +886,28 @@ def _list_complement(A, B):
 def build_portfolio(**kwargs):
     """This function builds and returns a portfolio given a set of input
     arguments.
-    Input:
-     * pf_allocation (optional): DataFrame with the required data column
+
+    :Input:
+     :pf_allocation (optional): DataFrame with the required data column
          labels "Name" and "Allocation" of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     * names (optional): A string or list of strings, containing the names
+     :names (optional): A string or list of strings, containing the names
          of the stocks, e.g. 'GOOG' for Google.
-     * start (optional): String/datetime start date of stock data to be
+     :start (optional): String/datetime start date of stock data to be
          requested through quandl (default: None).
-     * end (optional): String/datetime end date of stock data to be
+     :end (optional): String/datetime end date of stock data to be
          requested through quandl (default: None).
-     * data (optional): A DataFrame which contains quantities of
+     :data (optional): A DataFrame which contains quantities of
          the stocks listed in pf_allocation.
-    Output:
-     * pf: Instance of Portfolio which contains all the information
+
+    :Output:
+     :pf: Instance of Portfolio which contains all the information
          requested by the user.
     Only the following combinations of inputs are allowed:
-     * pf_allocation (optional), names, start_date (optional),
+     :pf_allocation (optional), names, start_date (optional),
            end_date (optional)
-     * pf_allocation (optional), data
+     :pf_allocation (optional), data
     Moreover, the two different ways this function can be used are useful
     for
      1. building a portfolio by pulling data from quandl,
