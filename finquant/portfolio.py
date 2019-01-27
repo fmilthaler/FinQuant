@@ -395,7 +395,7 @@ class Portfolio(object):
         return self.data.kurt()
 
     # optimising the investments with the efficient frontier class
-    def get_EF(self):
+    def _get_EF(self):
         '''
         If self.ef does not exist, create and return an instance of
         finquant.efficient_frontier.EfficientFrontier, else, return the
@@ -420,7 +420,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # perform optimisation
         opt_weights = ef.minimum_volatility()
         # if verbose==True, print out results
@@ -439,7 +439,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # perform optimisation
         opt_weights = ef.maximum_sharpe_ratio()
         # if verbose==True, print out results
@@ -459,7 +459,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # perform optimisation
         opt_weights = ef.efficient_return(target)
         # if verbose==True, print out results
@@ -479,7 +479,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # perform optimisation
         opt_weights = ef.efficient_volatility(target)
         # if verbose==True, print out results
@@ -503,7 +503,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # perform optimisation
         efrontier = ef.efficient_frontier(targets)
         return efrontier
@@ -514,7 +514,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # plot efficient frontier
         ef.plot_efrontier()
 
@@ -526,7 +526,7 @@ class Portfolio(object):
         '''
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self.get_EF()
+        ef = self._get_EF()
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
