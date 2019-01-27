@@ -1,7 +1,6 @@
-'''
-Provides functions to compute and visualise moving averages and Bollinger
+"""Provides functions to compute and visualise moving averages and Bollinger
 Bands.
-'''
+"""
 
 
 import numpy as np
@@ -10,10 +9,8 @@ import matplotlib.pyplot as plt
 
 
 def compute_ma(data, fun, spans, plot=True):
-    '''
-    Computes the moving average (sma or ema, depends on the input argument
+    """Computes the moving average (sma or ema, depends on the input argument
     "fun") for a number of different time windows.
-
     Input:
      * data: pandas.DataFrame with stock prices, only one column is expected.
      * fun: function that computes a moving average, e.g. sma (simple) or
@@ -22,7 +19,9 @@ def compute_ma(data, fun, spans, plot=True):
      * plot: boolean (default: True), whether to plot the moving averages
          and buy/sell signales based on crossovers of shortest and longest
          moving average.
-    '''
+    Output:
+     * ma: pandas.DataFrame with moving averages of given data.
+    """
     if (not isinstance(data, pd.DataFrame)):
         raise ValueError("data must be of type pandas.DataFrame")
     # compute moving averages
@@ -66,58 +65,70 @@ def compute_ma(data, fun, spans, plot=True):
 
 
 def sma(data, span=100):
-    '''
-    Computes and returns the simple moving average.
+    """Computes and returns the simple moving average.
     Note: the moving average is computed on all columns.
-
     Input:
      * data: pandas.DataFrame with stock prices in columns
      * span: Integer (defaul: 100), number of days/values over which
          the average is computed
-    '''
+    Output:
+     * sma: pandas.DataFrame of simple moving average
+    """
     return data.rolling(window=span, center=False).mean()
 
 
 def ema(data, span=100):
-    '''
-    Computes and returns the exponential moving average.
+    """Computes and returns the exponential moving average.
     Note: the moving average is computed on all columns.
-
     Input:
      * data: pandas.DataFrame with stock prices in columns
      * span: Integer (defaul: 100), number of days/values over which
          the average is computed
-    '''
+    Output:
+     * ema: pandas.DataFrame of exponential moving average
+    """
     return data.ewm(span=span, adjust=False, min_periods=span).mean()
 
 
 def sma_std(data, span=100):
-    '''
-    Computes and returns the standard deviation of the simple moving
+    """Computes and returns the standard deviation of the simple moving
     average.
-
     Input:
      * data: pandas.DataFrame with stock prices in columns
      * span: Integer (defaul: 100), number of days/values over which
          the average is computed
-    '''
+    Output:
+     * sma_std: pandas.DataFrame of standard deviation of
+         simple moving average
+    """
     return data.rolling(window=span, center=False).std()
 
 
 def ema_std(data, span=100):
-    '''
-    Computes and returns the standard deviation of the exponential
+    """Computes and returns the standard deviation of the exponential
     moving average.
-
     Input:
      * data: pandas.DataFrame with stock prices in columns
      * span: Integer (defaul: 100), number of days/values over which
          the average is computed
-    '''
+    Output:
+     * ema_std: pandas.DataFrame of standard deviation of
+         exponential moving average
+    """
     return data.ewm(span=span, adjust=False, min_periods=span).std()
 
 
 def plot_bollinger_band(data, fun, span):
+    """Creates a plot of a Bolling Band
+    Input:
+     * data: pandas.DataFrame with stock prices in columns
+     * fun: function that computes a moving average, e.g. sma (simple) or
+         ema (exponential).
+     * span: Integer (defaul: 100), number of days/values over which
+         the average is computed
+    """
+    if (not isinstance(data, pd.DataFrame)):
+        raise ValueError("data is expected to be a pandas.DataFrame")
     if (not len(data.columns.values) == 1):
         raise ValueError("data is expected to have only one column.")
     if (not isinstance(span, int)):
