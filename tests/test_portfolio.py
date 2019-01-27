@@ -382,7 +382,7 @@ def test_mc_optimisation():
 def test_get_ef():
     d = d_pass[3]
     pf = buildPortfolio(**d)
-    ef = pf.get_EF()
+    ef = pf._get_EF()
     assert(isinstance(ef, EfficientFrontier))
     assert(isinstance(pf.ef, EfficientFrontier))
     assert(pf.ef == ef)
