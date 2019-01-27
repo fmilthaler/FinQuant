@@ -43,7 +43,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
 # importing FinQuant's function to automatically build the portfolio
-from finquant.portfolio import buildPortfolio
+from finquant.portfolio import build_portfolio
 
 # <codecell>
 
@@ -74,7 +74,7 @@ plt.rcParams['figure.figsize'] = (10, 6)
 df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
 df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
 # building a portfolio by providing stock data
-pf = buildPortfolio(data=df_data)
+pf = build_portfolio(data=df_data)
 print(pf)
 pf.properties()
 
@@ -93,7 +93,7 @@ pf.properties()
 # <codecell>
 
 # if needed, change risk free rate and frequency/time window of the portfolio
-print("pf.riskFreeRate = {}".format(pf.riskFreeRate))
+print("pf.risk_free_rate = {}".format(pf.risk_free_rate))
 print("pf.freq = {}".format(pf.freq))
 
 # <codecell>
@@ -125,15 +125,15 @@ pf.ef_efficient_volatility(0.22)
 from finquant.efficient_frontier import EfficientFrontier
 
 # creating an instance of EfficientFrontier
-ef = EfficientFrontier(pf.compMeanReturns(freq=1),
-                       pf.compCov())
+ef = EfficientFrontier(pf.comp_mean_returns(freq=1),
+                       pf.comp_cov())
 # optimisation for minimum volatility
 ef.minimum_volatility()
 
 # <codecell>
 
 # printing out relevant quantities of the optimised portfolio
-(expectedReturn, volatility, sharpe) = ef.properties(verbose=True)
+(expected_return, volatility, sharpe) = ef.properties(verbose=True)
 
 # <markdowncell>
 

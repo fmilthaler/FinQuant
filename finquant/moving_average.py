@@ -9,15 +9,15 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-def computeMA(data, fun, spans, plot=True):
+def compute_ma(data, fun, spans, plot=True):
     '''
-    Computes the moving average (SMA or EWM, depends on the input argument
+    Computes the moving average (sma or ema, depends on the input argument
     "fun") for a number of different time windows.
 
     Input:
      * data: pandas.DataFrame with stock prices, only one column is expected.
-     * fun: function that computes a moving average, e.g. SMA (simple) or
-         EMA (exponential).
+     * fun: function that computes a moving average, e.g. sma (simple) or
+         ema (exponential).
      * spans: list of integers, time windows to compute the MA on.
      * plot: boolean (default: True), whether to plot the moving averages
          and buy/sell signales based on crossovers of shortest and longest
@@ -65,7 +65,7 @@ def computeMA(data, fun, spans, plot=True):
     return ma
 
 
-def SMA(data, span=100):
+def sma(data, span=100):
     '''
     Computes and returns the simple moving average.
     Note: the moving average is computed on all columns.
@@ -78,7 +78,7 @@ def SMA(data, span=100):
     return data.rolling(window=span, center=False).mean()
 
 
-def EMA(data, span=100):
+def ema(data, span=100):
     '''
     Computes and returns the exponential moving average.
     Note: the moving average is computed on all columns.
@@ -91,7 +91,7 @@ def EMA(data, span=100):
     return data.ewm(span=span, adjust=False, min_periods=span).mean()
 
 
-def SMAstd(data, span=100):
+def sma_std(data, span=100):
     '''
     Computes and returns the standard deviation of the simple moving
     average.
@@ -104,7 +104,7 @@ def SMAstd(data, span=100):
     return data.rolling(window=span, center=False).std()
 
 
-def EMAstd(data, span=100):
+def ema_std(data, span=100):
     '''
     Computes and returns the standard deviation of the exponential
     moving average.
@@ -117,13 +117,13 @@ def EMAstd(data, span=100):
     return data.ewm(span=span, adjust=False, min_periods=span).std()
 
 
-def plotBollingerBand(data, fun, span):
+def plot_bollinger_band(data, fun, span):
     if (not len(data.columns.values) == 1):
         raise ValueError("data is expected to have only one column.")
     if (not isinstance(span, int)):
         raise ValueError("span must be an integer.")
     # compute moving average
-    ma = computeMA(data, fun, [span], plot=False)
+    ma = compute_ma(data, fun, [span], plot=False)
     # create dataframes for bollinger band object and standard
     # deviation
     bol = ma.copy(deep=True)
@@ -131,10 +131,10 @@ def plotBollingerBand(data, fun, span):
     # get column label
     collabel = data.columns.values[0]
     # get standard deviation
-    if (fun == SMA):
-        std[str(span)+"d std"] = SMAstd(data[collabel], span=span)
-    elif (fun == EMA):
-        std[str(span)+"d std"] = EMAstd(data[collabel], span=span)
+    if (fun == sma):
+        std[str(span)+"d std"] = sma_std(data[collabel], span=span)
+    elif (fun == ema):
+        std[str(span)+"d std"] = ema_std(data[collabel], span=span)
     # compute upper and lower band
     bol['Lower Band'] = bol[str(span)+"d"] - (std[str(span)+"d std"] * 2)
     bol['Upper Band'] = bol[str(span)+"d"] + (std[str(span)+"d std"] * 2)
@@ -151,7 +151,7 @@ def plotBollingerBand(data, fun, span):
     bol[collabel].plot(ax=ax)
     bol[str(span)+"d"].plot(ax=ax)
     # title
-    title = 'Bollinger Band of +/- 2$\sigma$, Moving Average of '\
+    title = 'Bollinger Band of +/- 2$\\sigma$, Moving Average of '\
             + str(fun.__name__)+' over '+str(span)+' days'
     plt.title(title)
     # legend

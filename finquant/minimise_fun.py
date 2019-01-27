@@ -13,31 +13,31 @@ def portfolio_volatility(weights, mean_returns, cov_matrix):
 
     Input:
      * weights: numpy.ndarray, weights of the stocks in the portfolio
-     * meanReturns: pandas.Series, individual expected returns for all stocks
+     * mean_returns: pandas.Series, individual expected returns for all stocks
          in the portfolio
      * cov_matrix: pandas.DataFrame, covariance matrix of returns
-     * riskFreeRate: Float (default=0.005), risk free rate
+     * risk_free_rate: Float (default=0.005), risk free rate
     '''
     return annualised_portfolio_quantities(weights,
                                            mean_returns,
                                            cov_matrix)[1]
 
 
-def negative_sharpe_ratio(weights, meanReturns, cov_matrix, riskFreeRate):
+def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     '''
     Calculates the negative Sharpe ratio of a portfolio
 
     Input:
      * weights: numpy.ndarray, weights of the stocks in the portfolio
-     * meanReturns: pandas.Series, individual expected returns for all stocks
+     * mean_returns: pandas.Series, individual expected returns for all stocks
          in the portfolio
      * cov_matrix: pandas.DataFrame, covariance matrix of returns
-     * riskFreeRate: Float (default=0.005), risk free rate
+     * risk_free_rate: Float (default=0.005), risk free rate
     '''
     sharpe = annualised_portfolio_quantities(weights,
-                                             meanReturns,
+                                             mean_returns,
                                              cov_matrix,
-                                             riskFreeRate=riskFreeRate)[2]
+                                             risk_free_rate=risk_free_rate)[2]
     # to find the maximum Sharpe ratio with scipy.optimize.minimize,
     # return the negative of the calculated Sharpe ratio
     return -sharpe
@@ -49,7 +49,7 @@ def portfolio_return(weights, mean_returns, cov_matrix):
 
     Input:
      * weights: numpy.ndarray, weights of the stocks in the portfolio
-     * meanReturns: pandas.Series, individual expected returns for all stocks
+     * mean_returns: pandas.Series, individual expected returns for all stocks
          in the portfolio
      * cov_matrix: pandas.DataFrame, covariance matrix of returns
     '''

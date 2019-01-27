@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from finquant.moving_average import computeMA, SMA, EMA, SMAstd, EMAstd
-from finquant.moving_average import plotBollingerBand
+from finquant.moving_average import compute_ma, sma, ema, sma_std, ema_std
+from finquant.moving_average import plot_bollinger_band
 
 
-def test_SMA():
+def test_sma():
     orig = np.array([[np.nan, 0.5, 1.5, 2.5, 3.5,
                       4.5, 5.5, 6.5, 7.5, 8.5],
                      [np.nan, 0.5, 2.5, 6.5, 12.5,
@@ -14,11 +14,11 @@ def test_SMA():
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({'0': l1, '1': l2})
-    res = SMA(df, span=2).dropna()
+    res = sma(df, span=2).dropna()
     assert(all((dforig == res).all()))
 
 
-def test_EMA():
+def test_ema():
     orig = np.array([[np.nan, 0.6666666666666666, 1.5555555555555556,
                       2.5185185185185186, 3.506172839506173,
                       4.502057613168724, 5.500685871056241,
@@ -33,11 +33,11 @@ def test_EMA():
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({'0': l1, '1': l2})
-    res = EMA(df, span=2).dropna()
+    res = ema(df, span=2).dropna()
     assert(all((abs(dforig - res) <= 1e-15).all()))
 
 
-def test_SMAstd():
+def test_sma_std():
     orig = np.array([[np.nan, 0.7071067811865476, 0.7071067811865476,
                       0.7071067811865476, 0.7071067811865476,
                       0.7071067811865476, 0.7071067811865476,
@@ -52,10 +52,11 @@ def test_SMAstd():
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({'0': l1, '1': l2})
-    res = SMAstd(df, span=2).dropna()
+    res = sma_std(df, span=2).dropna()
     assert(all((abs(dforig - res) <= 1e-15).all()))
 
-def test_EMAstd():
+
+def test_ema_std():
     orig = np.array([[np.nan, 0.7071067811865476, 0.9746794344808964,
                       1.1143420667632726, 1.1785687889316867,
                       1.20612962779329, 1.217443715603457,
@@ -70,11 +71,11 @@ def test_EMAstd():
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({'0': l1, '1': l2})
-    res = EMAstd(df, span=2).dropna()
+    res = ema_std(df, span=2).dropna()
     assert(all((abs(dforig - res) <= 1e-15).all()))
 
 
-def test_computeMA():
+def test_compute_ma():
     stock_orig = [100.0, 0.1531138587991997, 0.6937500710898674,
                   -0.9998892390840102, -0.46790785174554383,
                   0.24992469198859263, 0.8371986752411684,
@@ -92,25 +93,26 @@ def test_computeMA():
     dforig = pd.DataFrame({'Stock': stock_orig,
                            '10d': ma10d_orig,
                            '30d': ma30d_orig}, index=index)
-    l = np.sin(np.linspace(1,10,100))
-    df = pd.DataFrame({'Stock': l})
-    ma = computeMA(df, EMA, spans=[10,30])
+    x = np.sin(np.linspace(1, 10, 100))
+    df = pd.DataFrame({'Stock': x})
+    ma = compute_ma(df, ema, spans=[10, 30])
     assert(all(abs((dforig - ma.describe()) <= 1e-15).all()))
 
 
-def test_plotBollingerBand():
+def test_plot_bollinger_band():
     labels_orig = ['Stock', '15d', 'Bollinger Band']
     xlabel_orig = 'Days'
     ylabel_orig = 'Price'
-    title_orig = 'Bollinger Band of +/- 2$\\sigma$, Moving Average of SMA over 15 days'
-    l = np.sin(np.linspace(1,10,100))
-    df = pd.DataFrame({'Stock': l}, index=np.linspace(1,10,100))
-    df.index.name='Days'
+    title_orig = 'Bollinger Band of +/- 2$\\sigma$, Moving Average '\
+                 'of sma over 15 days'
+    x = np.sin(np.linspace(1, 10, 100))
+    df = pd.DataFrame({'Stock': x}, index=np.linspace(1, 10, 100))
+    df.index.name = 'Days'
     plt.figure()
-    plotBollingerBand(df, SMA, span=15)
+    plot_bollinger_band(df, sma, span=15)
     # get data from axis object
     ax = plt.gca()
-    # ax.lines[0] is the data we passed to plotBollingerBand
+    # ax.lines[0] is the data we passed to plot_bollinger_band
     # ax.lines[1] is the moving average (tested already)
     # not sure how to obtain the data of the BollingerBand from
     # the plot.
@@ -123,10 +125,9 @@ def test_plotBollingerBand():
     ylabel_plot = ax.get_ylabel()
     title_plot = ax.get_title()
     # tests
-    assert((df['Stock'].index.values == stock_plot[:,0]).all())
-    assert((df['Stock'].values == stock_plot[:,1]).all())
+    assert((df['Stock'].index.values == stock_plot[:, 0]).all())
+    assert((df['Stock'].values == stock_plot[:, 1]).all())
     assert(labels_orig == labels_plot)
     assert(xlabel_orig == xlabel_plot)
     assert(ylabel_orig == ylabel_plot)
     assert(title_orig == title_plot)
-
