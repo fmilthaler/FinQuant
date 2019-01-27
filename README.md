@@ -105,6 +105,8 @@ yields
 ```
 # performs and plots results of Monte Carlo run (5000 iterations)
 opt_w, opt_res = pf.mc_optimisation(num_trials=5000)
+# plots the results of the Monte Carlo optimisation
+pf.mc_plot_results()
 # plots the Efficient Frontier
 pf.ef_plot_efrontier()
 # plots optimal portfolios based on Efficient Frontier
@@ -149,7 +151,7 @@ Download the code:
 And make sure to add the directory `FinQuant` to your `PYTHONPATH`.
 
 ## Portfolio
-This is the heart of `FinQuant`. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `FinQuant` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed below.
+This is the core of `FinQuant`. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `FinQuant` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed below.
 
 To learn more about the object, please read through the docstring of the module, and have a look at the examples.
 
@@ -183,6 +185,8 @@ And here is an incomplete list of functions provided within `pf`:
  - `ef_plot_optimal_portfolios`: computes and plots markers of the two optimal portfolios (minimum volatility/maximum Sharpe ratio)
  - `plot_stocks`: plots all stocks of the portfolio (expected (annual) return over volatility)
  - `mc_optimisation`: performs a Monte Carlo run and finds optimised portfolios
+ - `mc_plot_results`: plots the results of the Monte Carlo optimisation
+ - `mc_properties`: prints out the results of the Monte Carlo optimisation
  - `properties`: nicely prints out the portfolio's properties
 
 `finquant.portfolio.Portfolio` also provides a function `buildPortfolio` which is designed to automatically generate `pf` for the user's convenience. For more information on how to use `buildPortfolio`, please read its `docstring` (do `print(finquant.portfolio.buildPortfolio.__doc__)`) and have a look at the examples.
