@@ -1,7 +1,7 @@
 default: test
 
 test:
-	@pytest .
+	@pytest -v .
 
 rempltshow:
 	@-sed -i 's/plt.show()//g' test_Example*.py
