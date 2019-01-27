@@ -1,6 +1,5 @@
-'''
-This module provides an implementation of the Monte Carlo method.
-'''
+"""This module provides an implementation of the Monte Carlo method.
+"""
 
 
 import numpy as np
@@ -10,26 +9,22 @@ from finquant.quants import annualised_portfolio_quantities
 
 
 class MonteCarlo(object):
-    '''
-    An object to perform a Monte Carlo run/simulation.
-    '''
+    """An object to perform a Monte Carlo run/simulation."""
 
     def __init__(self, num_trials=1000):
-        '''
-        Input:
+        """Input:
          * num_trials: Integer (default: 1000), number iterations of the
                  Monte Carlo run/simulation.
-        '''
+        """
         self.num_trials = num_trials
 
     def run(self, fun, **kwargs):
-        '''
-        Input:
+        """Input:
          * fun: Function to call at each iteration of the Monte Carlo run.
          * kwargs: (optional) Additional arguments that are passed to `fun`.
         Output:
          * result: List of quantities returned from `fun` at each iteration.
-        '''
+        """
         result = []
         for i in range(self.num_trials):
             res = fun(**kwargs)
@@ -38,15 +33,13 @@ class MonteCarlo(object):
 
 
 class MonteCarloOpt(MonteCarlo):
-    '''
-    An object to perform a Monte Carlo run/simulation for finding
+    """An object to perform a Monte Carlo run/simulation for finding
     optimised financial portfolios.
-    '''
+    """
 
     def __init__(self, returns, num_trials=1000, risk_free_rate=0.005,
                  freq=252, initial_weights=None):
-        '''
-        Input:
+        """Input:
          * returns: A DataFrame which contains the returns of stocks.
              Note: If applicable, the given returns should be computed with the
              same risk free rate and time window/frequency (arguments
@@ -61,11 +54,10 @@ class MonteCarloOpt(MonteCarlo):
          * initial_weights: List/Array (default: None), weights of
              initial/given portfolio, only used to plot a marker for the
              initial portfolio in the optimisation plot.
-
         Output:
          * opt: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
-        '''
+        """
         if (initial_weights is not None and
            not isinstance(initial_weights, np.ndarray)):
             raise ValueError("If given, optional argument 'initial_weights' "
@@ -97,14 +89,12 @@ class MonteCarloOpt(MonteCarlo):
         self.opt_results = None
 
     def _random_weights(self):
-        '''
-        Computes random weights for the stocks of a portfolio and the
+        """Computes random weights for the stocks of a portfolio and the
         corresponding Expected Return, Volatility and Sharpe Ratio.
-
         Output:
          * (weights, quantities): Tuple of weights (np.ndarray) and a
              list of [expected return, volatility, sharpe ratio].
-        '''
+        """
         # select random weights for portfolio
         w = np.array(np.random.random(self.num_stocks))
         # rebalance weights
@@ -116,17 +106,15 @@ class MonteCarloOpt(MonteCarlo):
         return (w, list(portfolio_values))
 
     def _random_portfolios(self):
-        '''
-        Performs a Monte Carlo run and gets a list of random portfolios
+        """Performs a Monte Carlo run and gets a list of random portfolios
         and their corresponding quantities (Expected Return, Volatility,
         Sharpe Ratio). Returns pandas.DataFrame of weights and results.
-
         Output:
          * df_weights: pandas.DataFrame, holds the weights for each randomly
              generated portfolio
          * df_results: pandas.DataFrame, holds Expected Annualised Return,
              Volatility and Sharpe Ratio of each randomly generated portfolio
-        '''
+        """
         # run Monte Carlo to get random weights and corresponding quantities
         res = self.run(self._random_weights)
         # transpose and convert to pandas.DataFrame:
@@ -139,15 +127,13 @@ class MonteCarloOpt(MonteCarlo):
         return (df_weights, df_results)
 
     def optimisation(self):
-        '''
-        Optimisation of the portfolio by performing a Monte Carlo simulation.
-
+        """Optimisation of the portfolio by performing a Monte Carlo simulation.
         Output:
          * opt_w: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
          * opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
-        '''
+        """
         # perform Monte Carlo run and get weights and results
         df_weights, df_results = self._random_portfolios()
         # finding portfolios with the minimum volatility and maximum
@@ -169,12 +155,11 @@ class MonteCarloOpt(MonteCarlo):
         return opt_w, opt_res
 
     def plot_results(self):
-        '''
-        Plots the results of the Monte Carlo run, with all of the
+        """Plots the results of the Monte Carlo run, with all of the
         randomly generated weights/portfolios, as well as markers
         for the portfolios with the minimum Volatility and maximum
         Sharpe Ratio.
-        '''
+        """
         if (self.df_results is None or self.df_weights is None or
                 self.opt_weights is None or self.opt_results is None):
             raise Exception('Error: Cannot plot, run the Monte Carlo '
@@ -228,6 +213,7 @@ class MonteCarloOpt(MonteCarlo):
         plt.legend()
 
     def properties(self):
+        """Prints out the properties of the Monte Carlo optimisation."""
         # print out results
         opt_vals = ['Min Volatility', 'Max Sharpe Ratio']
         string = ""
