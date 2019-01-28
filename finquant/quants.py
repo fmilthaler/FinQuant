@@ -20,12 +20,10 @@ def weighted_mean(means, weights):
     :Output:
      :weighted mu: numpy.ndarray: (np.sum(means*weights))
     """
-    if (not isinstance(weights, (pd.Series, np.ndarray))):
-            raise ValueError("weights is expected to be a "
-                             + "list/pandas.Series, np.array")
-    if (not isinstance(means, (pd.Series, np.ndarray))):
-            raise ValueError("means is expected to be a "
-                             + "list/pandas.Series/np.ndarray")
+    if not isinstance(weights, (pd.Series, np.ndarray)):
+        raise ValueError("weights is expected to be a list/pandas.Series, np.array")
+    if not isinstance(means, (pd.Series, np.ndarray)):
+        raise ValueError("means is expected to be a list/pandas.Series/np.ndarray")
     return np.sum(means * weights)
 
 
@@ -41,12 +39,12 @@ def weighted_std(cov_matrix, weights):
      :weighted sigma: numpy.ndarray:
          np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
     """
-    if (not isinstance(weights, (list, pd.Series, np.ndarray))):
-            raise ValueError("weights is expected to be a "
-                             + "list/pandas.Series, np.array")
-    if (not isinstance(cov_matrix, (np.ndarray, (np.ndarray, pd.DataFrame)))):
-            raise ValueError("cov_matrix is expected to be a "
-                             + "numpy.ndarray/pandas.DataFrame")
+    if not isinstance(weights, (list, pd.Series, np.ndarray)):
+        raise ValueError("weights is expected to be a list/pandas.Series, np.array")
+    if not isinstance(cov_matrix, (np.ndarray, (np.ndarray, pd.DataFrame))):
+        raise ValueError(
+            "cov_matrix is expected to be a numpy.ndarray/pandas.DataFrame"
+        )
     return np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
 
 
@@ -61,23 +59,18 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
     :Output:
      :sharpe ratio: float (exp_return - risk_free_rate)/float(volatility)
     """
-    if (not isinstance(exp_return, (int, float, np.int64, np.float64))):
-            raise ValueError("exp_return is expected to be an integer "
-                             + "or float.")
-    if (not isinstance(volatility, (int, float, np.int64, np.float64))):
-            raise ValueError("volatility is expected to be an integer "
-                             + "or float.")
-    if (not isinstance(risk_free_rate, (int, float, np.int64, np.float64))):
-            raise ValueError("risk_free_rate is expected to be an integer "
-                             + "or float.")
-    return (exp_return - risk_free_rate)/float(volatility)
+    if not isinstance(exp_return, (int, float, np.int64, np.float64)):
+        raise ValueError("exp_return is expected to be an integer or float.")
+    if not isinstance(volatility, (int, float, np.int64, np.float64)):
+        raise ValueError("volatility is expected to be an integer or float.")
+    if not isinstance(risk_free_rate, (int, float, np.int64, np.float64)):
+        raise ValueError("risk_free_rate is expected to be an integer or float.")
+    return (exp_return - risk_free_rate) / float(volatility)
 
 
-def annualised_portfolio_quantities(weights,
-                                    means,
-                                    cov_matrix,
-                                    risk_free_rate=0.005,
-                                    freq=252):
+def annualised_portfolio_quantities(
+    weights, means, cov_matrix, risk_free_rate=0.005, freq=252
+):
     """Computes and returns the expected annualised return, volatility
     and Sharpe Ratio of a portfolio.
 
@@ -93,8 +86,8 @@ def annualised_portfolio_quantities(weights,
      :(expected return, volatility, sharpe ratio): tuple of those
          three quantities
     """
-    if (not isinstance(freq, int)):
-            raise ValueError("freq is expected to be an integer.")
+    if not isinstance(freq, int):
+        raise ValueError("freq is expected to be an integer.")
     expected_return = weighted_mean(means, weights) * freq
     volatility = weighted_std(cov_matrix, weights) * np.sqrt(freq)
     sharpe = sharpe_ratio(expected_return, volatility, risk_free_rate)

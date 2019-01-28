@@ -19,9 +19,7 @@ def portfolio_volatility(weights, mean_returns, cov_matrix):
     Output:
      :volatility: annualised volatility
     """
-    return annualised_portfolio_quantities(weights,
-                                           mean_returns,
-                                           cov_matrix)[1]
+    return annualised_portfolio_quantities(weights, mean_returns, cov_matrix)[1]
 
 
 def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
@@ -37,10 +35,9 @@ def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     Output:
      :sharpe: sharpe ratio * (-1)
     """
-    sharpe = annualised_portfolio_quantities(weights,
-                                             mean_returns,
-                                             cov_matrix,
-                                             risk_free_rate=risk_free_rate)[2]
+    sharpe = annualised_portfolio_quantities(
+        weights, mean_returns, cov_matrix, risk_free_rate=risk_free_rate
+    )[2]
     # to find the maximum Sharpe ratio with scipy.optimize.minimize,
     # return the negative of the calculated Sharpe ratio
     return -sharpe
@@ -58,6 +55,4 @@ def portfolio_return(weights, mean_returns, cov_matrix):
     Output:
      :return: expected annualised return
     """
-    return annualised_portfolio_quantities(weights,
-                                           mean_returns,
-                                           cov_matrix)[0]
+    return annualised_portfolio_quantities(weights, mean_returns, cov_matrix)[0]
