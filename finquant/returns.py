@@ -59,6 +59,6 @@ def historical_mean_return(data, freq=252):
     :Output:
      :returns: a pandas.DataFrame of mean daily * freq
     """
-    if (not isinstance(data, pd.DataFrame)):
+    if not isinstance(data, pd.DataFrame):
         raise ValueError("data must be a pandas.DataFrame")
     return daily_returns(data).mean() * freq

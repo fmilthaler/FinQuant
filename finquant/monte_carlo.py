@@ -40,8 +40,14 @@ class MonteCarloOpt(MonteCarlo):
     optimised financial portfolios.
     """
 
-    def __init__(self, returns, num_trials=1000, risk_free_rate=0.005,
-                 freq=252, initial_weights=None):
+    def __init__(
+        self,
+        returns,
+        num_trials=1000,
+        risk_free_rate=0.005,
+        freq=252,
+        initial_weights=None,
+    ):
         """
         :Input:
          :returns: A DataFrame which contains the returns of stocks.
@@ -63,18 +69,20 @@ class MonteCarloOpt(MonteCarlo):
          :opt: DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
         """
-        if (initial_weights is not None and
-           not isinstance(initial_weights, np.ndarray)):
-            raise ValueError("If given, optional argument 'initial_weights' "
-                             + "must be of type numpy.ndarray")
-        if (not isinstance(returns, pd.DataFrame)):
+        if initial_weights is not None and not isinstance(initial_weights, np.ndarray):
+            raise ValueError(
+                "If given, optional argument 'initial_weights' "
+                + "must be of type numpy.ndarray"
+            )
+        if not isinstance(returns, pd.DataFrame):
             raise ValueError("returns is expected to be a pandas.DataFrame")
-        if (not isinstance(num_trials, int)):
+        if not isinstance(num_trials, int):
             raise ValueError("num_trials is expected to be an integer")
-        if (not isinstance(risk_free_rate, (int, float))):
-            raise ValueError("risk_free_rate is expected to be an integer "
-                             + "or float.")
-        if (not isinstance(freq, int)):
+        if not isinstance(risk_free_rate, (int, float)):
+            raise ValueError(
+                "risk_free_rate is expected to be an integer " + "or float."
+            )
+        if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
         self.returns = returns
         self.num_trials = num_trials
@@ -104,11 +112,11 @@ class MonteCarloOpt(MonteCarlo):
         # select random weights for portfolio
         w = np.array(np.random.random(self.num_stocks))
         # rebalance weights
-        w = w/np.sum(w)
+        w = w / np.sum(w)
         # compute portfolio return and volatility
         portfolio_values = annualised_portfolio_quantities(
-            w, self.return_means, self.cov_matrix, self.risk_free_rate,
-            self.freq)
+            w, self.return_means, self.cov_matrix, self.risk_free_rate, self.freq
+        )
         return (w, list(portfolio_values))
 
     def _random_portfolios(self):
@@ -126,11 +134,13 @@ class MonteCarloOpt(MonteCarlo):
         res = self.run(self._random_weights)
         # transpose and convert to pandas.DataFrame:
         weights_columns = list(self.returns.columns)
-        result_columns = ['Expected Return', 'Volatility', 'Sharpe Ratio']
-        df_weights = pd.DataFrame(np.stack(np.array(res).T[0], axis=0),
-                                  columns=weights_columns)
-        df_results = pd.DataFrame(np.stack(np.array(res).T[1], axis=0),
-                                  columns=result_columns)
+        result_columns = ["Expected Return", "Volatility", "Sharpe Ratio"]
+        df_weights = pd.DataFrame(
+            np.stack(np.array(res).T[0], axis=0), columns=weights_columns
+        )
+        df_results = pd.DataFrame(
+            np.stack(np.array(res).T[1], axis=0), columns=result_columns
+        )
         return (df_weights, df_results)
 
     def optimisation(self):
@@ -147,15 +157,17 @@ class MonteCarloOpt(MonteCarlo):
         df_weights, df_results = self._random_portfolios()
         # finding portfolios with the minimum volatility and maximum
         # Sharpe ratio
-        index_min_volatility = df_results['Volatility'].idxmin()
-        index_max_sharpe = df_results['Sharpe Ratio'].idxmax()
+        index_min_volatility = df_results["Volatility"].idxmin()
+        index_max_sharpe = df_results["Sharpe Ratio"].idxmax()
         # storing optimal results to DataFrames
-        opt_w = pd.DataFrame([df_weights.iloc[index_min_volatility],
-                              df_weights.iloc[index_max_sharpe]],
-                             index=['Min Volatility', 'Max Sharpe Ratio'])
-        opt_res = pd.DataFrame([df_results.iloc[index_min_volatility],
-                                df_results.iloc[index_max_sharpe]],
-                               index=['Min Volatility', 'Max Sharpe Ratio'])
+        opt_w = pd.DataFrame(
+            [df_weights.iloc[index_min_volatility], df_weights.iloc[index_max_sharpe]],
+            index=["Min Volatility", "Max Sharpe Ratio"],
+        )
+        opt_res = pd.DataFrame(
+            [df_results.iloc[index_min_volatility], df_results.iloc[index_max_sharpe]],
+            index=["Min Volatility", "Max Sharpe Ratio"],
+        )
         # setting instance variables:
         self.df_weights = df_weights
         self.df_results = df_results
@@ -169,77 +181,99 @@ class MonteCarloOpt(MonteCarlo):
         for the portfolios with the minimum Volatility and maximum
         Sharpe Ratio.
         """
-        if (self.df_results is None or self.df_weights is None or
-                self.opt_weights is None or self.opt_results is None):
-            raise Exception('Error: Cannot plot, run the Monte Carlo '
-                            + 'optimisation first.')
+        if (
+            self.df_results is None
+            or self.df_weights is None
+            or self.opt_weights is None
+            or self.opt_results is None
+        ):
+            raise Exception(
+                "Error: Cannot plot, run the Monte Carlo " + "optimisation first."
+            )
         # create scatter plot coloured by Sharpe Ratio
-        plt.scatter(self.df_results['Volatility'],
-                    self.df_results['Expected Return'],
-                    c=self.df_results['Sharpe Ratio'],
-                    cmap='RdYlBu',
-                    s=10,
-                    label=None)
+        plt.scatter(
+            self.df_results["Volatility"],
+            self.df_results["Expected Return"],
+            c=self.df_results["Sharpe Ratio"],
+            cmap="RdYlBu",
+            s=10,
+            label=None,
+        )
         cbar = plt.colorbar()
         # mark in green the minimum volatility
-        plt.scatter(self.opt_results.loc['Min Volatility']['Volatility'],
-                    self.opt_results.loc['Min Volatility']['Expected Return'],
-                    marker='^',
-                    color='g',
-                    s=100,
-                    label='min Volatility')
+        plt.scatter(
+            self.opt_results.loc["Min Volatility"]["Volatility"],
+            self.opt_results.loc["Min Volatility"]["Expected Return"],
+            marker="^",
+            color="g",
+            s=100,
+            label="min Volatility",
+        )
         # mark in red the highest sharpe ratio
         plt.scatter(
-            self.opt_results.loc['Max Sharpe Ratio']['Volatility'],
-            self.opt_results.loc['Max Sharpe Ratio']['Expected Return'],
-            marker='^',
-            color='r',
+            self.opt_results.loc["Max Sharpe Ratio"]["Volatility"],
+            self.opt_results.loc["Max Sharpe Ratio"]["Expected Return"],
+            marker="^",
+            color="r",
             s=100,
-            label='max Sharpe Ratio')
+            label="max Sharpe Ratio",
+        )
         # also set marker for initial portfolio, if weights were given
-        if (self.initial_weights is not None):
+        if self.initial_weights is not None:
             # computed expected return and volatility of initial portfolio
             initial_values = annualised_portfolio_quantities(
                 self.initial_weights,
                 self.return_means,
                 self.cov_matrix,
                 self.risk_free_rate,
-                self.freq)
+                self.freq,
+            )
             initial_return = initial_values[0]
             initial_volatility = initial_values[1]
-            plt.scatter(initial_volatility,
-                        initial_return,
-                        marker='^',
-                        color='k',
-                        s=100,
-                        label='Initial Portfolio')
-        plt.title('Monte Carlo simulation to optimise the portfolio based '
-                  + 'on the Efficient Frontier')
-        plt.xlabel('Volatility [period='+str(self.freq)+']')
-        plt.ylabel('Expected Return [period='+str(self.freq)+']')
-        cbar.ax.set_ylabel('Sharpe Ratio [period='
-                           + str(self.freq)+']', rotation=90)
+            plt.scatter(
+                initial_volatility,
+                initial_return,
+                marker="^",
+                color="k",
+                s=100,
+                label="Initial Portfolio",
+            )
+        plt.title(
+            "Monte Carlo simulation to optimise the portfolio based "
+            + "on the Efficient Frontier"
+        )
+        plt.xlabel("Volatility [period=" + str(self.freq) + "]")
+        plt.ylabel("Expected Return [period=" + str(self.freq) + "]")
+        cbar.ax.set_ylabel("Sharpe Ratio [period=" + str(self.freq) + "]", rotation=90)
         plt.legend()
 
     def properties(self):
         """Prints out the properties of the Monte Carlo optimisation."""
         # print out results
-        opt_vals = ['Min Volatility', 'Max Sharpe Ratio']
+        opt_vals = ["Min Volatility", "Max Sharpe Ratio"]
         string = ""
         for val in opt_vals:
-            string += "-"*70
+            string += "-" * 70
             string += "\nOptimised portfolio for {}".format(
-                val.replace('Min', 'Minimum').replace('Max', 'Maximum'))
+                val.replace("Min", "Minimum").replace("Max", "Maximum")
+            )
             string += "\n\nTime period: {} days".format(self.freq)
             string += "\nExpected return: {0:0.3f}".format(
-                self.opt_results.loc[val]['Expected Return'])
+                self.opt_results.loc[val]["Expected Return"]
+            )
             string += "\nVolatility: {:0.3f}".format(
-                self.opt_results.loc[val]['Volatility'])
+                self.opt_results.loc[val]["Volatility"]
+            )
             string += "\nSharpe Ratio: {:0.3f}".format(
-                self.opt_results.loc[val]['Sharpe Ratio'])
+                self.opt_results.loc[val]["Sharpe Ratio"]
+            )
             string += "\n\nOptimal weights:"
-            string += "\n"+str(self.opt_weights.loc[val].to_frame().
-                               transpose().rename(index={val: 'Allocation'}))
+            string += "\n" + str(
+                self.opt_weights.loc[val]
+                .to_frame()
+                .transpose()
+                .rename(index={val: "Allocation"})
+            )
             string += "\n"
-        string += "-"*70
+        string += "-" * 70
         print(string)
