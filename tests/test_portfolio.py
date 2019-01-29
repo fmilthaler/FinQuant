@@ -32,7 +32,7 @@ names = df_pf.Name.values.tolist()
 weights_df_pf = [0.31746031746031744, 0.15873015873015872,
                  0.23809523809523808, 0.2857142857142857]
 weights_no_df_pf = [1./len(names) for i in range(len(names))]
-df_pf2 = pd.DataFrame({'FMV': weights_no_df_pf, 'Name': names})
+df_pf2 = pd.DataFrame({'Allocation': weights_no_df_pf, 'Name': names})
 start_date = datetime.datetime(2015, 1, 1)
 end_date = '2017-12-31'
 # portfolio quantities (based on provided data)
@@ -42,25 +42,25 @@ sharpe_orig = 1.5562027551510393
 freq_orig = 252
 risk_free_rate_orig = 0.005
 # create fake allocations
-d_error_1 = {0: {'Names': 'GOOG', 'FMV': 20},
-             1: {'Names': 'AMZN', 'FMV': 10},
-             2: {'Names': 'MCD', 'FMV': 15},
-             3: {'Names': 'DIS', 'FMV': 18}}
+d_error_1 = {0: {'Names': 'GOOG', 'Allocation': 20},
+             1: {'Names': 'AMZN', 'Allocation': 10},
+             2: {'Names': 'MCD', 'Allocation': 15},
+             3: {'Names': 'DIS', 'Allocation': 18}}
 df_pf_error_1 = pd.DataFrame.from_dict(d_error_1, orient='index')
 d_error_2 = {0: {'Name': 'GOOG', 'weight': 20},
              1: {'Name': 'AMZN', 'weight': 10},
              2: {'Name': 'MCD', 'weight': 15},
              3: {'Name': 'DIS', 'weight': 18}}
 df_pf_error_2 = pd.DataFrame.from_dict(d_error_2, orient='index')
-d_error_3 = {0: {'Name': 'IBM', 'FMV': 20},
-             1: {'Name': 'KO', 'FMV': 10},
-             2: {'Name': 'AXP', 'FMV': 15},
-             3: {'Name': 'GE', 'FMV': 18}}
+d_error_3 = {0: {'Name': 'IBM', 'Allocation': 20},
+             1: {'Name': 'KO', 'Allocation': 10},
+             2: {'Name': 'AXP', 'Allocation': 15},
+             3: {'Name': 'GE', 'Allocation': 18}}
 df_pf_error_3 = pd.DataFrame.from_dict(d_error_3, orient='index')
-d_error_4 = {0: {'Name': 'GOOG', 'FMV': 20},
-             1: {'Name': 'AMZN', 'FMV': 10},
-             2: {'Name': 'MCD', 'FMV': 15},
-             3: {'Name': 'GE', 'FMV': 18}}
+d_error_4 = {0: {'Name': 'GOOG', 'Allocation': 20},
+             1: {'Name': 'AMZN', 'Allocation': 10},
+             2: {'Name': 'MCD', 'Allocation': 15},
+             3: {'Name': 'GE', 'Allocation': 18}}
 df_pf_error_4 = pd.DataFrame.from_dict(d_error_4, orient='index')
 # create kwargs to be passed to build_portfolio
 d_pass = [{'names': names, 'pf_allocation': df_pf},
