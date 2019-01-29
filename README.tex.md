@@ -1,5 +1,9 @@
 # FinQuant
 
+<p align="center">
+  <img src="images/finquant-logo.png" style="width:15%;"/>
+</p>
+
 <a href='https://travis-ci.org/fmilthaler/FinQuant'>
   <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=develop' alt='travis'></a>
 
