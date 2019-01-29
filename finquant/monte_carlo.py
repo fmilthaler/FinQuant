@@ -1,4 +1,6 @@
-"""This module provides an implementation of the Monte Carlo method.
+"""The module provides a class ``MonteCarlo`` which is an implementation of the
+Monte Carlo method and a class ``MonteCarloOpt`` which allows the user to perform a
+Monte Carlo run to find optimised financial portfolios, given an intial portfolio.
 """
 
 
@@ -14,7 +16,7 @@ class MonteCarlo(object):
     def __init__(self, num_trials=1000):
         """
         :Input:
-         :num_trials: Integer (default: 1000), number iterations of the
+         :num_trials: int (default: 1000), number of iterations of the
                  Monte Carlo run/simulation.
         """
         self.num_trials = num_trials
@@ -38,6 +40,8 @@ class MonteCarlo(object):
 class MonteCarloOpt(MonteCarlo):
     """An object to perform a Monte Carlo run/simulation for finding
     optimised financial portfolios.
+
+    Inherits from `MonteCarlo`.
     """
 
     def __init__(
@@ -50,23 +54,23 @@ class MonteCarloOpt(MonteCarlo):
     ):
         """
         :Input:
-         :returns: A DataFrame which contains the returns of stocks.
+         :returns: A pandas.DataFrame which contains the returns of stocks.
              Note: If applicable, the given returns should be computed with the
              same risk free rate and time window/frequency (arguments
              "risk_free_rate" and "freq" as passed down here.
-         :num_trials: Integer (default: 10000), number of portfolios to be
+         :num_trials: int (default: 10000), number of portfolios to be
              computed, each with a random distribution of weights/investments
              in each stock
-         :risk_free_rate: Float (default: 0.005), the risk free rate as
+         :risk_free_rate: float (default: 0.005), the risk free rate as
              required for the Sharpe Ratio
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: int (default: 252), number of trading days, default
              value corresponds to trading days in a year
          :initial_weights: List/Array (default: None), weights of
              initial/given portfolio, only used to plot a marker for the
              initial portfolio in the optimisation plot.
 
         :Output:
-         :opt: DataFrame with optimised investment strategies for maximum
+         :opt: pandas.DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
         """
         if initial_weights is not None and not isinstance(initial_weights, np.ndarray):
@@ -148,9 +152,9 @@ class MonteCarloOpt(MonteCarlo):
         simulation.
 
         :Output:
-         :opt_w: DataFrame with optimised investment strategies for maximum
+         :opt_w: pandas.DataFrame with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
-         :opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+         :opt_res: pandas.DataFrame with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # perform Monte Carlo run and get weights and results

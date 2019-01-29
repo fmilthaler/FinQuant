@@ -1,4 +1,4 @@
-"""Provides functions to compute daily returns of stock data"""
+"""The module provides functions to compute different kinds of returns of stocks."""
 
 
 import numpy as np
@@ -7,11 +7,12 @@ import pandas as pd
 
 def cumulative_returns(data, dividend=0):
     """Returns DataFrame with cumulative returns
-    R = (price_{t_i} - price_{t_0} + dividend) / price_{t_0}
+
+    :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_0} + \\text{dividend}}{\\text{price}_{t_0}}`
 
     :Input:
-     :data: DataFrame with daily stock prices
-     :dividend: Float (default: 0), paid dividend
+     :data: pandas.DataFrame with daily stock prices
+     :dividend: float (default: 0), paid dividend
 
     :Output:
      :returns: a pandas.DataFrame of cumulative returns of given stock prices
@@ -21,10 +22,11 @@ def cumulative_returns(data, dividend=0):
 
 def daily_returns(data):
     """Returns DataFrame with daily returns (percentage change)
-    R = (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}}
+
+    :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}`
 
     :Input:
-     :data: DataFrame with daily stock prices
+     :data: pandas.DataFrame with daily stock prices
 
     :Output:
      :returns: a pandas.DataFrame of daily percentage change of returns
@@ -36,10 +38,11 @@ def daily_returns(data):
 def daily_log_returns(data):
     """
     Returns DataFrame with daily log returns
-    R_{log} = log(1 + (price_{t_i} - price_{t_{i-1}}) / price_{t_{i-1}})
+
+    :math:`R_{\\log} = \\log\\left(1 + \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}\\right)`
 
     :Input:
-     :data: DataFrame with daily stock prices
+     :data: pandas.DataFrame with daily stock prices
 
     :Output:
      :returns: a pandas.DataFrame of
@@ -52,8 +55,8 @@ def historical_mean_return(data, freq=252):
     """Returns the mean return based on historical stock price data.
 
     :Input:
-     :data: DataFrame with daily stock prices
-     :freq: Integer (default: 252), number of trading days, default
+     :data: pandas.DataFrame with daily stock prices
+     :freq: int (default: 252), number of trading days, default
              value corresponds to trading days in a year
 
     :Output:

@@ -1,6 +1,6 @@
-"""Provides functions to compute quantities relevant to financial portfolios,
-e.g. a weighted average, which is the expected value/return, a weighted
-standard deviation (volatility), and the Sharpe ratio.
+"""The module provides functions to compute quantities relevant to financial
+portfolios, e.g. a weighted average, which is the expected value/return, a
+weighted standard deviation (volatility), and the Sharpe ratio.
 """
 
 
@@ -14,8 +14,8 @@ def weighted_mean(means, weights):
     of said portfolio.
 
     :Input:
-     :means: Array/pd.Series of mean/average values
-     :weights: Array/pd.Series of weights
+     :means: numpy.ndarray/pd.Series of mean/average values
+     :weights: numpy.ndarray/pd.Series of weights
 
     :Output:
      :weighted mu: numpy.ndarray: (np.sum(means*weights))
@@ -32,8 +32,8 @@ def weighted_std(cov_matrix, weights):
     a portfolio, which contains several stocks.
 
     :Input:
-     :cov_matrix: Array/pandas.DataFrame, covariance matrix
-     :weights: List/Array/pd.Series of weights
+     :cov_matrix: numpy.ndarray/pandas.DataFrame, covariance matrix
+     :weights: list/numpy.ndarray/pd.Series of weights
 
     :Output:
      :weighted sigma: numpy.ndarray:
@@ -75,11 +75,11 @@ def annualised_portfolio_quantities(
     and Sharpe Ratio of a portfolio.
 
     :Input:
-     :weights: List/Array/pd.Series of weights
-     :means: List/Array/pd.Series of mean/average values
-     :cov_matrix: Array/pandas.DataFrame, covariance matrix
-     :risk_free_rate: Float (default=0.005), risk free rate
-     :freq: Integer (default: 252), number of trading days, default
+     :weights: list/numpy.ndarray/pd.Series of weights
+     :means: list/numpy.ndarray/pd.Series of mean/average values
+     :cov_matrix: numpy.ndarray/pandas.DataFrame, covariance matrix
+     :risk_free_rate: float (default=0.005), risk free rate
+     :freq: int (default: 252), number of trading days, default
          value corresponds to trading days in a year
 
     :Output:
