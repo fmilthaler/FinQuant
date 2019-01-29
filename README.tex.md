@@ -3,6 +3,9 @@
 </p>
 
 <p align="center">
+  <a href="https://pypi.org/project/FinQuant">
+    <img src="https://img.shields.io/badge/pypi-v0.1.0-brightgreen.svg?style=popout" alt='pypi'>
+  </a>
   <a href="https://travis-ci.org/fmilthaler/FinQuant">
     <img src="https://travis-ci.org/fmilthaler/FinQuant.svg?style=popout?branch=master" alt='travis'>
   </a>
