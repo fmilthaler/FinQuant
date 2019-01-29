@@ -45,7 +45,7 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # To play around yourself with different stocks, here is a list of companies and their tickers
-# d = {0 : {'Name':'GOOG', 'Allocation':20}, # Google
+# d = {0: {'Name':'GOOG', 'Allocation':20}, # Google
 #      1: {'Name':'AMZN', 'Allocation':33},  # Amazon
 #      2: {'Name':'MSFT', 'Allocation':18},  # Microsoft
 #      3: {'Name':'AAPL', 'Allocation':10},  # Apple
@@ -62,11 +62,12 @@ from finquant.portfolio import build_portfolio
 
 # <codecell>
 
-d = {0 : {'Name':'GOOG', 'Allocation':20},
-     1: {'Name':'AMZN', 'Allocation':10},
-     2: {'Name':'MCD', 'Allocation':15},
-     3: {'Name':'DIS', 'Allocation':18},
-    }
+d = {
+    0: {'Name':'GOOG', 'Allocation':20},
+    1: {'Name':'AMZN', 'Allocation':10},
+    2: {'Name':'MCD', 'Allocation':15},
+    3: {'Name':'DIS', 'Allocation':18},
+}
 pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
 # <markdowncell>
@@ -95,10 +96,12 @@ end_date = '2017-12-31'
 # While quandl will download lots of different prices for each stock,
 # e.g. high, low, close, etc, FinQuant will extract the column "Adj. Close".
 
-pf = build_portfolio(names=names,
-                    pf_allocation=pf_allocation,
-                    start_date=start_date,
-                    end_date=end_date)
+pf = build_portfolio(
+    names=names,
+    pf_allocation=pf_allocation,
+    start_date=start_date,
+    end_date=end_date
+)
 
 # <markdowncell>
 
