@@ -3,12 +3,29 @@
 <a href='https://travis-ci.org/fmilthaler/FinQuant'>
   <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=feature/tests' alt='travis'></a>
 
-`FinQuant` is a program for financial **portfolio management, analysis and optimisation**.
+*FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
-**Note**: Throughout this README, `pf` refers to the object `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities, such as Expected Return, Volatility, and Sharpe Ratio, automatically. To make `FinQuant` an user-friendly program, that combines data analysis, optimisation and visualisation, the object provides interfaces to the main features that are provided in a number of modules in `./finquant/` and are discussed below.
+This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](https://finquant.readthedocs.io/en/latest/ "FinQuant Documentation").
+
+## Table of contents
+ - [Motivation](#Motivation)
+ - [Dependencies](#Dependencies)
+ - [Usage](#Usage)
+ - [Portfolio Management](#Portfolio-Management)
+ - [Returns](#Returns)
+ - [Moving Averages](#Moving-Averages)
+ - [Portfolio Optimisation](#Portfolio-Optimisation)
+   - [Efficient Frontier](#Efficient-Frontier)
+   - [Monte Carlo](#Monte-Carlo)
+ - [Examples](#Examples)
+   - [Building a portfolio with `quandl`](#Building-a-portfolio-with-quandl)
+   - [Building a portfolio with preset data](#Building-a-portfolio-with-preset-data)
+   - [Analysis of a portfolio](#Analysis-of-a-portfolio)
+   - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
+
 
 ## Motivation
-Within a few lines of code, `FinQuant` can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
+Within a few lines of code, *FinQuant* can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
 
 ### Automatically generating an instance of `Portfolio`
 `finquant.portfolio.build_portfolio` is a function that eases the creating of your portfolio. See below for one of several ways of using `build_portfolio`.
@@ -118,23 +135,8 @@ pf.plot_stocks()
   <img src="images/ef-mc-overlay.svg" style="width:50%;"/>
 </p>
 
-## Table of contents
- - [Dependencies](#Dependencies)
- - [Usage](#Usage)
- - [Portfolio](#Portfolio)
- - [Returns](#Returns)
- - [Moving Averages](#Moving-Averages)
- - [Portfolio Optimisation](#Portfolio-Optimisation)
-   - [Efficient Frontier](#Efficient-Frontier)
-   - [Monte Carlo](#Monte-Carlo)
- - [Examples](#Examples)
-   - [Building a portfolio with `quandl`](#Building-a-portfolio-with-quandl)
-   - [Building a portfolio with preset data](#Building-a-portfolio-with-preset-data)
-   - [Analysis of a portfolio](#Analysis-of-a-portfolio)
-   - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
-
 ## Dependencies
-`FinQuant` depends on the following Python packages:
+*FinQuant* depends on the following Python packages:
  - python>=3.5.0
  - numpy>=1.11.0
  - pandas>=0.17.1
@@ -148,51 +150,17 @@ Download the code:
 
 ```git clone https://github.com/fmilthaler/FinQuant.git```
 
-And make sure to add the directory `FinQuant` to your `PYTHONPATH`.
+And make sure to add the directory *FinQuant* to your `PYTHONPATH`.
 
-## Portfolio
-This is the core of `FinQuant`. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make `FinQuant` an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed below.
+## Portfolio Management
+This is the core of *FinQuant*. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make *FinQuant* an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/`.
 
-To learn more about the object, please read through the docstring of the module, and have a look at the examples.
+To learn more about the object, please read through the [documentation](https://finquant.readthedocs.io/en/latest/ "FinQuant Documentation"), docstring of the module/class, and/or have a look at the examples.
 
-Here is a list of instance variables the user has access to:
- - `portfolio`: a `pandas.DataFrame` which contains the weights/allocation (and possibly more information) about the portfolio
- - `stocks`: a `dict` of instances of `Stock`, meaning a `dict` of individual stocks
- - `data`: a `pandas.DataFrame` with the stock prices of all stocks
- - `expected_return`: the portfolio's expected return
- - `volatility`: the portfolio's volatility
- - `sharpe`: the portfolio's Sharpe Ratio
- - `skew`: a `pandas.Series` with the skewness of all stocks
- - `kurtosis`: a `pandas.Series` with the Kurtosis of all stocks
- - `risk_free_rate`: the risk free rate associated with the portfolio
- - `freq`: the time window/frequency of/over which the expected return and volatility are computed
- - `ef`: instance of `finquant.efficient_frontier.EfficientFrontier` which is used for finding optimial portfolios (see more below)
-
-And here is an incomplete list of functions provided within `pf`:
- - `get_stock`: Returns the instance of a Stock
- - `comp_cumulative_returns`: Cumulative Returns
- - `comp_daily_returns`: Percentage change of daily Returns
- - `compDailyLogReturns`: Log Return
- - `comp_mean_returns`: historical mean of the daily returns
- - `comp_expected_return`: computes the Expected Return of the portfolio
- - `comp_volatility`: computes the volatility of the given portfolio
- - `comp_sharpe`: computes and return the Sharpe ratio of the portfolio
- - `ef_minimum_volatility`: performs an optimisation for the portfolio with the minimum volatility
- - `ef_maximum_sharpe_ratio`: performs an optimisation for the portfolio with the maximum Sharpe Ratio
- - `ef_efficient_return`: performs an optimisation for the portfolio with the minimum volatility for a given target return.
- - `ef_efficient_volatility`: performs an optimisation for the portfolio with the maximum Sharpe ratio for a given target volatility.
- - `ef_plot_efrontier`: computes and plots the *Efficient Frontier* of the portfolio
- - `ef_plot_optimal_portfolios`: computes and plots markers of the two optimal portfolios (minimum volatility/maximum Sharpe ratio)
- - `plot_stocks`: plots all stocks of the portfolio (expected (annual) return over volatility)
- - `mc_optimisation`: performs a Monte Carlo run and finds optimised portfolios
- - `mc_plot_results`: plots the results of the Monte Carlo optimisation
- - `mc_properties`: prints out the results of the Monte Carlo optimisation
- - `properties`: nicely prints out the portfolio's properties
-
-`finquant.portfolio.Portfolio` also provides a function `build_portfolio` which is designed to automatically generate `pf` for the user's convenience. For more information on how to use `build_portfolio`, please read its `docstring` (do `print(finquant.portfolio.build_portfolio.__doc__)`) and have a look at the examples.
+`finquant.portfolio.Portfolio` also provides a function `build_portfolio` which is designed to automatically generate an instance of `Portfolio` for the user's convenience. For more information on how to use `build_portfolio`, please refer to the [documentation](https://finquant.readthedocs.io/en/latest/ "FinQuant Documentation"), its `docstring` and/or have a look at the examples.
 
 ## Returns
-Daily returns of stocks are often computed in different ways. `FinQuant` provides three different ways of computing the daily returns in `finquant.returns`:
+Daily returns of stocks are often computed in different ways. *FinQuant* provides three different ways of computing the daily returns in `finquant.returns`:
 1. The cumulative return: $\displaystyle\dfrac{\text{price}_{t_i} - \text{price}_{t_0} + \text{dividend}}{\text{price}_{t_0}}$
 2. Percentage change of daily returns: $\displaystyle\dfrac{\text{price}_{t_i} - \text{price}_{t_{i-1}}}{\text{price}_{t_{i-1}}}$
 3. Log Return: $\displaystyle\log\left(1 + \dfrac{\text{price}_{t_i} - \text{price}_{t_{i-1}}}{\text{price}_{t_{i-1}}}\right)$
@@ -235,13 +203,13 @@ The approach branded as *Efficient Frontier* should be the preferred method for 
 For more information about the project and details on how to use it, please
 look at the examples provided in `./example`.
 
-**Note**: In the below examples, `pf` refers to an instance of `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make `FinQuant` a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed throughout this README.
+**Note**: In the below examples, `pf` refers to an instance of `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make *FinQuant* a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed throughout this README.
 
 ### Building a portfolio with `quandl`
-`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use `FinQuant` to build a financial portfolio by downloading stock price data through the Python package `quandl`.
+`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package `quandl`.
 
 ### Building a portfolio with preset data
-`./example/Example-Build-Portfolio-from-file.py`: Shows how to use `FinQuant` to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
+`./example/Example-Build-Portfolio-from-file.py`: Shows how to use *FinQuant* to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
 
 ### Analysis of a portfolio
 `./example/Example-Analysis.py`: This example shows how to use an instance of `finquant.portfolio.Portfolio`, get the portfolio's quantities, such as
@@ -254,7 +222,7 @@ It also shows how to extract individual stocks from the given portfolio. Moreove
  - *Moving Averages*, a band of *Moving Averages*, and a *Bollinger Band*.
 
 ### Optimisation of a portfolio
-`./example/Example-Optimisation.py`: This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of `finquant.efficient_frontier.EfficientFrontier` for optimising the portfolio. To make `FinQuant` more user-friendly,  for the
+`./example/Example-Optimisation.py`: This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of `finquant.efficient_frontier.EfficientFrontier` for optimising the portfolio, for the
  - Minimum Volatility
  - Maximum Sharpe Ratio
  - Minimum Volatility for a given target Return
@@ -264,4 +232,4 @@ Furthermore, it is also shown how the entire *Efficient Frontier* and the optima
 
 Also, the optimisation of a portfolio and its visualisation based on a *Monte Carlo* is shown.
 
-Finally, `FinQuant`'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
+Finally, *FinQuant*'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
