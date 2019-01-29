@@ -1,15 +1,24 @@
-# FinQuant
-
 <p align="center">
   <img src="images/finquant-logo.png" width="45%">
 </p>
 
-<a href='https://travis-ci.org/fmilthaler/FinQuant'>
-  <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=develop' alt='travis'></a>
+<p align="center">
+  <a href="https://travis-ci.org/fmilthaler/FinQuant">
+    <img src="https://travis-ci.org/fmilthaler/FinQuant.svg?style=popout?branch=master" alt='travis'>
+  </a>
+  <a href="http://finquant.readthedocs.io/">
+    <img src="https://img.shields.io/readthedocs/finquant.svg?style=popout" alt="docs">
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/github/license/fmilthaler/FinQuant.svg?style=popout" alt="license">
+  </a>
+</p>
+
+# FinQuant
 
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
-This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](https://finquant.readthedocs.io/en/latest/ "FinQuant Documentation").
+This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](finquant.readthedocs.io "FinQuant Documentation").
 
 ## Table of contents
  - [Motivation](#Motivation)
