@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/finquant-logo.png" width="45%">
+  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/finquant-logo.png" width="45%">
 </p>
 
 <p align="center">
@@ -99,7 +99,7 @@ pf.comp_cumulative_returns().plot().axhline(y = 0, color = "black", lw = 3)
 ```
 yields
 <p align="center">
-  <img src="images/cumulative-return.svg" width="60%">
+  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/cumulative-return.svg" width="60%">
 </p>
 
 ### Band Moving Average (Buy/Sell Signals)
@@ -112,7 +112,7 @@ ma = compute_ma(dis, ema, spans, plot=True)
 ```
 yields
 <p align="center">
-  <img src="images/ma-band-buysell-signals.svg" width="60%">
+  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/ma-band-buysell-signals.svg" width="60%">
 </p>
 
 ### Bollinger Band
@@ -125,7 +125,7 @@ plot_bollinger_band(dis, sma, span)
 ```
 yields
 <p align="center">
-  <img src="images/bollinger-band.svg" width="60%">
+  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/bollinger-band.svg" width="60%">
 </p>
 
 ### Portfolio Optimisation
@@ -142,7 +142,7 @@ pf.ef.plot_optimal_portfolios()
 pf.plot_stocks()
 ```
 <p align="center">
-  <img src="images/ef-mc-overlay.svg" width="60%">
+  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/ef-mc-overlay.svg" width="60%">
 </p>
 
 ## Installation
