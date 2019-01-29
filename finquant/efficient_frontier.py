@@ -133,7 +133,7 @@ class EfficientFrontier(object):
         # set optimal weights
         if save_weights:
             self.weights = result["x"]
-            self.df_weights = self.dataframe_weights(self.weights)
+            self.df_weights = self._dataframe_weights(self.weights)
             return self.df_weights
         else:
             # not setting instance variables, and returning array instead
@@ -173,7 +173,7 @@ class EfficientFrontier(object):
         # set optimal weights
         if save_weights:
             self.weights = result["x"]
-            self.df_weights = self.dataframe_weights(self.weights)
+            self.df_weights = self._dataframe_weights(self.weights)
             return self.df_weights
         else:
             # not setting instance variables, and returning array instead
@@ -227,7 +227,7 @@ class EfficientFrontier(object):
         # set optimal weights
         if save_weights:
             self.weights = result["x"]
-            self.df_weights = self.dataframe_weights(self.weights)
+            self.df_weights = self._dataframe_weights(self.weights)
             return self.df_weights
         else:
             # not setting instance variables, and returning array instead
@@ -271,7 +271,7 @@ class EfficientFrontier(object):
         self.last_optimisation = "Efficient Volatility"
         # set optimal weights
         self.weights = result["x"]
-        self.df_weights = self.dataframe_weights(self.weights)
+        self.df_weights = self._dataframe_weights(self.weights)
         return self.df_weights
 
     def efficient_frontier(self, targets=None):
@@ -367,7 +367,7 @@ class EfficientFrontier(object):
         )
         plt.legend()
 
-    def dataframe_weights(self, weights):
+    def _dataframe_weights(self, weights):
         """Generates and returns a pandas.DataFrame from given
         array weights.
 
