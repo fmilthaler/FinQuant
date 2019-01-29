@@ -1,7 +1,7 @@
 # FinQuant
 
 <a href='https://travis-ci.org/fmilthaler/FinQuant'>
-  <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=feature/tests' alt='travis'></a>
+  <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=develop' alt='travis'></a>
 
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
