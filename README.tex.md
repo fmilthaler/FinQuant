@@ -58,11 +58,11 @@ Kurtosis:
 0 -0.751818 -0.856101 -0.602008 -0.892666
 
 Information:
-    FMV  Name
-0  0.25  GOOG
-1  0.25  AMZN
-2  0.25   MCD
-3  0.25   DIS
+   Allocation  Name
+0        0.25  GOOG
+1        0.25  AMZN
+2        0.25   MCD
+3        0.25   DIS
 ----------------------------------------------------------------------
 ```
 
@@ -156,7 +156,7 @@ This is the core of `FinQuant`. `finquant.portfolio.Portfolio` provides an objec
 To learn more about the object, please read through the docstring of the module, and have a look at the examples.
 
 Here is a list of instance variables the user has access to:
- - `portfolio`: a `pandas.DataFrame` which contains the weights/FMV (and possibly more information) about the portfolio
+ - `portfolio`: a `pandas.DataFrame` which contains the weights/allocation (and possibly more information) about the portfolio
  - `stocks`: a `dict` of instances of `Stock`, meaning a `dict` of individual stocks
  - `data`: a `pandas.DataFrame` with the stock prices of all stocks
  - `expected_return`: the portfolio's expected return

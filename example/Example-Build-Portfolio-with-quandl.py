@@ -40,32 +40,32 @@ from finquant.portfolio import build_portfolio
 # <markdowncell>
 
 # ## Get data from quandl and build portfolio
-# First we need to build a pandas.DataFrame that holds relevant data for our portfolio. The minimal information needed are stock names and the amount of money to be invested in them, e.g. FMV.
+# First we need to build a pandas.DataFrame that holds relevant data for our portfolio. The minimal information needed are stock names and the amount of money to be invested in them, e.g. Allocation.
 
 # <codecell>
 
 # To play around yourself with different stocks, here is a list of companies and their tickers
-# d = {0 : {'Name':'GOOG', 'FMV':20}, # Google
-#      1: {'Name':'AMZN', 'FMV':33},  # Amazon
-#      2: {'Name':'MSFT', 'FMV':18},  # Microsoft
-#      3: {'Name':'AAPL', 'FMV':10},  # Apple
-#      4: {'Name':'KO', 'FMV':15},    # Coca-Cola
-#      5: {'Name':'XOM', 'FMV':11},   # Exxon Mobil
-#      6: {'Name':'JPM', 'FMV':21},   # JP Morgan
-#      7: {'Name':'DIS', 'FMV':9},    # Disney
-#      8: {'Name':'MCD', 'FMV':23},   # McDonald's
-#      9: {'Name':'WMT', 'FMV':3},    # Walmart
-#     10: {'Name':'YHOO', 'FMV':7},   # Yahoo
-#     11: {'Name':'GS', 'FMV':9},     # Goldman Sachs
+# d = {0 : {'Name':'GOOG', 'Allocation':20}, # Google
+#      1: {'Name':'AMZN', 'Allocation':33},  # Amazon
+#      2: {'Name':'MSFT', 'Allocation':18},  # Microsoft
+#      3: {'Name':'AAPL', 'Allocation':10},  # Apple
+#      4: {'Name':'KO', 'Allocation':15},    # Coca-Cola
+#      5: {'Name':'XOM', 'Allocation':11},   # Exxon Mobil
+#      6: {'Name':'JPM', 'Allocation':21},   # JP Morgan
+#      7: {'Name':'DIS', 'Allocation':9},    # Disney
+#      8: {'Name':'MCD', 'Allocation':23},   # McDonald's
+#      9: {'Name':'WMT', 'Allocation':3},    # Walmart
+#     10: {'Name':'YHOO', 'Allocation':7},   # Yahoo
+#     11: {'Name':'GS', 'Allocation':9},     # Goldman Sachs
 #     }
 # pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
 # <codecell>
 
-d = {0 : {'Name':'GOOG', 'FMV':20},
-     1: {'Name':'AMZN', 'FMV':10},
-     2: {'Name':'MCD', 'FMV':15},
-     3: {'Name':'DIS', 'FMV':18},
+d = {0 : {'Name':'GOOG', 'Allocation':20},
+     1: {'Name':'AMZN', 'Allocation':10},
+     2: {'Name':'MCD', 'Allocation':15},
+     3: {'Name':'DIS', 'Allocation':18},
     }
 pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
