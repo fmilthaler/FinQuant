@@ -15,15 +15,13 @@
 </p>
 
 # FinQuant
-
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
 This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](finquant.readthedocs.io "FinQuant Documentation").
 
 ## Table of contents
  - [Motivation](#Motivation)
- - [Dependencies](#Dependencies)
- - [Usage](#Usage)
+ - [Installation](#Installation)
  - [Portfolio Management](#Portfolio-Management)
  - [Returns](#Returns)
  - [Moving Averages](#Moving-Averages)
@@ -35,7 +33,6 @@ This README only gives a brief overview of *FinQuant*. The interested reader sho
    - [Building a portfolio with preset data](#Building-a-portfolio-with-preset-data)
    - [Analysis of a portfolio](#Analysis-of-a-portfolio)
    - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
-
 
 ## Motivation
 Within a few lines of code, *FinQuant* can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
@@ -258,3 +255,4 @@ Furthermore, it is also shown how the entire *Efficient Frontier* and the optima
 Also, the optimisation of a portfolio and its visualisation based on a *Monte Carlo* is shown.
 
 Finally, *FinQuant*'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
+
