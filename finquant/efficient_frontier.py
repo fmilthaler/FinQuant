@@ -404,8 +404,8 @@ class EfficientFrontier(object):
             string += "\nOptimised portfolio for {}".format(self.last_optimisation)
             string += "\n\nTime window/frequency: {}".format(self.freq)
             string += "\nRisk free rate: {}".format(self.risk_free_rate)
-            string += "\nExpected annual return: {:.3f}".format(expected_return)
-            string += "\nAnnual volatility: {:.3f}".format(volatility)
+            string += "\nExpected annual Return: {:.3f}".format(expected_return)
+            string += "\nAnnual Volatility: {:.3f}".format(volatility)
             string += "\nSharpe Ratio: {:.3f}".format(sharpe)
             string += "\n\nOptimal weights:"
             string += "\n" + str(self.df_weights.transpose())
