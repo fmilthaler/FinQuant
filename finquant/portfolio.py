@@ -278,7 +278,7 @@ class Portfolio(object):
         """
         return daily_returns(self.data)
 
-    def compDailyLogReturns(self):
+    def comp_daily_log_returns(self):
         """Computes the daily log returns of all stocks in the portfolio."""
         return daily_log_returns(self.data)
 
