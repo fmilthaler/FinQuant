@@ -111,7 +111,7 @@ pf.comp_cumulative_returns().head(3)
 
 # <codecell>
 
-pf.compDailyLogReturns().head(3)
+pf.comp_daily_log_returns().head(3)
 
 # <codecell>
 
@@ -143,13 +143,13 @@ plt.show()
 # <codecell>
 
 # plotting daily log returns
-pf.compDailyLogReturns().plot().axhline(y = 0, color = "black")
+pf.comp_daily_log_returns().plot().axhline(y = 0, color = "black")
 plt.show()
 
 # <codecell>
 
 # cumulative log returns
-pf.compDailyLogReturns().cumsum().plot().axhline(y = 0, color = "black")
+pf.comp_daily_log_returns().cumsum().plot().axhline(y = 0, color = "black")
 plt.show()
 
 # <markdowncell>
