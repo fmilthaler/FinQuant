@@ -1,50 +1,48 @@
-"""This module is the core of FinQuant. It provides
- - a class "Stock" that holds and calculates quantities of a single stock,
- - a class "Portfolio" that holds and calculates quantities of a financial
-     portfolio, which is a collection of Stock instances.
- - a function "build_portfolio()" that automatically constructs and returns
-     an instance of "Portfolio" and instances of "Stock". The relevant stock
-     data is either retrieved through `quandl` or provided by the user as a
-     pandas.DataFrame (after loading it manually from disk/reading from file).
-     For an example on how to use it, please read the corresponding docstring,
-     or have a look at the examples in the sub-directory `example`.
-The classes "Stock" and "Portfolio" are designed to easily manage your
-financial portfolio, and make the most common quantitative calculations:
+"""This module is the **core** of `FinQuant`. It provides
+
+ - a public class ``Stock`` that holds and calculates quantities of a single stock,
+ - a public class ``Portfolio`` that holds and calculates quantities of a financial
+   portfolio, which is a collection of Stock instances.
+ - a public function ``build_portfolio()`` that automatically constructs and returns
+   an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
+   data is either retrieved through `quandl` or provided by the user as a
+   ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
+   For an example on how to use it, please read the corresponding docstring,
+   or have a look at the examples in the sub-directory ``example``.
+
+The classes ``Stock`` and ``Portfolio`` are designed to easily manage your
+financial portfolio, and make the most common quantitative calculations, such as:
  - cumulative returns of the portfolio's stocks
-     ( (price_{t} - price_{t=0} + dividend) / price_{t=0} ),
  - daily returns of the portfolio's stocks (daily percentage change),
  - daily log returns of the portfolio's stocks,
- - expected (annualised) return,
- - volatility,
- - Sharpe ratio,
+ - Expected (annualised) Return,
+ - Volatility,
+ - Sharpe Ratio,
  - skewness of the portfolio's stocks,
  - Kurtosis of the portfolio's stocks,
  - the portfolio's covariance matrix.
-"Portfolio" also provides methods to easily compute and visualise
- - simple moving averages of any given time window,
- - exponential moving averages of any given time window,
- - Bollinger Bands of any given time window,
+
 Furthermore, the constructed portfolio can be optimised for
- - minimum volatility,
- - maximum Sharpe ratio
- - minimum volatility for a given expected return
- - maximum Sharpe ratio for a given target volatility
-by either performing a numerical computation based on the Efficient
-Frontier, or by performing a Monte Carlo simulation of `n` trials.
+
+ - minimum Volatility,
+ - maximum Sharpe Ratio
+ - minimum Volatility for a given Expected Return
+ - maximum Sharpe Ratio for a given target Volatility
+by either performing a numerical computation to solve a minimisation problem, or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
-Finally, methods are implemented to generated the following plots:
+
+Finally, functions are implemented to generated the following plots:
+
  - Monte Carlo run to find optimal portfolio(s)
  - Efficient Frontier
- - Portfolio with the minimum volatility based on an Efficient Frontier
-   optimisation
- - Portfolio with the maximum Sharpe ratio based on an Efficient Frontier
-   optimisation
- - Portfolio with the minimum volatility for a given expected return based
-   on an Efficient Frontier optimisation
- - Portfolio with the maximum Sharpe ratio for a given target volatility
-   based on an Efficient Frontier optimisation
- - Individual stocks of the portfolio (expected return over volatility)
+ - Portfolio with the minimum Volatility based a numerical optimisation
+ - Portfolio with the maximum Sharpe Ratio based on a numerical optimisation
+ - Portfolio with the minimum Volatility for a given Expected Return based
+   on a numerical optimisation
+ - Portfolio with the maximum Sharpe Ratio for a given target Volatility
+   based on a numerical optimisation
+ - Individual stocks of the portfolio (Expected Return over Volatility)
 """
 
 
@@ -63,29 +61,29 @@ class Stock(object):
     """Object that contains information about a stock/fund.
     To initialise the object, it requires a name, information about
     the stock/fund given as one of the following data structures:
-     - pandas.Series
-     - pandas.DataFrame
+     - ``pandas.Series``
+     - ``pandas.DataFrame``
     The investment information can contain as little information as its name,
-    and the amount invested in it, the column labels must be "Name" and "Allocation"
+    and the amount invested in it, the column labels must be ``Name`` and ``Allocation``
     respectively, but it can also contain more information, such as
      - Year
      - Strategy
      - CCY
-     - etc
+     - etc.
     It also requires either data, e.g. daily closing prices as a
-    pandas.DataFrame or pandas.Series.
-    "data" must be given as a DataFrame, and at least one data column
+    ``pandas.DataFrame`` or ``pandas.Series``.
+    ``data`` must be given as a ``pandas.DataFrame``, and at least one data column
     is required to containing the closing price, hence it is required to
-    contain one column label "<stock_name> - Adj. Close" which is used to
-    compute the return of investment. However, "data" can contain more
+    contain one column label ``<stock_name> - Adj. Close`` which is used to
+    compute the return of investment. However, ``data`` can contain more
     data in additional columns.
     """
 
     def __init__(self, investmentinfo, data):
         """
         :Input:
-         :investmentinfo: pandas.DataFrame of investment information
-         :data: pandas.DataFrame of stock price
+         :investmentinfo: ``pandas.DataFrame`` of investment information
+         :data: ``pandas.DataFrame`` of stock price
         """
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
@@ -98,24 +96,32 @@ class Stock(object):
 
     # functions to compute quantities
     def comp_daily_returns(self):
-        """Computes the daily returns (percentage change)"""
+        """Computes the daily returns (percentage change).
+        See ``finquant.returns.daily_returns``.
+        """
         return daily_returns(self.data)
 
     def comp_expected_return(self, freq=252):
-        """Computes the expected return of the stock.
+        """Computes the Expected Return of the stock.
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year
+
+        :Output:
+         :expected_return: Expected Return of stock.
         """
         return historical_mean_return(self.data, freq=freq)
 
     def comp_volatility(self, freq=252):
-        """Computes the volatility of the stock.
+        """Computes the Volatility of the stock.
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year
+
+        :Output:
+         :volatility: Volatility of stock.
         """
         return self.comp_daily_returns().std() * np.sqrt(freq)
 
@@ -128,14 +134,14 @@ class Stock(object):
         return self.data.kurt().values[0]
 
     def properties(self):
-        """Nicely prints out the properties of the stock: expected return,
-        volatility, skewness, Kurtosis as well as the Allocation (and other
+        """Nicely prints out the properties of the stock: Expected Return,
+        Volatility, Skewness, Kurtosis as well as the ``Allocation`` (and other
         information provided in investmentinfo.)
         """
         # nicely printing out information and quantities of the stock
         string = "-" * 50
         string += "\nStock: {}".format(self.name)
-        string += "\nExpected return:{:0.3f}".format(self.expected_return.values[0])
+        string += "\nExpected Return:{:0.3f}".format(self.expected_return.values[0])
         string += "\nVolatility: {:0.3f}".format(self.volatility.values[0])
         string += "\nSkewness: {:0.5f}".format(self.skew)
         string += "\nKurtosis: {:0.5f}".format(self.kurtosis)
@@ -155,12 +161,13 @@ class Portfolio(object):
     """Object that contains information about a investment portfolio.
     To initialise the object, it does not require any input.
     To fill the portfolio with investment information, the
-    function add_stock(stock) should be used, in which `stock` is
-    a `Stock` object, a pandas.DataFrame of the portfolio investment
+    function ``add_stock(stock)`` should be used, in which ``stock`` is
+    an object of ``Stock``, a ``pandas.DataFrame`` of the portfolio investment
     information.
     """
 
     def __init__(self):
+        """Initiates ``Portfolio``."""
         # initilisating instance variables
         self.portfolio = pd.DataFrame()
         self.stocks = {}
@@ -224,10 +231,23 @@ class Portfolio(object):
             self._update()
 
     def add_stock(self, stock):
-        """Adds a stock of type `Stock` to the portfolio.
+        """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
+        is called, the following instance variables get updated:
+
+         - ``portfolio``: Adds a column with information from ``stock``
+         - ``stocks``: Adds an entry for ``stock``
+         - ``data``: Adds a column of stock prices from ``stock``
+
+        Also, the following instance variables are (re-)computed:
+
+         - ``expected_return``: Expected Return of the portfolio
+         - ``volatility``: Volatility of the portfolio
+         - ``sharpe``: Sharpe Ratio of the portfolio
+         - ``skew``: Skewness of the portfolio's stocks
+         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
         :Input:
-         :stock: an object of `Stock`
+         :stock: an object of ``Stock``
         """
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
@@ -262,44 +282,68 @@ class Portfolio(object):
             self.kurtosis = self._comp_kurtosis()
 
     def get_stock(self, name):
-        """Returns the instance of Stock with name <name>."""
+        """Returns the instance of ``Stock`` with name ``name``.
+
+        :Input:
+         :name: ``string`` of the name of the stock that is returned. Must match
+             one of the labels in the dictionary ``self.stocks``.
+
+        :Output:
+         :stock: instance of ``Stock``.
+        """
         return self.stocks[name]
 
     def comp_cumulative_returns(self):
         """Computes the cumulative returns of all stocks in the
         portfolio.
-        (price_{t} - price_{t=0})/ price_{t=0}
+        See ``finquant.returns.cumulative_returns``.
+
+        :Output:
+         :ret: a ``pandas.DataFrame`` of cumulative returns of given stock prices.
         """
         return cumulative_returns(self.data)
 
     def comp_daily_returns(self):
         """Computes the daily returns (percentage change) of all
-        stocks in the portfolio.
+        stocks in the portfolio. See ``finquant.returns.daily_returns``.
+
+        :Output:
+         :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
+             of given stock prices.
         """
         return daily_returns(self.data)
 
     def comp_daily_log_returns(self):
-        """Computes the daily log returns of all stocks in the portfolio."""
+        """Computes the daily log returns of all stocks in the portfolio.
+        See ``finquant.returns.daily_log_returns``.
+
+        :Output:
+         :ret: a ``pandas.DataFrame`` of log Returns
+        """
         return daily_log_returns(self.data)
 
     def comp_mean_returns(self, freq=252):
-        """Computes the mean return based on historical stock price data.
+        """Computes the mean returns based on historical stock price data.
+        See ``finquant.returns.historical_mean_return``.
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
+
+        :Output:
+         :ret: a ``pandas.DataFrame`` of historical mean Returns.
         """
         return historical_mean_return(self.data, freq=freq)
 
     def comp_stock_volatility(self, freq=252):
-        """Computes the volatilities of all the stocks individually
+        """Computes the Volatilities of all the stocks individually
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
 
         :Output:
-         :pandas.DataFrame with the individual volatilities of all stocks
+         :volatilies: ``pandas.DataFrame`` with the individual Volatilities of all stocks
              of the portfolio.
         """
         if not isinstance(freq, int):
@@ -307,19 +351,26 @@ class Portfolio(object):
         return self.comp_daily_returns().std() * np.sqrt(freq)
 
     def comp_weights(self):
-        """Computes and returns a pandas.Series of the weights of the stocks
-        of the portfolio.
+        """Computes and returns a ``pandas.Series`` of the weights/allocation
+        of the stocks of the portfolio.
+
+        :Output:
+         :weights: a ``pandas.Series`` with weights/allocation of all stocks
+             within the portfolio.
         """
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
         return self.portfolio["Allocation"] / self.totalinvestment
 
     def comp_expected_return(self, freq=252):
-        """Computes the expected return of the portfolio.
+        """Computes the Expected Return of the portfolio.
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
+
+        :Output:
+         :expected_return: ``float`` the Expected Return of the portfolio.
         """
         if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
@@ -330,11 +381,14 @@ class Portfolio(object):
         return expected_return
 
     def comp_volatility(self, freq=252):
-        """Computes the volatility of the given portfolio.
+        """Computes the Volatility of the given portfolio.
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
+
+        :Output:
+         :volatility: ``float`` the Volatility of the portfolio.
         """
         if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
@@ -344,15 +398,22 @@ class Portfolio(object):
         return volatility
 
     def comp_cov(self):
-        """Compute and return a pandas.DataFrame of the covariance matrix
+        """Compute and return a ``pandas.DataFrame`` of the covariance matrix
         of the portfolio.
+
+        :Output:
+         :cov: a ``pandas.DataFrame`` of the covariance matrix of the portfolio.
         """
         # get the covariance matrix of the mean returns of the portfolio
         returns = daily_returns(self.data)
         return returns.cov()
 
     def comp_sharpe(self):
-        """Compute and return the Sharpe ratio of the portfolio."""
+        """Compute and return the Sharpe Ratio of the portfolio.
+
+        :Output:
+         :sharpe: ``float``, the Sharpe Ratio of the portfolio
+        """
         # compute the Sharpe Ratio of the portfolio
         sharpe = sharpe_ratio(
             self.expected_return, self.volatility, self.risk_free_rate
@@ -385,12 +446,18 @@ class Portfolio(object):
         return self.ef
 
     def ef_minimum_volatility(self, verbose=False):
-        """Interface to ef.minimum_volatility().
-        Finds the portfolio with the minimum volatility.
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.minimum_volatility``.
+
+        Finds the portfolio with the minimum Volatility.
 
         :Input:
-         :verbose: Boolean (default=False), whether to print out properties
+         :verbose: ``boolean`` (default= ``False``), whether to print out properties
              or not.
+
+        :Output:
+         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+             the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -402,13 +469,19 @@ class Portfolio(object):
         return opt_weights
 
     def ef_maximum_sharpe_ratio(self, verbose=False):
-        """Interface to ef.maximum_sharpe_ratio().
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.maximum_sharpe_ratio``.
+
         Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
         :Input:
-         :verbose: Boolean (default=False), whether to print out properties
+         :verbose: ``boolean`` (default= ``False``), whether to print out properties
              or not.
+
+        :Output:
+         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+             the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -420,14 +493,19 @@ class Portfolio(object):
         return opt_weights
 
     def ef_efficient_return(self, target, verbose=False):
-        """Interface to ef.efficient_return().
-        Finds the portfolio with the minimum volatility for a given target
-        return.
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.efficient_return``.
+
+        Finds the portfolio with the minimum Volatility for a given target return.
 
         :Input:
-         :target: Float, the target return of the optimised portfolio.
-         :verbose: Boolean (default=False), whether to print out properties
+         :target: ``float``, the target return of the optimised portfolio.
+         :verbose: ``boolean`` (default= ``False``), whether to print out properties
              or not.
+
+        :Output:
+         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+             the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -439,14 +517,20 @@ class Portfolio(object):
         return opt_weights
 
     def ef_efficient_volatility(self, target, verbose=False):
-        """Interface to ef.efficient_volatility().
-        Finds the portfolio with the maximum Sharpe ratio for a given
-        target volatility.
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.efficient_volatility``.
+
+        Finds the portfolio with the maximum Sharpe Ratio for a given
+        target Volatility.
 
         :Input:
-         :target: Float, the target volatility of the optimised portfolio.
-         :verbose: Boolean (default=False), whether to print out properties
+         :target: ``float``, the target Volatility of the optimised portfolio.
+         :verbose: ``boolean`` (default= ``False``), whether to print out properties
              or not.
+
+        :Output:
+         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+             the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -458,18 +542,21 @@ class Portfolio(object):
         return opt_weights
 
     def ef_efficient_frontier(self, targets=None):
-        """Gets portfolios for a range of given target returns.
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.efficient_frontier``.
+
+        Gets portfolios for a range of given target Returns.
         If no targets were provided, the algorithm will find the minimum
-        and maximum returns of the portfolio's individual stocks, and set
+        and maximum Returns of the portfolio's individual stocks, and set
         the target range according to those values.
         Results in the Efficient Frontier.
 
         :Input:
-         :targets: list/numpy.ndarray (default: None) of floats,
-             range of target returns.
+         :targets: ``list``/``numpy.ndarray`` (default: ``None``) of ``floats``,
+             range of target Returns.
 
         :Output:
-         :array of (volatility, return) values.
+         :efrontier: ``numpy.ndarray`` of (Volatility, Return) values.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -479,7 +566,10 @@ class Portfolio(object):
         return efrontier
 
     def ef_plot_efrontier(self):
-        """Plots the Efficient Frontier."""
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.plot_efrontier``.
+
+        Plots the Efficient Frontier."""
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
         ef = self._get_ef()
@@ -487,9 +577,13 @@ class Portfolio(object):
         ef.plot_efrontier()
 
     def ef_plot_optimal_portfolios(self):
-        """Plots the optimised portfolios for
-         - minimum volatility, and
-         - maximum Sharpe ratio.
+        """Interface to
+        ``finquant.efficient_frontier.EfficientFrontier.plot_optimal_portfolios``.
+
+        Plots markers of the optimised portfolios for
+
+         - minimum Volatility, and
+         - maximum Sharpe Ratio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -503,7 +597,7 @@ class Portfolio(object):
         finquant.monte_carlo.MonteCarloOpt, else, return the existing instance.
         """
         if self.mc is None:
-            # create instance of EfficientFrontier
+            # create instance of MonteCarloOpt
             self.mc = MonteCarloOpt(
                 self.comp_daily_returns(),
                 num_trials=num_trials,
@@ -516,18 +610,21 @@ class Portfolio(object):
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
     def mc_optimisation(self, num_trials=1000):
-        """Optimisation of the portfolio by performing a Monte Carlo
+        """Interface to
+        ``finquant.monte_carlo.MonteCarloOpt.optimisation``.
+
+        Optimisation of the portfolio by performing a Monte Carlo
         simulation.
 
         :Input:
-         :num_trials: Integer (default: 1000), number of portfolios to be
-             computed, each with a random distribution of weights/investments
+         :num_trials: ``int`` (default: ``1000``), number of portfolios to be
+             computed, each with a random distribution of weights/allocation
              in each stock.
 
         :Output:
-         :opt_w: DataFrame with optimised investment strategies for maximum
-             Sharpe Ratio and minimum volatility.
-         :opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+         :opt_w: ``pandas.DataFrame`` with optimised investment strategies for maximum
+             Sharpe Ratio and minimum Volatility.
+         :opt_res: ``pandas.DataFrame`` with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
@@ -536,26 +633,29 @@ class Portfolio(object):
         return opt_weights, opt_results
 
     def mc_plot_results(self):
-        """Plots the optimised portfolios found by a Monte Carlo run for
-         - minimum volatility, and
-         - maximum Sharpe ratio.
+        """Plots the results of the Monte Carlo run, with all of the randomly
+        generated weights/portfolios, as well as markers for the portfolios with the
+         - minimum Volatility, and
+         - maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
         mc = self._get_mc()
         mc.plot_results()
 
     def mc_properties(self):
-        """Prints out the results of the Monte Carlo optimisation."""
+        """Calculates and prints out Expected annualised Return,
+        Volatility and Sharpe Ratio of optimised portfolio.
+        """
         # get instance of MonteCarloOpt
         mc = self._get_mc()
         mc.properties()
 
     def plot_stocks(self, freq=252):
-        """Plots the expected annual returns over annual volatility of
+        """Plots the Expected annual Returns over annual Volatility of
         the stocks of the portfolio.
 
         :Input:
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
         """
         # annual mean returns of all stocks
@@ -576,9 +676,14 @@ class Portfolio(object):
             plt.legend()
 
     def properties(self):
-        """Nicely prints out the properties of the portfolio: expected return,
-        volatility, Sharpe ratio, skewness, Kurtosis as well as the allocation
-        of the stocks across the portfolio.
+        """Nicely prints out the properties of the portfolio:
+
+         - Expected Return,
+         - Volatility,
+         - Sharpe Ratio,
+         - skewness,
+         - Kurtosis
+        as well as the allocation of the stocks across the portfolio.
         """
         # nicely printing out information and quantities of the portfolio
         string = "-" * 70
@@ -586,9 +691,9 @@ class Portfolio(object):
         string += "\nStocks: {}".format(", ".join(stocknames))
         string += "\nTime window/frequency: {}".format(self.freq)
         string += "\nRisk free rate: {}".format(self.risk_free_rate)
-        string += "\nPortfolio expected return: {:0.3f}".format(self.expected_return)
-        string += "\nPortfolio volatility: {:0.3f}".format(self.volatility)
-        string += "\nPortfolio Sharpe ratio: {:0.3f}".format(self.sharpe)
+        string += "\nPortfolio Expected Return: {:0.3f}".format(self.expected_return)
+        string += "\nPortfolio Volatility: {:0.3f}".format(self.volatility)
+        string += "\nPortfolio Sharpe Ratio: {:0.3f}".format(self.sharpe)
         string += "\n\nSkewness:"
         string += "\n" + str(self.skew.to_frame().transpose())
         string += "\n\nKurtosis:"
@@ -626,7 +731,7 @@ def _correct_quandl_request_stock_name(names):
 
 def _quandl_request(names, start_date=None, end_date=None):
     """This function performs a simple request from quandl and returns
-    a DataFrame containing stock data.
+    a ``pandas.DataFrame`` containing stock data.
 
     :Input:
      :names: List of strings of stock names to be requested
@@ -651,24 +756,24 @@ def _quandl_request(names, start_date=None, end_date=None):
 def _get_quandl_data_column_label(stock_name, data_label):
     """Given stock name and label of a data column, this function returns
     the string "<stock_name> - <data_label>" as it can be found in a
-    DataFrame returned by quandl.
+    ``pandas.DataFrame`` returned by quandl.
     """
     return stock_name + " - " + data_label
 
 
 def _get_stocks_data_columns(data, names, cols):
-    """This function returns a subset of the given DataFrame data, which
+    """This function returns a subset of the given ``pandas.DataFrame`` data, which
     contains only the data columns as specified in the input cols.
 
     :Input:
-     :data: A DataFrame which contains quantities of the stocks
+     :data: A ``pandas.DataFrame`` which contains quantities of the stocks
          listed in pf_allocation.
      :names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      :cols: A list of strings of column labels of data to be extracted.
 
     :Output:
-     :data: A DataFrame which contains only the data columns of
+     :data: A ``pandas.DataFrame`` which contains only the data columns of
          data as specified in cols.
     """
     # get correct stock names that quandl get request
@@ -722,8 +827,8 @@ def _build_portfolio_from_quandl(
     :Input:
      :names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
-     :pf_allocation (optional): DataFrame with the required data column
-         labels "Name" and "Allocation" of the stocks.
+     :pf_allocation (optional): ``pandas.DataFrame`` with the required data column
+         labels ``Name`` and ``Allocation`` of the stocks.
      :start_date (optional): String/datetime start date of stock data to
          be requested through quandl (default: None)
      :end_date (optional): String/datetime end date of stock data to be
@@ -753,15 +858,15 @@ def _stocknames_in_data_columns(names, df):
 
 
 def _generate_pf_allocation(names=None, data=None):
-    """Takes column names of provided DataFrame "data", and generates a
-    DataFrame with columns "Name" and "Allocation" which contain the names found
-    in input "data" and 1./len(data.columns) respectively.
+    """Takes column names of provided ``pandas.DataFrame`` ``data``, and generates a
+    ``pandas.DataFrame`` with columns ``Name`` and ``Allocation`` which contain the
+    names found in input ``data`` and 1.0/len(data.columns) respectively.
 
     :Input:
-     :data: A DataFrame which contains prices of the stocks
+     :data: A ``pandas.DataFrame`` which contains prices of the stocks
 
     :Output:
-     :pf_allocation: pandas.DataFrame with columns 'Name' and 'Allocation', which
+     :pf_allocation: ``pandas.DataFrame`` with columns ``Name`` and ``Allocation``, which
          contain the names and weights of the stocks
     """
     # checking input arguments
@@ -786,7 +891,7 @@ def _generate_pf_allocation(names=None, data=None):
             reducedlist = [elt for num, elt in enumerate(splitnames) if not num == i]
             if splitname in reducedlist:
                 errormsg = (
-                    "'data' DataFrame contains conflicting "
+                    "'data' pandas.DataFrame contains conflicting "
                     + "column labels."
                     + "\nMultiple columns with a substring of "
                     + "\n "
@@ -794,14 +899,14 @@ def _generate_pf_allocation(names=None, data=None):
                     + "\n"
                     + "were found. You have two options:"
                     + "\n 1. call 'build_portfolio' and pass a "
-                    + "DataFrame 'pf_allocation' that contains the "
+                    + "pandas.DataFrame 'pf_allocation' that contains the "
                     + "weights/allocation of stocks within your "
                     + "portfolio. 'build_portfolio' will then extract "
                     + "the columns from 'data' that match the values "
-                    + "of the column 'Name' in the DataFrame "
+                    + "of the column 'Name' in the pandas.DataFrame "
                     + "'pf_allocation'."
                     + "\n 2. call 'build_portfolio' and pass a "
-                    + "DataFrame 'data' that does not have conflicting "
+                    + "pandas.DataFrame 'data' that does not have conflicting "
                     + "column labels, e.g. 'GOOG' and "
                     + "'GOOG - Adj. Close' are considered "
                     + "conflicting column headers."
@@ -814,16 +919,16 @@ def _generate_pf_allocation(names=None, data=None):
 
 
 def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"]):
-    """Returns a portfolio based on input in form of pandas.DataFrame.
+    """Returns a portfolio based on input in form of ``pandas.DataFrame``.
 
     :Input:
-     :data: A DataFrame which contains prices of the stocks listed in
+     :data: A ``pandas.DataFrame`` which contains prices of the stocks listed in
          pf_allocation
-     :pf_allocation (optional): DataFrame with the required data column
-         labels "Name" and "Allocation" of the stocks. If not given, it is
+     :pf_allocation: (optional) ``pandas.DataFrame`` with the required data column
+         labels ``Name`` and ``Allocation`` of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     :datacolumns (optional): A list of strings of data column labels
+     :datacolumns: (optional) A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
 
     :Output:
@@ -872,35 +977,40 @@ def _list_complement(A, B):
 
 
 def build_portfolio(**kwargs):
-    """This function builds and returns a portfolio given a set of input
-    arguments.
+    """This function builds and returns an instance of ``Portfolio``
+    given a set of input arguments.
 
     :Input:
-     :pf_allocation (optional): DataFrame with the required data column
-         labels "Name" and "Allocation" of the stocks. If not given, it is
+     :pf_allocation: (optional) ``pandas.DataFrame`` with the required data column
+         labels ``Name`` and ``Allocation`` of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     :names (optional): A string or list of strings, containing the names
-         of the stocks, e.g. 'GOOG' for Google.
-     :start (optional): String/datetime start date of stock data to be
-         requested through quandl (default: None).
-     :end (optional): String/datetime end date of stock data to be
-         requested through quandl (default: None).
-     :data (optional): A DataFrame which contains quantities of
-         the stocks listed in pf_allocation.
+     :names: (optional) A ``string`` or ``list`` of ``strings``, containing the names
+         of the stocks, e.g. "GOOG" for Google.
+     :start: (optional) ``string``/``datetime`` start date of stock data to be
+         requested through `quandl` (default: ``None``).
+     :end: (optional) ``string``/``datetime`` end date of stock data to be
+         requested through `quandl` (default: ``None``).
+     :data: (optional) A ``pandas.DataFrame`` which contains quantities of
+         the stocks listed in ``pf_allocation``.
 
     :Output:
-     :pf: Instance of Portfolio which contains all the information
+     :pf: Instance of ``Portfolio`` which contains all the information
          requested by the user.
-    Only the following combinations of inputs are allowed:
-     :pf_allocation (optional), names, start_date (optional),
-           end_date (optional)
-     :pf_allocation (optional), data
-    Moreover, the two different ways this function can be used are useful
-    for
-     1. building a portfolio by pulling data from quandl,
-     2. building a portfolio by providing stock data which was obtained
-         otherwise, e.g. from data files.
+
+    :note: Only the following combinations of inputs are allowed:
+
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional)
+     - ``data``, ``pf_allocation`` (optional)
+
+    The two different ways this function can be used are useful for:
+
+     1. building a portfolio by pulling data from `quandl`,
+     2. building a portfolio by providing stock data which was obtained otherwise,
+        e.g. from data files.
+
+    If used in an unsupported way, the function (or subsequently called function) raises appropriate Exceptions
+    with useful information what went wrong.
     """
     docstring_msg = (
         "Please read through the docstring, "

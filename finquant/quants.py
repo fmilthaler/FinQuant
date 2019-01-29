@@ -10,37 +10,37 @@ import pandas as pd
 
 def weighted_mean(means, weights):
     """Computes the weighted mean/average, or in the case of a
-    financial portfolio, it can be used for the expected return
+    financial portfolio, it can be used for the Expected Return
     of said portfolio.
 
     :Input:
-     :means: numpy.ndarray/pd.Series of mean/average values
-     :weights: numpy.ndarray/pd.Series of weights
+     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
+     :weights: ``numpy.ndarray``/``pd.Series`` of weights
 
     :Output:
-     :weighted mu: numpy.ndarray: (np.sum(means*weights))
+     :weighted mu: ``numpy.ndarray``: ``(np.sum(means*weights))``
     """
     if not isinstance(weights, (pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a list/pandas.Series, np.array")
+        raise ValueError("weights is expected to be a pandas.Series/np.ndarray")
     if not isinstance(means, (pd.Series, np.ndarray)):
-        raise ValueError("means is expected to be a list/pandas.Series/np.ndarray")
+        raise ValueError("means is expected to be a pandas.Series/np.ndarray")
     return np.sum(means * weights)
 
 
 def weighted_std(cov_matrix, weights):
-    """Computes the weighted standard deviation, or volatility of
+    """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
     :Input:
-     :cov_matrix: numpy.ndarray/pandas.DataFrame, covariance matrix
-     :weights: list/numpy.ndarray/pd.Series of weights
+     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
+     :weights: ``numpy.ndarray``/``pd.Series`` of weights
 
     :Output:
-     :weighted sigma: numpy.ndarray:
-         np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+     :weighted sigma: ``numpy.ndarray``:
+         ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
     """
-    if not isinstance(weights, (list, pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a list/pandas.Series, np.array")
+    if not isinstance(weights, (pd.Series, np.ndarray)):
+        raise ValueError("weights is expected to be a pandas.Series, np.array")
     if not isinstance(cov_matrix, (np.ndarray, (np.ndarray, pd.DataFrame))):
         raise ValueError(
             "cov_matrix is expected to be a numpy.ndarray/pandas.DataFrame"
@@ -52,12 +52,12 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
     """Computes the Sharpe Ratio
 
     :Input:
-     :exp_return: int/float, expected return of a portfolio
-     :volatility: int/float, volatility of a portfolio
-     :risk_free_rate: int/float (default=0.005), risk free rate
+     :exp_return: ``int``/``float``, Expected Return of a portfolio
+     :volatility: ``int``/``float``, Volatility of a portfolio
+     :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
 
     :Output:
-     :sharpe ratio: float (exp_return - risk_free_rate)/float(volatility)
+     :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
     """
     if not isinstance(exp_return, (int, float, np.int64, np.float64)):
         raise ValueError("exp_return is expected to be an integer or float.")
@@ -75,15 +75,15 @@ def annualised_portfolio_quantities(
     and Sharpe Ratio of a portfolio.
 
     :Input:
-     :weights: list/numpy.ndarray/pd.Series of weights
-     :means: list/numpy.ndarray/pd.Series of mean/average values
-     :cov_matrix: numpy.ndarray/pandas.DataFrame, covariance matrix
-     :risk_free_rate: float (default=0.005), risk free rate
-     :freq: int (default: 252), number of trading days, default
+     :weights: ``numpy.ndarray``/``pd.Series`` of weights
+     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
+     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
+     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
+     :freq: ``int`` (default= ``252``), number of trading days, default
          value corresponds to trading days in a year
 
     :Output:
-     :(expected return, volatility, sharpe ratio): tuple of those
+     :(Expected Return, Volatility, Sharpe Ratio): tuple of those
          three quantities
     """
     if not isinstance(freq, int):

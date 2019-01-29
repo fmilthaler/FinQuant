@@ -11,11 +11,11 @@ def cumulative_returns(data, dividend=0):
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_0} + \\text{dividend}}{\\text{price}_{t_0}}`
 
     :Input:
-     :data: pandas.DataFrame with daily stock prices
-     :dividend: float (default: 0), paid dividend
+     :data: ``pandas.DataFrame`` with daily stock prices
+     :dividend: ``float`` (default= ``0``), paid dividend
 
     :Output:
-     :returns: a pandas.DataFrame of cumulative returns of given stock prices
+     :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
     """
     return data.apply(lambda x: (x - x[0] + dividend) / x[0])
 
@@ -26,11 +26,11 @@ def daily_returns(data):
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}`
 
     :Input:
-     :data: pandas.DataFrame with daily stock prices
+     :data: ``pandas.DataFrame`` with daily stock prices
 
     :Output:
-     :returns: a pandas.DataFrame of daily percentage change of returns
-         of given stock prices
+     :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
+         of given stock prices.
     """
     return data.pct_change().dropna(how="all")
 
@@ -42,11 +42,11 @@ def daily_log_returns(data):
     :math:`R_{\\log} = \\log\\left(1 + \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}\\right)`
 
     :Input:
-     :data: pandas.DataFrame with daily stock prices
+     :data: ``pandas.DataFrame`` with daily stock prices
 
     :Output:
-     :returns: a pandas.DataFrame of
-         log(1 + daily percentage change of returns)
+     :ret: a ``pandas.DataFrame`` of
+         log(1 + daily percentage change of Returns)
     """
     return np.log(1 + daily_returns(data)).dropna(how="all")
 
@@ -55,12 +55,12 @@ def historical_mean_return(data, freq=252):
     """Returns the mean return based on historical stock price data.
 
     :Input:
-     :data: pandas.DataFrame with daily stock prices
-     :freq: int (default: 252), number of trading days, default
+     :data: ``pandas.DataFrame`` with daily stock prices
+     :freq: ``int`` (default= ``252``), number of trading days, default
              value corresponds to trading days in a year
 
     :Output:
-     :returns: a pandas.DataFrame of mean daily * freq
+     :ret: a ``pandas.DataFrame`` of historical mean Returns.
     """
     if not isinstance(data, pd.DataFrame):
         raise ValueError("data must be a pandas.DataFrame")

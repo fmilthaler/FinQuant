@@ -16,7 +16,7 @@ class MonteCarlo(object):
     def __init__(self, num_trials=1000):
         """
         :Input:
-         :num_trials: int (default: 1000), number of iterations of the
+         :num_trials: ``int`` (default: ``1000``), number of iterations of the
                  Monte Carlo run/simulation.
         """
         self.num_trials = num_trials
@@ -54,23 +54,23 @@ class MonteCarloOpt(MonteCarlo):
     ):
         """
         :Input:
-         :returns: A pandas.DataFrame which contains the returns of stocks.
+         :returns: A ``pandas.DataFrame`` which contains the returns of stocks.
              Note: If applicable, the given returns should be computed with the
              same risk free rate and time window/frequency (arguments
-             "risk_free_rate" and "freq" as passed down here.
-         :num_trials: int (default: 10000), number of portfolios to be
-             computed, each with a random distribution of weights/investments
+             ``risk_free_rate`` and ``freq`` as passed down here.
+         :num_trials: ``int`` (default: ``1000``), number of portfolios to be
+             computed, each with a random distribution of weights/allocation
              in each stock
-         :risk_free_rate: float (default: 0.005), the risk free rate as
+         :risk_free_rate: ``float`` (default: ``0.005``), the risk free rate as
              required for the Sharpe Ratio
-         :freq: int (default: 252), number of trading days, default
+         :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year
-         :initial_weights: List/Array (default: None), weights of
+         :initial_weights: ``list``/``numpy.ndarray`` (default: ``None``), weights of
              initial/given portfolio, only used to plot a marker for the
              initial portfolio in the optimisation plot.
 
         :Output:
-         :opt: pandas.DataFrame with optimised investment strategies for maximum
+         :opt: ``pandas.DataFrame`` with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
         """
         if initial_weights is not None and not isinstance(initial_weights, np.ndarray):
@@ -84,7 +84,7 @@ class MonteCarloOpt(MonteCarlo):
             raise ValueError("num_trials is expected to be an integer")
         if not isinstance(risk_free_rate, (int, float)):
             raise ValueError(
-                "risk_free_rate is expected to be an integer " + "or float."
+                "risk_free_rate is expected to be an integer or float."
             )
         if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
@@ -126,12 +126,12 @@ class MonteCarloOpt(MonteCarlo):
     def _random_portfolios(self):
         """Performs a Monte Carlo run and gets a list of random portfolios
         and their corresponding quantities (Expected Return, Volatility,
-        Sharpe Ratio). Returns pandas.DataFrame of weights and results.
+        Sharpe Ratio). Returns ``pandas.DataFrame`` of weights and results.
 
         :Output:
-         :df_weights: pandas.DataFrame, holds the weights for each randomly
+         :df_weights: ``pandas.DataFrame``, holds the weights for each randomly
              generated portfolio
-         :df_results: pandas.DataFrame, holds Expected Annualised Return,
+         :df_results: ``pandas.DataFrame``, holds Expected Annualised Return,
              Volatility and Sharpe Ratio of each randomly generated portfolio
         """
         # run Monte Carlo to get random weights and corresponding quantities
@@ -152,9 +152,9 @@ class MonteCarloOpt(MonteCarlo):
         simulation.
 
         :Output:
-         :opt_w: pandas.DataFrame with optimised investment strategies for maximum
+         :opt_w: ``pandas.DataFrame`` with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
-         :opt_res: pandas.DataFrame with Expected Return, Volatility and Sharpe Ratio
+         :opt_res: ``pandas.DataFrame`` with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # perform Monte Carlo run and get weights and results
