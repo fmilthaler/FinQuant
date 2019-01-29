@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='FinQuant',
-    version='0.1.0',
+    version='0.1.1',
     author='Frank Milthaler',
     author_email='f.milthaler@gmail.com',
     description='A program for financial portfolio management, analysis and optimisation',
