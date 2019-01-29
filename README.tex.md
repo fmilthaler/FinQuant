@@ -6,6 +6,12 @@
   <a href="https://travis-ci.org/fmilthaler/FinQuant">
     <img src="https://travis-ci.org/fmilthaler/FinQuant.svg?style=popout?branch=master" alt='travis'>
   </a>
+  <a href="http://finquant.readthedocs.io/">
+    <img src="https://img.shields.io/readthedocs/finquant.svg?style=popout" alt="docs">
+  </a>
+  <a href="https://opensource.org/licenses/MIT">
+    <img src="https://img.shields.io/github/license/fmilthaler/FinQuant.svg?style=popout" alt="license">
+  </a>
 </p>
 
 # FinQuant
