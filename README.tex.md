@@ -1,7 +1,7 @@
 # FinQuant
 
 <p align="center">
-  <img src="images/finquant-logo.png" style="width:15%;"/>
+  <img src="images/finquant-logo.png" width="45%">
 </p>
 
 <a href='https://travis-ci.org/fmilthaler/FinQuant'>
@@ -93,7 +93,7 @@ pf.comp_cumulative_returns().plot().axhline(y = 0, color = "black", lw = 3)
 ```
 yields
 <p align="center">
-  <img src="images/cumulative-return.svg" style="width:50%;"/>
+  <img src="images/cumulative-return.svg" width="60%">
 </p>
 
 ### Band Moving Average (Buy/Sell Signals)
@@ -106,7 +106,7 @@ ma = compute_ma(dis, ema, spans, plot=True)
 ```
 yields
 <p align="center">
-  <img src="images/ma-band-buysell-signals.svg" style="width:50%;"/>
+  <img src="images/ma-band-buysell-signals.svg" width="60%">
 </p>
 
 ### Bollinger Band
@@ -119,7 +119,7 @@ plot_bollinger_band(dis, sma, span)
 ```
 yields
 <p align="center">
-  <img src="images/bollinger-band.svg" style="width:50%;"/>
+  <img src="images/bollinger-band.svg" width="60%">
 </p>
 
 ### Portfolio Optimisation
@@ -136,7 +136,7 @@ pf.ef.plot_optimal_portfolios()
 pf.plot_stocks()
 ```
 <p align="center">
-  <img src="images/ef-mc-overlay.svg" style="width:50%;"/>
+  <img src="images/ef-mc-overlay.svg" width="60%">
 </p>
 
 ## Dependencies
