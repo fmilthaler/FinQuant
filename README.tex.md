@@ -1,11 +1,11 @@
-# FinQuant
-
 <p align="center">
   <img src="images/finquant-logo.png" width="45%">
 </p>
 
 <a href='https://travis-ci.org/fmilthaler/FinQuant'>
   <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=develop' alt='travis'></a>
+
+# FinQuant
 
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
