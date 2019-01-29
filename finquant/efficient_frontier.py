@@ -1,5 +1,5 @@
-"""This module facilitates a class EfficientFrontier that can be used to
-optimise a portfolio.
+"""The module facilitates a class `EfficientFrontier` that can be used to
+optimise a portfolio by minimising a cost/objective function.
 """
 
 
@@ -12,13 +12,16 @@ from finquant.quants import annualised_portfolio_quantities
 
 
 class EfficientFrontier(object):
-    """An object designed to perform optimisations based on the
-    efficient frontier of a given portfolio.
+    """An object designed to perform optimisations based on minimising a cost/objective function.
     It can find parameters for portfolios with
      - minimum volatility
      - maximum Sharpe ratio
      - minimum volatility for a given target return
      - maximum Sharpe ratio for a given target volatility
+
+    It also provides functions to compute the Efficient Frontier between a range
+    of Returns, plot the Efficient Frontier, plot the optimal portfolios
+    (minimum Volatility and maximum Sharpe Ratio).
     """
 
     def __init__(
@@ -30,7 +33,7 @@ class EfficientFrontier(object):
              stocks in the portfolio
          :cov_matrix: pandas.DataFrame, covariance matrix of returns
          :risk_free_rate: int/float (default=0.005), risk free rate
-         :freq: Integer (default: 252), number of trading days, default
+         :freq: int (default: 252), number of trading days, default
              value corresponds to trading days in a year
          :method: string (default: "SLSQP"), type of solver method to use,
              must be one of:
@@ -102,11 +105,11 @@ class EfficientFrontier(object):
         """Finds the portfolio with the minimum volatility.
 
         :Input:
-        :save_weights: Boolean (default: True), whether to save the optimised
+         :save_weights: Boolean (default: True), whether to save the optimised
              weights in the instance variable weights (and df_weights). Useful
-             for the case of computing the efficient frontier after doing a
+             for the case of computing the efficient frontier after doing an
              optimisation, else the optimal weights would be overwritten by the
-             efficient frontier computations.
+             efficient frontier computations. Best to ignore this argument.
 
         :Output:
          :df_weights/weights:
@@ -142,11 +145,11 @@ class EfficientFrontier(object):
         tangency portfolio.
 
         :Input:
-        :save_weights: Boolean (default: True), whether to save the optimised
+         :save_weights: Boolean (default: True), whether to save the optimised
              weights in the instance variable weights (and df_weights). Useful
-             for the case of computing the efficient frontier after doing a
+             for the case of computing the efficient frontier after doing an
              optimisation, else the optimal weights would be overwritten by the
-             efficient frontier computations.
+             efficient frontier computations. Best to ignore this argument.
 
         :Output:
          :df_weights/weights:
@@ -182,12 +185,12 @@ class EfficientFrontier(object):
         return.
 
         :Input:
-         :target: Float, the target return of the optimised portfolio.
+         :target: float, the target return of the optimised portfolio.
          :save_weights: Boolean (default: True), whether to save the optimised
              weights in the instance variable weights (and df_weights). Useful
-             for the case of computing the efficient frontier after doing a
+             for the case of computing the efficient frontier after doing an
              optimisation, else the optimal weights would be overwritten by the
-             efficient frontier computations.
+             efficient frontier computations. Best to ignore this argument.
 
         :Output:
          :df_weights/weights:
@@ -236,7 +239,7 @@ class EfficientFrontier(object):
         target volatility.
 
         :Input:
-         :target: Float, the target volatility of the optimised portfolio.
+         :target: float, the target volatility of the optimised portfolio.
 
         :Output:
          :df_weights: returning pandas.DataFrame of weights
@@ -327,8 +330,8 @@ class EfficientFrontier(object):
         plt.legend()
 
     def plot_optimal_portfolios(self):
-        """Plots the Efficient Frontier and a marker for the minimum volatility and
-        maximum Sharpe ratio.
+        """Plots markers for the optimised portfolios for minimum Volatility
+        and maximum Sharpe Ratio.
         """
         # compute optimal portfolios
         min_vol_weights = self.minimum_volatility(save_weights=False)
@@ -379,12 +382,11 @@ class EfficientFrontier(object):
         return pd.DataFrame(weights, index=self.names, columns=["Allocation"])
 
     def properties(self, verbose=False):
-        """Calculates and prints out expected annualised return,
-        volatility and Sharpe ratio of optimised portfolio.
+        """Calculates and prints out Expected annualised Return,
+        Volatility and Sharpe Ratio of optimised portfolio.
 
         :Input:
-         :verbose: Boolean (default: False), whether to print out properties
-             or not
+         :verbose: Boolean (default: False), whether to print out properties or not
         """
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
