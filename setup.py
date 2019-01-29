@@ -7,6 +7,7 @@ setuptools.setup(
     name='FinQuant',
     version='0.1.0',
     author='Frank Milthaler',
+    author_email='f.milthaler@gmail.com',
     description='A program for financial portfolio management, analysis and optimisation',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -16,21 +17,17 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
-        'Intended Audience :: Finance',
+        'Intended Audience :: Financial and Insurance Industry',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-    ],
+        'Operating System :: OS Independent'],
     keywords=['finance', 'portfolio', 'investment',
     'numerical', 'optimisation', 'monte carlo',
-    'efficient frontier', 'quantitative', 'quant'
-    ],
+    'efficient frontier', 'quantitative', 'quant'],
     python_requires='>=3.5',
-    install_requires=[
-        'quandl', 'numpy', 'pandas', 'scipy',
-        'matplotlib', 'pytest'
-    ]
+    install_requires=['quandl', 'numpy', 'pandas', 'scipy',
+        'matplotlib', 'pytest']
 )
