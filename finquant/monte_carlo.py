@@ -83,9 +83,7 @@ class MonteCarloOpt(MonteCarlo):
         if not isinstance(num_trials, int):
             raise ValueError("num_trials is expected to be an integer")
         if not isinstance(risk_free_rate, (int, float)):
-            raise ValueError(
-                "risk_free_rate is expected to be an integer or float."
-            )
+            raise ValueError("risk_free_rate is expected to be an integer or float.")
         if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
         self.returns = returns
