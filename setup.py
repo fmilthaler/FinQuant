@@ -11,6 +11,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/fmilthaler/FinQuant',
+    download_url = 'https://github.com/fmilthaler/FinQuant/archive/v0.1.tar.gz',
     license='MIT',
     packages=setuptools.find_packages(),
     classifiers=[
