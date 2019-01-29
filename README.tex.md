@@ -139,7 +139,10 @@ pf.plot_stocks()
   <img src="images/ef-mc-overlay.svg" width="60%">
 </p>
 
-## Dependencies
+## Installation
+As it is common for open-source projects, there are several ways to get hold of the code. Choose whichever suits you and your purposes best.
+
+### Dependencies
 *FinQuant* depends on the following Python packages:
  - python>=3.5.0
  - numpy>=1.11.0
@@ -149,12 +152,21 @@ pf.plot_stocks()
  - scipy>=1.2.0
  - pytest>=2.8.7
 
-## Usage
-Download the code:
+### From PyPI
+*FinQuant* can be obtained from PyPI
+
+```pip install FinQuant```
+
+### From GitHub
+Get the code from GitHub:
 
 ```git clone https://github.com/fmilthaler/FinQuant.git```
 
-And make sure to add the directory *FinQuant* to your `PYTHONPATH`.
+Then inside `FinQuant` run:
+
+```python setup.py install```
+
+Alternatively, if you do not wish to install *FinQuant*, you can also download/clone it as stated above, and then make sure to add it to your ``PYTHONPATH``.
 
 ## Portfolio Management
 This is the core of *FinQuant*. `finquant.portfolio.Portfolio` provides an object that holds prices of all stocks in your portfolio, and automatically computes the most common quantities for you. To make *FinQuant* an user-friendly program, that combines data analysis, visualisation and optimisation, the object provides interfaces to the main features that are provided in the modules in `./finquant/`.
