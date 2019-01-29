@@ -2,8 +2,11 @@
   <img src="images/finquant-logo.png" width="45%">
 </p>
 
-<a href='https://travis-ci.org/fmilthaler/FinQuant'>
-  <img src='https://travis-ci.org/fmilthaler/FinQuant.svg?branch=develop' alt='travis'></a>
+<p align="center">
+  <a href="https://travis-ci.org/fmilthaler/FinQuant">
+    <img src="https://travis-ci.org/fmilthaler/FinQuant.svg?style=popout?branch=master" alt='travis'>
+  </a>
+</p>
 
 # FinQuant
 
