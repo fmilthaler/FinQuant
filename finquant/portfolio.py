@@ -72,7 +72,7 @@ class Stock(object):
      - pandas.Series
      - pandas.DataFrame
     The investment information can contain as little information as its name,
-    and the amount invested in it, the column labels must be "Name" and "FMV"
+    and the amount invested in it, the column labels must be "Name" and "Allocation"
     respectively, but it can also contain more information, such as
      - Year
      - Strategy
@@ -138,7 +138,7 @@ class Stock(object):
     def properties(self):
         '''
         Nicely prints out the properties of the stock: expected return,
-        volatility, skewness, Kurtosis as well as the FMV (and other
+        volatility, skewness, Kurtosis as well as the Allocation (and other
         information provided in investmentinfo.)
         '''
         # nicely printing out information and quantities of the stock
@@ -266,7 +266,7 @@ class Portfolio(object):
         if (not (self.portfolio.empty or
                  self.stocks == {} or
                  self.data.empty)):
-            self.totalinvestment = self.portfolio.FMV.sum()
+            self.totalinvestment = self.portfolio.Allocation.sum()
             self.expected_return = self.comp_expected_return(freq=self.freq)
             self.volatility = self.comp_volatility(freq=self.freq)
             self.sharpe = self.comp_sharpe()
@@ -333,7 +333,7 @@ class Portfolio(object):
         '''
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
-        return self.portfolio['FMV']/self.totalinvestment
+        return self.portfolio['Allocation']/self.totalinvestment
 
     def comp_expected_return(self, freq=252):
         '''
@@ -779,7 +779,7 @@ def _build_portfolio_from_quandl(names,
      * names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      * pf_allocation (optional): DataFrame with the required data column
-         labels "Name" and "FMV" of the stocks.
+         labels "Name" and "Allocation" of the stocks.
      * start_date (optional): String/datetime start date of stock data to
          be requested through quandl (default: None)
      * end_date (optional): String/datetime end date of stock data to be
@@ -811,14 +811,14 @@ def _stocknames_in_data_columns(names, df):
 def _generate_pf_allocation(names=None, data=None):
     '''
     Takes column names of provided DataFrame "data", and generates a
-    DataFrame with columns "Name" and "FMV" which contain the names found
+    DataFrame with columns "Name" and "Allocation" which contain the names found
     in input "data" and 1./len(data.columns) respectively.
 
     Input:
      * data: A DataFrame which contains prices of the stocks
 
     Output:
-     * pf_allocation: pandas.DataFrame with columns 'Name' and 'FMV', which
+     * pf_allocation: pandas.DataFrame with columns 'Name' and 'Allocation', which
          contain the names and weights of the stocks
     '''
     # checking input arguments
@@ -865,7 +865,7 @@ def _generate_pf_allocation(names=None, data=None):
     # if names is given, we go directly to the below:
     # compute equal weights
     weights = [1./len(names) for i in range(len(names))]
-    return pd.DataFrame({'FMV': weights, 'Name': names})
+    return pd.DataFrame({'Allocation': weights, 'Name': names})
 
 
 def _build_portfolio_from_df(data,
@@ -878,7 +878,7 @@ def _build_portfolio_from_df(data,
      * data: A DataFrame which contains prices of the stocks listed in
          pf_allocation
      * pf_allocation (optional): DataFrame with the required data column
-         labels "Name" and "FMV" of the stocks. If not given, it is
+         labels "Name" and "Allocation" of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
      * datacolumns (optional): A list of strings of data column labels
@@ -943,7 +943,7 @@ def build_portfolio(**kwargs):
 
     Input:
      * pf_allocation (optional): DataFrame with the required data column
-         labels "Name" and "FMV" of the stocks. If not given, it is
+         labels "Name" and "Allocation" of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
      * names (optional): A string or list of strings, containing the names
