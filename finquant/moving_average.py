@@ -1,5 +1,9 @@
-"""Provides functions to compute and visualise moving averages and Bollinger
-Bands.
+"""The module provides functions to compute and visualise:
+
+- *Simple Moving Averages*,
+- *Exponential Moving Averages*,
+- a *band* of *Moving Averages* (simple or exponential), and
+- *Bollinger Bands*.
 """
 
 
@@ -9,14 +13,16 @@ import matplotlib.pyplot as plt
 
 
 def compute_ma(data, fun, spans, plot=True):
-    """Computes the moving average (sma or ema, depends on the input argument
-    "fun") for a number of different time windows.
+    """Computes a band of moving averages (sma or ema, depends on the input argument
+    `fun`) for a number of different time windows. If `plot` is `True`, it also
+    computes and sets markers for buy/sell signals based on crossovers of the Moving
+    Averages with the shortest/longest spans.
 
     :Input:
      :data: pandas.DataFrame with stock prices, only one column is expected.
      :fun: function that computes a moving average, e.g. sma (simple) or
          ema (exponential).
-     :spans: list of integers, time windows to compute the MA on.
+     :spans: list of integers, time windows to compute the Moving Average on.
      :plot: boolean (default: True), whether to plot the moving averages
          and buy/sell signales based on crossovers of shortest and longest
          moving average.
@@ -78,11 +84,12 @@ def compute_ma(data, fun, spans, plot=True):
 
 def sma(data, span=100):
     """Computes and returns the simple moving average.
+
     Note: the moving average is computed on all columns.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: Integer (defaul: 100), number of days/values over which
+     :span: int (defaul: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -93,11 +100,12 @@ def sma(data, span=100):
 
 def ema(data, span=100):
     """Computes and returns the exponential moving average.
+
     Note: the moving average is computed on all columns.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: Integer (defaul: 100), number of days/values over which
+     :span: int (defaul: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -112,7 +120,7 @@ def sma_std(data, span=100):
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: Integer (defaul: 100), number of days/values over which
+     :span: int (defaul: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -128,7 +136,7 @@ def ema_std(data, span=100):
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: Integer (defaul: 100), number of days/values over which
+     :span: int (defaul: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -139,13 +147,13 @@ def ema_std(data, span=100):
 
 
 def plot_bollinger_band(data, fun, span):
-    """Creates a plot of a Bolling Band
+    """Computes and visualises a Bolling Band.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
      :fun: function that computes a moving average, e.g. sma (simple) or
          ema (exponential).
-     :span: Integer (defaul: 100), number of days/values over which
+     :span: int (defaul: 100), number of days/values over which
          the average is computed
     """
     if not isinstance(data, pd.DataFrame):
