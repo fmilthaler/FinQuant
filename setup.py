@@ -12,12 +12,15 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/fmilthaler/FinQuant',
-    download_url = 'https://github.com/fmilthaler/FinQuant/archive/v0.1.tar.gz',
+    download_url = 'https://github.com/fmilthaler/FinQuant/archive/v0.1.1.tar.gz',
     license='MIT',
     packages=setuptools.find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
+        'Intended Audience :: Education',
         'Intended Audience :: Financial and Insurance Industry',
+        'Intended Audience :: Other Audience',
+        'Intended Audience :: Science/Research',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -29,5 +32,6 @@ setuptools.setup(
     'efficient frontier', 'quantitative', 'quant'],
     python_requires='>=3.5',
     install_requires=['quandl', 'numpy', 'pandas', 'scipy',
-        'matplotlib', 'pytest']
+        'matplotlib', 'pytest'],
+    project_urls={'Documentation': 'https://finquant.readthedocs.io'}
 )
