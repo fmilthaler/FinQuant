@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/finquant-logo.png" width="45%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/finquant-logo.png" width="45%">
 </p>
 
 <p align="center">
@@ -102,7 +102,7 @@ pf.comp_cumulative_returns().plot().axhline(y = 0, color = "black", lw = 3)
 ```
 yields
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/cumulative-return.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/cumulative-return.svg?sanitize=true" width="60%">
 </p>
 
 ### Band Moving Average (Buy/Sell Signals)
@@ -115,7 +115,7 @@ ma = compute_ma(dis, ema, spans, plot=True)
 ```
 yields
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/ma-band-buysell-signals.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/ma-band-buysell-signals.svg?sanitize=true" width="60%">
 </p>
 
 ### Bollinger Band
@@ -128,7 +128,7 @@ plot_bollinger_band(dis, sma, span)
 ```
 yields
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/bollinger-band.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/bollinger-band.svg?sanitize=true" width="60%">
 </p>
 
 ### Portfolio Optimisation
@@ -145,7 +145,7 @@ pf.ef.plot_optimal_portfolios()
 pf.plot_stocks()
 ```
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/ef-mc-overlay.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/ef-mc-overlay.svg?sanitize=true" width="60%">
 </p>
 
 ## Installation
@@ -186,9 +186,9 @@ To learn more about the object, please read through the [documentation](https://
 
 ## Returns
 Daily returns of stocks are often computed in different ways. *FinQuant* provides three different ways of computing the daily returns in `finquant.returns`:
-1. The cumulative return: <img src="/tex/738645698dc3073b4bb52a0c078ae829.svg?invert_in_darkmode&sanitize=true" align=middle width=194.52263655pt height=46.976899200000005pt/>
-2. Percentage change of daily returns: <img src="/tex/27215e5f36fd0308b51ab510444edf0d.svg?invert_in_darkmode&sanitize=true" align=middle width=126.07712039999997pt height=48.84266309999997pt/>
-3. Log Return: <img src="/tex/ef37c00ad58fe657a64041c3093e0640.svg?invert_in_darkmode&sanitize=true" align=middle width=208.3327686pt height=57.53473439999999pt/>
+1. The cumulative return: <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/tex/738645698dc3073b4bb52a0c078ae829.svg?invert_in_darkmode&sanitize=true" align=middle width=194.52263655pt height=46.976899200000005pt/>
+2. Percentage change of daily returns: <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/tex/27215e5f36fd0308b51ab510444edf0d.svg?invert_in_darkmode&sanitize=true" align=middle width=126.07712039999997pt height=48.84266309999997pt/>
+3. Log Return: <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/tex/ef37c00ad58fe657a64041c3093e0640.svg?invert_in_darkmode&sanitize=true" align=middle width=208.3327686pt height=57.53473439999999pt/>
 
 In addition to those, the module provides the function `historical_mean_return(data, freq=252)`, which computes the historical mean of the daily returns over a time period `freq`.
 
