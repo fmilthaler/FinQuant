@@ -20,7 +20,7 @@
 # FinQuant
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
-This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](finquant.readthedocs.io "FinQuant Documentation").
+This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](https://finquant.readthedocs.io "FinQuant Documentation").
 
 ## Table of contents
  - [Motivation](#Motivation)
