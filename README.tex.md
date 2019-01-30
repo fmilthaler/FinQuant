@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/finquant-logo.png" width="45%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/finquant-logo.png" width="45%">
 </p>
 
 <p align="center">
@@ -20,7 +20,7 @@
 # FinQuant
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
-This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](finquant.readthedocs.io "FinQuant Documentation").
+This README only gives a brief overview of *FinQuant*. The interested reader should refer to its [documentation](https://finquant.readthedocs.io "FinQuant Documentation").
 
 ## Table of contents
  - [Motivation](#Motivation)
@@ -102,7 +102,7 @@ pf.comp_cumulative_returns().plot().axhline(y = 0, color = "black", lw = 3)
 ```
 yields
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/cumulative-return.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/cumulative-return.svg?sanitize=true" width="60%">
 </p>
 
 ### Band Moving Average (Buy/Sell Signals)
@@ -115,7 +115,7 @@ ma = compute_ma(dis, ema, spans, plot=True)
 ```
 yields
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/ma-band-buysell-signals.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/ma-band-buysell-signals.svg?sanitize=true" width="60%">
 </p>
 
 ### Bollinger Band
@@ -128,7 +128,7 @@ plot_bollinger_band(dis, sma, span)
 ```
 yields
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/bollinger-band.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/bollinger-band.svg?sanitize=true" width="60%">
 </p>
 
 ### Portfolio Optimisation
@@ -145,7 +145,7 @@ pf.ef.plot_optimal_portfolios()
 pf.plot_stocks()
 ```
 <p align="center">
-  <img src="https://github.com/fmilthaler/FinQuant/blob/master/images/ef-mc-overlay.svg" width="60%">
+  <img src="https://raw.githubusercontent.com/fmilthaler/finquant/master/images/ef-mc-overlay.svg?sanitize=true" width="60%">
 </p>
 
 ## Installation
