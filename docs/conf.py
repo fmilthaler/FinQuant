@@ -16,6 +16,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
+# get version/release from file
+with open("../version", "r") as f:
+    ver = dict(x.rstrip().split('=') for x in f)
 
 # -- Project information -----------------------------------------------------
 
@@ -24,10 +27,9 @@ copyright = "2019, Frank Milthaler"
 author = "Frank Milthaler"
 
 # The short X.Y version
-version = "0.1"
+version = ver["version"]
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
-
+release = ver["release"]
 
 # -- General configuration ---------------------------------------------------
 

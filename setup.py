@@ -1,11 +1,15 @@
 import setuptools
 
+# get version/release from file
+with open("version", "r") as f:
+    ver = dict(x.rstrip().split('=') for x in f)
+
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='FinQuant',
-    version='0.1.1',
+    version=ver['version'],
     author='Frank Milthaler',
     author_email='f.milthaler@gmail.com',
     description='A program for financial portfolio management, analysis and optimisation',
