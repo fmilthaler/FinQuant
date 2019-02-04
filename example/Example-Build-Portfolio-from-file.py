@@ -4,9 +4,9 @@
 # <markdowncell>
 
 # # Building a portfolio with data from disk
-# 
+#
 # ## Building a portfolio with `build_portfolio()` with data obtained from data files.
-# 
+#
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
 # <codecell>
@@ -24,19 +24,19 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # plotting style:
-plt.style.use('seaborn-darkgrid')
-#set line width
-plt.rcParams['lines.linewidth'] = 2
-#set font size for titles
-plt.rcParams['axes.titlesize'] = 14
-#set font size for labels on axes
-plt.rcParams['axes.labelsize'] = 12
-#set size of numbers on x-axis
-plt.rcParams['xtick.labelsize'] = 10
-#set size of numbers on y-axis
-plt.rcParams['ytick.labelsize'] = 10
-#set figure size
-plt.rcParams['figure.figsize'] = (10, 6)
+plt.style.use("seaborn-darkgrid")
+# set line width
+plt.rcParams["lines.linewidth"] = 2
+# set font size for titles
+plt.rcParams["axes.titlesize"] = 14
+# set font size for labels on axes
+plt.rcParams["axes.labelsize"] = 12
+# set size of numbers on x-axis
+plt.rcParams["xtick.labelsize"] = 10
+# set size of numbers on y-axis
+plt.rcParams["ytick.labelsize"] = 10
+# set figure size
+plt.rcParams["figure.figsize"] = (10, 6)
 
 # <markdowncell>
 
@@ -50,10 +50,10 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # pf.getPortfolio().to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
 # pf.getPfStockData().to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
 # read data from files:
-df_pf_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-portfolio.csv'
-df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
+df_pf_path = pathlib.Path.cwd() / ".." / "data" / "ex1-portfolio.csv"
+df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
 df_pf = pd.read_csv(df_pf_path)
-df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
+df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 
 # <markdowncell>
 
@@ -71,7 +71,7 @@ df_data.head(3)
 
 # ## Building a portfolio with `build_portfolio()`
 # `build_portfolio()` is an interface that can be used in different ways. Two of which is shown below. For more information the docstring is shown below as well.
-# 
+#
 # In this example `build_portfolio()` is being passed `df_data`, which was read in from file above.
 
 # <codecell>

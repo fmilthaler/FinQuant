@@ -4,7 +4,7 @@
 # <markdowncell>
 
 # # Building a portfolio with data from `quandl`
-# 
+#
 # ## Building a portfolio with `build_portfolio()` by downloading relevant data through quandl with stock names, start and end date and column labels
 # This example only focuses on how to use `build_portfolio()` to get an instance of `Portfolio` by providing minimal information that is passed on to `quandl`. For a more exhaustive description of this package and example, please try `Example-Analysis` and `Example-Optimisation`.
 
@@ -16,17 +16,17 @@ import pandas as pd
 # <codecell>
 
 # plotting style:
-plt.style.use('seaborn-darkgrid')
-#set line width
-plt.rcParams['lines.linewidth'] = 2
-#set font size for titles
-plt.rcParams['axes.titlesize'] = 14
-#set font size for labels on axes
-plt.rcParams['axes.labelsize'] = 12
-#set size of numbers on x-axis
-plt.rcParams['xtick.labelsize'] = 10
-#set size of numbers on y-axis
-plt.rcParams['ytick.labelsize'] = 10
+plt.style.use("seaborn-darkgrid")
+# set line width
+plt.rcParams["lines.linewidth"] = 2
+# set font size for titles
+plt.rcParams["axes.titlesize"] = 14
+# set font size for labels on axes
+plt.rcParams["axes.labelsize"] = 12
+# set size of numbers on x-axis
+plt.rcParams["xtick.labelsize"] = 10
+# set size of numbers on y-axis
+plt.rcParams["ytick.labelsize"] = 10
 
 # <codecell>
 
@@ -63,20 +63,20 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 d = {
-    0: {'Name':'GOOG', 'Allocation':20},
-    1: {'Name':'AMZN', 'Allocation':10},
-    2: {'Name':'MCD', 'Allocation':15},
-    3: {'Name':'DIS', 'Allocation':18},
+    0: {"Name": "GOOG", "Allocation": 20},
+    1: {"Name": "AMZN", "Allocation": 10},
+    2: {"Name": "MCD", "Allocation": 15},
+    3: {"Name": "DIS", "Allocation": 18},
 }
-pf_allocation = pd.DataFrame.from_dict(d, orient='index')
+pf_allocation = pd.DataFrame.from_dict(d, orient="index")
 
 # <markdowncell>
 
 # ### User friendly interface to quandl
 # As mentioned above, in this example `build_portfolio()` is used to build a portfolio by performing a query to `quandl`.
-# 
+#
 # To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
-# 
+#
 # For example, all three lists of tickers/names as shown below are valid input for
 # `FinQuant`'s function `build_portfolio(names=names)`:
 #  * `names = ['WIKI/GOOG', 'WIKI/AMZN']`
@@ -87,20 +87,17 @@ pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
 # here we set the list of names based on the names in
 # the DataFrame pf_allocation
-names = pf_allocation['Name'].values.tolist()
+names = pf_allocation["Name"].values.tolist()
 
 # dates can be set as datetime or string, as shown below:
-start_date = datetime.datetime(2015,1,1)
-end_date = '2017-12-31'
+start_date = datetime.datetime(2015, 1, 1)
+end_date = "2017-12-31"
 
 # While quandl will download lots of different prices for each stock,
 # e.g. high, low, close, etc, FinQuant will extract the column "Adj. Close".
 
 pf = build_portfolio(
-    names=names,
-    pf_allocation=pf_allocation,
-    start_date=start_date,
-    end_date=end_date
+    names=names, pf_allocation=pf_allocation, start_date=start_date, end_date=end_date
 )
 
 # <markdowncell>
