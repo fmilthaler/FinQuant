@@ -26,6 +26,10 @@ copyexamples: $(EXAMPLEFILES)
 $(EXAMPLEFILES):
 	@cp $(@) $(subst example/,tests/test_,$(@))
 
+pypi:
+	@$(PYTHON) setup.py sdist bdist_wheel
+	@$(PYTHON) -m twine upload dist/*
+
 clean: $(CLEANDIRS)
 $(CLEANDIRS):
 	@echo "cleaning directory $(@:clean-%=%):"
