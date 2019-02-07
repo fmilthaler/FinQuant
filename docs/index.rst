@@ -12,6 +12,7 @@
 
 .. _GitHub: https://github.com/fmilthaler/FinQuant/
 
+.. _PyPI: https://pypi.org/project/FinQuant/
 
 #####################################
 Welcome to FinQuant's documentation
@@ -43,7 +44,7 @@ Dependencies
 
 From PyPI
 ---------
-*FinQuant* can be obtained from PyPI
+*FinQuant* can be obtained from `PyPI`_:
 
 .. code:: text
 
