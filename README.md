@@ -215,7 +215,7 @@ Often it is useful to visualise the *Efficient Frontier* as well as the optimal 
  - `plot_efrontier`: Plots the *Efficient Frontier*. If no minimum/maximum Return values are provided, the algorithm automatically chooses those limits for the *Efficient Frontier* based on the minimum/maximum Return values of all stocks within the given portfolio.
  - `plot_optimal_portfolios`: Plots markers of the portfolios with the Minimum Volatility and Maximum Sharpe Ratio.
 
-For reasons of user-friendliness, interfaces to these functions are provided in `qf`. Please have a look at #Portfolio.
+For reasons of user-friendliness, interfaces to these functions are provided in `finquant.portfolio.Portfolio`. Please have a look at the [documentation](https://finquant.readthedocs.io "FinQuant Documentation").
 
 ### Monte Carlo
 Alternatively a *Monte Carlo* run of `n` trials can be performed to find the optimal portfolios for
