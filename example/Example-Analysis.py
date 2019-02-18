@@ -55,17 +55,17 @@ pf = build_portfolio(data=df_data)
 # <codecell>
 
 # expected (annualised) return
-pf.expected_return
+print(pf.expected_return)
 
 # <codecell>
 
 # volatility
-pf.volatility
+print(pf.volatility)
 
 # <codecell>
 
 # Sharpe ratio (computed with a risk free rate of 0.005 by default)
-pf.sharpe
+print(pf.sharpe)
 
 # <markdowncell>
 
@@ -73,11 +73,11 @@ pf.sharpe
 
 # <codecell>
 
-pf.skew
+print(pf.skew)
 
 # <codecell>
 
-pf.kurtosis
+print(pf.kurtosis)
 
 # <markdowncell>
 
@@ -97,16 +97,16 @@ pf.properties()
 # <codecell>
 
 # annualised mean returns
-pf.comp_mean_returns()
+print(pf.comp_mean_returns())
 
 # <codecell>
 
 # daily returns (percentage change)
-pf.comp_cumulative_returns().head(3)
+print(pf.comp_cumulative_returns().head(3))
 
 # <codecell>
 
-pf.comp_daily_log_returns().head(3)
+print(pf.comp_daily_log_returns().head(3))
 
 # <codecell>
 
@@ -193,7 +193,6 @@ dis = pf.get_stock("DIS").data.copy(deep=True)
 spans = [10, 50, 100, 150, 200]
 # compute and plot moving averages
 dis_ma = compute_ma(dis, ema, spans, plot=True)
-dis_ma.head(3)
 plt.show()
 
 # <markdowncell>
@@ -259,27 +258,27 @@ pf.properties()
 goog = pf.get_stock("GOOG")
 # getting the stock prices
 goog_prices = goog.data
-goog_prices.head(3)
+print(goog_prices.head(3))
 
 # <codecell>
 
-goog.comp_daily_returns().head(3)
+print(goog.comp_daily_returns().head(3))
 
 # <codecell>
 
-goog.expected_return
+print(goog.expected_return)
 
 # <codecell>
 
-goog.volatility
+print(goog.volatility)
 
 # <codecell>
 
-goog.skew
+print(goog.skew)
 
 # <codecell>
 
-goog.kurtosis
+print(goog.kurtosis)
 
 # <codecell>
 
@@ -293,12 +292,12 @@ goog.properties()
 
 # <codecell>
 
-pf.data.loc[str(datetime.datetime(2015, 1, 2))]
+print(pf.data.loc[str(datetime.datetime(2015, 1, 2))])
 
 # <codecell>
 
-pf.data.loc[pf.data.index > datetime.datetime(2016, 1, 2)].head(3)
+print(pf.data.loc[pf.data.index > datetime.datetime(2016, 1, 2)].head(3))
 
 # <codecell>
 
-pf.data.loc[pf.data.index.year == 2017].head(3)
+print(pf.data.loc[pf.data.index.year == 2017].head(3))

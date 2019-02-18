@@ -83,12 +83,12 @@ pf = build_portfolio(
 # <codecell>
 
 # the portfolio information DataFrame
-pf.portfolio
+print(pf.portfolio)
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.data.head(3)
+print(pf.data.head(3))
 
 # <codecell>
 

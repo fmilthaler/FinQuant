@@ -38,11 +38,11 @@ df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 
 # <codecell>
 
-df_pf
+print(df_pf)
 
 # <codecell>
 
-df_data.head(3)
+print(df_data.head(3))
 
 # <markdowncell>
 
@@ -73,12 +73,12 @@ pf = build_portfolio(data=df_data)
 
 # the portfolio information DataFrame
 print(pf.portfolio.name)
-pf.portfolio
+print(pf.portfolio)
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.data.head(3)
+print(pf.data.head(3))
 
 # <markdowncell>
 
@@ -95,9 +95,9 @@ pf2 = build_portfolio(data=df_data, pf_allocation=df_pf)
 
 # the portfolio information DataFrame
 print(pf2.portfolio.name)
-pf2.portfolio
+print(pf2.portfolio)
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf2.data.head(3)
+print(pf2.data.head(3))

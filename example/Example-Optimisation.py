@@ -118,7 +118,7 @@ from finquant.efficient_frontier import EfficientFrontier
 # creating an instance of EfficientFrontier
 ef = EfficientFrontier(pf.comp_mean_returns(freq=1), pf.comp_cov())
 # optimisation for minimum volatility
-ef.minimum_volatility()
+print(ef.minimum_volatility())
 
 # <codecell>
 
