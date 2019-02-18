@@ -5,7 +5,6 @@
 
 # # Example:
 # ## Building a portfolio with `build_portfolio()` with data obtained from data files.
-#
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
 # <codecell>
@@ -51,7 +50,6 @@ pf = build_portfolio(data=df_data)
 
 # ## Expected Return, Volatility and Sharpe Ratio of Portfolio
 # The annualised expected return and volatility as well as the Sharpe Ratio are automatically computed. They are obtained as shown below.
-#
 # The expected return and volatility are based on 252 trading days by default. The Sharpe Ratio is computed with a risk free rate of 0.005 by default.
 
 # <codecell>
@@ -179,7 +177,6 @@ plt.show()
 
 # ## Band of moving averages and Buy/Sell signals
 # `FinQuant` also provides a method `finquant.moving_average.compute_ma` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
-#
 # To learn more about it and its input arguments, read its docstring and see the example below.
 
 # <codecell>
@@ -226,7 +223,6 @@ plt.show()
 #  - Expected return
 #  - Volatility
 #  - Sharpe Ratio
-#
 # are automatically recomputed.
 
 # <codecell>

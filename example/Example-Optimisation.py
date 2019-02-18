@@ -4,32 +4,23 @@
 # <markdowncell>
 
 # # Example: Portfolio optimisation
-#
 # This example shows how `FinQuant` can be used to optimise a portfolio.
-#
 # Two different approaches are implemented in `FinQuant`:
 #  1. Efficient Frontier
 #  2. Monte Carlo run
-#
 # With the *Efficient Frontier* approach, the portfolio can be optimised for
 #  - minimum volatility,
 #  - maximum Sharpe ratio
 #  - minimum volatility for a given expected return
 #  - maximum Sharpe ratio for a given target volatility
-#
 # by performing a numerical solve to minimise/maximise an objective function.
-#
 # Alternatively a *Monte Carlo* run of `n` trials can be performed to find the optimal portfolios for
 #  - minimum volatility,
 #  - maximum Sharpe ratio
-#
 # The approach branded as *Efficient Frontier* should be the preferred method for reasons of computational effort and accuracy. The latter approach is only included for the sake of completeness, and creation of beautiful plots.
-#
 # ## Visualisation
 # Not only does `FinQuant` allow for the optimisation of a portfolio with the above mentioned methods and objectives, `FinQuant` also allows for the computation and visualisation of an *Efficient Frontier* and *Monte Carlo* run.
-#
 # Let `pf` be an instance of `Portfolio`. The *Efficient Frontier* can be computed and visualised with `pf.ef_plot_efrontier()`. The optimal portfolios for *minimum volatility* and *maximum Sharpe ratio* can be visualised with `pf.ef_plot_optimal_portfolios()`. And if required, the individual stocks of the portfolio can be visualised with `pf.plot_stocks(show=False)`. An overlay of these three commands is shown below.
-#
 # Finally, the entire result of a *Monte Carlo* run can also be visualised automatically by `FinQuant`. An example is shown below.
 
 # <markdowncell>
@@ -88,7 +79,6 @@ pf.properties()
 #  - maximum Sharpe ratio
 #  - minimum volatility for a given target return
 #  - maximum Sharpe ratio for a given target volatility
-#
 # See below for an example for each optimisation.
 
 # <codecell>
@@ -144,7 +134,6 @@ ef.minimum_volatility()
 #  2. By manually creating an instance of `EfficientFrontier` and providing the data from the portfolio
 #   - with automatically setting limits of the *Efficient Frontier*
 #   - by providing a range of target expected return values
-#
 # As before, let `pf` and be an instance of `Portfolio`. The following code snippets compute and plot an *Efficient Frontier* of a portfolio, its optimised portfolios and individual stocks within the portfolio.
 #  - `pf.ef_plot_efrontier()`
 #  - `pf.ef_plot_optimal_portfolios()`

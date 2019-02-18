@@ -4,9 +4,7 @@
 # <markdowncell>
 
 # # Building a portfolio with data from disk
-#
 # ## Building a portfolio with `build_portfolio()` with data obtained from data files.
-#
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
 # <codecell>
@@ -50,7 +48,6 @@ df_data.head(3)
 
 # ## Building a portfolio with `build_portfolio()`
 # `build_portfolio()` is an interface that can be used in different ways. Two of which is shown below. For more information the docstring is shown below as well.
-#
 # In this example `build_portfolio()` is being passed `df_data`, which was read in from file above.
 
 # <codecell>

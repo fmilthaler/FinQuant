@@ -4,7 +4,6 @@
 # <markdowncell>
 
 # # Building a portfolio with data from `quandl`
-#
 # ## Building a portfolio with `build_portfolio()` by downloading relevant data through quandl with stock names, start and end date and column labels
 # This example only focuses on how to use `build_portfolio()` to get an instance of `Portfolio` by providing minimal information that is passed on to `quandl`. For a more exhaustive description of this package and example, please try `Example-Analysis` and `Example-Optimisation`.
 
@@ -52,9 +51,7 @@ pf_allocation = pd.DataFrame.from_dict(d, orient="index")
 
 # ### User friendly interface to quandl
 # As mentioned above, in this example `build_portfolio()` is used to build a portfolio by performing a query to `quandl`.
-#
 # To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
-#
 # For example, all three lists of tickers/names as shown below are valid input for
 # `FinQuant`'s function `build_portfolio(names=names)`:
 #  * `names = ['WIKI/GOOG', 'WIKI/AMZN']`
