@@ -1002,19 +1002,19 @@ def build_portfolio(**kwargs):
      :pf: Instance of ``Portfolio`` which contains all the information
          requested by the user.
 
-    :note: Only the following combinations of inputs are allowed:
+    .. note:: Only the following combinations of inputs are allowed:
 
      - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
-    The two different ways this function can be used are useful for:
+     The two different ways this function can be used are useful for:
 
      1. building a portfolio by pulling data from `quandl`,
      2. building a portfolio by providing stock data which was obtained otherwise,
         e.g. from data files.
 
-    If used in an unsupported way, the function (or subsequently called function) raises appropriate Exceptions
-    with useful information what went wrong.
+     If used in an unsupported way, the function (or subsequently called function) raises appropriate Exceptions
+     with useful information what went wrong.
     """
     docstring_msg = (
         "Please read through the docstring, "
