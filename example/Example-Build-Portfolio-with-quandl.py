@@ -22,7 +22,7 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # To play around yourself with different stocks, here is a list of companies and their tickers
-# d = {0: {'Name':'GOOG', 'Allocation':20}, # Google
+# d = {0: {'Name':'GOOG', 'Allocation':20},  # Google
 #      1: {'Name':'AMZN', 'Allocation':33},  # Amazon
 #      2: {'Name':'MSFT', 'Allocation':18},  # Microsoft
 #      3: {'Name':'AAPL', 'Allocation':10},  # Apple
@@ -35,7 +35,6 @@ from finquant.portfolio import build_portfolio
 #     10: {'Name':'YHOO', 'Allocation':7},   # Yahoo
 #     11: {'Name':'GS', 'Allocation':9},     # Goldman Sachs
 #     }
-# pf_allocation = pd.DataFrame.from_dict(d, orient='index')
 
 # <codecell>
 
