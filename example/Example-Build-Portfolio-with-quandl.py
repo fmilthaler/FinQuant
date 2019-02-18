@@ -10,23 +10,7 @@
 
 # <codecell>
 
-import matplotlib.pyplot as plt
 import pandas as pd
-
-# <codecell>
-
-# plotting style:
-plt.style.use("seaborn-darkgrid")
-# set line width
-plt.rcParams["lines.linewidth"] = 2
-# set font size for titles
-plt.rcParams["axes.titlesize"] = 14
-# set font size for labels on axes
-plt.rcParams["axes.labelsize"] = 12
-# set size of numbers on x-axis
-plt.rcParams["xtick.labelsize"] = 10
-# set size of numbers on y-axis
-plt.rcParams["ytick.labelsize"] = 10
 
 # <codecell>
 
