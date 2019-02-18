@@ -5,6 +5,8 @@ DATADIR=data
 EXAMPLEDIR=example
 EXAMPLEFILES=$(wildcard example/Example*.py)
 TESTDIR=tests
+DOCDIR=docs
+AUTODOCEXAMPLES=autodoc-examples.sh
 CLEANDIRS = $(PYDIR:%=clean-%) \
 $(EXAMPLEDIR:%=clean-%) \
 $(TESTDIR:%=clean-%)
@@ -12,6 +14,7 @@ $(TESTDIR:%=clean-%)
 SEARCH=
 
 .PHONY: test
+.PHONY: doc
 .PHONY: EXAMPLEFILES $(EXAMPLEFILES)
 .PHONY: cleandirs $(CLEANDIRS)
 .PHONY: clean
@@ -29,6 +32,11 @@ $(EXAMPLEFILES):
 pypi:
 	@$(PYTHON) setup.py sdist bdist_wheel
 	@$(PYTHON) -m twine upload dist/*
+
+doc:
+	@$(MAKE) -C $(DOCDIR) clean
+	@cd $(DOCDIR); ./$(AUTODOCEXAMPLES)
+	@$(MAKE) -C $(DOCDIR) html
 
 clean: $(CLEANDIRS)
 $(CLEANDIRS):
