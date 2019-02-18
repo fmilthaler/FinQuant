@@ -29,24 +29,24 @@ Analysis of a portfolio
 =======================
 ``./example/Example-Analysis.py``: This example shows how to use an instance of ``finquant.portfolio.Portfolio``, get the portfolio's quantities, such as
 
- - Expected Returns,
- - Volatility,
- - Sharpe Ratio.
+- Expected Returns,
+- Volatility,
+- Sharpe Ratio.
 
 It also shows how to extract individual stocks from the given portfolio. Moreover it shows how to compute and visualise:
 
- - the different Returns provided by the module ``finquant.returns``,
- - *Moving Averages*, a band of *Moving Averages*, and a *Bollinger Band*.
+- the different Returns provided by the module ``finquant.returns``,
+- *Moving Averages*, a band of *Moving Averages*, and a *Bollinger Band*.
 
 
 Optimisation of a portfolio
 ===========================
 ``./example/Example-Optimisation.py``: This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of ``finquant.efficient_frontier.EfficientFrontier`` for numerically optimising the portfolio, for the
 
- - Minimum Volatility
- - Maximum Sharpe Ratio
- - Minimum Volatility for a given target Return
- - Maximum Sharpe Ratio for a given target Volatility.
+- Minimum Volatility
+- Maximum Sharpe Ratio
+- Minimum Volatility for a given target Return
+- Maximum Sharpe Ratio for a given target Volatility.
 
 Furthermore, it is also shown how the entire *Efficient Frontier* and the optimal portfolios can be computed and visualised. If needed, it also gives an example of plotting the individual stocks of the given portfolio within the computed *Efficient Frontier*.
 
