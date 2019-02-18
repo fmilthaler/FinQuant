@@ -20,7 +20,7 @@ all: clean
 
 test:
 	@echo "Running tests"
-	@$(MAKE) -C tests
+	@$(MAKE) -C $(TESTDIR)
 
 copyexamples: $(EXAMPLEFILES)
 $(EXAMPLEFILES):
