@@ -1,33 +1,43 @@
 .. _examples:
 
+.. _GitHub: https://github.com/fmilthaler/FinQuant/
+
 ########
 Examples
 ########
 
 
 For more information about the project and details on how to use it, please
-look at the examples provided in ``./example``:
- - ``./example/Example-Build-Portfolio-with-quandl.py``
- - ``./example/Example-Build-Portfolio-from-file.py``
- - ``./example/Example-Analysis.py``
- - ``./example/Example-Optimisation.py``
+look at the examples discussed below.
 
 .. note:: In the below examples, ``pf`` refers to an instance of ``finquant.portfolio.Portfolio``, the object that holds all stock prices and computes its most common quantities automatically. To make *FinQuant* a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in ``./finquant/`` and are discussed throughout this documentation.
 
 
 Building a portfolio with *quandl*
 ==================================
-``./example/Example-Build-Portfolio-with-quandl.py``: Shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package *quandl*.
+This example shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package *quandl*.
+
+.. note:: This example refers to ``example/Example-Build-Portfolio-with-quandl.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Build-Portfolio-with-quandl.py  <../example/Example-Build-Portfolio-with-quandl.py>`
+
+.. literalinclude:: ./auto-Example-Build-Portfolio-with-quandl.py
+    :linenos:
+    :language: python
 
 
 Building a portfolio with preset data
 =====================================
-``./example/Example-Build-Portfolio-from-file.py``: Shows how to use *FinQuant* to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
+This example shows how to use *FinQuant* to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
+
+.. note:: This example refers to ``example/Example-Build-Portfolio-from-file.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Build-Portfolio-from-file.py  <../example/Example-Build-Portfolio-from-file.py>`
+
+.. literalinclude:: ./auto-Example-Build-Portfolio-from-file.py
+    :linenos:
+    :language: python
 
 
 Analysis of a portfolio
 =======================
-``./example/Example-Analysis.py``: This example shows how to use an instance of ``finquant.portfolio.Portfolio``, get the portfolio's quantities, such as
+This example shows how to use an instance of ``finquant.portfolio.Portfolio``, get the portfolio's quantities, such as
 
 - Expected Returns,
 - Volatility,
@@ -38,10 +48,16 @@ It also shows how to extract individual stocks from the given portfolio. Moreove
 - the different Returns provided by the module ``finquant.returns``,
 - *Moving Averages*, a band of *Moving Averages*, and a *Bollinger Band*.
 
+.. note:: This example refers to ``example/Example-Analysis.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Analysis.py  <../example/Example-Analysis.py>`
+
+.. literalinclude:: ./auto-Example-Analysis.py
+    :linenos:
+    :language: python
+
 
 Optimisation of a portfolio
 ===========================
-``./example/Example-Optimisation.py``: This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of ``finquant.efficient_frontier.EfficientFrontier`` for numerically optimising the portfolio, for the
+This example focusses on the optimisation of a portfolio. To achieve this, the example shows the usage of ``finquant.efficient_frontier.EfficientFrontier`` for numerically optimising the portfolio, for the
 
 - Minimum Volatility
 - Maximum Sharpe Ratio
@@ -54,3 +70,8 @@ Also, the optimisation of a portfolio and its visualisation based on a *Monte Ca
 
 Finally, *FinQuant*'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
 
+.. note:: This example refers to ``example/Example-Optimisation.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Optimisation.py  <../example/Example-Optimisation.py>`
+
+.. literalinclude:: ./auto-Example-Optimisation.py
+    :linenos:
+    :language: python
