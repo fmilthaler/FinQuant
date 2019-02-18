@@ -14,10 +14,11 @@ from finquant.quants import annualised_portfolio_quantities
 class EfficientFrontier(object):
     """An object designed to perform optimisations based on minimising a cost/objective function.
     It can find parameters for portfolios with
-     - minimum volatility
-     - maximum Sharpe ratio
-     - minimum volatility for a given target return
-     - maximum Sharpe ratio for a given target volatility
+
+    - minimum volatility
+    - maximum Sharpe ratio
+    - minimum volatility for a given target return
+    - maximum Sharpe ratio for a given target volatility
 
     It also provides functions to compute the Efficient Frontier between a range
     of Returns, plot the Efficient Frontier, plot the optimal portfolios
@@ -37,20 +38,22 @@ class EfficientFrontier(object):
              value corresponds to trading days in a year
          :method: ``string`` (default= ``"SLSQP"``), type of solver method to use,
              must be one of:
-              - 'Nelder-Mead'
-              - 'Powell'
-              - 'CG'
-              - 'BFGS'
-              - 'Newton-CG'
-              - 'L-BFGS-B'
-              - 'TNC'
-              - 'COBYLA'
-              - 'SLSQP'
-              - 'trust-constr'
-              - 'dogleg'
-              - 'trust-ncg'
-              - 'trust-exact'
-              - 'trust-krylov'
+
+             - 'Nelder-Mead'
+             - 'Powell'
+             - 'CG'
+             - 'BFGS'
+             - 'Newton-CG'
+             - 'L-BFGS-B'
+             - 'TNC'
+             - 'COBYLA'
+             - 'SLSQP'
+             - 'trust-constr'
+             - 'dogleg'
+             - 'trust-ncg'
+             - 'trust-exact'
+             - 'trust-krylov'
+
              all of which are officially supported by scipy.optimize.minimize
         """
         if not isinstance(mean_returns, pd.Series):

@@ -1,48 +1,49 @@
 """This module is the **core** of `FinQuant`. It provides
 
- - a public class ``Stock`` that holds and calculates quantities of a single stock,
- - a public class ``Portfolio`` that holds and calculates quantities of a financial
-   portfolio, which is a collection of Stock instances.
- - a public function ``build_portfolio()`` that automatically constructs and returns
-   an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
-   data is either retrieved through `quandl` or provided by the user as a
-   ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
-   For an example on how to use it, please read the corresponding docstring,
-   or have a look at the examples in the sub-directory ``example``.
+- a public class ``Stock`` that holds and calculates quantities of a single stock,
+- a public class ``Portfolio`` that holds and calculates quantities of a financial
+  portfolio, which is a collection of Stock instances.
+- a public function ``build_portfolio()`` that automatically constructs and returns
+  an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
+  data is either retrieved through `quandl` or provided by the user as a
+  ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
+  For an example on how to use it, please read the corresponding docstring,
+  or have a look at the examples in the sub-directory ``example``.
 
 The classes ``Stock`` and ``Portfolio`` are designed to easily manage your
 financial portfolio, and make the most common quantitative calculations, such as:
- - cumulative returns of the portfolio's stocks
- - daily returns of the portfolio's stocks (daily percentage change),
- - daily log returns of the portfolio's stocks,
- - Expected (annualised) Return,
- - Volatility,
- - Sharpe Ratio,
- - skewness of the portfolio's stocks,
- - Kurtosis of the portfolio's stocks,
- - the portfolio's covariance matrix.
+
+- cumulative returns of the portfolio's stocks
+- daily returns of the portfolio's stocks (daily percentage change),
+- daily log returns of the portfolio's stocks,
+- Expected (annualised) Return,
+- Volatility,
+- Sharpe Ratio,
+- skewness of the portfolio's stocks,
+- Kurtosis of the portfolio's stocks,
+- the portfolio's covariance matrix.
 
 Furthermore, the constructed portfolio can be optimised for
 
- - minimum Volatility,
- - maximum Sharpe Ratio
- - minimum Volatility for a given Expected Return
- - maximum Sharpe Ratio for a given target Volatility
+- minimum Volatility,
+- maximum Sharpe Ratio
+- minimum Volatility for a given Expected Return
+- maximum Sharpe Ratio for a given target Volatility
 by either performing a numerical computation to solve a minimisation problem, or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
 
 Finally, functions are implemented to generated the following plots:
 
- - Monte Carlo run to find optimal portfolio(s)
- - Efficient Frontier
- - Portfolio with the minimum Volatility based a numerical optimisation
- - Portfolio with the maximum Sharpe Ratio based on a numerical optimisation
- - Portfolio with the minimum Volatility for a given Expected Return based
-   on a numerical optimisation
- - Portfolio with the maximum Sharpe Ratio for a given target Volatility
-   based on a numerical optimisation
- - Individual stocks of the portfolio (Expected Return over Volatility)
+- Monte Carlo run to find optimal portfolio(s)
+- Efficient Frontier
+- Portfolio with the minimum Volatility based a numerical optimisation
+- Portfolio with the maximum Sharpe Ratio based on a numerical optimisation
+- Portfolio with the minimum Volatility for a given Expected Return based
+  on a numerical optimisation
+- Portfolio with the maximum Sharpe Ratio for a given target Volatility
+  based on a numerical optimisation
+- Individual stocks of the portfolio (Expected Return over Volatility)
 """
 
 
@@ -61,15 +62,17 @@ class Stock(object):
     """Object that contains information about a stock/fund.
     To initialise the object, it requires a name, information about
     the stock/fund given as one of the following data structures:
-     - ``pandas.Series``
-     - ``pandas.DataFrame``
+
+    - ``pandas.Series``
+    - ``pandas.DataFrame``
     The investment information can contain as little information as its name,
     and the amount invested in it, the column labels must be ``Name`` and ``Allocation``
     respectively, but it can also contain more information, such as
-     - Year
-     - Strategy
-     - CCY
-     - etc.
+
+    - Year
+    - Strategy
+    - CCY
+    - etc.
     It also requires either data, e.g. daily closing prices as a
     ``pandas.DataFrame`` or ``pandas.Series``.
     ``data`` must be given as a ``pandas.DataFrame``, and at least one data column
@@ -162,8 +165,7 @@ class Portfolio(object):
     To initialise the object, it does not require any input.
     To fill the portfolio with investment information, the
     function ``add_stock(stock)`` should be used, in which ``stock`` is
-    an object of ``Stock``, a ``pandas.DataFrame`` of the portfolio investment
-    information.
+    an object of ``Stock``.
     """
 
     def __init__(self):
@@ -232,19 +234,19 @@ class Portfolio(object):
 
     def add_stock(self, stock):
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
-        is called, the following instance variables get updated:
+        is called, the following instance variables are updated:
 
-         - ``portfolio``: Adds a column with information from ``stock``
-         - ``stocks``: Adds an entry for ``stock``
-         - ``data``: Adds a column of stock prices from ``stock``
+        - ``portfolio``: ``pandas.DataFrame``, adds a column with information from ``stock``
+        - ``stocks``: ``dictionary``, adds an entry for ``stock``
+        - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
         Also, the following instance variables are (re-)computed:
 
-         - ``expected_return``: Expected Return of the portfolio
-         - ``volatility``: Volatility of the portfolio
-         - ``sharpe``: Sharpe Ratio of the portfolio
-         - ``skew``: Skewness of the portfolio's stocks
-         - ``kurtosis``: Kurtosis of the portfolio's stocks
+        - ``expected_return``: Expected Return of the portfolio
+        - ``volatility``: Volatility of the portfolio
+        - ``sharpe``: Sharpe Ratio of the portfolio
+        - ``skew``: Skewness of the portfolio's stocks
+        - ``kurtosis``: Kurtosis of the portfolio's stocks
 
         :Input:
          :stock: an object of ``Stock``
@@ -582,8 +584,8 @@ class Portfolio(object):
 
         Plots markers of the optimised portfolios for
 
-         - minimum Volatility, and
-         - maximum Sharpe Ratio.
+        - minimum Volatility, and
+        - maximum Sharpe Ratio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -635,8 +637,9 @@ class Portfolio(object):
     def mc_plot_results(self):
         """Plots the results of the Monte Carlo run, with all of the randomly
         generated weights/portfolios, as well as markers for the portfolios with the
-         - minimum Volatility, and
-         - maximum Sharpe Ratio.
+
+        - minimum Volatility, and
+        - maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
         mc = self._get_mc()
@@ -678,11 +681,12 @@ class Portfolio(object):
     def properties(self):
         """Nicely prints out the properties of the portfolio:
 
-         - Expected Return,
-         - Volatility,
-         - Sharpe Ratio,
-         - skewness,
-         - Kurtosis
+        - Expected Return,
+        - Volatility,
+        - Sharpe Ratio,
+        - skewness,
+        - Kurtosis
+
         as well as the allocation of the stocks across the portfolio.
         """
         # nicely printing out information and quantities of the portfolio
