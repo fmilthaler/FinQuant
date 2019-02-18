@@ -29,6 +29,7 @@ Furthermore, the constructed portfolio can be optimised for
 - maximum Sharpe Ratio
 - minimum Volatility for a given Expected Return
 - maximum Sharpe Ratio for a given target Volatility
+
 by either performing a numerical computation to solve a minimisation problem, or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
@@ -65,6 +66,7 @@ class Stock(object):
 
     - ``pandas.Series``
     - ``pandas.DataFrame``
+
     The investment information can contain as little information as its name,
     and the amount invested in it, the column labels must be ``Name`` and ``Allocation``
     respectively, but it can also contain more information, such as
@@ -73,6 +75,7 @@ class Stock(object):
     - Strategy
     - CCY
     - etc.
+
     It also requires either data, e.g. daily closing prices as a
     ``pandas.DataFrame`` or ``pandas.Series``.
     ``data`` must be given as a ``pandas.DataFrame``, and at least one data column
