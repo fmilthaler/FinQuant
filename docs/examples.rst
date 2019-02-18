@@ -1,6 +1,6 @@
-.. _examples:
-
 .. _GitHub: https://github.com/fmilthaler/FinQuant/
+
+.. _examples:
 
 ########
 Examples
