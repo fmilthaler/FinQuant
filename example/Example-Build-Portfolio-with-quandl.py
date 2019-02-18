@@ -11,13 +11,7 @@
 # <codecell>
 
 import pandas as pd
-
-# <codecell>
-
 import datetime
-
-# <codecell>
-
 # importing some custom functions/objects
 from finquant.portfolio import build_portfolio
 

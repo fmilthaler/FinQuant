@@ -43,7 +43,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import datetime
-
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
 
