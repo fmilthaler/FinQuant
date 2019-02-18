@@ -89,7 +89,7 @@ print("pf.freq = {}".format(pf.freq))
 
 # <codecell>
 
-pf.ef_minimum_volatility()
+pf.ef_minimum_volatility(verbose=True)
 
 # <codecell>
 
@@ -104,7 +104,7 @@ pf.ef_efficient_return(0.26, verbose=True)
 # <codecell>
 
 # maximum Sharpe ratio for a given target volatility of 0.22
-pf.ef_efficient_volatility(0.22)
+pf.ef_efficient_volatility(0.22, verbose=True)
 
 # <markdowncell>
 
