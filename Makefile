@@ -35,7 +35,6 @@ pypi:
 
 doc:
 	@$(MAKE) -C $(DOCDIR) clean
-	@cd $(DOCDIR); ./$(AUTODOCEXAMPLES)
 	@$(MAKE) -C $(DOCDIR) html
 
 clean: $(CLEANDIRS)
