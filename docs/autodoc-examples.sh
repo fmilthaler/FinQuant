@@ -14,7 +14,7 @@ do
     sed -i '/<markdowncell>/{ N; d; }' $i
     sed -i '/<codecell>/{ N; d; }' $i
     # also removing plotting styles to keep code snippet shortish:
-    sed -i '/plotting style:/{ N; d; }' $i
+    sed -i '/plotting style:/d' $i
     sed -i '/plt.style.use/{ N; d; }' $i
     sed -i '/plt.rcParams/{ N; d; }' $i
 done
