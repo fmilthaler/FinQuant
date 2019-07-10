@@ -12,7 +12,7 @@
   <a href="http://finquant.readthedocs.io/">
     <img src="https://img.shields.io/readthedocs/finquant.svg?style=popout" alt="docs">
   </a>
-  <a href="https://opensource.org/licenses/MIT">
+  <a href="https://github.com/fmilthaler/FinQuant/blob/master/LICENSE.txt">
     <img src="https://img.shields.io/github/license/fmilthaler/FinQuant.svg?style=popout" alt="license">
   </a>
 </p>
