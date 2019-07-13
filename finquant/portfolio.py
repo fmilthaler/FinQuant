@@ -760,6 +760,30 @@ def _quandl_request(names, start_date=None, end_date=None):
     return quandl.get(reqnames, start_date=start_date, end_date=end_date)
 
 
+def _yfinance_request(names, start_date=None, end_date=None):
+    """This function performs a simple request from Yahoo Finance
+    (using `yfinance`) and returns a ``pandas.DataFrame``
+    containing stock data.
+
+    :Input:
+     :names: List of strings of stock names to be requested
+     :start_date (optional): String/datetime of the start date of
+         relevant stock data.
+     :end_date (optional): String/datetime of the end date of
+         relevant stock data.
+    """
+    try:
+        import yfinance as yf
+    except ImportError:
+        print(
+            "The following package is required:\n - `yfinance`\n"
+            + "Please make sure that it is installed."
+        )
+    # unlike quandl, yfinance does not have a prefix in front of the ticker
+    # thus we do not need to correct them
+    return yf.download(names, start=start_date, end=end_date)
+
+
 def _get_quandl_data_column_label(stock_name, data_label):
     """Given stock name and label of a data column, this function returns
     the string "<stock_name> - <data_label>" as it can be found in a
@@ -778,6 +802,7 @@ def _get_stocks_data_columns(data, names, cols):
      :names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      :cols: A list of strings of column labels of data to be extracted.
+         Currently only one column per stock is supported.
 
     :Output:
      :data: A ``pandas.DataFrame`` which contains only the data columns of
@@ -787,6 +812,8 @@ def _get_stocks_data_columns(data, names, cols):
     reqnames = _correct_quandl_request_stock_name(names)
     # get current column labels and replacement labels
     reqcolnames = []
+    # if dataframe is of type multiindex, also get first level colname
+    firstlevel_colnames = []
     for i in range(len(names)):
         for col in cols:
             # differ between dataframe directly from quandl and
@@ -801,13 +828,34 @@ def _get_stocks_data_columns(data, names, cols):
             # 3. if "<stock_name> - <col>" in column labels
             elif _get_quandl_data_column_label(names[i], col) in data.columns:
                 colname = _get_quandl_data_column_label(names[i], col)
+            # if column labels is of type multiindex, and the "Adj Close" is in
+            # first level labels, we assume the dataframe comes from yfinance:
+            elif isinstance(data.columns, pd.core.index.MultiIndex):
+                # alter col for yfinance, as it returns column labels without '.'
+                col = col.replace('.','')
+                if col in data.columns:
+                    if not col in firstlevel_colnames:
+                        firstlevel_colnames.append(col)
+                    if names[i] in data[col].columns:
+                        colname = names[i]
+                    else: # error, it must find names[i] on second level of column header
+                        raise ValueError("Could not find column labels in second level of MultiIndex pd.DataFrame")
             # else, error
             else:
                 raise ValueError("Could not find column labels in given dataframe.")
             # append correct name to list of correct names
             reqcolnames.append(colname)
 
-    data = data.loc[:, reqcolnames]
+    # if data comes from yfinance, it is a multiindex dataframe:
+    if isinstance(data.columns, pd.core.index.MultiIndex):
+        if not len(firstlevel_colnames) == 1:
+            raise ValueError("Sorry, for now only one value/quantity per Stock is supported.")
+        data = data[firstlevel_colnames[0]].loc[:, reqcolnames]
+    else:
+        # if it comes from quandl, it is not of type multiindex
+        data = data.loc[:, reqcolnames]
+
+    # special column label treatment for dataframes from quandl:
     # now rename the columns (removing "WIKI/" from column labels):
     newcolnames = {}
     for i in reqcolnames:
@@ -825,8 +873,8 @@ def _get_stocks_data_columns(data, names, cols):
     return data
 
 
-def _build_portfolio_from_quandl(
-    names, pf_allocation=None, start_date=None, end_date=None
+def _build_portfolio_from_api(
+        names, pf_allocation=None, start_date=None, end_date=None, data_api="yfinance"
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -840,6 +888,10 @@ def _build_portfolio_from_quandl(
          be requested through quandl (default: None)
      :end_date (optional): String/datetime end date of stock data to be
          requested through quandl (default: None)
+     :data_api: (optional) A ``string`` (default: ``yfinance``) which determines how to
+         obtain stock prices, if data is not provided by the user. Valid values:
+         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
+         - ``quandl`` (Python package/API to `Quandl`)
 
     :Output:
      :pf: Instance of Portfolio which contains all the information
@@ -847,8 +899,11 @@ def _build_portfolio_from_quandl(
     """
     # create an empty portfolio
     pf = Portfolio()
-    # request data from quandl:
-    data = _quandl_request(names, start_date, end_date)
+    # request data from service:
+    if (data_api == "yfinance"):
+        data = _yfinance_request(names, start_date, end_date)
+    elif (data_api == "quandl"):
+        data = _quandl_request(names, start_date, end_date)
     # check pf_allocation:
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(names=names)
@@ -951,7 +1006,8 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
             "Error: None of the provided stock names were"
             + "found in the provided dataframe."
         )
-    # extract only 'Adj. Close' column from DataFrame:
+    # extract only "Adjusted Close" price ("Adj. Close" in quandl, "Adj Close" in yfinance)
+    # column from DataFrame:
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
     # building portfolio:
     pf = Portfolio()
@@ -1000,6 +1056,10 @@ def build_portfolio(**kwargs):
          requested through `quandl` (default: ``None``).
      :data: (optional) A ``pandas.DataFrame`` which contains quantities of
          the stocks listed in ``pf_allocation``.
+     :data_api: (optional) A ``string`` (default: ``yfinance``) which determines how to
+         obtain stock prices, if data is not provided by the user. Valid values:
+         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
+         - ``quandl`` (Python package/API to `Quandl`)
 
     :Output:
      :pf: Instance of ``Portfolio`` which contains all the information
@@ -1007,12 +1067,12 @@ def build_portfolio(**kwargs):
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:
 
-     1. building a portfolio by pulling data from `quandl`,
+     1. building a portfolio by pulling data from `yfinance`/`quandl`,
      2. building a portfolio by providing stock data which was obtained otherwise,
         e.g. from data files.
 
@@ -1037,7 +1097,7 @@ def build_portfolio(**kwargs):
     )
 
     # list of all valid optional input arguments
-    all_input_args = ["pf_allocation", "names", "start_date", "end_date", "data"]
+    all_input_args = ["pf_allocation", "names", "start_date", "end_date", "data", "data_api"]
 
     # check if no input argument was passed
     if kwargs == {}:
@@ -1054,9 +1114,9 @@ def build_portfolio(**kwargs):
     # create an empty portfolio
     pf = Portfolio()
 
-    # 1. pf_allocation, names, start_date, end_date
+    # 1. pf_allocation, names, start_date, end_date, data_api
     allowed_mandatory_args = ["names"]
-    allowed_input_args = ["names", "pf_allocation", "start_date", "end_date"]
+    allowed_input_args = ["names", "pf_allocation", "start_date", "end_date", "data_api"]
     complement_input_args = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
@@ -1065,7 +1125,7 @@ def build_portfolio(**kwargs):
                 input_comb_error.format(complement_input_args, allowed_mandatory_args)
             )
         # get portfolio:
-        pf = _build_portfolio_from_quandl(**kwargs)
+        pf = _build_portfolio_from_api(**kwargs)
 
     # 2. pf_allocation, data
     allowed_mandatory_args = ["data"]
