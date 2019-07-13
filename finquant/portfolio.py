@@ -898,7 +898,7 @@ def _get_stocks_data_columns(data, names, cols):
 
 
 def _build_portfolio_from_api(
-        names, pf_allocation=None, start_date=None, end_date=None, data_api="yfinance"
+        names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -912,10 +912,10 @@ def _build_portfolio_from_api(
          be requested through `quandl` (default: None)
      :end_date (optional): String/datetime end date of stock data to be
          requested through `quandl` (default: None)
-     :data_api: (optional) A ``string`` (default: ``yfinance``) which determines how to
+     :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
          obtain stock prices, if data is not provided by the user. Valid values:
-         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
          - ``quandl`` (Python package/API to `Quandl`)
+         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
     :Output:
      :pf: Instance of Portfolio which contains all the information
@@ -1080,10 +1080,10 @@ def build_portfolio(**kwargs):
          requested through `quandl` (default: ``None``).
      :data: (optional) A ``pandas.DataFrame`` which contains quantities of
          the stocks listed in ``pf_allocation``.
-     :data_api: (optional) A ``string`` (default: ``yfinance``) which determines how to
+     :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
          obtain stock prices, if data is not provided by the user. Valid values:
-         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
          - ``quandl`` (Python package/API to `Quandl`)
+         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
     :Output:
      :pf: Instance of ``Portfolio`` which contains all the information
