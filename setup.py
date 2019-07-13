@@ -35,7 +35,7 @@ setuptools.setup(
     'numerical', 'optimisation', 'monte carlo',
     'efficient frontier', 'quantitative', 'quant'],
     python_requires='>=3.5',
-    install_requires=['quandl', 'numpy', 'pandas', 'scipy',
+    install_requires=['quandl', 'yfinance', 'numpy', 'pandas', 'scipy',
         'matplotlib', 'pytest'],
     project_urls={'Documentation': 'https://finquant.readthedocs.io'}
 )
