@@ -719,7 +719,7 @@ class Portfolio(object):
 
 def _correct_quandl_request_stock_name(names):
     """This function makes sure that all strings in the given list of
-    stock names are leading with "WIKI/" as required by quandl to
+    stock names are leading with "WIKI/" as required by `quandl` to
     request data.
     Example: If an element of names is "GOOG" (which stands for
     Google), this function modifies the element of names to "WIKI/GOOG".
@@ -737,7 +737,7 @@ def _correct_quandl_request_stock_name(names):
 
 
 def _quandl_request(names, start_date=None, end_date=None):
-    """This function performs a simple request from quandl and returns
+    """This function performs a simple request from `quandl` and returns
     a ``pandas.DataFrame`` containing stock data.
 
     :Input:
@@ -751,7 +751,7 @@ def _quandl_request(names, start_date=None, end_date=None):
         import quandl
     except ImportError:
         print(
-            "The following package is required:\n - quandl\n"
+            "The following package is required:\n - `quandl`\n"
             + "Please make sure that it is installed."
         )
     # get correct stock names that quandl.get can request,
@@ -787,7 +787,7 @@ def _yfinance_request(names, start_date=None, end_date=None):
 def _get_quandl_data_column_label(stock_name, data_label):
     """Given stock name and label of a data column, this function returns
     the string "<stock_name> - <data_label>" as it can be found in a
-    ``pandas.DataFrame`` returned by quandl.
+    ``pandas.DataFrame`` returned by `quandl`.
     """
     return stock_name + " - " + data_label
 
@@ -885,9 +885,9 @@ def _build_portfolio_from_api(
      :pf_allocation (optional): ``pandas.DataFrame`` with the required data column
          labels ``Name`` and ``Allocation`` of the stocks.
      :start_date (optional): String/datetime start date of stock data to
-         be requested through quandl (default: None)
+         be requested through `quandl` (default: None)
      :end_date (optional): String/datetime end date of stock data to be
-         requested through quandl (default: None)
+         requested through `quandl` (default: None)
      :data_api: (optional) A ``string`` (default: ``yfinance``) which determines how to
          obtain stock prices, if data is not provided by the user. Valid values:
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
