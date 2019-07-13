@@ -779,6 +779,22 @@ def _yfinance_request(names, start_date=None, end_date=None):
             "The following package is required:\n - `yfinance`\n"
             + "Please make sure that it is installed."
         )
+    # yfinance does not exit safely if start/end date were not given correctly:
+    # this step is not required for quandl as it handles this exception properly
+    try:
+        import datetime
+        if isinstance(start_date, str):
+            start_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+        if isinstance(end_date, str):
+            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    except ImportError:
+        print(
+            "The following package is required:\n - `datetime`\n"
+            + "Please make sure that it is installed."
+        )
+    except Exception:
+        raise Exception("Please provide valid values for <start_date> and <end_date>")
+
     # unlike quandl, yfinance does not have a prefix in front of the ticker
     # thus we do not need to correct them
     return yf.download(names, start=start_date, end=end_date)
