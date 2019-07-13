@@ -757,7 +757,11 @@ def _quandl_request(names, start_date=None, end_date=None):
     # get correct stock names that quandl.get can request,
     # e.g. "WIKI/GOOG" for Google
     reqnames = _correct_quandl_request_stock_name(names)
-    return quandl.get(reqnames, start_date=start_date, end_date=end_date)
+    try:
+        resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
+    except Exception:
+        raise Exception("Error during download of stock data from Quandl.")
+    return resp
 
 
 def _yfinance_request(names, start_date=None, end_date=None):
@@ -797,7 +801,11 @@ def _yfinance_request(names, start_date=None, end_date=None):
 
     # unlike quandl, yfinance does not have a prefix in front of the ticker
     # thus we do not need to correct them
-    return yf.download(names, start=start_date, end=end_date)
+    try:
+        resp = yf.download(names, start=start_date, end=end_date)
+    except Exception:
+        raise Exception("Error during download of stock data from Yahoo Finance with `yfinance`.")
+    return resp
 
 
 def _get_quandl_data_column_label(stock_name, data_label):
