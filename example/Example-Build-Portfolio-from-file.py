@@ -4,39 +4,16 @@
 # <markdowncell>
 
 # # Building a portfolio with data from disk
-# 
 # ## Building a portfolio with `build_portfolio()` with data obtained from data files.
-# 
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
 # <codecell>
 
 import pathlib
-import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
-
-# <codecell>
-
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
-
-# <codecell>
-
-# plotting style:
-plt.style.use('seaborn-darkgrid')
-#set line width
-plt.rcParams['lines.linewidth'] = 2
-#set font size for titles
-plt.rcParams['axes.titlesize'] = 14
-#set font size for labels on axes
-plt.rcParams['axes.labelsize'] = 12
-#set size of numbers on x-axis
-plt.rcParams['xtick.labelsize'] = 10
-#set size of numbers on y-axis
-plt.rcParams['ytick.labelsize'] = 10
-#set figure size
-plt.rcParams['figure.figsize'] = (10, 6)
 
 # <markdowncell>
 
@@ -50,10 +27,10 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # pf.getPortfolio().to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
 # pf.getPfStockData().to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
 # read data from files:
-df_pf_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-portfolio.csv'
-df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
+df_pf_path = pathlib.Path.cwd() / ".." / "data" / "ex1-portfolio.csv"
+df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
 df_pf = pd.read_csv(df_pf_path)
-df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
+df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 
 # <markdowncell>
 
@@ -61,17 +38,16 @@ df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
 
 # <codecell>
 
-df_pf
+print(df_pf)
 
 # <codecell>
 
-df_data.head(3)
+print(df_data.head(3))
 
 # <markdowncell>
 
 # ## Building a portfolio with `build_portfolio()`
 # `build_portfolio()` is an interface that can be used in different ways. Two of which is shown below. For more information the docstring is shown below as well.
-# 
 # In this example `build_portfolio()` is being passed `df_data`, which was read in from file above.
 
 # <codecell>
@@ -97,12 +73,12 @@ pf = build_portfolio(data=df_data)
 
 # the portfolio information DataFrame
 print(pf.portfolio.name)
-pf.portfolio
+print(pf.portfolio)
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf.data.head(3)
+print(pf.data.head(3))
 
 # <markdowncell>
 
@@ -119,9 +95,9 @@ pf2 = build_portfolio(data=df_data, pf_allocation=df_pf)
 
 # the portfolio information DataFrame
 print(pf2.portfolio.name)
-pf2.portfolio
+print(pf2.portfolio)
 
 # <codecell>
 
 # the portfolio stock data, prices DataFrame
-pf2.data.head(3)
+print(pf2.data.head(3))

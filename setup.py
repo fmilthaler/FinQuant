@@ -1,18 +1,22 @@
 import setuptools
 
+# get version/release from file
+with open("version", "r") as f:
+    ver = dict(x.rstrip().split('=') for x in f)
+
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name='FinQuant',
-    version='0.1.1',
+    version=ver['version'],
     author='Frank Milthaler',
     author_email='f.milthaler@gmail.com',
     description='A program for financial portfolio management, analysis and optimisation',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/fmilthaler/FinQuant',
-    download_url = 'https://github.com/fmilthaler/FinQuant/archive/v0.1.1.tar.gz',
+    download_url = 'https://github.com/fmilthaler/FinQuant/archive/v{}.tar.gz'.format(ver['release']),
     license='MIT',
     packages=setuptools.find_packages(),
     classifiers=[
@@ -31,7 +35,7 @@ setuptools.setup(
     'numerical', 'optimisation', 'monte carlo',
     'efficient frontier', 'quantitative', 'quant'],
     python_requires='>=3.5',
-    install_requires=['quandl', 'numpy', 'pandas', 'scipy',
+    install_requires=['quandl', 'yfinance', 'numpy', 'pandas', 'scipy',
         'matplotlib', 'pytest'],
     project_urls={'Documentation': 'https://finquant.readthedocs.io'}
 )

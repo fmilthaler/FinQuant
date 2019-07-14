@@ -1,48 +1,50 @@
 """This module is the **core** of `FinQuant`. It provides
 
- - a public class ``Stock`` that holds and calculates quantities of a single stock,
- - a public class ``Portfolio`` that holds and calculates quantities of a financial
-   portfolio, which is a collection of Stock instances.
- - a public function ``build_portfolio()`` that automatically constructs and returns
-   an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
-   data is either retrieved through `quandl` or provided by the user as a
-   ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
-   For an example on how to use it, please read the corresponding docstring,
-   or have a look at the examples in the sub-directory ``example``.
+- a public class ``Stock`` that holds and calculates quantities of a single stock,
+- a public class ``Portfolio`` that holds and calculates quantities of a financial
+  portfolio, which is a collection of Stock instances.
+- a public function ``build_portfolio()`` that automatically constructs and returns
+  an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
+  data is either retrieved through `quandl`/`yfinance` or provided by the user as a
+  ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
+  For an example on how to use it, please read the corresponding docstring,
+  or have a look at the examples in the sub-directory ``example``.
 
 The classes ``Stock`` and ``Portfolio`` are designed to easily manage your
 financial portfolio, and make the most common quantitative calculations, such as:
- - cumulative returns of the portfolio's stocks
- - daily returns of the portfolio's stocks (daily percentage change),
- - daily log returns of the portfolio's stocks,
- - Expected (annualised) Return,
- - Volatility,
- - Sharpe Ratio,
- - skewness of the portfolio's stocks,
- - Kurtosis of the portfolio's stocks,
- - the portfolio's covariance matrix.
+
+- cumulative returns of the portfolio's stocks
+- daily returns of the portfolio's stocks (daily percentage change),
+- daily log returns of the portfolio's stocks,
+- Expected (annualised) Return,
+- Volatility,
+- Sharpe Ratio,
+- skewness of the portfolio's stocks,
+- Kurtosis of the portfolio's stocks,
+- the portfolio's covariance matrix.
 
 Furthermore, the constructed portfolio can be optimised for
 
- - minimum Volatility,
- - maximum Sharpe Ratio
- - minimum Volatility for a given Expected Return
- - maximum Sharpe Ratio for a given target Volatility
+- minimum Volatility,
+- maximum Sharpe Ratio
+- minimum Volatility for a given Expected Return
+- maximum Sharpe Ratio for a given target Volatility
+
 by either performing a numerical computation to solve a minimisation problem, or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
 
 Finally, functions are implemented to generated the following plots:
 
- - Monte Carlo run to find optimal portfolio(s)
- - Efficient Frontier
- - Portfolio with the minimum Volatility based a numerical optimisation
- - Portfolio with the maximum Sharpe Ratio based on a numerical optimisation
- - Portfolio with the minimum Volatility for a given Expected Return based
-   on a numerical optimisation
- - Portfolio with the maximum Sharpe Ratio for a given target Volatility
-   based on a numerical optimisation
- - Individual stocks of the portfolio (Expected Return over Volatility)
+- Monte Carlo run to find optimal portfolio(s)
+- Efficient Frontier
+- Portfolio with the minimum Volatility based a numerical optimisation
+- Portfolio with the maximum Sharpe Ratio based on a numerical optimisation
+- Portfolio with the minimum Volatility for a given Expected Return based
+  on a numerical optimisation
+- Portfolio with the maximum Sharpe Ratio for a given target Volatility
+  based on a numerical optimisation
+- Individual stocks of the portfolio (Expected Return over Volatility)
 """
 
 
@@ -61,15 +63,19 @@ class Stock(object):
     """Object that contains information about a stock/fund.
     To initialise the object, it requires a name, information about
     the stock/fund given as one of the following data structures:
-     - ``pandas.Series``
-     - ``pandas.DataFrame``
+
+    - ``pandas.Series``
+    - ``pandas.DataFrame``
+
     The investment information can contain as little information as its name,
     and the amount invested in it, the column labels must be ``Name`` and ``Allocation``
     respectively, but it can also contain more information, such as
-     - Year
-     - Strategy
-     - CCY
-     - etc.
+
+    - Year
+    - Strategy
+    - CCY
+    - etc.
+
     It also requires either data, e.g. daily closing prices as a
     ``pandas.DataFrame`` or ``pandas.Series``.
     ``data`` must be given as a ``pandas.DataFrame``, and at least one data column
@@ -162,8 +168,7 @@ class Portfolio(object):
     To initialise the object, it does not require any input.
     To fill the portfolio with investment information, the
     function ``add_stock(stock)`` should be used, in which ``stock`` is
-    an object of ``Stock``, a ``pandas.DataFrame`` of the portfolio investment
-    information.
+    an object of ``Stock``.
     """
 
     def __init__(self):
@@ -232,19 +237,19 @@ class Portfolio(object):
 
     def add_stock(self, stock):
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
-        is called, the following instance variables get updated:
+        is called, the following instance variables are updated:
 
-         - ``portfolio``: Adds a column with information from ``stock``
-         - ``stocks``: Adds an entry for ``stock``
-         - ``data``: Adds a column of stock prices from ``stock``
+        - ``portfolio``: ``pandas.DataFrame``, adds a column with information from ``stock``
+        - ``stocks``: ``dictionary``, adds an entry for ``stock``
+        - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
         Also, the following instance variables are (re-)computed:
 
-         - ``expected_return``: Expected Return of the portfolio
-         - ``volatility``: Volatility of the portfolio
-         - ``sharpe``: Sharpe Ratio of the portfolio
-         - ``skew``: Skewness of the portfolio's stocks
-         - ``kurtosis``: Kurtosis of the portfolio's stocks
+        - ``expected_return``: Expected Return of the portfolio
+        - ``volatility``: Volatility of the portfolio
+        - ``sharpe``: Sharpe Ratio of the portfolio
+        - ``skew``: Skewness of the portfolio's stocks
+        - ``kurtosis``: Kurtosis of the portfolio's stocks
 
         :Input:
          :stock: an object of ``Stock``
@@ -582,8 +587,8 @@ class Portfolio(object):
 
         Plots markers of the optimised portfolios for
 
-         - minimum Volatility, and
-         - maximum Sharpe Ratio.
+        - minimum Volatility, and
+        - maximum Sharpe Ratio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -635,8 +640,9 @@ class Portfolio(object):
     def mc_plot_results(self):
         """Plots the results of the Monte Carlo run, with all of the randomly
         generated weights/portfolios, as well as markers for the portfolios with the
-         - minimum Volatility, and
-         - maximum Sharpe Ratio.
+
+        - minimum Volatility, and
+        - maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
         mc = self._get_mc()
@@ -678,11 +684,12 @@ class Portfolio(object):
     def properties(self):
         """Nicely prints out the properties of the portfolio:
 
-         - Expected Return,
-         - Volatility,
-         - Sharpe Ratio,
-         - skewness,
-         - Kurtosis
+        - Expected Return,
+        - Volatility,
+        - Sharpe Ratio,
+        - skewness,
+        - Kurtosis
+
         as well as the allocation of the stocks across the portfolio.
         """
         # nicely printing out information and quantities of the portfolio
@@ -712,7 +719,7 @@ class Portfolio(object):
 
 def _correct_quandl_request_stock_name(names):
     """This function makes sure that all strings in the given list of
-    stock names are leading with "WIKI/" as required by quandl to
+    stock names are leading with "WIKI/" as required by `quandl` to
     request data.
     Example: If an element of names is "GOOG" (which stands for
     Google), this function modifies the element of names to "WIKI/GOOG".
@@ -730,7 +737,7 @@ def _correct_quandl_request_stock_name(names):
 
 
 def _quandl_request(names, start_date=None, end_date=None):
-    """This function performs a simple request from quandl and returns
+    """This function performs a simple request from `quandl` and returns
     a ``pandas.DataFrame`` containing stock data.
 
     :Input:
@@ -744,19 +751,67 @@ def _quandl_request(names, start_date=None, end_date=None):
         import quandl
     except ImportError:
         print(
-            "The following package is required:\n - quandl\n"
+            "The following package is required:\n - `quandl`\n"
             + "Please make sure that it is installed."
         )
     # get correct stock names that quandl.get can request,
     # e.g. "WIKI/GOOG" for Google
     reqnames = _correct_quandl_request_stock_name(names)
-    return quandl.get(reqnames, start_date=start_date, end_date=end_date)
+    try:
+        resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
+    except Exception:
+        raise Exception("Error during download of stock data from Quandl.")
+    return resp
+
+
+def _yfinance_request(names, start_date=None, end_date=None):
+    """This function performs a simple request from Yahoo Finance
+    (using `yfinance`) and returns a ``pandas.DataFrame``
+    containing stock data.
+
+    :Input:
+     :names: List of strings of stock names to be requested
+     :start_date (optional): String/datetime of the start date of
+         relevant stock data.
+     :end_date (optional): String/datetime of the end date of
+         relevant stock data.
+    """
+    try:
+        import yfinance as yf
+    except ImportError:
+        print(
+            "The following package is required:\n - `yfinance`\n"
+            + "Please make sure that it is installed."
+        )
+    # yfinance does not exit safely if start/end date were not given correctly:
+    # this step is not required for quandl as it handles this exception properly
+    try:
+        import datetime
+        if isinstance(start_date, str):
+            start_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+        if isinstance(end_date, str):
+            end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+    except ImportError:
+        print(
+            "The following package is required:\n - `datetime`\n"
+            + "Please make sure that it is installed."
+        )
+    except Exception:
+        raise Exception("Please provide valid values for <start_date> and <end_date>")
+
+    # unlike quandl, yfinance does not have a prefix in front of the ticker
+    # thus we do not need to correct them
+    try:
+        resp = yf.download(names, start=start_date, end=end_date)
+    except Exception:
+        raise Exception("Error during download of stock data from Yahoo Finance with `yfinance`.")
+    return resp
 
 
 def _get_quandl_data_column_label(stock_name, data_label):
     """Given stock name and label of a data column, this function returns
     the string "<stock_name> - <data_label>" as it can be found in a
-    ``pandas.DataFrame`` returned by quandl.
+    ``pandas.DataFrame`` returned by `quandl`.
     """
     return stock_name + " - " + data_label
 
@@ -771,6 +826,7 @@ def _get_stocks_data_columns(data, names, cols):
      :names: A string or list of strings, containing the names of the
          stocks, e.g. 'GOOG' for Google.
      :cols: A list of strings of column labels of data to be extracted.
+         Currently only one column per stock is supported.
 
     :Output:
      :data: A ``pandas.DataFrame`` which contains only the data columns of
@@ -780,6 +836,8 @@ def _get_stocks_data_columns(data, names, cols):
     reqnames = _correct_quandl_request_stock_name(names)
     # get current column labels and replacement labels
     reqcolnames = []
+    # if dataframe is of type multiindex, also get first level colname
+    firstlevel_colnames = []
     for i in range(len(names)):
         for col in cols:
             # differ between dataframe directly from quandl and
@@ -794,13 +852,34 @@ def _get_stocks_data_columns(data, names, cols):
             # 3. if "<stock_name> - <col>" in column labels
             elif _get_quandl_data_column_label(names[i], col) in data.columns:
                 colname = _get_quandl_data_column_label(names[i], col)
+            # if column labels is of type multiindex, and the "Adj Close" is in
+            # first level labels, we assume the dataframe comes from yfinance:
+            elif isinstance(data.columns, pd.core.index.MultiIndex):
+                # alter col for yfinance, as it returns column labels without '.'
+                col = col.replace('.','')
+                if col in data.columns:
+                    if not col in firstlevel_colnames:
+                        firstlevel_colnames.append(col)
+                    if names[i] in data[col].columns:
+                        colname = names[i]
+                    else: # error, it must find names[i] on second level of column header
+                        raise ValueError("Could not find column labels in second level of MultiIndex pd.DataFrame")
             # else, error
             else:
                 raise ValueError("Could not find column labels in given dataframe.")
             # append correct name to list of correct names
             reqcolnames.append(colname)
 
-    data = data.loc[:, reqcolnames]
+    # if data comes from yfinance, it is a multiindex dataframe:
+    if isinstance(data.columns, pd.core.index.MultiIndex):
+        if not len(firstlevel_colnames) == 1:
+            raise ValueError("Sorry, for now only one value/quantity per Stock is supported.")
+        data = data[firstlevel_colnames[0]].loc[:, reqcolnames]
+    else:
+        # if it comes from quandl, it is not of type multiindex
+        data = data.loc[:, reqcolnames]
+
+    # special column label treatment for dataframes from quandl:
     # now rename the columns (removing "WIKI/" from column labels):
     newcolnames = {}
     for i in reqcolnames:
@@ -818,8 +897,8 @@ def _get_stocks_data_columns(data, names, cols):
     return data
 
 
-def _build_portfolio_from_quandl(
-    names, pf_allocation=None, start_date=None, end_date=None
+def _build_portfolio_from_api(
+        names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -830,9 +909,13 @@ def _build_portfolio_from_quandl(
      :pf_allocation (optional): ``pandas.DataFrame`` with the required data column
          labels ``Name`` and ``Allocation`` of the stocks.
      :start_date (optional): String/datetime start date of stock data to
-         be requested through quandl (default: None)
+         be requested through `quandl`/`yfinance` (default: None)
      :end_date (optional): String/datetime end date of stock data to be
-         requested through quandl (default: None)
+         requested through `quandl`/`yfinance` (default: None)
+     :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
+         obtain stock prices, if data is not provided by the user. Valid values:
+         - ``quandl`` (Python package/API to `Quandl`)
+         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
     :Output:
      :pf: Instance of Portfolio which contains all the information
@@ -840,8 +923,11 @@ def _build_portfolio_from_quandl(
     """
     # create an empty portfolio
     pf = Portfolio()
-    # request data from quandl:
-    data = _quandl_request(names, start_date, end_date)
+    # request data from service:
+    if (data_api == "yfinance"):
+        data = _yfinance_request(names, start_date, end_date)
+    elif (data_api == "quandl"):
+        data = _quandl_request(names, start_date, end_date)
     # check pf_allocation:
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(names=names)
@@ -944,7 +1030,8 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
             "Error: None of the provided stock names were"
             + "found in the provided dataframe."
         )
-    # extract only 'Adj. Close' column from DataFrame:
+    # extract only "Adjusted Close" price ("Adj. Close" in quandl, "Adj Close" in yfinance)
+    # column from DataFrame:
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
     # building portfolio:
     pf = Portfolio()
@@ -988,29 +1075,34 @@ def build_portfolio(**kwargs):
      :names: (optional) A ``string`` or ``list`` of ``strings``, containing the names
          of the stocks, e.g. "GOOG" for Google.
      :start: (optional) ``string``/``datetime`` start date of stock data to be
-         requested through `quandl` (default: ``None``).
+         requested through `quandl`/`yfinance` (default: ``None``).
      :end: (optional) ``string``/``datetime`` end date of stock data to be
-         requested through `quandl` (default: ``None``).
+         requested through `quandl`/`yfinance` (default: ``None``).
      :data: (optional) A ``pandas.DataFrame`` which contains quantities of
          the stocks listed in ``pf_allocation``.
+     :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
+         obtain stock prices, if data is not provided by the user. Valid values:
+
+         - ``quandl`` (Python package/API to `Quandl`)
+         - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
     :Output:
      :pf: Instance of ``Portfolio`` which contains all the information
          requested by the user.
 
-    :note: Only the following combinations of inputs are allowed:
+    .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional)
      - ``data``, ``pf_allocation`` (optional)
 
-    The two different ways this function can be used are useful for:
+     The two different ways this function can be used are useful for:
 
-     1. building a portfolio by pulling data from `quandl`,
+     1. building a portfolio by pulling data from `quandl`/`yfinance`,
      2. building a portfolio by providing stock data which was obtained otherwise,
         e.g. from data files.
 
-    If used in an unsupported way, the function (or subsequently called function) raises appropriate Exceptions
-    with useful information what went wrong.
+     If used in an unsupported way, the function (or subsequently called function) raises appropriate Exceptions
+     with useful information what went wrong.
     """
     docstring_msg = (
         "Please read through the docstring, "
@@ -1030,7 +1122,7 @@ def build_portfolio(**kwargs):
     )
 
     # list of all valid optional input arguments
-    all_input_args = ["pf_allocation", "names", "start_date", "end_date", "data"]
+    all_input_args = ["pf_allocation", "names", "start_date", "end_date", "data", "data_api"]
 
     # check if no input argument was passed
     if kwargs == {}:
@@ -1047,9 +1139,9 @@ def build_portfolio(**kwargs):
     # create an empty portfolio
     pf = Portfolio()
 
-    # 1. pf_allocation, names, start_date, end_date
+    # 1. pf_allocation, names, start_date, end_date, data_api
     allowed_mandatory_args = ["names"]
-    allowed_input_args = ["names", "pf_allocation", "start_date", "end_date"]
+    allowed_input_args = ["names", "pf_allocation", "start_date", "end_date", "data_api"]
     complement_input_args = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
@@ -1058,7 +1150,7 @@ def build_portfolio(**kwargs):
                 input_comb_error.format(complement_input_args, allowed_mandatory_args)
             )
         # get portfolio:
-        pf = _build_portfolio_from_quandl(**kwargs)
+        pf = _build_portfolio_from_api(**kwargs)
 
     # 2. pf_allocation, data
     allowed_mandatory_args = ["data"]

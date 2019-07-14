@@ -4,63 +4,53 @@
 # <markdowncell>
 
 # # Example: Portfolio optimisation
-# 
 # This example shows how `FinQuant` can be used to optimise a portfolio.
-# 
 # Two different approaches are implemented in `FinQuant`:
 #  1. Efficient Frontier
 #  2. Monte Carlo run
-# 
 # With the *Efficient Frontier* approach, the portfolio can be optimised for
 #  - minimum volatility,
 #  - maximum Sharpe ratio
 #  - minimum volatility for a given expected return
 #  - maximum Sharpe ratio for a given target volatility
-# 
 # by performing a numerical solve to minimise/maximise an objective function.
-# 
 # Alternatively a *Monte Carlo* run of `n` trials can be performed to find the optimal portfolios for
 #  - minimum volatility,
 #  - maximum Sharpe ratio
-# 
 # The approach branded as *Efficient Frontier* should be the preferred method for reasons of computational effort and accuracy. The latter approach is only included for the sake of completeness, and creation of beautiful plots.
 # 
 # ## Visualisation
 # Not only does `FinQuant` allow for the optimisation of a portfolio with the above mentioned methods and objectives, `FinQuant` also allows for the computation and visualisation of an *Efficient Frontier* and *Monte Carlo* run.
-# 
 # Let `pf` be an instance of `Portfolio`. The *Efficient Frontier* can be computed and visualised with `pf.ef_plot_efrontier()`. The optimal portfolios for *minimum volatility* and *maximum Sharpe ratio* can be visualised with `pf.ef_plot_optimal_portfolios()`. And if required, the individual stocks of the portfolio can be visualised with `pf.plot_stocks(show=False)`. An overlay of these three commands is shown below.
-# 
 # Finally, the entire result of a *Monte Carlo* run can also be visualised automatically by `FinQuant`. An example is shown below.
-
-# <markdowncell>
-
-# ### Getting stock data
 
 # <codecell>
 
 import pathlib
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import datetime
+
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
 
 # <codecell>
 
 # plotting style:
-plt.style.use('seaborn-darkgrid')
-#set line width
-plt.rcParams['lines.linewidth'] = 2
-#set font size for titles
-plt.rcParams['axes.titlesize'] = 14
-#set font size for labels on axes
-plt.rcParams['axes.labelsize'] = 12
-#set size of numbers on x-axis
-plt.rcParams['xtick.labelsize'] = 10
-#set size of numbers on y-axis
-plt.rcParams['ytick.labelsize'] = 10
-#set figure size
-plt.rcParams['figure.figsize'] = (10, 6)
+plt.style.use("seaborn-darkgrid")
+# set line width
+plt.rcParams["lines.linewidth"] = 2
+# set font size for titles
+plt.rcParams["axes.titlesize"] = 14
+# set font size for labels on axes
+plt.rcParams["axes.labelsize"] = 12
+# set size of numbers on x-axis
+plt.rcParams["xtick.labelsize"] = 10
+# set size of numbers on y-axis
+plt.rcParams["ytick.labelsize"] = 10
+# set figure size
+plt.rcParams["figure.figsize"] = (10, 6)
 
 # <markdowncell>
 
@@ -71,8 +61,8 @@ plt.rcParams['figure.figsize'] = (10, 6)
 
 # stock data was previously pulled from quandl and stored in ex1-stockdata.csv
 # read data from files:
-df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
-df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
+df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
+df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 # building a portfolio by providing stock data
 pf = build_portfolio(data=df_data)
 print(pf)
@@ -87,7 +77,6 @@ pf.properties()
 #  - maximum Sharpe ratio
 #  - minimum volatility for a given target return
 #  - maximum Sharpe ratio for a given target volatility
-# 
 # See below for an example for each optimisation.
 
 # <codecell>
@@ -98,7 +87,7 @@ print("pf.freq = {}".format(pf.freq))
 
 # <codecell>
 
-pf.ef_minimum_volatility()
+pf.ef_minimum_volatility(verbose=True)
 
 # <codecell>
 
@@ -113,7 +102,7 @@ pf.ef_efficient_return(0.26, verbose=True)
 # <codecell>
 
 # maximum Sharpe ratio for a given target volatility of 0.22
-pf.ef_efficient_volatility(0.22)
+pf.ef_efficient_volatility(0.22, verbose=True)
 
 # <markdowncell>
 
@@ -125,10 +114,9 @@ pf.ef_efficient_volatility(0.22)
 from finquant.efficient_frontier import EfficientFrontier
 
 # creating an instance of EfficientFrontier
-ef = EfficientFrontier(pf.comp_mean_returns(freq=1),
-                       pf.comp_cov())
+ef = EfficientFrontier(pf.comp_mean_returns(freq=1), pf.comp_cov())
 # optimisation for minimum volatility
-ef.minimum_volatility()
+print(ef.minimum_volatility())
 
 # <codecell>
 
@@ -144,7 +132,6 @@ ef.minimum_volatility()
 #  2. By manually creating an instance of `EfficientFrontier` and providing the data from the portfolio
 #   - with automatically setting limits of the *Efficient Frontier*
 #   - by providing a range of target expected return values
-# 
 # As before, let `pf` and be an instance of `Portfolio`. The following code snippets compute and plot an *Efficient Frontier* of a portfolio, its optimised portfolios and individual stocks within the portfolio.
 #  - `pf.ef_plot_efrontier()`
 #  - `pf.ef_plot_optimal_portfolios()`
@@ -170,7 +157,6 @@ plt.show()
 
 # <codecell>
 
-import numpy as np
 targets = np.linspace(0.12, 0.45, 50)
 # computing efficient frontier
 efficient_frontier = ef.efficient_frontier(targets)

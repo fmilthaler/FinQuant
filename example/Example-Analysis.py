@@ -5,7 +5,6 @@
 
 # # Example:
 # ## Building a portfolio with `build_portfolio()` with data obtained from data files.
-# 
 # Note: The stock data is provided in two data files. The stock data was previously pulled from quandl.
 
 # <codecell>
@@ -14,28 +13,25 @@ import pathlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
-
-# <codecell>
-
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
 
 # <codecell>
 
 # plotting style:
-plt.style.use('seaborn-darkgrid')
-#set line width
-plt.rcParams['lines.linewidth'] = 2
-#set font size for titles
-plt.rcParams['axes.titlesize'] = 14
-#set font size for labels on axes
-plt.rcParams['axes.labelsize'] = 12
-#set size of numbers on x-axis
-plt.rcParams['xtick.labelsize'] = 10
-#set size of numbers on y-axis
-plt.rcParams['ytick.labelsize'] = 10
-#set figure size
-plt.rcParams['figure.figsize'] = (10, 6)
+plt.style.use("seaborn-darkgrid")
+# set line width
+plt.rcParams["lines.linewidth"] = 2
+# set font size for titles
+plt.rcParams["axes.titlesize"] = 14
+# set font size for labels on axes
+plt.rcParams["axes.labelsize"] = 12
+# set size of numbers on x-axis
+plt.rcParams["xtick.labelsize"] = 10
+# set size of numbers on y-axis
+plt.rcParams["ytick.labelsize"] = 10
+# set figure size
+plt.rcParams["figure.figsize"] = (10, 6)
 
 # <markdowncell>
 
@@ -45,8 +41,8 @@ plt.rcParams['figure.figsize'] = (10, 6)
 # <codecell>
 
 # read data from files:
-df_data_path = pathlib.Path.cwd() / '..' / 'data' / 'ex1-stockdata.csv'
-df_data = pd.read_csv(df_data_path, index_col='Date', parse_dates=True)
+df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
+df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 # building a portfolio by providing stock data
 pf = build_portfolio(data=df_data)
 
@@ -54,23 +50,22 @@ pf = build_portfolio(data=df_data)
 
 # ## Expected Return, Volatility and Sharpe Ratio of Portfolio
 # The annualised expected return and volatility as well as the Sharpe Ratio are automatically computed. They are obtained as shown below.
-# 
 # The expected return and volatility are based on 252 trading days by default. The Sharpe Ratio is computed with a risk free rate of 0.005 by default.
 
 # <codecell>
 
 # expected (annualised) return
-pf.expected_return
+print(pf.expected_return)
 
 # <codecell>
 
 # volatility
-pf.volatility
+print(pf.volatility)
 
 # <codecell>
 
 # Sharpe ratio (computed with a risk free rate of 0.005 by default)
-pf.sharpe
+print(pf.sharpe)
 
 # <markdowncell>
 
@@ -78,11 +73,11 @@ pf.sharpe
 
 # <codecell>
 
-pf.skew
+print(pf.skew)
 
 # <codecell>
 
-pf.kurtosis
+print(pf.kurtosis)
 
 # <markdowncell>
 
@@ -102,16 +97,16 @@ pf.properties()
 # <codecell>
 
 # annualised mean returns
-pf.comp_mean_returns()
+print(pf.comp_mean_returns())
 
 # <codecell>
 
 # daily returns (percentage change)
-pf.comp_cumulative_returns().head(3)
+print(pf.comp_cumulative_returns().head(3))
 
 # <codecell>
 
-pf.comp_daily_log_returns().head(3)
+print(pf.comp_daily_log_returns().head(3))
 
 # <codecell>
 
@@ -125,31 +120,31 @@ plt.show()
 
 # <codecell>
 
-pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
+pf.data.plot(secondary_y=["MCD", "DIS"], grid=True)
 plt.show()
 
 # <codecell>
 
 # plotting cumulative returns (price_{t} - price_{t=0}) / price_{t=0}
-pf.comp_cumulative_returns().plot().axhline(y = 0, color = "black", lw = 3)
+pf.comp_cumulative_returns().plot().axhline(y=0, color="black", lw=3)
 plt.show()
 
 # <codecell>
 
 # plotting daily percentage changes of returns
-pf.comp_daily_returns().plot().axhline(y = 0, color = "black")
+pf.comp_daily_returns().plot().axhline(y=0, color="black")
 plt.show()
 
 # <codecell>
 
 # plotting daily log returns
-pf.comp_daily_log_returns().plot().axhline(y = 0, color = "black")
+pf.comp_daily_log_returns().plot().axhline(y=0, color="black")
 plt.show()
 
 # <codecell>
 
 # cumulative log returns
-pf.comp_daily_log_returns().cumsum().plot().axhline(y = 0, color = "black")
+pf.comp_daily_log_returns().cumsum().plot().axhline(y=0, color="black")
 plt.show()
 
 # <markdowncell>
@@ -160,32 +155,34 @@ plt.show()
 # <codecell>
 
 from finquant.moving_average import sma
+
 # simple moving average
-ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
+ax = pf.data.plot(secondary_y=["MCD", "DIS"], grid=True)
 # computing simple moving average over a span of 50 (trading) days
 # and plotting it
-sma(pf.data, span=50).plot(ax=ax, secondary_y = ["MCD", "DIS"], grid = True)
+sma(pf.data, span=50).plot(ax=ax, secondary_y=["MCD", "DIS"], grid=True)
 plt.show()
 
 # <codecell>
 
 from finquant.moving_average import ema
+
 # exponential moving average
-ax=pf.data.plot(secondary_y = ["MCD", "DIS"], grid = True)
+ax = pf.data.plot(secondary_y=["MCD", "DIS"], grid=True)
 # computing exponential moving average and plotting it
-ema(pf.data).plot(ax=ax, secondary_y = ["MCD", "DIS"])
+ema(pf.data).plot(ax=ax, secondary_y=["MCD", "DIS"])
 plt.show()
 
 # <markdowncell>
 
 # ## Band of moving averages and Buy/Sell signals
 # `FinQuant` also provides a method `finquant.moving_average.compute_ma` that automatically computes and plots several moving averages. It also **finds buy/sell signals based on crossovers** of the shortest and longest moving average.
-# 
 # To learn more about it and its input arguments, read its docstring and see the example below.
 
 # <codecell>
 
 from finquant.moving_average import compute_ma
+
 print(compute_ma.__doc__)
 
 # <codecell>
@@ -196,7 +193,6 @@ dis = pf.get_stock("DIS").data.copy(deep=True)
 spans = [10, 50, 100, 150, 200]
 # compute and plot moving averages
 dis_ma = compute_ma(dis, ema, spans, plot=True)
-dis_ma.head(3)
 plt.show()
 
 # <markdowncell>
@@ -208,9 +204,10 @@ plt.show()
 
 # plot the bollinger band of the disney stock prices
 from finquant.moving_average import plot_bollinger_band
+
 # get stock data for disney
 dis = pf.get_stock("DIS").data.copy(deep=True)
-span=20
+span = 20
 # for simple moving average:
 plot_bollinger_band(dis, sma, span)
 plt.show()
@@ -225,7 +222,6 @@ plt.show()
 #  - Expected return
 #  - Volatility
 #  - Sharpe Ratio
-# 
 # are automatically recomputed.
 
 # <codecell>
@@ -241,7 +237,9 @@ pf.risk_free_rate = 0.02
 exret = pf.comp_expected_return(freq=100)
 vol = pf.comp_volatility(freq=100)
 sharpe = pf.comp_sharpe()
-print("For {} trading days and a risk free rate of {}:".format(pf.freq, pf.risk_free_rate))
+print(
+    "For {} trading days and a risk free rate of {}:".format(pf.freq, pf.risk_free_rate)
+)
 print("Expected return: {:0.3f}".format(exret))
 print("Volatility: {:0.3f}".format(vol))
 print("Sharpe Ratio: {:0.3f}".format(sharpe))
@@ -260,27 +258,27 @@ pf.properties()
 goog = pf.get_stock("GOOG")
 # getting the stock prices
 goog_prices = goog.data
-goog_prices.head(3)
+print(goog_prices.head(3))
 
 # <codecell>
 
-goog.comp_daily_returns().head(3)
+print(goog.comp_daily_returns().head(3))
 
 # <codecell>
 
-goog.expected_return
+print(goog.expected_return)
 
 # <codecell>
 
-goog.volatility
+print(goog.volatility)
 
 # <codecell>
 
-goog.skew
+print(goog.skew)
 
 # <codecell>
 
-goog.kurtosis
+print(goog.kurtosis)
 
 # <codecell>
 
@@ -294,12 +292,12 @@ goog.properties()
 
 # <codecell>
 
-pf.data.loc[str(datetime.datetime(2015,1,2))]
+print(pf.data.loc[str(datetime.datetime(2015, 1, 2))])
 
 # <codecell>
 
-pf.data.loc[pf.data.index>datetime.datetime(2016,1,2)].head(3)
+print(pf.data.loc[pf.data.index > datetime.datetime(2016, 1, 2)].head(3))
 
 # <codecell>
 
-pf.data.loc[pf.data.index.year==2017].head(3)
+print(pf.data.loc[pf.data.index.year == 2017].head(3))

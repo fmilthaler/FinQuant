@@ -16,6 +16,12 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 
+# run bash script for examples
+os.system('./autodoc-examples.sh')
+
+# get version/release from file
+with open("../version", "r") as f:
+    ver = dict(x.rstrip().split('=') for x in f)
 
 # -- Project information -----------------------------------------------------
 
@@ -24,10 +30,9 @@ copyright = "2019, Frank Milthaler"
 author = "Frank Milthaler"
 
 # The short X.Y version
-version = "0.1"
+version = ver["version"]
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
-
+release = ver["release"]
 
 # -- General configuration ---------------------------------------------------
 
@@ -84,7 +89,7 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["nstatic"]
+html_static_path = []
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.

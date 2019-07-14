@@ -5,6 +5,18 @@
 *.ipynb
 .ipynb_checkpoints
 
+#######################
+# Documentation files #
+#######################
+docs/build/*
+docs/auto-Example-*.py
+
+###############
+# Build files #
+###############
+build/*
+FinQuant.egg-info/*
+
 ##################
 # Text artifacts #
 ##################
