@@ -35,8 +35,8 @@ Dependencies
 *FinQuant* depends on the following Python packages:
 
 - ``python>=3.5.0``
-- ``numpy>=1.11.0``
-- ``pandas>=0.17.1``
+- ``numpy>=1.15``
+- ``pandas>=0.24``
 - ``matplotlib>=1.5.1``
 - ``quandl>=3.4.5``
 - ``yfinance>=0.1.43``
