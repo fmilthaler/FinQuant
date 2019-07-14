@@ -44,5 +44,5 @@ $(CLEANDIRS):
 
 search:
 	@echo "searching all python files for $(SEARCH):"
-	@find . \( -name "*.py" -o -name "README.tex.md" \) -not -path "./*/bkup-files/*" | xargs grep -i --color=auto $(SEARCH)
+	@find . \( -name "*.py" -o -name "README.tex.md" \) -not -path "./*/bkup-files/*" -not -path "./docs/build/*" -not -path "./build/*" | xargs grep -i --color=auto $(SEARCH)
 
