@@ -21,7 +21,7 @@ SEARCH=
 
 all: clean
 
-test:
+test:copyexamples
 	@echo "Running tests"
 	@$(MAKE) -C $(TESTDIR)
 
