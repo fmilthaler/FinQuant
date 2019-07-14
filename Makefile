@@ -6,10 +6,12 @@ EXAMPLEDIR=example
 EXAMPLEFILES=$(wildcard example/Example*.py)
 TESTDIR=tests
 DOCDIR=docs
+DISTDIR=dist
 AUTODOCEXAMPLES=autodoc-examples.sh
 CLEANDIRS = $(PYDIR:%=clean-%) \
 $(EXAMPLEDIR:%=clean-%) \
-$(TESTDIR:%=clean-%)
+$(TESTDIR:%=clean-%) \
+$(DISTDIR:%=clean-%)
 
 SEARCH=
 
@@ -18,6 +20,7 @@ SEARCH=
 .PHONY: EXAMPLEFILES $(EXAMPLEFILES)
 .PHONY: cleandirs $(CLEANDIRS)
 .PHONY: clean
+.PHONY: dirclean
 
 all: clean
 
@@ -37,7 +40,10 @@ doc:
 	@$(MAKE) -C $(DOCDIR) clean
 	@$(MAKE) -C $(DOCDIR) html
 
-clean: $(CLEANDIRS)
+clean: dirclean
+	rm -rf .pytest_cache FinQuant.egg-info
+
+dirclean: $(CLEANDIRS)
 $(CLEANDIRS):
 	@echo "cleaning directory $(@:clean-%=%):"
 	@$(MAKE) -C $(@:clean-%=%) clean
