@@ -32,7 +32,7 @@ This README only gives a brief overview of *FinQuant*. The interested reader sho
    - [Efficient Frontier](#Efficient-Frontier)
    - [Monte Carlo](#Monte-Carlo)
  - [Examples](#Examples)
-   - [Building a portfolio with data from web `quandl`/`yfinance`](#Building-a-portfolio-with-data-from-web-quandl/yfinance)
+   - [Building a portfolio with data from web](#Building-a-portfolio-with-data-from-web)
    - [Building a portfolio with preset data](#Building-a-portfolio-with-preset-data)
    - [Analysis of a portfolio](#Analysis-of-a-portfolio)
    - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
@@ -231,7 +231,7 @@ look at the examples provided in `./example`.
 
 **Note**: In the below examples, `pf` refers to an instance of `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make *FinQuant* a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed throughout this README.
 
-### Building a portfolio with data from web `quandl`/`yfinance`
+### Building a portfolio with data from web
 `./example/Example-Build-Portfolio-from-web.py`: Shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package `quandl`/`yfinance`.
 
 ### Building a portfolio with preset data
