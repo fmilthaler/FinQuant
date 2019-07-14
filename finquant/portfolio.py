@@ -5,7 +5,7 @@
   portfolio, which is a collection of Stock instances.
 - a public function ``build_portfolio()`` that automatically constructs and returns
   an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
-  data is either retrieved through `quandl` or provided by the user as a
+  data is either retrieved through `quandl`/`yfinance` or provided by the user as a
   ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
   For an example on how to use it, please read the corresponding docstring,
   or have a look at the examples in the sub-directory ``example``.
@@ -909,9 +909,9 @@ def _build_portfolio_from_api(
      :pf_allocation (optional): ``pandas.DataFrame`` with the required data column
          labels ``Name`` and ``Allocation`` of the stocks.
      :start_date (optional): String/datetime start date of stock data to
-         be requested through `quandl` (default: None)
+         be requested through `quandl`/`yfinance` (default: None)
      :end_date (optional): String/datetime end date of stock data to be
-         requested through `quandl` (default: None)
+         requested through `quandl`/`yfinance` (default: None)
      :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
          obtain stock prices, if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
@@ -1075,13 +1075,14 @@ def build_portfolio(**kwargs):
      :names: (optional) A ``string`` or ``list`` of ``strings``, containing the names
          of the stocks, e.g. "GOOG" for Google.
      :start: (optional) ``string``/``datetime`` start date of stock data to be
-         requested through `quandl` (default: ``None``).
+         requested through `quandl`/`yfinance` (default: ``None``).
      :end: (optional) ``string``/``datetime`` end date of stock data to be
-         requested through `quandl` (default: ``None``).
+         requested through `quandl`/`yfinance` (default: ``None``).
      :data: (optional) A ``pandas.DataFrame`` which contains quantities of
          the stocks listed in ``pf_allocation``.
      :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
          obtain stock prices, if data is not provided by the user. Valid values:
+
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
@@ -1096,7 +1097,7 @@ def build_portfolio(**kwargs):
 
      The two different ways this function can be used are useful for:
 
-     1. building a portfolio by pulling data from `yfinance`/`quandl`,
+     1. building a portfolio by pulling data from `quandl`/`yfinance`,
      2. building a portfolio by providing stock data which was obtained otherwise,
         e.g. from data files.
 
