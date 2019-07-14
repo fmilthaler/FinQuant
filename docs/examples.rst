@@ -13,13 +13,13 @@ look at the examples discussed below.
 .. note:: In the below examples, ``pf`` refers to an instance of ``finquant.portfolio.Portfolio``, the object that holds all stock prices and computes its most common quantities automatically. To make *FinQuant* a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in ``./finquant/`` and are discussed throughout this documentation.
 
 
-Building a portfolio with *quandl*
+Building a portfolio with data from web *quandl*/*yfinance*
 ==================================
-This example shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package *quandl*.
+This example shows how to use *FinQuant* to build a financial portfolio by downloading stock price data by using the Python package *quandl*/*yfinance*.
 
-.. note:: This example refers to ``example/Example-Build-Portfolio-with-quandl.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Build-Portfolio-with-quandl.py  <../example/Example-Build-Portfolio-with-quandl.py>`
+.. note:: This example refers to ``example/Example-Build-Portfolio-from-web.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Build-Portfolio-from-web.py  <../example/Example-Build-Portfolio-from-web.py>`
 
-.. literalinclude:: ./auto-Example-Build-Portfolio-with-quandl.py
+.. literalinclude:: ./auto-Example-Build-Portfolio-from-web.py
     :linenos:
     :language: python
 
