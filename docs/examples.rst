@@ -14,7 +14,7 @@ look at the examples discussed below.
 
 
 Building a portfolio with data from web *quandl*/*yfinance*
-==================================
+===========================================================
 This example shows how to use *FinQuant* to build a financial portfolio by downloading stock price data by using the Python package *quandl*/*yfinance*.
 
 .. note:: This example refers to ``example/Example-Build-Portfolio-from-web.py`` of the `GitHub`_ repository. It can be downloaded with jupyter notebook cell information: :download:`download Example-Build-Portfolio-from-web.py  <../example/Example-Build-Portfolio-from-web.py>`
