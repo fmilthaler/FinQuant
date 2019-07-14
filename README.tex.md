@@ -12,7 +12,7 @@
   <a href="http://finquant.readthedocs.io/">
     <img src="https://img.shields.io/readthedocs/finquant.svg?style=popout" alt="docs">
   </a>
-  <a href="https://opensource.org/licenses/MIT">
+  <a href="https://github.com/fmilthaler/FinQuant/blob/master/LICENSE.txt">
     <img src="https://img.shields.io/github/license/fmilthaler/FinQuant.svg?style=popout" alt="license">
   </a>
 </p>
@@ -32,7 +32,7 @@ This README only gives a brief overview of *FinQuant*. The interested reader sho
    - [Efficient Frontier](#Efficient-Frontier)
    - [Monte Carlo](#Monte-Carlo)
  - [Examples](#Examples)
-   - [Building a portfolio with `quandl`](#Building-a-portfolio-with-quandl)
+   - [Building a portfolio with data from web `quandl`/`yfinance`](#Building-a-portfolio-with-data-from-web-quandl/yfinance)
    - [Building a portfolio with preset data](#Building-a-portfolio-with-preset-data)
    - [Analysis of a portfolio](#Analysis-of-a-portfolio)
    - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
@@ -158,6 +158,7 @@ As it is common for open-source projects, there are several ways to get hold of 
  - pandas>=0.17.1
  - matplotlib>=1.5.1
  - quandl>=3.4.5
+ - yfinance>=0.1.43
  - scipy>=1.2.0
  - pytest>=2.8.7
 
@@ -230,8 +231,8 @@ look at the examples provided in `./example`.
 
 **Note**: In the below examples, `pf` refers to an instance of `finquant.portfolio.Portfolio`, the object that holds all stock prices and computes its most common quantities automatically. To make *FinQuant* a user-friendly program, that combines data analysis, visualisation and optimisation, the object also provides interfaces to the main features that are provided in the modules in `./finquant/` and are discussed throughout this README.
 
-### Building a portfolio with `quandl`
-`./example/Example-Build-Portfolio-with-quandl.py`: Shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package `quandl`.
+### Building a portfolio with data from web `quandl`/`yfinance`
+`./example/Example-Build-Portfolio-from-web.py`: Shows how to use *FinQuant* to build a financial portfolio by downloading stock price data through the Python package `quandl`/`yfinance`.
 
 ### Building a portfolio with preset data
 `./example/Example-Build-Portfolio-from-file.py`: Shows how to use *FinQuant* to build a financial portfolio by providing stock price data yourself, e.g. by reading data from disk/file.
