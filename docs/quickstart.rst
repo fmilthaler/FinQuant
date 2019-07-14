@@ -1,5 +1,8 @@
 .. _quickstart:
 .. _quandl: http://www.quandl.com/
+.. _yfinance: https://pypi.org/project/yfinance/
+.. |yahoofinance| replace:: Yahoo Finance
+.. _yahoofinance: https://finance.yahoo.com/
 
 ###########
 Quick Start
@@ -19,6 +22,14 @@ Getting an object of ``Portfolio`` that holds stock prices of four different sto
     pf = build_portfolio(names=names)
 
 The above uses *Quandl* in the background to download the requested data. For more information on *Quandl*, please refer to quandl_.
+
+If preferred, *FinQuant* also allows to fetch stock price data from |yahoofinance|_. The code snippet below is the equivalent to the above, but using yfinance_ instead (default value for ``data_api`` is ``"quandl"``):
+
+.. code:: python
+
+    from finquant.portfolio import build_portfolio
+    names = ['GOOG', 'AMZN', 'MCD', 'DIS']
+    pf = build_portfolio(names=names, data_api="yfinance")
 
 Alternatively, if you already are in possession of stock prices you want to analyse/optimise, you can do the following.
 

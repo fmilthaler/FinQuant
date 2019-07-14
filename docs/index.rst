@@ -39,6 +39,7 @@ Dependencies
 - ``pandas>=0.17.1``
 - ``matplotlib>=1.5.1``
 - ``quandl>=3.4.5``
+- ``yfinance>=0.1.43``
 - ``scipy>=1.2.0``
 - ``pytest>=2.8.7``
 
