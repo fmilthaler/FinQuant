@@ -1,6 +1,6 @@
 default: test
 
-test:
+test:rempltshow
 	@pytest -v .
 
 rempltshow:
