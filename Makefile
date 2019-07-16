@@ -7,11 +7,12 @@ EXAMPLEFILES=$(wildcard example/Example*.py)
 TESTDIR=tests
 DOCDIR=docs
 DISTDIR=dist
+BUILDDIR=build
 AUTODOCEXAMPLES=autodoc-examples.sh
 CLEANDIRS = $(PYDIR:%=clean-%) \
 $(EXAMPLEDIR:%=clean-%) \
 $(TESTDIR:%=clean-%) \
-$(DISTDIR:%=clean-%)
+$(DOCDIR:%=clean-%)
 
 SEARCH=
 
@@ -34,19 +35,20 @@ $(EXAMPLEFILES):
 
 pypi:
 	@$(PYTHON) setup.py sdist bdist_wheel
-	@$(PYTHON) -m twine upload dist/*
+	@$(PYTHON) -m twine upload dist/FinQuant-*
 
 doc:
 	@$(MAKE) -C $(DOCDIR) clean
 	@$(MAKE) -C $(DOCDIR) html
 
 clean: dirclean
-	rm -rf .pytest_cache FinQuant.egg-info
+clean:
+	-@rm -rf .pytest_cache FinQuant.egg-info $(BUILDDIR)/ $(DISTDIR)/
 
 dirclean: $(CLEANDIRS)
 $(CLEANDIRS):
 	@echo "cleaning directory $(@:clean-%=%):"
-	@$(MAKE) -C $(@:clean-%=%) clean
+	-@$(MAKE) -C $(@:clean-%=%) clean
 
 search:
 	@echo "searching all python files for $(SEARCH):"
