@@ -14,14 +14,15 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+
+sys.path.insert(0, os.path.abspath(".."))
 
 # run bash script for examples
-os.system('./autodoc-examples.sh')
+os.system("./autodoc-examples.sh")
 
 # get version/release from file
 with open("../version", "r") as f:
-    ver = dict(x.rstrip().split('=') for x in f)
+    ver = dict(x.rstrip().split("=") for x in f)
 
 # -- Project information -----------------------------------------------------
 

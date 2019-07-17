@@ -53,15 +53,17 @@ pf_allocation = pd.DataFrame.from_dict(d, orient="index")
 
 # ### User friendly interface to quandl/yfinance
 # As mentioned above, in this example `build_portfolio()` is used to build a portfolio by performing a query to `quandl`/`yfinance`.
+#
 # To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`/`yfinance`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers.
 # For example, if using `quandl` as a data source (default), a list of names/tickers as shown below is a valid input for `FinQuant`'s function `build_portfolio(names=names)`:
 #  * `names = ["WIKI/GOOG", "WIKI/AMZN"]`
-#  
+#
 # If using `yfinance` as a data source, `FinQuant`'s function `build_portfolio(names=names)` expects the stock names to be without any leading/trailing string (check Yahoo Finance for correct stock names):
 #  * `names = ["GOOG", "AMZN"]`
-#  
+#
 # By default, `FinQuant` uses `quandl` to obtain stock price data. The function `build_portfolio()` can be called with the optional argument `data_api` to use `yfinance` instead:
 #  * `build_portfolio(names=names, data_api="yfinance")`
+#
 # In the below example we are using the default option, `quandl`.
 
 # <codecell>
