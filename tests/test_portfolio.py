@@ -80,8 +80,18 @@ d_pass = [
     {"names": names, "pf_allocation": df_pf},
     {"names": names},
     {"names": names, "start_date": start_date, "end_date": end_date},
-    {"names": names, "start_date": start_date, "end_date": end_date, "data_api": "quandl"},
-    {"names": names_yf, "start_date": start_date, "end_date": end_date, "data_api": "yfinance"},
+    {
+        "names": names,
+        "start_date": start_date,
+        "end_date": end_date,
+        "data_api": "quandl",
+    },
+    {
+        "names": names_yf,
+        "start_date": start_date,
+        "end_date": end_date,
+        "data_api": "yfinance",
+    },
     {"data": df_data},
     {"data": df_data, "pf_allocation": df_pf},
 ]

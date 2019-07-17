@@ -782,6 +782,7 @@ def _yfinance_request(names, start_date=None, end_date=None):
     # this step is not required for quandl as it handles this exception properly
     try:
         import datetime
+
         if isinstance(start_date, str):
             start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         if isinstance(end_date, str):
@@ -803,7 +804,9 @@ def _yfinance_request(names, start_date=None, end_date=None):
             stock_tuples = [(col, names[0]) for col in list(resp.columns)]
             resp.columns = pd.MultiIndex.from_tuples(stock_tuples)
     except Exception:
-        raise Exception("Error during download of stock data from Yahoo Finance with `yfinance`.")
+        raise Exception(
+            "Error during download of stock data from Yahoo Finance with `yfinance`."
+        )
     return resp
 
 
@@ -855,14 +858,16 @@ def _get_stocks_data_columns(data, names, cols):
             # first level labels, we assume the dataframe comes from yfinance:
             elif isinstance(data.columns, pd.MultiIndex):
                 # alter col for yfinance, as it returns column labels without '.'
-                col = col.replace('.','')
+                col = col.replace(".", "")
                 if col in data.columns:
                     if not col in firstlevel_colnames:
                         firstlevel_colnames.append(col)
                     if names[i] in data[col].columns:
                         colname = names[i]
-                    else: # error, it must find names[i] on second level of column header
-                        raise ValueError("Could not find column labels in second level of MultiIndex pd.DataFrame")
+                    else:  # error, it must find names[i] on second level of column header
+                        raise ValueError(
+                            "Could not find column labels in second level of MultiIndex pd.DataFrame"
+                        )
             # else, error
             else:
                 raise ValueError("Could not find column labels in given dataframe.")
@@ -872,7 +877,9 @@ def _get_stocks_data_columns(data, names, cols):
     # if data comes from yfinance, it is a multiindex dataframe:
     if isinstance(data.columns, pd.MultiIndex):
         if not len(firstlevel_colnames) == 1:
-            raise ValueError("Sorry, for now only one value/quantity per Stock is supported.")
+            raise ValueError(
+                "Sorry, for now only one value/quantity per Stock is supported."
+            )
         data = data[firstlevel_colnames[0]].loc[:, reqcolnames]
     else:
         # if it comes from quandl, it is not of type multiindex
@@ -891,7 +898,7 @@ def _get_stocks_data_columns(data, names, cols):
 
 
 def _build_portfolio_from_api(
-        names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
+    names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -917,9 +924,9 @@ def _build_portfolio_from_api(
     # create an empty portfolio
     pf = Portfolio()
     # request data from service:
-    if (data_api == "yfinance"):
+    if data_api == "yfinance":
         data = _yfinance_request(names, start_date, end_date)
-    elif (data_api == "quandl"):
+    elif data_api == "quandl":
         data = _quandl_request(names, start_date, end_date)
     # check pf_allocation:
     if pf_allocation is None:
@@ -1032,7 +1039,7 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
         # get name of stock
         name = pf_allocation.loc[i].Name
         # extract data column(s) of said stock
-        stock_data = data.loc[:,[name]].copy(deep=True)
+        stock_data = data.loc[:, [name]].copy(deep=True)
         # if only one data column per stock exists, give dataframe a name
         if len(datacolumns) == 1:
             stock_data.name = datacolumns[0]
@@ -1115,7 +1122,14 @@ def build_portfolio(**kwargs):
     )
 
     # list of all valid optional input arguments
-    all_input_args = ["pf_allocation", "names", "start_date", "end_date", "data", "data_api"]
+    all_input_args = [
+        "pf_allocation",
+        "names",
+        "start_date",
+        "end_date",
+        "data",
+        "data_api",
+    ]
 
     # check if no input argument was passed
     if kwargs == {}:
@@ -1134,7 +1148,13 @@ def build_portfolio(**kwargs):
 
     # 1. pf_allocation, names, start_date, end_date, data_api
     allowed_mandatory_args = ["names"]
-    allowed_input_args = ["names", "pf_allocation", "start_date", "end_date", "data_api"]
+    allowed_input_args = [
+        "names",
+        "pf_allocation",
+        "start_date",
+        "end_date",
+        "data_api",
+    ]
     complement_input_args = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
