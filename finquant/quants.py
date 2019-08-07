@@ -59,11 +59,11 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
     :Output:
      :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
     """
-    if not isinstance(exp_return, (int, float, np.int64, np.float64)):
+    if not isinstance(exp_return, (int, float, np.int32, np.int64, np.float32, np.float64)):
         raise ValueError("exp_return is expected to be an integer or float.")
-    if not isinstance(volatility, (int, float, np.int64, np.float64)):
+    if not isinstance(volatility, (int, float, np.int32, np.int64, np.float32, np.float64)):
         raise ValueError("volatility is expected to be an integer or float.")
-    if not isinstance(risk_free_rate, (int, float, np.int64, np.float64)):
+    if not isinstance(risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
     return (exp_return - risk_free_rate) / float(volatility)
 
