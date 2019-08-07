@@ -32,7 +32,7 @@ def daily_returns(data):
      :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
          of given stock prices.
     """
-    return data.pct_change().dropna(how="all")
+    return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan)
 
 
 def daily_log_returns(data):
