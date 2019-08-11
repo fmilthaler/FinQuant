@@ -92,7 +92,7 @@ class MonteCarloOpt(MonteCarlo):
         self.freq = freq
         self.initial_weights = initial_weights
         # initiate super class
-        super().__init__(num_trials=self.num_trials)
+        super(MonteCarloOpt, self).__init__(num_trials=self.num_trials)
         # setting additional variables
         self.num_stocks = len(self.returns.columns)
         self.return_means = self.returns.mean()
