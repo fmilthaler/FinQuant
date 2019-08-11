@@ -57,7 +57,7 @@ def compute_ma(data, fun, spans, plot=True):
         ax.plot(
             signals.loc[signals["signal"] == 1.0].index.values,
             signals[minlabel][signals["signal"] == 1.0].values,
-            "^",
+            marker="^",
             markersize=10,
             color="r",
             label="buy signal",
@@ -66,7 +66,7 @@ def compute_ma(data, fun, spans, plot=True):
         ax.plot(
             signals.loc[signals["signal"] == -1.0].index.values,
             signals[minlabel][signals["signal"] == -1.0].values,
-            "v",
+            marker="v",
             markersize=10,
             color="b",
             label="sell signal",
