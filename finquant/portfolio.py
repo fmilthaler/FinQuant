@@ -1039,7 +1039,7 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
         # get name of stock
         name = pf_allocation.loc[i].Name
         # extract data column(s) of said stock
-        stock_data = data.filter(regex=name).copy(deep=True)
+        stock_data = data.loc[:,[name]].copy(deep=True)
         # if only one data column per stock exists, give dataframe a name
         if len(datacolumns) == 1:
             stock_data.name = datacolumns[0]
