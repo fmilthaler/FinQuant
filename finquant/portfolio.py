@@ -185,7 +185,7 @@ class Portfolio:
         self._add_stock_data(stock)
 
         # update quantities of portfolio
-        self._update()
+        # self._update() # the update will be done at the end of building portfolio
 
     def _add_stock_data(self, stock: Stock) -> None:
         # insert given data into portfolio stocks dataframe:
@@ -1023,11 +1023,13 @@ def _build_portfolio_from_df(
         pf.market_index = Market(data=market_data)
     for i in range(len(pf_allocation)):
         # get name of stock
-        name = pf_allocation.loc[i].Name
+        name = pf_allocation.iloc[i].Name
         # extract data column of said stock
         stock_data = data.loc[:, [name]].copy(deep=True).squeeze()
         # create Stock instance and add it to portfolio
-        pf.add_stock(Stock(pf_allocation.loc[i], data=stock_data))
+        pf.add_stock(Stock(pf_allocation.iloc[i], data=stock_data))
+    # update the portfolio
+    pf._update()
     return pf
 
 
