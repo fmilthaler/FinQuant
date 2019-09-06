@@ -24,6 +24,7 @@ First off, you should create a fork. Within your fork, create a new branch. Depe
 Make your changes to the code, and write sensible commit messages.
 
 ### Tests
+In the root directory of your version of FinQuant, run `make test` and make sure all tests are passing.
 If applicable, add new tests in the `./tests/` directory. Tests should be written with `pytest`.
 
 ### Documentation
