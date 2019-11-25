@@ -1074,9 +1074,9 @@ def build_portfolio(**kwargs):
          in the resulting portfolio.
      :names: (optional) A ``string`` or ``list`` of ``strings``, containing the names
          of the stocks, e.g. "GOOG" for Google.
-     :start: (optional) ``string``/``datetime`` start date of stock data to be
+     :start_date: (optional) ``string``/``datetime`` start date of stock data to be
          requested through `quandl`/`yfinance` (default: ``None``).
-     :end: (optional) ``string``/``datetime`` end date of stock data to be
+     :end_date: (optional) ``string``/``datetime`` end date of stock data to be
          requested through `quandl`/`yfinance` (default: ``None``).
      :data: (optional) A ``pandas.DataFrame`` which contains quantities of
          the stocks listed in ``pf_allocation``.
