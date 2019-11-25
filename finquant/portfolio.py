@@ -719,10 +719,10 @@ class Portfolio(object):
 
 def _correct_quandl_request_stock_name(names):
     """This function makes sure that all strings in the given list of
-    stock names are leading with "WIKI/" as required by `quandl` to
-    request data.
-    Example: If an element of names is "GOOG" (which stands for
-    Google), this function modifies the element of names to "WIKI/GOOG".
+    stock names are leading with a string indicating the database to be
+    accessed, e.g. "WIKI/", as required by `quandl` to request data.
+    Example: If the given name does not contain a leading string
+    for the database, this function add "WIKI/" to the name.
     """
     # make sure names is a list of names:
     if isinstance(names, str):
@@ -730,7 +730,7 @@ def _correct_quandl_request_stock_name(names):
     reqnames = []
     # correct stock names if necessary:
     for name in names:
-        if not name.startswith("WIKI/"):
+        if not "/" in name:
             name = "WIKI/" + name
         reqnames.append(name)
     return reqnames
