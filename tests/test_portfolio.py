@@ -28,6 +28,7 @@ df_pf = pd.read_csv(df_pf_path)
 df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 # create testing variables
 names = df_pf.Name.values.tolist()
+names_yf = [name.replace("WIKI/", "") for name in names]
 weights_df_pf = [
     0.31746031746031744,
     0.15873015873015872,
@@ -36,6 +37,7 @@ weights_df_pf = [
 ]
 weights_no_df_pf = [1.0 / len(names) for i in range(len(names))]
 df_pf2 = pd.DataFrame({"Allocation": weights_no_df_pf, "Name": names})
+df_pf2_yf = pd.DataFrame({"Allocation": weights_no_df_pf, "Name": names_yf})
 start_date = datetime.datetime(2015, 1, 1)
 end_date = "2017-12-31"
 # portfolio quantities (based on provided data)
@@ -46,31 +48,31 @@ freq_orig = 252
 risk_free_rate_orig = 0.005
 # create fake allocations
 d_error_1 = {
-    0: {"Names": "GOOG", "Allocation": 20},
-    1: {"Names": "AMZN", "Allocation": 10},
-    2: {"Names": "MCD", "Allocation": 15},
-    3: {"Names": "DIS", "Allocation": 18},
+    0: {"Names": "WIKI/GOOG", "Allocation": 20},
+    1: {"Names": "WIKI/AMZN", "Allocation": 10},
+    2: {"Names": "WIKI/MCD", "Allocation": 15},
+    3: {"Names": "WIKI/DIS", "Allocation": 18},
 }
 df_pf_error_1 = pd.DataFrame.from_dict(d_error_1, orient="index")
 d_error_2 = {
-    0: {"Name": "GOOG", "weight": 20},
-    1: {"Name": "AMZN", "weight": 10},
-    2: {"Name": "MCD", "weight": 15},
-    3: {"Name": "DIS", "weight": 18},
+    0: {"Name": "WIKI/GOOG", "weight": 20},
+    1: {"Name": "WIKI/AMZN", "weight": 10},
+    2: {"Name": "WIKI/MCD", "weight": 15},
+    3: {"Name": "WIKI/DIS", "weight": 18},
 }
 df_pf_error_2 = pd.DataFrame.from_dict(d_error_2, orient="index")
 d_error_3 = {
-    0: {"Name": "IBM", "Allocation": 20},
-    1: {"Name": "KO", "Allocation": 10},
-    2: {"Name": "AXP", "Allocation": 15},
-    3: {"Name": "GE", "Allocation": 18},
+    0: {"Name": "WIKI/IBM", "Allocation": 20},
+    1: {"Name": "WIKI/KO", "Allocation": 10},
+    2: {"Name": "WIKI/AXP", "Allocation": 15},
+    3: {"Name": "WIKI/GE", "Allocation": 18},
 }
 df_pf_error_3 = pd.DataFrame.from_dict(d_error_3, orient="index")
 d_error_4 = {
-    0: {"Name": "GOOG", "Allocation": 20},
-    1: {"Name": "AMZN", "Allocation": 10},
-    2: {"Name": "MCD", "Allocation": 15},
-    3: {"Name": "GE", "Allocation": 18},
+    0: {"Name": "WIKI/GOOG", "Allocation": 20},
+    1: {"Name": "WIKI/AMZN", "Allocation": 10},
+    2: {"Name": "WIKI/MCD", "Allocation": 15},
+    3: {"Name": "WIKI/GE", "Allocation": 18},
 }
 df_pf_error_4 = pd.DataFrame.from_dict(d_error_4, orient="index")
 # create kwargs to be passed to build_portfolio
@@ -79,22 +81,22 @@ d_pass = [
     {"names": names},
     {"names": names, "start_date": start_date, "end_date": end_date},
     {"names": names, "start_date": start_date, "end_date": end_date, "data_api": "quandl"},
-    {"names": names, "start_date": start_date, "end_date": end_date, "data_api": "yfinance"},
+    {"names": names_yf, "start_date": start_date, "end_date": end_date, "data_api": "yfinance"},
     {"data": df_data},
     {"data": df_data, "pf_allocation": df_pf},
 ]
 d_fail = [
     {},
     {"testinput": "..."},
-    {"names": ["GOOG"], "testinput": "..."},
+    {"names": ["WIKI/GOOG"], "testinput": "..."},
     {"names": 1},
     {"names": "test"},
     {"names": "test", "data_api": "yfinance"},
-    {"names": "GOOG"},
+    {"names": "WIKI/GOOG"},
     {"names": "GOOG", "data_api": "yfinance"},
-    {"names": ["GE"], "pf_allocation": df_pf},
+    {"names": ["WIKI/GE"], "pf_allocation": df_pf},
     {"names": ["GE"], "pf_allocation": df_pf, "data_api": "yfinance"},
-    {"names": ["GOOG"], "data": df_data},
+    {"names": ["WIKI/GOOG"], "data": df_data},
     {"names": ["GOOG"], "data": df_data, "data_api": "yfinance"},
     {"names": names, "start_date": start_date, "end_date": "end_date"},
     {"names": names, "start_date": start_date, "end_date": 1},
@@ -183,13 +185,13 @@ def test_buildPF_pass_4():
     d = d_pass[4]
     pf = build_portfolio(**d)
     assert isinstance(pf, Portfolio)
-    assert isinstance(pf.get_stock(names[0]), Stock)
+    assert isinstance(pf.get_stock(names_yf[0]), Stock)
     assert isinstance(pf.data, pd.DataFrame)
     assert isinstance(pf.portfolio, pd.DataFrame)
     assert len(pf.stocks) == len(pf.data.columns)
-    assert pf.data.columns.tolist() == names
+    assert pf.data.columns.tolist() == names_yf
     assert pf.data.index.name == "Date"
-    assert ((pf.portfolio == df_pf2).all()).all()
+    assert ((pf.portfolio == df_pf2_yf).all()).all()
     assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
     pf.properties()
 
