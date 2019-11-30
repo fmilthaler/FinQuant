@@ -718,22 +718,14 @@ class Portfolio(object):
 
 
 def _correct_quandl_request_stock_name(names):
-    """This function makes sure that all strings in the given list of
-    stock names are leading with a string indicating the database to be
-    accessed, e.g. "WIKI/", as required by `quandl` to request data.
-    Example: If the given name does not contain a leading string
-    for the database, this function add "WIKI/" to the name.
+    """If given input argument is of type string,
+    this function converts it to a list, assuming the input argument
+    is only one stock name.
     """
     # make sure names is a list of names:
     if isinstance(names, str):
         names = [names]
-    reqnames = []
-    # correct stock names if necessary:
-    for name in names:
-        if not "/" in name:
-            name = "WIKI/" + name
-        reqnames.append(name)
-    return reqnames
+    return names
 
 
 def _quandl_request(names, start_date=None, end_date=None):
@@ -760,7 +752,10 @@ def _quandl_request(names, start_date=None, end_date=None):
     try:
         resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
     except Exception:
-        raise Exception("Error during download of stock data from Quandl.")
+        errormsg = "Error during download of stock data from Quandl.\n" \
+                   + "Make sure all the requested stock names/tickers are " \
+                   + "supported by Quandl."
+        raise Exception(errormsg)
     return resp
 
 
@@ -824,7 +819,7 @@ def _get_stocks_data_columns(data, names, cols):
      :data: A ``pandas.DataFrame`` which contains quantities of the stocks
          listed in pf_allocation.
      :names: A string or list of strings, containing the names of the
-         stocks, e.g. 'GOOG' for Google.
+         stocks, e.g. 'WIKI/GOOG' for Google.
      :cols: A list of strings of column labels of data to be extracted.
          Currently only one column per stock is supported.
 
@@ -879,12 +874,6 @@ def _get_stocks_data_columns(data, names, cols):
         # if it comes from quandl, it is not of type multiindex
         data = data.loc[:, reqcolnames]
 
-    # special column label treatment for dataframes from quandl:
-    # now rename the columns (removing "WIKI/" from column labels):
-    newcolnames = {}
-    for i in reqcolnames:
-        newcolnames.update({i: i.replace("WIKI/", "")})
-    data.rename(columns=newcolnames, inplace=True)
     # if only one data column per stock exists, rename column labels
     # to the name of the corresponding stock
     newcolnames = {}
