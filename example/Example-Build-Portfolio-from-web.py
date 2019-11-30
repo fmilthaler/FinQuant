@@ -11,6 +11,7 @@
 
 import pandas as pd
 import datetime
+
 # importing some custom functions/objects
 from finquant.portfolio import build_portfolio
 
@@ -22,48 +23,45 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # To play around yourself with different stocks, here is a short list of companies and their tickers
-# d = {0: {'Name':'GOOG', 'Allocation':20},  # Google
-#      1: {'Name':'AMZN', 'Allocation':33},  # Amazon
-#      2: {'Name':'MSFT', 'Allocation':18},  # Microsoft
-#      3: {'Name':'AAPL', 'Allocation':10},  # Apple
-#      4: {'Name':'KO', 'Allocation':15},    # Coca-Cola
-#      5: {'Name':'XOM', 'Allocation':11},   # Exxon Mobil
-#      6: {'Name':'JPM', 'Allocation':21},   # JP Morgan
-#      7: {'Name':'DIS', 'Allocation':9},    # Disney
-#      8: {'Name':'MCD', 'Allocation':23},   # McDonald's
-#      9: {'Name':'WMT', 'Allocation':3},    # Walmart
-#     10: {'Name':'YHOO', 'Allocation':7},   # Yahoo
-#     11: {'Name':'GS', 'Allocation':9},     # Goldman Sachs
+# d = {0: {'Name':'WIKI/GOOG', 'Allocation':20},  # Google
+#      1: {'Name':'WIKI/AMZN', 'Allocation':33},  # Amazon
+#      2: {'Name':'WIKI/MSFT', 'Allocation':18},  # Microsoft
+#      3: {'Name':'WIKI/AAPL', 'Allocation':10},  # Apple
+#      4: {'Name':'WIKI/KO', 'Allocation':15},    # Coca-Cola
+#      5: {'Name':'WIKI/XOM', 'Allocation':11},   # Exxon Mobil
+#      6: {'Name':'WIKI/JPM', 'Allocation':21},   # JP Morgan
+#      7: {'Name':'WIKI/DIS', 'Allocation':9},    # Disney
+#      8: {'Name':'WIKI/MCD', 'Allocation':23},   # McDonald's
+#      9: {'Name':'WIKI/WMT', 'Allocation':3},    # Walmart
+#     10: {'Name':'WIKI/YHOO', 'Allocation':7},   # Yahoo
+#     11: {'Name':'WIKI/GS', 'Allocation':9},     # Goldman Sachs
 #     }
 
 # <codecell>
 
 d = {
-    0: {"Name": "GOOG", "Allocation": 20},
-    1: {"Name": "AMZN", "Allocation": 10},
-    2: {"Name": "MCD", "Allocation": 15},
-    3: {"Name": "DIS", "Allocation": 18},
+    0: {"Name": "WIKI/GOOG", "Allocation": 20},
+    1: {"Name": "WIKI/AMZN", "Allocation": 10},
+    2: {"Name": "WIKI/MCD", "Allocation": 15},
+    3: {"Name": "WIKI/DIS", "Allocation": 18},
 }
+# If you wish to use Yahoo Finance as source, you must remove "WIKI/" from the stock names/tickers
+
 pf_allocation = pd.DataFrame.from_dict(d, orient="index")
 
 # <markdowncell>
 
 # ### User friendly interface to quandl/yfinance
 # As mentioned above, in this example `build_portfolio()` is used to build a portfolio by performing a query to `quandl`/`yfinance`.
-# 
-# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`/`yfinance`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers. Moreover, the leading `"WIKI/"` in `quandl`'s request can be set by the user or not.
-# For example, if using `quandl` as a data source (default), all three lists of tickers/names as shown below are valid input for
-# `FinQuant`'s function `build_portfolio(names=names)`:
-#  * `names = ['WIKI/GOOG', 'WIKI/AMZN']`
-#  * `names = ['GOOG', 'AMZN']`
-#  * `names = ['WIKI/GOOG', 'AMZN']`
-# 
-# If using `yfinance` as a data source, `FinQuant`'s function `build_portfolio(names=names)` expects the stock names to be without any leading/trailing string:
-#  * `names = ['GOOG', 'AMZN']`
-# 
+# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`/`yfinance`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers.
+# For example, if using `quandl` as a data source (default), a list of names/tickers as shown below is a valid input for `FinQuant`'s function `build_portfolio(names=names)`:
+#  * `names = ["WIKI/GOOG", "WIKI/AMZN"]`
+#  
+# If using `yfinance` as a data source, `FinQuant`'s function `build_portfolio(names=names)` expects the stock names to be without any leading/trailing string (check Yahoo Finance for correct stock names):
+#  * `names = ["GOOG", "AMZN"]`
+#  
 # By default, `FinQuant` uses `quandl` to obtain stock price data. The function `build_portfolio()` can be called with the optional argument `data_api` to use `yfinance` instead:
 #  * `build_portfolio(names=names, data_api="yfinance")`
-# 
 # In the below example we are using the default option, `quandl`.
 
 # <codecell>
