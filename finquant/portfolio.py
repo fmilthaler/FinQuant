@@ -849,7 +849,7 @@ def _get_stocks_data_columns(data, names, cols):
                 colname = _get_quandl_data_column_label(names[i], col)
             # if column labels is of type multiindex, and the "Adj Close" is in
             # first level labels, we assume the dataframe comes from yfinance:
-            elif isinstance(data.columns, pd.core.index.MultiIndex):
+            elif isinstance(data.columns, pd.MultiIndex):
                 # alter col for yfinance, as it returns column labels without '.'
                 col = col.replace('.','')
                 if col in data.columns:
@@ -866,7 +866,7 @@ def _get_stocks_data_columns(data, names, cols):
             reqcolnames.append(colname)
 
     # if data comes from yfinance, it is a multiindex dataframe:
-    if isinstance(data.columns, pd.core.index.MultiIndex):
+    if isinstance(data.columns, pd.MultiIndex):
         if not len(firstlevel_colnames) == 1:
             raise ValueError("Sorry, for now only one value/quantity per Stock is supported.")
         data = data[firstlevel_colnames[0]].loc[:, reqcolnames]
