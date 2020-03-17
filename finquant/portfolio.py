@@ -798,6 +798,10 @@ def _yfinance_request(names, start_date=None, end_date=None):
     # thus we do not need to correct them
     try:
         resp = yf.download(names, start=start_date, end=end_date)
+        if not isinstance(resp.columns, pd.core.index.MultiIndex) and len(names) > 0:
+            # for single stock must make the dataframe multiindex
+            stock_tuples = [(col, names[0]) for col in list(resp.columns)]
+            resp.columns = pd.MultiIndex.from_tuples(stock_tuples)
     except Exception:
         raise Exception("Error during download of stock data from Yahoo Finance with `yfinance`.")
     return resp
