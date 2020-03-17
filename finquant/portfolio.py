@@ -783,7 +783,7 @@ def _yfinance_request(names, start_date=None, end_date=None):
     try:
         import datetime
         if isinstance(start_date, str):
-            start_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
+            start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         if isinstance(end_date, str):
             end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
     except ImportError:
