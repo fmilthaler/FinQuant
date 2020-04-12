@@ -752,9 +752,11 @@ def _quandl_request(names, start_date=None, end_date=None):
     try:
         resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
     except Exception:
-        errormsg = "Error during download of stock data from Quandl.\n" \
-                   + "Make sure all the requested stock names/tickers are " \
-                   + "supported by Quandl."
+        errormsg = (
+            "Error during download of stock data from Quandl.\n"
+            + "Make sure all the requested stock names/tickers are "
+            + "supported by Quandl."
+        )
         raise Exception(errormsg)
     return resp
 
