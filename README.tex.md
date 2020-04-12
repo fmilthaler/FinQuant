@@ -3,6 +3,9 @@
 </p>
 
 <p align="center">
+  <a href="https://GitHub.com/fmilthaler/FinQuant/stargazers/">
+    <img src="https://img.shields.io/github/stars/fmilthaler/FinQuant.svg?style=social&label=Star&maxAge=2592000" alt='pypi'>
+  </a>
   <a href="https://pypi.org/project/FinQuant">
     <img src="https://img.shields.io/badge/pypi-v0.2-brightgreen.svg?style=popout" alt='pypi'>
   </a>
@@ -11,6 +14,12 @@
   </a>
   <a href="http://finquant.readthedocs.io/">
     <img src="https://img.shields.io/readthedocs/finquant.svg?style=popout" alt="docs">
+  </a>
+  <a href="https://GitHub.com/fmilthaler/FinQuant/graphs/contributors/">
+    <img src="https://img.shields.io/github/contributors/fmilthaler/FinQuant.svg?style=popout" alt="contributors">
+  </a>
+  <a href="https://github.com/fmilthaler/FinQuant/issues">
+    <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=popout" alt="contributions">
   </a>
   <a href="https://github.com/fmilthaler/FinQuant/blob/master/LICENSE.txt">
     <img src="https://img.shields.io/github/license/fmilthaler/FinQuant.svg?style=popout" alt="license">
