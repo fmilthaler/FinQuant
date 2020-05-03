@@ -137,8 +137,8 @@ class MonteCarloOpt(MonteCarlo):
         # convert to pandas.DataFrame:
         weights_columns = list(self.returns.columns)
         result_columns = ["Expected Return", "Volatility", "Sharpe Ratio"]
-        df_weights = pd.DataFrame(data=res[:,0].tolist(), columns=weights_columns)
-        df_results = pd.DataFrame(data=res[:,1].tolist(), columns=result_columns)
+        df_weights = pd.DataFrame(data=res[:, 0].tolist(), columns=weights_columns)
+        df_results = pd.DataFrame(data=res[:, 1].tolist(), columns=result_columns)
         return (df_weights, df_results)
 
     def optimisation(self):
