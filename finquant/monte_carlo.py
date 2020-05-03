@@ -134,15 +134,11 @@ class MonteCarloOpt(MonteCarlo):
         """
         # run Monte Carlo to get random weights and corresponding quantities
         res = self.run(self._random_weights)
-        # transpose and convert to pandas.DataFrame:
+        # convert to pandas.DataFrame:
         weights_columns = list(self.returns.columns)
         result_columns = ["Expected Return", "Volatility", "Sharpe Ratio"]
-        df_weights = pd.DataFrame(
-            np.stack(np.array(res).T[0], axis=0), columns=weights_columns
-        )
-        df_results = pd.DataFrame(
-            np.stack(np.array(res).T[1], axis=0), columns=result_columns
-        )
+        df_weights = pd.DataFrame(data=res[:,0].tolist(), columns=weights_columns)
+        df_results = pd.DataFrame(data=res[:,1].tolist(), columns=result_columns)
         return (df_weights, df_results)
 
     def optimisation(self):
