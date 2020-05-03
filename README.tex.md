@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://GitHub.com/fmilthaler/FinQuant/stargazers/">
-    <img src="https://img.shields.io/github/stars/fmilthaler/FinQuant.svg?style=social&label=Star&maxAge=2592000" alt='pypi'>
+    <img src="https://img.shields.io/github/stars/fmilthaler/FinQuant.svg?style=social&label=Star" alt='pypi'>
   </a>
   <a href="https://pypi.org/project/FinQuant">
     <img src="https://img.shields.io/badge/pypi-v0.2.2-brightgreen.svg?style=popout" alt='pypi'>
