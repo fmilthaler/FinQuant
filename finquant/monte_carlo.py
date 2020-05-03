@@ -119,7 +119,7 @@ class MonteCarloOpt(MonteCarlo):
         portfolio_values = annualised_portfolio_quantities(
             w, self.return_means, self.cov_matrix, self.risk_free_rate, self.freq
         )
-        return (w, list(portfolio_values))
+        return (w, np.array(portfolio_values))
 
     def _random_portfolios(self):
         """Performs a Monte Carlo run and gets a list of random portfolios
