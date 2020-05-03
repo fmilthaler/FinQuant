@@ -632,6 +632,8 @@ class Portfolio(object):
          :opt_res: ``pandas.DataFrame`` with Expected Return, Volatility and Sharpe Ratio
              for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
+        # dismiss previous instance of mc, as we are performing a new MC optimisation:
+        self.mc = None
         # get instance of MonteCarloOpt
         mc = self._get_mc(num_trials)
         opt_weights, opt_results = mc.optimisation()
