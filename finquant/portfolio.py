@@ -47,7 +47,6 @@ Finally, functions are implemented to generated the following plots:
 - Individual stocks of the portfolio (Expected Return over Volatility)
 """
 
-
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
@@ -58,7 +57,7 @@ from finquant.returns import daily_log_returns
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
 from sklearn.cluster import KMeans
-from scipy.cluster.vq import kmeans,vq
+from scipy.cluster.vq import kmeans, vq
 
 
 class Stock(object):
@@ -598,11 +597,22 @@ class Portfolio(object):
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
-    def cluster_stocks(self, n_clusters = 5):
-        hms = historical_mean_return(self.data)
-        vol = daily_returns(self.data).std() * np.sqrt(self.freq)
+    def cluster_stocks(self, n_clusters=5):
+        print(len(self.data.columns))
+        if not isinstance(n_clusters, int):
+            raise ValueError('Total number of clusters must be integer.')
+        elif n_clusters < 2:
+            raise ValueError(f'Total number of clusters({len(self.data.columns)}) must be > 2.')
+        elif len(self.data.columns) < 3:
+            raise ValueError(f'Total number of stocks in portfolio({len(self.data.columns)}) must be > 2.')
+        elif len(self.data.columns) <= n_clusters:
+            raise ValueError(f'Total number of clusters({n_clusters}) must be <= number of stocks({len(self.data.columns)}) in portfolio')
+
+        pf_return_means = historical_mean_return(self.data)
+        pf_daily_returns = daily_returns(self.data)
+        pf_volatility = pf_daily_returns.std() * np.sqrt(self.freq)
         # format the data as a numpy array to feed into the K-Means algorithm
-        data = np.asarray([np.asarray(hms), np.asarray(vol)]).T
+        data = np.asarray([np.asarray(pf_return_means), np.asarray(pf_volatility)]).T
 
         distorsions = []
         max_n_clusters = min(20, len(self.data.columns))
@@ -663,10 +673,9 @@ class Portfolio(object):
         plt.xlabel('Returns')
         plt.ylabel('Volatility')
 
-        hms.head()
+        pf_return_means.head()
 
-        r = daily_returns(self.data)
-        r.head()
+
 
         idx, _ = vq(data, centroids)
         clusters = {}
@@ -674,24 +683,24 @@ class Portfolio(object):
         for i in list(set(idx)):
             clusters[i] = []
 
-        for name, cluster in zip(hms.index, idx):
+        for name, cluster in zip(pf_return_means.index, idx):
             clusters[cluster].append(name)
 
         for i in list(set(idx)):
             s = 'avg' + str(i)
-            r[s] = r[clusters[i]].mean(axis=1)
+            pf_daily_returns[s] = pf_daily_returns[clusters[i]].mean(axis=1)
 
         for n in range(n_clusters):
             plt.figure(figsize=(8, 4))
 
             for stock in clusters[n]:
-                plt.plot(r[stock].cumsum(), 'gray', linewidth=1)
+                plt.plot(pf_daily_returns[stock].cumsum(), 'gray', linewidth=1)
 
             plt.title(f'Cluster #{n}')
             print(f'Cluster #{n}')
             print(clusters[n])
             s = 'avg' + str(n)
-            plt.plot(r[s].cumsum(), 'red', linewidth=3)
+            plt.plot(pf_daily_returns[s].cumsum(), 'red', linewidth=3)
             plt.xticks(rotation=30)
             plt.grid(True)
 
@@ -856,9 +865,9 @@ def _quandl_request(names, start_date=None, end_date=None):
         resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
     except Exception:
         errormsg = (
-            "Error during download of stock data from Quandl.\n"
-            + "Make sure all the requested stock names/tickers are "
-            + "supported by Quandl."
+                "Error during download of stock data from Quandl.\n"
+                + "Make sure all the requested stock names/tickers are "
+                + "supported by Quandl."
         )
         raise Exception(errormsg)
     return resp
@@ -1003,7 +1012,7 @@ def _get_stocks_data_columns(data, names, cols):
 
 
 def _build_portfolio_from_api(
-    names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
+        names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -1082,25 +1091,25 @@ def _generate_pf_allocation(names=None, data=None):
             reducedlist = [elt for num, elt in enumerate(splitnames) if not num == i]
             if splitname in reducedlist:
                 errormsg = (
-                    "'data' pandas.DataFrame contains conflicting "
-                    + "column labels."
-                    + "\nMultiple columns with a substring of "
-                    + "\n "
-                    + str(splitname)
-                    + "\n"
-                    + "were found. You have two options:"
-                    + "\n 1. call 'build_portfolio' and pass a "
-                    + "pandas.DataFrame 'pf_allocation' that contains the "
-                    + "weights/allocation of stocks within your "
-                    + "portfolio. 'build_portfolio' will then extract "
-                    + "the columns from 'data' that match the values "
-                    + "of the column 'Name' in the pandas.DataFrame "
-                    + "'pf_allocation'."
-                    + "\n 2. call 'build_portfolio' and pass a "
-                    + "pandas.DataFrame 'data' that does not have conflicting "
-                    + "column labels, e.g. 'GOOG' and "
-                    + "'GOOG - Adj. Close' are considered "
-                    + "conflicting column headers."
+                        "'data' pandas.DataFrame contains conflicting "
+                        + "column labels."
+                        + "\nMultiple columns with a substring of "
+                        + "\n "
+                        + str(splitname)
+                        + "\n"
+                        + "were found. You have two options:"
+                        + "\n 1. call 'build_portfolio' and pass a "
+                        + "pandas.DataFrame 'pf_allocation' that contains the "
+                        + "weights/allocation of stocks within your "
+                        + "portfolio. 'build_portfolio' will then extract "
+                        + "the columns from 'data' that match the values "
+                        + "of the column 'Name' in the pandas.DataFrame "
+                        + "'pf_allocation'."
+                        + "\n 2. call 'build_portfolio' and pass a "
+                        + "pandas.DataFrame 'data' that does not have conflicting "
+                        + "column labels, e.g. 'GOOG' and "
+                        + "'GOOG - Adj. Close' are considered "
+                        + "conflicting column headers."
                 )
                 raise ValueError(errormsg)
     # if names is given, we go directly to the below:
@@ -1215,15 +1224,15 @@ def build_portfolio(**kwargs):
         "examples in `examples/`."
     )
     input_error = (
-        "You passed an unsupported argument to "
-        "build_portfolio. The following arguments are not "
-        "supported:"
-        "\n {}\nOnly the following arguments are allowed:\n "
-        "{}\n" + docstring_msg
+            "You passed an unsupported argument to "
+            "build_portfolio. The following arguments are not "
+            "supported:"
+            "\n {}\nOnly the following arguments are allowed:\n "
+            "{}\n" + docstring_msg
     )
     input_comb_error = (
-        "Error: None of the input arguments {} are allowed "
-        "in combination with {}.\n" + docstring_msg
+            "Error: None of the input arguments {} are allowed "
+            "in combination with {}.\n" + docstring_msg
     )
 
     # list of all valid optional input arguments
@@ -1285,14 +1294,14 @@ def build_portfolio(**kwargs):
 
     # final check
     if (
-        pf.portfolio.empty
-        or pf.data.empty
-        or pf.stocks == {}
-        or pf.expected_return is None
-        or pf.volatility is None
-        or pf.sharpe is None
-        or pf.skew is None
-        or pf.kurtosis is None
+            pf.portfolio.empty
+            or pf.data.empty
+            or pf.stocks == {}
+            or pf.expected_return is None
+            or pf.volatility is None
+            or pf.sharpe is None
+            or pf.skew is None
+            or pf.kurtosis is None
     ):
         raise ValueError(
             "Should not get here. Something went wrong while "
