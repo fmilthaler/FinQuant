@@ -11,6 +11,7 @@
 
 import pandas as pd
 import datetime
+import matplotlib.pyplot as plt
 
 # importing some custom functions/objects
 from finquant.portfolio import build_portfolio

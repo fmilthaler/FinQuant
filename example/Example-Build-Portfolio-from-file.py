@@ -12,6 +12,7 @@
 import pathlib
 import pandas as pd
 import datetime
+import matplotlib.pyplot as plt
 
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio

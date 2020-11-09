@@ -5,3 +5,4 @@ quandl>=3.4.5
 yfinance>=0.1.43
 scipy>=1.2.0
 pytest>=2.8.7
+scikit-learn>=0.23.2
