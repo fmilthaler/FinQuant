@@ -16,7 +16,7 @@ ticker_list = ['TMUSR', 'AAPL', 'MSFT', 'AMZN', 'FB', 'GOOGL', 'GOOG', 'INTC', '
 
 # # Building a portfolio with data from `quandl`/`yfinance`
 # ## Building a portfolio with `build_portfolio()` by downloading relevant data through `quandl`/`yfinance` with stock names, start and end date and column labels
-# This example only focuses on how to use `build_portfolio()` and cluster stocks based on return and volatility
+# This example only focuses on how to use `build_portfolio()` and cluster stocks based on the return and volatility
 # <codecell>
 
 import pandas as pd
@@ -29,7 +29,7 @@ from finquant.portfolio import build_portfolio
 # <markdowncell>
 
 # ## Get data from `quandl`/`yfinance` and build portfolio
-# First we need to build a pandas.DataFrame that holds relevant data for our portfolio. The minimal information needed are stock names and the amount of money to be invested in them, e.g. Allocation.
+# First we need to list stocks we want to cluster.
 
 # <codecell>
 
@@ -46,7 +46,7 @@ tickers_list = [ 'AAPL', 'MSFT', 'AMZN', 'FB', 'GOOGL', 'GOOG', 'INTC', 'NVDA', 
 
 # <codecell>
 
-# dates can be set as datetime or string, as shown below:
+# dates can be set as datetime:
 start_date = datetime.datetime(2015, 1, 1)
 end_date = datetime.datetime(2020, 1, 1)
 
