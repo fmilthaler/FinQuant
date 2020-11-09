@@ -19,7 +19,6 @@ ticker_list = ['TMUSR', 'AAPL', 'MSFT', 'AMZN', 'FB', 'GOOGL', 'GOOG', 'INTC', '
 # This example only focuses on how to use `build_portfolio()` and cluster stocks based on the return and volatility
 # <codecell>
 
-import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
 
@@ -79,7 +78,6 @@ print(pf)
 pf.properties()
 
 # <markdowncell>
-
 pf.cluster_stocks(n_clusters=6)
 
 plt.show()
