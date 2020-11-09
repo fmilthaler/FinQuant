@@ -57,6 +57,8 @@ from finquant.returns import daily_returns, cumulative_returns
 from finquant.returns import daily_log_returns
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
+from sklearn.cluster import KMeans
+from scipy.cluster.vq import kmeans,vq
 
 
 class Stock(object):
@@ -595,6 +597,105 @@ class Portfolio(object):
         ef = self._get_ef()
         # plot efficient frontier
         ef.plot_optimal_portfolios()
+
+    def cluster_stocks(self, n_clusters = 5):
+        hms = historical_mean_return(self.data)
+        vol = daily_returns(self.data).std() * np.sqrt(self.freq)
+        # format the data as a numpy array to feed into the K-Means algorithm
+        data = np.asarray([np.asarray(hms), np.asarray(vol)]).T
+
+        distorsions = []
+        max_n_clusters = min(20, len(self.data.columns))
+
+        for k in range(2, max_n_clusters):
+            k_means = KMeans(n_clusters=k)
+            k_means.fit(X=data)
+            distorsions.append(k_means.inertia_)
+
+        plt.plot(
+            range(2, max_n_clusters),
+            distorsions,
+            linestyle='-',
+            color='red',
+            lw=2,
+            label='Elbow curve',
+        )
+        plt.title('Elbow curve')
+        plt.xlabel('Number of clusters')
+        plt.ylabel('Distortion')
+        plt.grid(True)
+        plt.legend()
+
+        # Step size of the mesh. Decrease to increase the quality of the VQ.
+        h = .002  # point in the mesh [x_min, x_max]x[y_min, y_max].
+
+        x_min, x_max = data[:, 0].min() - 0.1, data[:, 0].max() + 0.1
+        y_min, y_max = data[:, 1].min() - 0.1, data[:, 1].max() + 0.1
+        xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+        km = KMeans(n_clusters=n_clusters)
+        km.fit(data)
+
+        centroids = km.cluster_centers_
+
+        # Obtain labels for each point in mesh. Use last trained model.
+        Z = km.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
+
+        # some plotting using numpy's logical indexing
+        plt.figure(figsize=(16, 9))
+        plt.imshow(Z, interpolation='nearest',
+                   extent=(xx.min(), xx.max(), yy.min(), yy.max()),
+                   cmap=plt.cm.Paired,
+                   aspect='auto', origin='lower')
+
+        # Plot the centroids as a white X
+        plt.scatter(centroids[:, 0], centroids[:, 1],
+                    marker='*', s=420,
+                    color='white', zorder=10)
+        # Plot data
+        plt.plot(data[:, 0],
+                 data[:, 1],
+                 'o',
+                 markersize=12)
+
+        plt.title('K-means clustering\n'
+                  'Centroids are marked with white star')
+        plt.xlabel('Returns')
+        plt.ylabel('Volatility')
+
+        hms.head()
+
+        r = daily_returns(self.data)
+        r.head()
+
+        idx, _ = vq(data, centroids)
+        clusters = {}
+
+        for i in list(set(idx)):
+            clusters[i] = []
+
+        for name, cluster in zip(hms.index, idx):
+            clusters[cluster].append(name)
+
+        for i in list(set(idx)):
+            s = 'avg' + str(i)
+            r[s] = r[clusters[i]].mean(axis=1)
+
+        for n in range(n_clusters):
+            plt.figure(figsize=(8, 4))
+
+            for stock in clusters[n]:
+                plt.plot(r[stock].cumsum(), 'gray', linewidth=1)
+
+            plt.title(f'Cluster #{n}')
+            print(f'Cluster #{n}')
+            print(clusters[n])
+            s = 'avg' + str(n)
+            plt.plot(r[s].cumsum(), 'red', linewidth=3)
+            plt.xticks(rotation=30)
+            plt.grid(True)
+
+        return clusters
 
     # optimising the investments with the efficient frontier class
     def _get_mc(self, num_trials=1000):
