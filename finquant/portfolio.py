@@ -598,7 +598,19 @@ class Portfolio(object):
         ef.plot_optimal_portfolios()
 
     def cluster_stocks(self, n_clusters=5):
-        print(len(self.data.columns))
+        """.Gets portfolios for a range of given target Returns.
+            If no targets were provided, the algorithm will find the minimum
+            and maximum Returns of the portfolio's individual stocks, and set
+            the target range according to those values.
+            Results in the Efficient Frontier.
+
+            :Input:
+                 :n_clusters: ``int`` (default: 5)
+
+            :Output:
+                 :clusters: ``list`` of (Volatility, Return) values.
+        """
+
         if not isinstance(n_clusters, int):
             raise ValueError('Total number of clusters must be integer.')
         elif n_clusters < 2:
