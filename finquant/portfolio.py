@@ -597,18 +597,26 @@ class Portfolio(object):
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
-    def cluster_stocks(self, n_clusters=5):
-        """.Gets portfolios for a range of given target Returns.
-            If no targets were provided, the algorithm will find the minimum
-            and maximum Returns of the portfolio's individual stocks, and set
-            the target range according to those values.
-            Results in the Efficient Frontier.
+    def cluster_stocks(self, n_clusters=5, verbose=False):
+        """ Gets the number of clusters and tries to cluster(KMeans) stocks based on
+            the mean returns and volatility. The decision about optimal number
+            of clusters can be made based on an elbow curve. Max number of cluster is
+            20.
+
+            Good article about elbow curve:
+            https://blog.cambridgespark.com/how-to-determine-the-optimal-number-of-clusters-for-k-means-clustering-14f27070048f
+
+            The function creates following plots:
+             1. Elbow curve to make decision about optimal number of clusters
+             2. A plot with K-Means clustered by return and volatility stocks and centroids.
+             3. Plots with clusters and their daily return cumulative sum over the given period
 
             :Input:
-                 :n_clusters: ``int`` (default: 5)
-
+                 :n_clusters: ``int`` (default: 5), should be > 2 and less than number of stocks in
+                 portfolio
+                 :verbose: ``boolean`` (default= ``False``), whether to print out clusters
             :Output:
-                 :clusters: ``list`` of (Volatility, Return) values.
+                 :clusters: ``list`` of (Stocks) tickers.
         """
 
         if not isinstance(n_clusters, int):
@@ -617,8 +625,9 @@ class Portfolio(object):
             raise ValueError(f'Total number of clusters({len(self.data.columns)}) must be > 2.')
         elif len(self.data.columns) < 3:
             raise ValueError(f'Total number of stocks in portfolio({len(self.data.columns)}) must be > 2.')
-        elif len(self.data.columns) <= n_clusters:
-            raise ValueError(f'Total number of clusters({n_clusters}) must be <= number of stocks({len(self.data.columns)}) in portfolio')
+        elif n_clusters > len(self.data.columns):
+            raise ValueError(f'Total number of clusters({n_clusters}) '
+                             f'must be <= number of stocks({len(self.data.columns)}) in portfolio')
 
         pf_return_means = historical_mean_return(self.data)
         pf_daily_returns = daily_returns(self.data)
@@ -664,7 +673,7 @@ class Portfolio(object):
         Z = km.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape)
 
         # some plotting using numpy's logical indexing
-        plt.figure(figsize=(16, 9))
+        plt.figure(figsize=(10, 6))
         plt.imshow(Z, interpolation='nearest',
                    extent=(xx.min(), xx.max(), yy.min(), yy.max()),
                    cmap=plt.cm.Paired,
@@ -674,7 +683,7 @@ class Portfolio(object):
         plt.scatter(centroids[:, 0], centroids[:, 1],
                     marker='*', s=420,
                     color='white', zorder=10)
-        # Plot data
+        # Plot stocks
         plt.plot(data[:, 0],
                  data[:, 1],
                  'o',
@@ -685,10 +694,6 @@ class Portfolio(object):
         plt.xlabel('Returns')
         plt.ylabel('Volatility')
 
-        pf_return_means.head()
-
-
-
         idx, _ = vq(data, centroids)
         clusters = {}
 
@@ -698,23 +703,33 @@ class Portfolio(object):
         for name, cluster in zip(pf_return_means.index, idx):
             clusters[cluster].append(name)
 
+        # Calculating avg comulative daily return for each cluter and store
+        # in pf_daily_returns under special stock name - avg{Cluster index}
         for i in list(set(idx)):
             s = 'avg' + str(i)
             pf_daily_returns[s] = pf_daily_returns[clusters[i]].mean(axis=1)
 
         for n in range(n_clusters):
-            plt.figure(figsize=(8, 4))
+            #plot clusters
+            plt.figure(figsize=(10, 6))
 
             for stock in clusters[n]:
+                #plot stocks as grey lines
                 plt.plot(pf_daily_returns[stock].cumsum(), 'gray', linewidth=1)
 
+
             plt.title(f'Cluster #{n}')
-            print(f'Cluster #{n}')
-            print(clusters[n])
+            plt.ylabel("Daily returns cumulative sum")
+            #plot average to see cluster dynamic
             s = 'avg' + str(n)
             plt.plot(pf_daily_returns[s].cumsum(), 'red', linewidth=3)
             plt.xticks(rotation=30)
             plt.grid(True)
+
+            if verbose:
+               print(f'Cluster #{n}')
+               print(clusters[n])
+
 
         return clusters
 

@@ -20,6 +20,7 @@ weak_abse = 1e-8
 
 # setting quandl api key
 quandl.ApiConfig.api_key = os.getenv("QUANDLAPIKEY")
+quandl.read_key()
 
 # read data from file
 df_pf_path = pathlib.Path.cwd() / ".." / "data" / "ex1-portfolio.csv"
@@ -606,3 +607,29 @@ def test_plot_stocks():
     pf = build_portfolio(**d)
     # just checking if a plot is successfully created, not checking for content
     pf.plot_stocks()
+
+########################################################
+# tests for some portfolio clustering should fail      #
+########################################################
+
+def test_cluster_stocks_fail_0():
+    d = d_pass[4]
+    pf = build_portfolio(**d)
+    with pytest.raises(Exception):
+        pf.cluster_stocks(n_clusters=5)
+
+
+def test_cluster_stocks_fail_1():
+    d = d_pass[4]
+    pf = build_portfolio(**d)
+    with pytest.raises(Exception):
+        pf.cluster_stocks(n_clusters=1)
+
+########################################################
+# tests for some portfolio clustering should pass      #
+########################################################
+
+def test_cluster_stocks_pass_0():
+    d = d_pass[4]
+    pf = build_portfolio(**d)
+    pf.cluster_stocks(n_clusters=4, verbose=True)
