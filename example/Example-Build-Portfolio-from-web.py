@@ -12,6 +12,7 @@
 import pandas as pd
 import datetime
 import matplotlib.pyplot as plt
+import quandl
 
 # importing some custom functions/objects
 from finquant.portfolio import build_portfolio
@@ -39,7 +40,7 @@ from finquant.portfolio import build_portfolio
 #     }
 
 # <codecell>
-
+quandl.read_key()
 d = {
     0: {"Name": "WIKI/GOOG", "Allocation": 20},
     1: {"Name": "WIKI/AMZN", "Allocation": 10},

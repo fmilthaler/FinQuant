@@ -69,8 +69,9 @@ print(pf)
 pf.properties()
 
 # <markdowncell>
-pf.cluster_stocks(n_clusters=10)
 
+clusters = pf.cluster_stocks(n_clusters=10, verbose=True)
+# show plot with cluster
 plt.show()
 
 # ## Please continue with `Example-Build-Portfolio-from-file.py`.
