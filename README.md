@@ -45,6 +45,7 @@ This README only gives a brief overview of *FinQuant*. The interested reader sho
    - [Building a portfolio with preset data](#Building-a-portfolio-with-preset-data)
    - [Analysis of a portfolio](#Analysis-of-a-portfolio)
    - [Optimisation of a portfolio](#Optimisation-of-a-portfolio)
+   - [Clustering stocks](#Clustering-stocks)
 
 ## Motivation
 Within a few lines of code, *FinQuant* can generate an object that holds your stock prices of your desired financial portfolio, analyses it, and can create plots of different kinds of *Returns*, *Moving Averages*, *Moving Average Bands with buy/sell signals*, and *Bollinger Bands*. It also allows for the optimisation based on the *Efficient Frontier* or a *Monte Carlo* run of the financial portfolio within a few lines of code. Some of the results are shown here.
@@ -163,13 +164,16 @@ As it is common for open-source projects, there are several ways to get hold of 
 ### Dependencies
 *FinQuant* depends on the following Python packages:
  - python>=3.5.0
- - numpy>=1.15
+ - numpy==1.19.3 *
  - pandas>=0.24
  - matplotlib>=1.5.1
  - quandl>=3.4.5
  - yfinance>=0.1.43
  - scipy>=1.2.0
  - pytest>=2.8.7
+
+* - numpy 1.19.4 can cause an issue on Win 
+Deatail can be found here  https://developercommunity.visualstudio.com/content/problem/1207405/fmod-after-an-update-to-windows-2004-is-causing-a.html
 
 ### From PyPI
 *FinQuant* can be obtained from PyPI
@@ -268,4 +272,12 @@ Furthermore, it is also shown how the entire *Efficient Frontier* and the optima
 Also, the optimisation of a portfolio and its visualisation based on a *Monte Carlo* is shown.
 
 Finally, *FinQuant*'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
+
+### Clustering stocks
+
+`./example/Example-Cluster-Stocks.py`: This example shows how to use an instance of `finquant.portfolio.Portfolio`, allocate stocks with k-means clustering algorithms to various clusters to evaluate cumulative daily returns and volatility, one can make a decision to invest or exclude stocks from the portfolio
+
+- Elbow curve to make decision about optimal number of clusters
+- A plot with clustered by return and volatility stocks and centroids.
+- Plots with clusters and their daily return cumulative sum over the given period
 
