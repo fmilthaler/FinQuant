@@ -54,6 +54,7 @@ setuptools.setup(
         "scipy",
         "matplotlib",
         "pytest",
+        "scikit-learn",
     ],
     project_urls={"Documentation": "https://finquant.readthedocs.io"},
 )
