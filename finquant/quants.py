@@ -6,6 +6,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 
 import numpy as np
 import pandas as pd
+from finquant.returns import weighted_mean_daily_returns
 
 
 def weighted_mean(means, weights):
@@ -72,6 +73,24 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
     ):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
     return (exp_return - risk_free_rate) / float(volatility)
+
+def downside_risk(data, weights, risk_free_rate=0.005):
+    """Computes the downside risk (target semideviation of returns, given a risk free rate)
+    :Input:
+      :data: ``pandas.DataFrame`` with daily stock prices
+      :weights: ``numpy.ndarray``/``pd.Series`` of weights
+      :risk_free_rate: ``int``/``float`` (default=``0.005``), risk free rate
+    
+    :Output:
+      :downside_risk: ``float`` (can be NaN if all returns outperform the risk free rate)
+    """
+    wtd_daily_mean = weighted_mean_daily_returns(data, weights)
+    under = wtd_daily_mean.where(lambda i : i < risk_free_rate).dropna(how='all')
+    if len(under) == 0:
+        return np.NaN
+    downside = under - risk_free_rate
+    return np.sqrt((downside * downside).mean())
+
 
 
 def annualised_portfolio_quantities(
