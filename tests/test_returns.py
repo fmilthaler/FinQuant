@@ -43,8 +43,13 @@ def test_weighted_daily_mean_returns():
     d = { "1": l1, "2": l2 }
     df = pd.DataFrame(d)
     ret = weighted_mean_daily_returns(df, weights)
-    assert all(abs(ret.values - expected) <= 1e-15)
+    assert all(abs(ret - expected) <= 1e-15)
 
+    d = { "1": l1 }
+    expected = [ 0.5 for i in range(len(l1)-1) ]
+    df = pd.DataFrame(d)
+    ret = weighted_mean_daily_returns(df, np.array([1]))
+    assert all(abs(ret - expected) <= 1e-15)
 
 def test_daily_log_returns():
     orig = [
