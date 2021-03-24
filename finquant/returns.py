@@ -42,9 +42,9 @@ def weighted_mean_daily_returns(data, weights):
       :weights: ``numpy.ndarray``/``pd.Series`` of weights
 
     :Output:
-      :ret: a ``pandas.Series`` of weighted mean daily percentage change of Returns
+      :ret: ``numpy.array`` of weighted mean daily percentage change of Returns
     """
-    return daily_returns(data).dot(weights)
+    return np.dot(daily_returns(data), weights)
 
 def daily_log_returns(data):
     """
