@@ -85,7 +85,8 @@ def downside_risk(data, weights, risk_free_rate=0.005):
       :downside_risk: ``float`` (can be NaN if all returns outperform the risk free rate)
     """
     wtd_daily_mean = weighted_mean_daily_returns(data, weights)
-    under = wtd_daily_mean.where(lambda i : i < risk_free_rate).dropna(how='all')
+    under = np.where(wtd_daily_mean < risk_free_rate, wtd_daily_mean, np.NaN)
+    under = under[np.logical_not(np.isnan(under))]
     if len(under) == 0:
         return np.NaN
     downside = under - risk_free_rate
