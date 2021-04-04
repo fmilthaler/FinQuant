@@ -74,6 +74,32 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
     return (exp_return - risk_free_rate) / float(volatility)
 
+def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
+    """Computes the Sharpe Ratio
+
+    :Input:
+     :exp_return: ``int``/``float``, Expected Return of a portfolio
+     :downside_risk: ``int``/``float``/``NaN``, Downside Risk of a portfolio
+     :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
+
+    :Output:
+     :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(downside_risk)``
+     Can be ``NaN`` if ``downside_risk`` is NaN
+    """
+    if not isinstance(
+        exp_return, (int, float, np.int32, np.int64, np.float32, np.float64)
+    ):
+        raise ValueError("exp_return is expected to be an integer or float.")
+    if not isinstance(
+        downside_risk, (int, float, np.int32, np.int64, np.float32, np.float64)
+    ):
+        raise ValueError("volatility is expected to be an integer or float.")
+    if not isinstance(
+        risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
+    ):
+        raise ValueError("risk_free_rate is expected to be an integer or float.")
+    return (exp_return - risk_free_rate) / float(downside_risk)
+
 def downside_risk(data, weights, risk_free_rate=0.005):
     """Computes the downside risk (target semideviation of returns, given a risk free rate)
     :Input:
