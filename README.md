@@ -129,7 +129,7 @@ yields
 
 ### Bollinger Band
 ```
-from finquant.moving_average import plot_bollinger_band
+from finquant.moving_average import plot_bollinger_band, sma
 # get stock data for disney
 dis = pf.get_stock("DIS").data.copy(deep=True)
 span=20
