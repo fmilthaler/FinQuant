@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from finquant.moving_average import compute_ma, sma, ema, sma_std, ema_std
 from finquant.moving_average import plot_bollinger_band
 
+plt.switch_backend('Agg')
 
 def test_sma():
     orig = np.array(
@@ -172,36 +173,36 @@ def test_compute_ma():
     assert all(abs((dforig - ma.describe()) <= 1e-15).all())
 
 
-# def test_plot_bollinger_band():
-#     labels_orig = ["Stock", "15d", "Bollinger Band"]
-#     xlabel_orig = "Days"
-#     ylabel_orig = "Price"
-#     title_orig = (
-#         "Bollinger Band of +/- 2$\\sigma$, Moving Average " "of sma over 15 days"
-#     )
-#     x = np.sin(np.linspace(1, 10, 100))
-#     df = pd.DataFrame({"Stock": x}, index=np.linspace(1, 10, 100))
-#     df.index.name = "Days"
-#     plt.figure()
-#     plot_bollinger_band(df, sma, span=15)
-#     # get data from axis object
-#     ax = plt.gca()
-#     # ax.lines[0] is the data we passed to plot_bollinger_band
-#     # ax.lines[1] is the moving average (tested already)
-#     # not sure how to obtain the data of the BollingerBand from
-#     # the plot.
-#     # only checking if input data matches data of first line on plot,
-#     # as a measure of data appearing in the plot
-#     line1 = ax.lines[0]
-#     stock_plot = line1.get_xydata()
-#     labels_plot = ax.get_legend_handles_labels()[1]
-#     xlabel_plot = ax.get_xlabel()
-#     ylabel_plot = ax.get_ylabel()
-#     title_plot = ax.get_title()
-#     # tests
-#     assert (df["Stock"].index.values == stock_plot[:, 0]).all()
-#     assert (df["Stock"].values == stock_plot[:, 1]).all()
-#     assert labels_orig == labels_plot
-#     assert xlabel_orig == xlabel_plot
-#     assert ylabel_orig == ylabel_plot
-#     assert title_orig == title_plot
+def test_plot_bollinger_band():
+    labels_orig = ["Bollinger Band", "Stock", "15d"]
+    xlabel_orig = "Days"
+    ylabel_orig = "Price"
+    title_orig = (
+        "Bollinger Band of +/- 2$\\sigma$, Moving Average " "of sma over 15 days"
+    )
+    x = np.sin(np.linspace(1, 10, 100))
+    df = pd.DataFrame({"Stock": x}, index=np.linspace(1, 10, 100))
+    df.index.name = "Days"
+    plt.figure()
+    plot_bollinger_band(df, sma, span=15)
+    # get data from axis object
+    ax = plt.gca()
+    # ax.lines[0] is the data we passed to plot_bollinger_band
+    # ax.lines[1] is the moving average (already tested)
+    # not sure how to obtain the data of the BollingerBand from
+    # the plot.
+    # only checking if input data matches data of first line on plot,
+    # as a measure of data appearing in the plot
+    line1 = ax.lines[0]
+    stock_plot = line1.get_xydata()
+    labels_plot = ax.get_legend_handles_labels()[1]
+    xlabel_plot = ax.get_xlabel()
+    ylabel_plot = ax.get_ylabel()
+    title_plot = ax.get_title()
+    # tests
+    assert (df["Stock"].index.values == stock_plot[:, 0]).all()
+    assert (df["Stock"].values == stock_plot[:, 1]).all()
+    assert labels_orig == labels_plot
+    assert xlabel_orig == xlabel_plot
+    assert ylabel_orig == ylabel_plot
+    assert title_orig == title_plot
