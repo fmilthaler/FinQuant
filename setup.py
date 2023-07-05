@@ -2,14 +2,14 @@ import setuptools
 
 # get version/release from file
 with open("version", "r") as f:
-    ver = dict(x.rstrip().split("=") for x in f)
+    version = dict(x.rstrip().split("=") for x in f)
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="FinQuant",
-    version=ver["version"],
+    version=version["version"],
     author="Frank Milthaler",
     author_email="f.milthaler@gmail.com",
     description="A program for financial portfolio management, analysis and optimisation",
@@ -17,7 +17,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/fmilthaler/FinQuant",
     download_url="https://github.com/fmilthaler/FinQuant/archive/v{}.tar.gz".format(
-        ver["release"]
+        version["release"]
     ),
     license="MIT",
     packages=setuptools.find_packages(),
@@ -52,7 +52,16 @@ setuptools.setup(
         "pandas",
         "scipy",
         "matplotlib",
-        "pytest",
     ],
+    extras_require={
+        "test": [
+            "pytest==7.3.2",
+        ],
+        "dev": [
+            "black==23.1.0",
+            "jupyter",
+            "notebook"
+        ],
+    },
     project_urls={"Documentation": "https://finquant.readthedocs.io"},
 )
