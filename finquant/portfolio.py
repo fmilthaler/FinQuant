@@ -60,7 +60,7 @@ from finquant.monte_carlo import MonteCarloOpt
 
 
 class Portfolio(object):
-    """Object that contains information about a investment portfolio.
+    """Object that contains information about an investment portfolio.
     To initialise the object, it does not require any input.
     To fill the portfolio with investment information, the
     function ``add_stock(stock)`` should be used, in which ``stock`` is
