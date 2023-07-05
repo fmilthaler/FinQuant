@@ -46,6 +46,7 @@ setuptools.setup(
     ],
     python_requires=">=3.10",
     install_requires=[
+        "quandl",
         "yfinance",
         "numpy",
         "pandas",
