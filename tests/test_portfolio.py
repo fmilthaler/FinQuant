@@ -88,7 +88,7 @@ df_pf_error_4 = pd.DataFrame.from_dict(d_error_4, orient="index")
 # create kwargs to be passed to build_portfolio
 d_pass = [
     {"names": names_yf, "pf_allocation": df_pf_yf, "data_api": "yfinance"},
-    {"names": names},
+    {"names": names_yf, "data_api": "yfinance"},
     {"names": names, "start_date": start_date, "end_date": end_date},
     {
         "names": names,
@@ -145,13 +145,13 @@ def test_buildPF_pass_0():
     d = d_pass[0]
     pf = build_portfolio(**d)
     assert isinstance(pf, Portfolio)
-    assert isinstance(pf.get_stock(names[0]), Stock)
+    assert isinstance(pf.get_stock(names_yf[0]), Stock)
     assert isinstance(pf.data, pd.DataFrame)
     assert isinstance(pf.portfolio, pd.DataFrame)
     assert len(pf.stocks) == len(pf.data.columns)
-    assert pf.data.columns.tolist() == names
+    assert pf.data.columns.tolist() == names_yf
     assert pf.data.index.name == "Date"
-    assert ((pf.portfolio == df_pf).all()).all()
+    assert ((pf.portfolio == df_pf_yf).all()).all()
     assert (pf.comp_weights() - weights_df_pf <= strong_abse).all()
     pf.properties()
 
