@@ -193,38 +193,40 @@ def test_buildPF_pass_3():
     assert ((pf.portfolio == df_pf2_yf).all()).all()
     assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
     pf.properties()
-# def test_buildPF_pass_5():
-#     d = d_pass[5]
-#     pf = build_portfolio(**d)
-#     assert isinstance(pf, Portfolio)
-#     assert isinstance(pf.get_stock(names[0]), Stock)
-#     assert isinstance(pf.data, pd.DataFrame)
-#     assert isinstance(pf.portfolio, pd.DataFrame)
-#     assert len(pf.stocks) == len(pf.data.columns)
-#     assert pf.data.columns.tolist() == names
-#     assert pf.data.index.name == "Date"
-#     assert ((pf.portfolio == df_pf2).all()).all()
-#     assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
-#     pf.properties()
-#
-#
-# def test_buildPF_pass_6():
-#     d = d_pass[6]
-#     pf = build_portfolio(**d)
-#     assert isinstance(pf, Portfolio)
-#     assert isinstance(pf.data, pd.DataFrame)
-#     assert isinstance(pf.portfolio, pd.DataFrame)
-#     assert len(pf.stocks) == len(pf.data.columns)
-#     assert pf.data.columns.tolist() == names
-#     assert pf.data.index.name == "Date"
-#     assert ((pf.portfolio == df_pf).all()).all()
-#     assert (pf.comp_weights() - weights_df_pf <= strong_abse).all()
-#     assert expret_orig - pf.expected_return <= strong_abse
-#     assert vol_orig - pf.volatility <= strong_abse
-#     assert sharpe_orig - pf.sharpe <= strong_abse
-#     assert freq_orig - pf.freq <= strong_abse
-#     assert risk_free_rate_orig - pf.risk_free_rate <= strong_abse
-#     pf.properties()
+
+
+def test_buildPF_pass_4():
+    d = d_pass[4]
+    pf = build_portfolio(**d)
+    assert isinstance(pf, Portfolio)
+    assert isinstance(pf.get_stock(names[0]), Stock)
+    assert isinstance(pf.data, pd.DataFrame)
+    assert isinstance(pf.portfolio, pd.DataFrame)
+    assert len(pf.stocks) == len(pf.data.columns)
+    assert pf.data.columns.tolist() == names
+    assert pf.data.index.name == "Date"
+    assert ((pf.portfolio == df_pf2).all()).all()
+    assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
+    pf.properties()
+
+
+def test_buildPF_pass_5():
+    d = d_pass[5]
+    pf = build_portfolio(**d)
+    assert isinstance(pf, Portfolio)
+    assert isinstance(pf.data, pd.DataFrame)
+    assert isinstance(pf.portfolio, pd.DataFrame)
+    assert len(pf.stocks) == len(pf.data.columns)
+    assert pf.data.columns.tolist() == names
+    assert pf.data.index.name == "Date"
+    assert ((pf.portfolio == df_pf).all()).all()
+    assert (pf.comp_weights() - weights_df_pf <= strong_abse).all()
+    assert expret_orig - pf.expected_return <= strong_abse
+    assert vol_orig - pf.volatility <= strong_abse
+    assert sharpe_orig - pf.sharpe <= strong_abse
+    assert freq_orig - pf.freq <= strong_abse
+    assert risk_free_rate_orig - pf.risk_free_rate <= strong_abse
+    pf.properties()
 
 
 #####################################################################
