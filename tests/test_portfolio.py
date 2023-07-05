@@ -25,11 +25,20 @@ quandl.ApiConfig.api_key = os.getenv("QUANDLAPIKEY")
 # read data from file
 df_pf_path = pathlib.Path.cwd() / ".." / "data" / "ex1-portfolio.csv"
 df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
+# allocation of portfolio (quandl version):
 df_pf = pd.read_csv(df_pf_path)
+# allocation of portfolio (yfinance version):
+df_pf_yf = df_pf.copy()
+df_pf_yf['Name'] = df_pf_yf['Name'].str.replace('WIKI/', '')
+# stock price data (quandl version):
 df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
+# stock price data (yfinance version):
+df_data_yf = df_data.copy()
+df_data_yf = df_data_yf.rename(columns=lambda x: x.replace('WIKI/', ''))
 # create testing variables
 names = df_pf.Name.values.tolist()
-names_yf = [name.replace("WIKI/", "") for name in names]
+names_yf = df_pf_yf.Name.values.tolist()
+# weights
 weights_df_pf = [
     0.31746031746031744,
     0.15873015873015872,
@@ -78,7 +87,7 @@ d_error_4 = {
 df_pf_error_4 = pd.DataFrame.from_dict(d_error_4, orient="index")
 # create kwargs to be passed to build_portfolio
 d_pass = [
-    {"names": names, "pf_allocation": df_pf},
+    {"names": names_yf, "pf_allocation": df_pf_yf, "data_api": "yfinance"},
     {"names": names},
     {"names": names, "start_date": start_date, "end_date": end_date},
     {
