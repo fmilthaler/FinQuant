@@ -579,7 +579,6 @@ class Portfolio(object):
                 textcoords="offset points",
                 label=i,
             )
-            plt.legend()
 
     def properties(self):
         """Nicely prints out the properties of the portfolio:
