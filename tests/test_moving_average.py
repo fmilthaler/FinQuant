@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 from finquant.moving_average import compute_ma, sma, ema, sma_std, ema_std
 from finquant.moving_average import plot_bollinger_band
 
-plt.switch_backend('Agg')
+plt.switch_backend("Agg")
+
 
 def test_sma():
     orig = np.array(
@@ -15,7 +16,7 @@ def test_sma():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = sma(df, span=2).dropna()
     assert all((dforig == res).all())
@@ -52,7 +53,7 @@ def test_ema():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = ema(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
@@ -89,7 +90,7 @@ def test_sma_std():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = sma_std(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
@@ -126,7 +127,7 @@ def test_ema_std():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = ema_std(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())

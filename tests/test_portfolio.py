@@ -29,12 +29,12 @@ df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
 df_pf = pd.read_csv(df_pf_path)
 # allocation of portfolio (yfinance version):
 df_pf_yf = df_pf.copy()
-df_pf_yf['Name'] = df_pf_yf['Name'].str.replace('WIKI/', '')
+df_pf_yf["Name"] = df_pf_yf["Name"].str.replace("WIKI/", "")
 # stock price data (quandl version):
 df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
 # stock price data (yfinance version):
 df_data_yf = df_data.copy()
-df_data_yf = df_data_yf.rename(columns=lambda x: x.replace('WIKI/', ''))
+df_data_yf = df_data_yf.rename(columns=lambda x: x.replace("WIKI/", ""))
 # create testing variables
 names = df_pf.Name.values.tolist()
 names_yf = df_pf_yf.Name.values.tolist()
@@ -89,7 +89,11 @@ df_pf_error_4 = pd.DataFrame.from_dict(d_error_4, orient="index")
 d_pass = [
     {"names": names_yf, "pf_allocation": df_pf_yf, "data_api": "yfinance"},
     {"names": names_yf, "data_api": "yfinance"},
-    {"names": names, "start_date": start_date, "end_date": end_date}, # testing default (quandl)
+    {
+        "names": names,
+        "start_date": start_date,
+        "end_date": end_date,
+    },  # testing default (quandl)
     {
         "names": names_yf,
         "start_date": start_date,
