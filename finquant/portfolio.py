@@ -198,7 +198,7 @@ class Portfolio(object):
     def totalinvestment(self, val):
         if val is not None:
             # treat "None" as initialisation
-            if not isinstance(val, (float, int)):
+            if not isinstance(val, (float, int, np.int64)):
                 raise ValueError("Total investment must be a float or integer.")
             elif val <= 0:
                 raise ValueError(
