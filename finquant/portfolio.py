@@ -257,7 +257,9 @@ class Portfolio(object):
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
         # adding information of stock to the portfolio
-        self.portfolio = self.portfolio._append(stock.investmentinfo, ignore_index=True)
+        self.portfolio = pd.concat(
+            [self.portfolio, stock.investmentinfo.to_frame().T], ignore_index=True
+        )
         # setting an appropriate name for the portfolio
         self.portfolio.name = "Allocation of stocks"
         # also add stock data of stock to the dataframe
