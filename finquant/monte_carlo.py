@@ -34,7 +34,7 @@ class MonteCarlo(object):
         for i in range(self.num_trials):
             res = fun(**kwargs)
             result.append(res)
-        return np.asarray(result)
+        return np.asarray(result, dtype=object)
 
 
 class MonteCarloOpt(MonteCarlo):
