@@ -10,7 +10,8 @@ import datetime
 import quandl
 import yfinance
 import pytest
-from finquant.portfolio import build_portfolio, Stock
+from finquant.portfolio import build_portfolio
+from finquant.stock import Stock
 
 # comparisons
 strong_abse = 1e-15

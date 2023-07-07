@@ -11,7 +11,8 @@ import datetime
 import quandl
 import yfinance
 import pytest
-from finquant.portfolio import build_portfolio, Stock, Portfolio
+from finquant.portfolio import build_portfolio, Portfolio
+from finquant.stock import Stock
 from finquant.efficient_frontier import EfficientFrontier
 
 # comparisons
