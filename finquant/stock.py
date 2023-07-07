@@ -1,5 +1,5 @@
 """ This module provides a public class ``Stock`` that holds and calculates quantities of a single stock.
-Istances of this class are used in the ``Portfolio`` class (provided in ``finquant.portfolio``).   
+Instances of this class are used in the ``Portfolio`` class (provided in ``finquant.portfolio``).   
 Every time a new instance of ``Stock`` is added to ``Portfolio``, the quantities of the portfolio are updated.  
 """
 
