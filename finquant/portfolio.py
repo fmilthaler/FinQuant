@@ -1,17 +1,16 @@
 """This module is the **core** of `FinQuant`. It provides
 
-- a public class ``Stock`` that holds and calculates quantities of a single stock,
 - a public class ``Portfolio`` that holds and calculates quantities of a financial
-  portfolio, which is a collection of Stock instances.
+  portfolio, which is a collection of ``Stock`` instances (the ``Stock`` class is provided in ``finquant.stock``).
 - a public function ``build_portfolio()`` that automatically constructs and returns
-  an instance of ``Portfolio`` and instances of ``Stock``. The relevant stock
-  data is either retrieved through `quandl`/`yfinance` or provided by the user as a
+  an instance of ``Portfolio`` and instances of ``Stock``. 
+  The relevant stock data is either retrieved through `quandl`/`yfinance` or provided by the user as a
   ``pandas.DataFrame`` (after loading it manually from disk/reading from file).
   For an example on how to use it, please read the corresponding docstring,
   or have a look at the examples in the sub-directory ``example``.
 
-The classes ``Stock`` and ``Portfolio`` are designed to easily manage your
-financial portfolio, and make the most common quantitative calculations, such as:
+The class ``Portfolio`` is designed to easily manage your financial portfolio, 
+and makes the most common quantitative calculations, such as:
 
 - cumulative returns of the portfolio's stocks
 - daily returns of the portfolio's stocks (daily percentage change),
@@ -55,112 +54,9 @@ from finquant.quants import weighted_mean, weighted_std, sharpe_ratio
 from finquant.returns import historical_mean_return
 from finquant.returns import daily_returns, cumulative_returns
 from finquant.returns import daily_log_returns
+from finquant.stock import Stock
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
-
-
-class Stock(object):
-    """Object that contains information about a stock/fund.
-    To initialise the object, it requires a name, information about
-    the stock/fund given as one of the following data structures:
-
-    - ``pandas.Series``
-    - ``pandas.DataFrame``
-
-    The investment information can contain as little information as its name,
-    and the amount invested in it, the column labels must be ``Name`` and ``Allocation``
-    respectively, but it can also contain more information, such as
-
-    - Year
-    - Strategy
-    - CCY
-    - etc.
-
-    It also requires either data, e.g. daily closing prices as a
-    ``pandas.DataFrame`` or ``pandas.Series``.
-    ``data`` must be given as a ``pandas.DataFrame``, and at least one data column
-    is required to containing the closing price, hence it is required to
-    contain one column label ``<stock_name> - Adj. Close`` which is used to
-    compute the return of investment. However, ``data`` can contain more
-    data in additional columns.
-    """
-
-    def __init__(self, investmentinfo, data):
-        """
-        :Input:
-         :investmentinfo: ``pandas.DataFrame`` of investment information
-         :data: ``pandas.DataFrame`` of stock price
-        """
-        self.name = investmentinfo.Name
-        self.investmentinfo = investmentinfo
-        self.data = data
-        # compute expected return and volatility of stock
-        self.expected_return = self.comp_expected_return()
-        self.volatility = self.comp_volatility()
-        self.skew = self._comp_skew()
-        self.kurtosis = self._comp_kurtosis()
-
-    # functions to compute quantities
-    def comp_daily_returns(self):
-        """Computes the daily returns (percentage change).
-        See ``finquant.returns.daily_returns``.
-        """
-        return daily_returns(self.data)
-
-    def comp_expected_return(self, freq=252):
-        """Computes the Expected Return of the stock.
-
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
-
-        :Output:
-         :expected_return: Expected Return of stock.
-        """
-        return historical_mean_return(self.data, freq=freq)
-
-    def comp_volatility(self, freq=252):
-        """Computes the Volatility of the stock.
-
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
-
-        :Output:
-         :volatility: Volatility of stock.
-        """
-        return self.comp_daily_returns().std() * np.sqrt(freq)
-
-    def _comp_skew(self):
-        """Computes and returns the skewness of the stock."""
-        return self.data.skew().values[0]
-
-    def _comp_kurtosis(self):
-        """Computes and returns the Kurtosis of the stock."""
-        return self.data.kurt().values[0]
-
-    def properties(self):
-        """Nicely prints out the properties of the stock: Expected Return,
-        Volatility, Skewness, Kurtosis as well as the ``Allocation`` (and other
-        information provided in investmentinfo.)
-        """
-        # nicely printing out information and quantities of the stock
-        string = "-" * 50
-        string += "\nStock: {}".format(self.name)
-        string += "\nExpected Return:{:0.3f}".format(self.expected_return.values[0])
-        string += "\nVolatility: {:0.3f}".format(self.volatility.values[0])
-        string += "\nSkewness: {:0.5f}".format(self.skew)
-        string += "\nKurtosis: {:0.5f}".format(self.kurtosis)
-        string += "\nInformation:"
-        string += "\n" + str(self.investmentinfo.to_frame().transpose())
-        string += "\n"
-        string += "-" * 50
-        print(string)
-
-    def __str__(self):
-        # print short description
-        string = "Contains information about " + str(self.name) + "."
-        return string
 
 
 class Portfolio(object):

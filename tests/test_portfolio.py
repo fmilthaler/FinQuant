@@ -11,7 +11,8 @@ import datetime
 import quandl
 import yfinance
 import pytest
-from finquant.portfolio import build_portfolio, Stock, Portfolio
+from finquant.portfolio import build_portfolio, Portfolio
+from finquant.stock import Stock
 from finquant.efficient_frontier import EfficientFrontier
 
 # comparisons
@@ -405,26 +406,6 @@ def test_buildPF_fail_26():
     d = d_fail[26]
     with pytest.raises(Exception):
         build_portfolio(**d)
-
-
-###################
-# tests for Stock #
-###################
-
-
-def test_Stock():
-    d = d_pass[3]
-    pf = build_portfolio(**d)
-    # loop over all stocks stored within pf and check that values
-    # are equal to the ones in pf
-    for i in range(len(pf.stocks)):
-        assert isinstance(pf.get_stock(names[0]), Stock)
-        stock = pf.get_stock(names[i])
-        assert stock.name == pf.portfolio["Name"][i]
-        assert all(stock.data - pf.data[stock.name].to_frame() <= strong_abse)
-        assert all(
-            stock.investmentinfo == pf.portfolio.loc[pf.portfolio["Name"] == stock.name]
-        )
 
 
 ######################################
