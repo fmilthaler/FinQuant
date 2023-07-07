@@ -4,6 +4,7 @@ import setuptools
 with open("version", "r") as f:
     version = dict(x.rstrip().split("=") for x in f)
 
+# get long description from README
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
@@ -46,21 +47,25 @@ setuptools.setup(
     ],
     python_requires=">=3.10",
     install_requires=[
-        "quandl",
-        "yfinance",
-        "numpy",
-        "pandas",
-        "scipy",
-        "matplotlib",
+        "quandl>=3.4.5",
+        "yfinance>=0.1.43",
+        "numpy>=1.15",
+        "pandas>=2.0",
+        "scipy>=1.2.0",
+        "matplotlib>=3.0",
     ],
     extras_require={
         "test": [
-            "pytest==7.3.2",
+            "pytest>=7.3.2"
         ],
         "dev": [
             "black==23.1.0",
             "jupyter",
             "notebook"
+        ],
+        "docs": [
+            "sphinx",
+            "sphinx_rtd_theme"
         ],
     },
     project_urls={"Documentation": "https://finquant.readthedocs.io"},
