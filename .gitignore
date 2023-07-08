@@ -35,3 +35,8 @@ FinQuant.egg-info/*
 *.aux
 *.out
 *.pdf
+
+#########
+# other #
+#########
+.idea

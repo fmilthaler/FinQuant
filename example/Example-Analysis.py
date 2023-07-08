@@ -20,7 +20,7 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # plotting style:
-plt.style.use("seaborn-darkgrid")
+plt.style.use("seaborn-v0_8-darkgrid")
 # set line width
 plt.rcParams["lines.linewidth"] = 2
 # set font size for titles

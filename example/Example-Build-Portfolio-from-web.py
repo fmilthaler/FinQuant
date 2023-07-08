@@ -80,7 +80,11 @@ end_date = "2017-12-31"
 # e.g. high, low, close, etc, FinQuant will extract the column "Adj. Close" ("Adj Close" if using yfinance).
 
 pf = build_portfolio(
-    names=names, pf_allocation=pf_allocation, start_date=start_date, end_date=end_date
+    names=names,
+    pf_allocation=pf_allocation,
+    start_date=start_date,
+    end_date=end_date,
+    data_api="quandl",
 )
 
 # <markdowncell>

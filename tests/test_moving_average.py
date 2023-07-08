@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 from finquant.moving_average import compute_ma, sma, ema, sma_std, ema_std
 from finquant.moving_average import plot_bollinger_band
 
+plt.switch_backend("Agg")
+
 
 def test_sma():
     orig = np.array(
@@ -14,7 +16,7 @@ def test_sma():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = sma(df, span=2).dropna()
     assert all((dforig == res).all())
@@ -51,7 +53,7 @@ def test_ema():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = ema(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
@@ -88,7 +90,7 @@ def test_sma_std():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = sma_std(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
@@ -125,7 +127,7 @@ def test_ema_std():
     )
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
-    l2 = [i ** 2 for i in range(10)]
+    l2 = [i**2 for i in range(10)]
     df = pd.DataFrame({"0": l1, "1": l2})
     res = ema_std(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
@@ -168,12 +170,12 @@ def test_compute_ma():
     )
     x = np.sin(np.linspace(1, 10, 100))
     df = pd.DataFrame({"Stock": x})
-    ma = compute_ma(df, ema, spans=[10, 30])
+    ma = compute_ma(df, ema, spans=[10, 30], plot=False)
     assert all(abs((dforig - ma.describe()) <= 1e-15).all())
 
 
 def test_plot_bollinger_band():
-    labels_orig = ["Stock", "15d", "Bollinger Band"]
+    labels_orig = ["Bollinger Band", "Stock", "15d"]
     xlabel_orig = "Days"
     ylabel_orig = "Price"
     title_orig = (
@@ -187,7 +189,7 @@ def test_plot_bollinger_band():
     # get data from axis object
     ax = plt.gca()
     # ax.lines[0] is the data we passed to plot_bollinger_band
-    # ax.lines[1] is the moving average (tested already)
+    # ax.lines[1] is the moving average (already tested)
     # not sure how to obtain the data of the BollingerBand from
     # the plot.
     # only checking if input data matches data of first line on plot,
