@@ -8,6 +8,19 @@ with open("version", "r") as f:
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# get dependencies
+def read_requirements(file_path):
+    with open(file_path, "r") as f:
+        return [line.strip() for line in f if line.strip()]
+
+install_requires = read_requirements("requirements.txt")
+
+extras_require = {
+    "test": read_requirements("requirements_test.txt"),
+    "dev": read_requirements("requirements_dev.txt"),
+    "docs": read_requirements("requirements_docs.txt"),
+}
+
 setuptools.setup(
     name="FinQuant",
     version=version["version"],
@@ -46,27 +59,7 @@ setuptools.setup(
         "quant",
     ],
     python_requires=">=3.10",
-    install_requires=[
-        "quandl>=3.4.5",
-        "yfinance>=0.1.43",
-        "numpy>=1.15",
-        "pandas>=2.0",
-        "scipy>=1.2.0",
-        "matplotlib>=3.0",
-    ],
-    extras_require={
-        "test": [
-            "pytest>=7.3.2"
-        ],
-        "dev": [
-            "black==23.1.0",
-            "jupyter",
-            "notebook"
-        ],
-        "docs": [
-            "sphinx",
-            "sphinx_rtd_theme"
-        ],
-    },
+    install_requires=install_requires,
+    extras_require=extras_require,
     project_urls={"Documentation": "https://finquant.readthedocs.io"},
 )
