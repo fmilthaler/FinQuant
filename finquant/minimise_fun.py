@@ -7,14 +7,13 @@ from finquant.quants import annualised_portfolio_quantities
 
 
 def portfolio_volatility(weights, mean_returns, cov_matrix):
-    """Calculates the negative Sharpe ratio of a portfolio
+    """Calculates the volatility a portfolio
 
     :Input:
      :weights: numpy.ndarray, weights of the stocks in the portfolio
      :mean_returns: pandas.Series, individual expected returns for all stocks
          in the portfolio
      :cov_matrix: pandas.DataFrame, covariance matrix of returns
-     :risk_free_rate: Float (default=0.005), risk free rate
 
     Output:
      :volatility: annualised volatility
