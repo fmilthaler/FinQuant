@@ -55,13 +55,13 @@ def historical_mean_return(data, freq=252):
     """Returns the mean return based on historical stock price data.
 
     :Input:
-     :data: ``pandas.DataFrame`` with daily stock prices
+     :data: ``pandas.DataFrame`` or ``pandas.Series`` with daily stock prices
      :freq: ``int`` (default= ``252``), number of trading days, default
              value corresponds to trading days in a year
 
     :Output:
-     :ret: a ``pandas.DataFrame`` of historical mean Returns.
+     :ret: a ``pandas.Series`` or ``numpy.float`` of historical mean Returns.
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data must be a pandas.DataFrame")
+    if not isinstance(data, (pd.DataFrame, pd.Series)):
+        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
     return daily_returns(data).mean() * freq

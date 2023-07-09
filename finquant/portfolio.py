@@ -59,6 +59,7 @@ from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
 from finquant.market import Market
 
+
 class Portfolio(object):
     """Object that contains information about an investment portfolio.
     To initialise the object, it does not require any input.
@@ -85,6 +86,11 @@ class Portfolio(object):
         # Monte Carlo optimisations
         self.ef = None
         self.mc = None
+        # istance variable for Market class
+        self.market_index = None
+        # dataframe containing beta values of stocks
+        self.beta_stocks = pd.DataFrame(index=["beta"])
+        self.beta = None
 
     @property
     def totalinvestment(self):
@@ -159,20 +165,26 @@ class Portfolio(object):
         # setting an appropriate name for the portfolio
         self.portfolio.name = "Allocation of stocks"
         # also add stock data of stock to the dataframe
-        self._add_stock_data(stock.data)
+        self._add_stock_data(stock)
 
         # update quantities of portfolio
         self._update()
 
-    def _add_stock_data(self, df):
+    def _add_stock_data(self, stock: Stock) -> None:
         # loop over columns in given dataframe
-        for datacol in df.columns:
+        for datacol in stock.data.columns:
             cols = len(self.data.columns)
-            self.data.insert(loc=cols, column=datacol, value=df[datacol].values)
+            self.data.insert(loc=cols, column=datacol, value=stock.data[datacol].values)
         # set index correctly
-        self.data.set_index(df.index.values, inplace=True)
+        self.data.set_index(stock.data.index.values, inplace=True)
         # set index name:
         self.data.index.rename("Date", inplace=True)
+
+        if self.market_index is not None:
+            # compute beta parameter of stock
+            beta_stock = stock.comp_beta(self.market_index.daily_returns)
+            # add beta of stock to portfolio's betas dataframe
+            self.beta_stocks[stock.name] = [beta_stock]
 
     def _update(self):
         # sanity check (only update values if none of the below is empty):
@@ -183,6 +195,8 @@ class Portfolio(object):
             self.sharpe = self.comp_sharpe()
             self.skew = self._comp_skew()
             self.kurtosis = self._comp_kurtosis()
+            if self.market_index is not None:
+                self.beta = self.comp_beta()
 
     def get_stock(self, name):
         """Returns the instance of ``Stock`` with name ``name``.
@@ -323,6 +337,20 @@ class Portfolio(object):
         )
         self.sharpe = sharpe
         return sharpe
+
+    def comp_beta(self) -> float:
+        """Compute and return the Beta parameter of the portfolio.
+
+        :Output:
+         :sharpe: ``float``, the Beta parameter of the portfolio
+        """
+
+        # compute the Beta parameter of the portfolio
+        weights = self.comp_weights()
+        beta = weighted_mean(self.beta_stocks.transpose()["beta"].values, weights)
+
+        self.beta = beta
+        return beta
 
     def _comp_skew(self):
         """Computes and returns the skewness of the stocks in the portfolio."""
@@ -586,6 +614,7 @@ class Portfolio(object):
         - Expected Return,
         - Volatility,
         - Sharpe Ratio,
+        - Beta (optional),
         - skewness,
         - Kurtosis
 
@@ -595,11 +624,15 @@ class Portfolio(object):
         string = "-" * 70
         stocknames = self.portfolio.Name.values.tolist()
         string += "\nStocks: {}".format(", ".join(stocknames))
+        if self.market_index is not None:
+            string += "\nMarket Index: {}".format(self.market_index.name)
         string += "\nTime window/frequency: {}".format(self.freq)
         string += "\nRisk free rate: {}".format(self.risk_free_rate)
         string += "\nPortfolio Expected Return: {:0.3f}".format(self.expected_return)
         string += "\nPortfolio Volatility: {:0.3f}".format(self.volatility)
         string += "\nPortfolio Sharpe Ratio: {:0.3f}".format(self.sharpe)
+        if self.beta is not None:
+            string += "\nPortfolio Beta: {:0.3f}".format(self.beta)
         string += "\n\nSkewness:"
         string += "\n" + str(self.skew.to_frame().transpose())
         string += "\n\nKurtosis:"
@@ -609,11 +642,6 @@ class Portfolio(object):
         string += "\n"
         string += "-" * 70
         print(string)
-
-    def __str__(self):
-        # print short description
-        string = "Contains information about a portfolio."
-        return string
 
 
 def _correct_quandl_request_stock_name(names):
