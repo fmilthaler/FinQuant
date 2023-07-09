@@ -7,7 +7,6 @@ import pandas as pd
 import yfinance
 import pytest
 from finquant.portfolio import build_portfolio
-from finquant.stock import Stock
 from finquant.market import Market
 
 d = {
