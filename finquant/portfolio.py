@@ -18,6 +18,7 @@ and makes the most common quantitative calculations, such as:
 - Expected (annualised) Return,
 - Volatility,
 - Sharpe Ratio,
+- Beta parameter (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
 - the portfolio's covariance matrix.
@@ -136,6 +137,14 @@ class Portfolio(object):
             self.__risk_free_rate = val
             # now that this changed, update other quantities
             self._update()
+
+    def set_market_index(self, index: Market) -> None:
+        """Adds an index market ``index`` to the portfolio.
+
+        :Input:
+         :index: an object of ``Index``
+        """
+        self.market_index = index
 
     def add_stock(self, stock):
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
@@ -1001,6 +1010,7 @@ def _build_portfolio_from_df(
     # building portfolio:
     pf = Portfolio()
     if market_data is not None and not market_data.empty:
+        # extract only "Adjusted Close" price column from market data
         market_data = _get_index_adj_clos_pr(market_data)
         # set market index of portfolio
         pf.set_market_index(Market(data=market_data))
