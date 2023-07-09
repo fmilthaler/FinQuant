@@ -3,8 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from .returns import historical_mean_return
-from .returns import daily_returns
+from finquant.returns import historical_mean_return, daily_returns
 
 
 class Market(object):
@@ -83,5 +82,5 @@ class Market(object):
 
     def __str__(self):
         # print short description
-        string = "Contains information about " + str(self.name) + "."
+        string = "Contains information about market index " + str(self.name) + "."
         return string

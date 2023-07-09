@@ -652,6 +652,11 @@ class Portfolio(object):
         string += "-" * 70
         print(string)
 
+    def __str__(self):
+        # print short description
+        string = "Contains information about a portfolio."
+        return string
+
 
 def _correct_quandl_request_stock_name(names):
     """If given input argument is of type string,
