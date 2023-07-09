@@ -57,7 +57,7 @@ from finquant.returns import daily_log_returns
 from finquant.stock import Stock
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
-
+from finquant.market import Market
 
 class Portfolio(object):
     """Object that contains information about an investment portfolio.
@@ -799,7 +799,12 @@ def _get_stocks_data_columns(data, names, cols):
 
 
 def _build_portfolio_from_api(
-    names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
+    names,
+    pf_allocation=None,
+    start_date=None,
+    end_date=None,
+    data_api="quandl",
+    market_index: str = None,
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -818,22 +823,32 @@ def _build_portfolio_from_api(
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
+     :market_index: (optional) ``string`` (default: ``None``) which determines the
+         market index to be used for the computation of the beta parameter of the stocks.
+
     :Output:
      :pf: Instance of Portfolio which contains all the information
          requested by the user.
     """
     # create an empty portfolio
     pf = Portfolio()
+    # create empty dataframe for market data
+    market_data = pd.DataFrame()
     # request data from service:
     if data_api == "yfinance":
         data = _yfinance_request(names, start_date, end_date)
+        if market_index is not None:
+            market_data = _yfinance_request([market_index], start_date, end_date)
     elif data_api == "quandl":
         data = _quandl_request(names, start_date, end_date)
+        if market_index is not None:
+            # only generated if user explicitly requests market index with quandl
+            raise Warning("Market index is not supported for quandl data.")
     # check pf_allocation:
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(names=names)
     # build portfolio:
-    pf = _build_portfolio_from_df(data, pf_allocation)
+    pf = _build_portfolio_from_df(data, pf_allocation, market_data=market_data)
     return pf
 
 
@@ -842,6 +857,20 @@ def _stocknames_in_data_columns(names, df):
     label in the dataframe df.
     """
     return any((name in label for name in names for label in df.columns))
+
+
+def _get_index_adj_clos_pr(data: pd.DataFrame) -> pd.Series:
+    """This function returns a subset of the given ``pandas.DataFrame`` data, which
+    contains only the data columns corresponding to Adjusted Closing Price.
+
+    :Input:
+     :data: A ``pandas.DataFrame`` which contains financial data.
+
+    :Output:
+     :data: A ``pandas.Series`` which contains only the data column of
+         data corresponding to Adjusted Closing Price.
+    """
+    return data["Adj Close"].squeeze()
 
 
 def _generate_pf_allocation(names=None, data=None):
@@ -905,7 +934,12 @@ def _generate_pf_allocation(names=None, data=None):
     return pd.DataFrame({"Allocation": weights, "Name": names})
 
 
-def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"]):
+def _build_portfolio_from_df(
+    data: pd.DataFrame,
+    pf_allocation: pd.DataFrame = None,
+    datacolumns: list = ["Adj. Close"],
+    market_data: pd.DataFrame = None,
+) -> Portfolio:
     """Returns a portfolio based on input in form of ``pandas.DataFrame``.
 
     :Input:
@@ -917,6 +951,8 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
          in the resulting portfolio.
      :datacolumns: (optional) A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
+     :market_data: (optional) A ``pandas.DataFrame`` which contains data of the
+         market index (default: ``None``).
 
     :Output:
      :pf: Instance of Portfolio which contains all the information
@@ -936,6 +972,10 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
     # building portfolio:
     pf = Portfolio()
+    if market_data is not None and not market_data.empty:
+        market_data = _get_index_adj_clos_pr(market_data)
+        # set market index of portfolio
+        pf.set_market_index(Market(data=market_data))
     for i in range(len(pf_allocation)):
         # get name of stock
         name = pf_allocation.loc[i].Name
@@ -987,6 +1027,9 @@ def build_portfolio(**kwargs):
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
+     :market_index: (optional) ``string`` (default: ``None``) which determines the
+         market index to be used for the computation of the beta parameter of the stocks.
+
     :Output:
      :pf: Instance of ``Portfolio`` which contains all the information
          requested by the user.
@@ -1030,6 +1073,7 @@ def build_portfolio(**kwargs):
         "end_date",
         "data",
         "data_api",
+        "market_index",
     ]
 
     # check if no input argument was passed
@@ -1055,6 +1099,7 @@ def build_portfolio(**kwargs):
         "start_date",
         "end_date",
         "data_api",
+        "market_index",
     ]
     complement_input_args = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
