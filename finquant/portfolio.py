@@ -139,10 +139,10 @@ class Portfolio(object):
             self._update()
 
     def set_market_index(self, index: Market) -> None:
-        """Adds an index market ``index`` to the portfolio.
+        """Set the market index to the portfolio.
 
         :Input:
-         :index: an object of ``Index``
+         :index: an object of ``Market`` class.
         """
         self.market_index = index
 
