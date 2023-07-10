@@ -7,7 +7,7 @@ Thank you to all the individuals who have contributed to this project!
 ## Maintainers
 
 - Frank Milthaler (@fmilthaler): Original author
-- Pietropaolo Frisoni (@PietropaoloFrisoni): current maintainer of FinQuant, helped resurrect the project, added new features, code review, bug fixing
+- Pietropaolo Frisoni (@PietropaoloFrisoni): Current maintainer of FinQuant, helped resurrect the project, added new features, code review, bug fixing
 
 ## Contributors
 
