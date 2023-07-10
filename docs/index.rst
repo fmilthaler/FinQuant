@@ -8,7 +8,7 @@
     :width: 30
     :align: middle
 
-.. _Travis Ci: https://travis-ci.org/fmilthaler/FinQuant
+.. _GitHub Actions: https://github.com/fmilthaler/finquant/actions/workflows/pytest.yml/badge.svg?branch=master
 
 .. _GitHub: https://github.com/fmilthaler/FinQuant/
 
@@ -22,7 +22,7 @@ Welcome to FinQuant's documentation
 
 *FinQuant* is made to be easily extended. I hope it proves itself useful for hobby investors, students, geeks, and the intellectual curious.
 
-.. caution:: While *FinQuant* has tests in place that are run automatically by `Travis CI`_, it cannot guarantee to be bug free, nor that the analysis or optimised portfolio yield to wealth. Please use at your own discretion and refer to the :ref:`license`.
+.. caution:: While *FinQuant* has tests in place that are run automatically by `GitHub Actions`_, it cannot guarantee to be bug free, nor that the analysis or optimised portfolio yield to wealth. Please use at your own discretion and refer to the :ref:`license`.
 
 
 Installation
