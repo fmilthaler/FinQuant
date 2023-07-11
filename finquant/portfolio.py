@@ -1082,7 +1082,7 @@ def build_portfolio(**kwargs):
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional), ``market_index`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:
@@ -1137,7 +1137,7 @@ def build_portfolio(**kwargs):
     # create an empty portfolio
     pf = Portfolio()
 
-    # 1. pf_allocation, names, start_date, end_date, data_api
+    # 1. pf_allocation, names, start_date, end_date, data_api, market_index
     allowed_mandatory_args = ["names"]
     allowed_input_args = [
         "names",
