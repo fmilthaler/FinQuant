@@ -1021,7 +1021,7 @@ def _build_portfolio_from_df(
         # extract only "Adjusted Close" price column from market data
         market_data = _get_index_adj_clos_pr(market_data)
         # set market index of portfolio
-        pf.set_market_index(Market(data=market_data))
+        pf.market_index = Market(data=market_data)
     for i in range(len(pf_allocation)):
         # get name of stock
         name = pf_allocation.loc[i].Name
