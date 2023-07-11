@@ -139,7 +139,7 @@ class Portfolio(object):
             self._update()
 
     @property
-    def market_index(self) -> Optional[Market]:
+    def market_index(self) -> Market:
         return self.__market_index
 
     @market_index.setter
