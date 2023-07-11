@@ -13,7 +13,7 @@ As mentioned above, *FinQuant* is a program for financial portfolio management, 
 
 Stock
 =====
-.. autoclass:: finquant.portfolio.Stock
+.. autoclass:: finquant.stock.Stock
     :members:
 
         .. automethod:: __init__
