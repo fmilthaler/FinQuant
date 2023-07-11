@@ -9,8 +9,8 @@
   <a href="https://pypi.org/project/FinQuant">
     <img src="https://img.shields.io/badge/pypi-v0.2.2-brightgreen.svg?style=popout" alt='pypi'>
   </a>
-  <a href="https://travis-ci.org/fmilthaler/FinQuant">
-    <img src="https://travis-ci.org/fmilthaler/FinQuant.svg?style=popout?branch=master" alt='travis'>
+  <a href="https://github.com/fmilthaler/FinQuant">
+    <img src="https://github.com/fmilthaler/finquant/actions/workflows/pytest.yml/badge.svg?branch=master" alt='GitHub Actions'>
   </a>
   <a href="http://finquant.readthedocs.io/">
     <img src="https://img.shields.io/readthedocs/finquant.svg?style=popout" alt="docs">
@@ -162,14 +162,13 @@ As it is common for open-source projects, there are several ways to get hold of 
 
 ### Dependencies
 *FinQuant* depends on the following Python packages:
- - python>=3.5.0
+ - python>=3.10
  - numpy>=1.15
- - pandas>=0.24
- - matplotlib>=1.5.1
+ - pandas>=2.0
+ - matplotlib>=3.0
  - quandl>=3.4.5
  - yfinance>=0.1.43
  - scipy>=1.2.0
- - pytest>=2.8.7
 
 ### From PyPI
 *FinQuant* can be obtained from PyPI

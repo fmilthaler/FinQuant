@@ -36,6 +36,7 @@ To keep everything consistent, please use [Black](https://github.com/psf/black) 
 ### Create a Pull Request
 Create a new [Pull Request](https://github.com/fmilthaler/FinQuant/pulls). Describe what your changes are in the Pull Request. If your contribution fixes a bug, or adds a features listed under [issues](https://github.com/fmilthaler/FinQuant/issues) as "#12", please add "fixes #12" or "closes #12". 
 
-If you do not have a [Quandl API key](https://docs.quandl.com/docs#section-authentication) set on your Travis account, some of the tests are most likely going to fail. There are two ways forward:
-1. you get a [Quandl API key](https://docs.quandl.com/docs#section-authentication), and set it as an environment variable under your Travis account settings.
-2. Or you set the target of your Pull Request to either `feature/new-feature` or `bugfix/new-bugfix`, if your contribution is a new feature of bugfix respectively. That way your changes can be merged into a branch of FinQuant, and all the tests can be ran with my [Quandl API key](https://docs.quandl.com/docs#section-authentication).
+If you do not have a [Quandl API key](https://docs.quandl.com/docs#section-authentication) set as a secret in your fork, some of the tests are going to fail. 
+While you are working on your fork, you can ignore the Quandl specific tests that are failing. Once you are happy with your work,
+open a PR and use `master` as the target branch. GitHub Actions is set up to run the tests automatically for PRs, and the
+Quandl tests are then run with my secret API key.

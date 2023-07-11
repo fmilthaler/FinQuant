@@ -2,14 +2,28 @@ import setuptools
 
 # get version/release from file
 with open("version", "r") as f:
-    ver = dict(x.rstrip().split("=") for x in f)
+    version = dict(x.rstrip().split("=") for x in f)
 
+# get long description from README
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# get dependencies
+def read_requirements(file_path):
+    with open(file_path, "r") as f:
+        return [line.strip() for line in f if line.strip()]
+
+install_requires = read_requirements("requirements.txt")
+
+extras_require = {
+    "test": read_requirements("requirements_test.txt"),
+    "dev": read_requirements("requirements_dev.txt"),
+    "docs": read_requirements("requirements_docs.txt"),
+}
+
 setuptools.setup(
     name="FinQuant",
-    version=ver["version"],
+    version=version["version"],
     author="Frank Milthaler",
     author_email="f.milthaler@gmail.com",
     description="A program for financial portfolio management, analysis and optimisation",
@@ -17,7 +31,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/fmilthaler/FinQuant",
     download_url="https://github.com/fmilthaler/FinQuant/archive/v{}.tar.gz".format(
-        ver["release"]
+        version["release"]
     ),
     license="MIT",
     packages=setuptools.find_packages(),
@@ -45,14 +59,7 @@ setuptools.setup(
         "quant",
     ],
     python_requires=">=3.10",
-    install_requires=[
-        "quandl",
-        "yfinance",
-        "numpy",
-        "pandas",
-        "scipy",
-        "matplotlib",
-        "pytest",
-    ],
+    install_requires=install_requires,
+    extras_require=extras_require,
     project_urls={"Documentation": "https://finquant.readthedocs.io"},
 )
