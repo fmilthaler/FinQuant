@@ -138,13 +138,17 @@ class Portfolio(object):
             # now that this changed, update other quantities
             self._update()
 
-    def set_market_index(self, index: Market) -> None:
+    @property
+    def market_index(self) -> Optional[Market]:
+        return self.__market_index
+
+    @market_index.setter
+    def market_index(self, index: Market) -> None:
         """Set the market index to the portfolio.
 
-        :Input:
-         :index: an object of ``Market`` class.
+        :param index: An object of the ``Market`` class.
         """
-        self.market_index = index
+        self.__market_index = index
 
     def add_stock(self, stock):
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
