@@ -868,7 +868,6 @@ def _build_portfolio_from_api(
          obtain stock prices, if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
-
      :market_index: (optional) ``string`` (default: ``None``) which determines the
          market index to be used for the computation of the beta parameter of the stocks.
 
