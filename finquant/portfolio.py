@@ -87,7 +87,7 @@ class Portfolio(object):
         # Monte Carlo optimisations
         self.ef = None
         self.mc = None
-        # istance variable for Market class
+        # instance variable for Market class
         self.market_index = None
         # dataframe containing beta values of stocks
         self.beta_stocks = pd.DataFrame(index=["beta"])
