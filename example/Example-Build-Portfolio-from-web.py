@@ -5,7 +5,7 @@
 
 # # Building a portfolio with data from `quandl`/`yfinance`
 # ## Building a portfolio with `build_portfolio()` by downloading relevant data through `quandl`/`yfinance` with stock names, start and end date and column labels
-# This example only focuses on how to use `build_portfolio()` to get an instance of `Portfolio` by providing minimal information that is passed on to `quandl`/`yfinance`. For a more exhaustive description of this package and example, please try `Example-Analysis` and `Example-Optimisation`.
+# This example only focuses on how to use `build_portfolio()` to get an instance of `Portfolio` by providing a few information that is passed on to `quandl`/`yfinance`. For a more exhaustive description of this package and example, please try `Example-Analysis` and `Example-Optimisation`.
 
 # <codecell>
 
@@ -22,49 +22,50 @@ from finquant.portfolio import build_portfolio
 
 # <codecell>
 
-# To play around yourself with different stocks, here is a short list of companies and their tickers
-# d = {0: {'Name':'WIKI/GOOG', 'Allocation':20},  # Google
-#      1: {'Name':'WIKI/AMZN', 'Allocation':33},  # Amazon
-#      2: {'Name':'WIKI/MSFT', 'Allocation':18},  # Microsoft
-#      3: {'Name':'WIKI/AAPL', 'Allocation':10},  # Apple
-#      4: {'Name':'WIKI/KO', 'Allocation':15},    # Coca-Cola
-#      5: {'Name':'WIKI/XOM', 'Allocation':11},   # Exxon Mobil
-#      6: {'Name':'WIKI/JPM', 'Allocation':21},   # JP Morgan
-#      7: {'Name':'WIKI/DIS', 'Allocation':9},    # Disney
-#      8: {'Name':'WIKI/MCD', 'Allocation':23},   # McDonald's
-#      9: {'Name':'WIKI/WMT', 'Allocation':3},    # Walmart
-#     10: {'Name':'WIKI/YHOO', 'Allocation':7},   # Yahoo
-#     11: {'Name':'WIKI/GS', 'Allocation':9},     # Goldman Sachs
+# To play around yourself with different stocks, here is a short list of companies and their tickers on Yahoo Finance:
+# d = {0: {'Name':'GOOG', 'Allocation':20},  # Google
+#      1: {'Name':'AMZN', 'Allocation':33},  # Amazon
+#      2: {'Name':'MSFT', 'Allocation':18},  # Microsoft
+#      3: {'Name':'AAPL', 'Allocation':10},  # Apple
+#      4: {'Name':'KO', 'Allocation':15},    # Coca-Cola
+#      5: {'Name':'XOM', 'Allocation':11},   # Exxon Mobil
+#      6: {'Name':'JPM', 'Allocation':21},   # JP Morgan
+#      7: {'Name':'DIS', 'Allocation':9},    # Disney
+#      8: {'Name':'MCD', 'Allocation':23},   # McDonald's
+#      9: {'Name':'WMT', 'Allocation':3},    # Walmart
+#     10: {'Name':'GS', 'Allocation':9},     # Goldman Sachs
 #     }
 
 # <codecell>
 
 d = {
-    0: {"Name": "WIKI/GOOG", "Allocation": 20},
-    1: {"Name": "WIKI/AMZN", "Allocation": 10},
-    2: {"Name": "WIKI/MCD", "Allocation": 15},
-    3: {"Name": "WIKI/DIS", "Allocation": 18},
+    0: {"Name": "GOOG", "Allocation": 20},
+    1: {"Name": "AMZN", "Allocation": 10},
+    2: {"Name": "MCD", "Allocation": 15},
+    3: {"Name": "DIS", "Allocation": 18},
 }
-# If you wish to use Yahoo Finance as source, you must remove "WIKI/" from the stock names/tickers
+# If you wish to use `quandl` as source, you must add "WIKI/" at the beginning of stock names/tickers, as "WIKI/GOOG".
 
 pf_allocation = pd.DataFrame.from_dict(d, orient="index")
 
 # <markdowncell>
 
 # ### User friendly interface to quandl/yfinance
-# As mentioned above, in this example `build_portfolio()` is used to build a portfolio by performing a query to `quandl`/`yfinance`.
+# As mentioned above, in this example `build_portfolio()` is used to build a portfolio by performing a query to `quandl`/`yfinance`. We mention that `quandl` will be removed in future versions of `FinQuant` as it is deprecated.
 #
-# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"`. For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`/`yfinance`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers.
-# For example, if using `quandl` as a data source (default), a list of names/tickers as shown below is a valid input for `FinQuant`'s function `build_portfolio(names=names)`:
+# To download Google's stock data, `quandl` requires the string `"WIKI/GOOG"` and `yfinance` the string `"GOOG"`.
+# For simplicity, `FinQuant` facilitates a set of functions under the hood to sort out lots of specific commands/required input for `quandl`/`yfinance`. When using `FinQuant`, the user simply needs to provide a list of stock names/tickers.
+# For example, if using `quandl` as a data source (currently the default option), a list of names/tickers as shown below is a valid input for `FinQuant`'s function `build_portfolio(names=names)`:
 #  * `names = ["WIKI/GOOG", "WIKI/AMZN"]`
 #
 # If using `yfinance` as a data source, `FinQuant`'s function `build_portfolio(names=names)` expects the stock names to be without any leading/trailing string (check Yahoo Finance for correct stock names):
 #  * `names = ["GOOG", "AMZN"]`
 #
-# By default, `FinQuant` uses `quandl` to obtain stock price data. The function `build_portfolio()` can be called with the optional argument `data_api` to use `yfinance` instead:
+# By default, `FinQuant` currently uses `quandl` to obtain stock price data. The function `build_portfolio()` can be called with the optional argument `data_api` to use `yfinance` instead:
 #  * `build_portfolio(names=names, data_api="yfinance")`
 #
-# In the below example we are using the default option, `quandl`.
+# In the below example we are using `yfinance` to download stock data. We specify the start and end date of the stock prices to be downloaded.
+# We also provide the optional parameter `market_index` to download the historical data of a market index. `FinQuant` can use them to calculate the beta parameter, measuring the portfolio's daily volatility compared to the market.
 
 # <codecell>
 
@@ -76,6 +77,10 @@ names = pf_allocation["Name"].values.tolist()
 start_date = datetime.datetime(2015, 1, 1)
 end_date = "2017-12-31"
 
+# the market index used to compare the portfolio to (in this case S&P 500).
+# If the parameter is omitted, no market comparison will be done
+market_index = "^GSPC"
+
 # While quandl/yfinance will download lots of different prices for each stock,
 # e.g. high, low, close, etc, FinQuant will extract the column "Adj. Close" ("Adj Close" if using yfinance).
 
@@ -84,7 +89,8 @@ pf = build_portfolio(
     pf_allocation=pf_allocation,
     start_date=start_date,
     end_date=end_date,
-    data_api="quandl",
+    data_api="yfinance",
+    market_index=market_index,
 )
 
 # <markdowncell>
