@@ -5,7 +5,7 @@
 
 # # Building a portfolio with data from `quandl`/`yfinance`
 # ## Building a portfolio with `build_portfolio()` by downloading relevant data through `quandl`/`yfinance` with stock names, start and end date and column labels
-# This example only focuses on how to use `build_portfolio()` to get an instance of `Portfolio` by providing a few information that is passed on to `quandl`/`yfinance`. For a more exhaustive description of this package and example, please try `Example-Analysis` and `Example-Optimisation`.
+# This example only focuses on how to use `build_portfolio()` to get an instance of `Portfolio` by providing a few items of information that is passed on to `quandl`/`yfinance`. For a more exhaustive description of this package and example, please try `Example-Analysis` and `Example-Optimisation`.
 
 # <codecell>
 
