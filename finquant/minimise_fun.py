@@ -7,7 +7,7 @@ from finquant.quants import annualised_portfolio_quantities
 
 
 def portfolio_volatility(weights, mean_returns, cov_matrix):
-    """Calculates the volatility a portfolio
+    """Calculates the volatility of a portfolio
 
     :Input:
      :weights: numpy.ndarray, weights of the stocks in the portfolio

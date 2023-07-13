@@ -4,6 +4,7 @@ Every time a new instance of ``Stock`` is added to ``Portfolio``, the quantities
 """
 
 import numpy as np
+import pandas as pd
 from finquant.returns import historical_mean_return
 from finquant.returns import daily_returns
 
@@ -48,6 +49,8 @@ class Stock(object):
         self.volatility = self.comp_volatility()
         self.skew = self._comp_skew()
         self.kurtosis = self._comp_kurtosis()
+        # beta parameter of stock (CAPM)
+        self.beta = None
 
     # functions to compute quantities
     def comp_daily_returns(self):
@@ -87,6 +90,24 @@ class Stock(object):
     def _comp_kurtosis(self):
         """Computes and returns the Kurtosis of the stock."""
         return self.data.kurt().values[0]
+
+    def comp_beta(self, market_daily_returns: pd.Series) -> float:
+        """Compute and return the Beta parameter of the stock.
+
+        :Input:
+         :market_daily_returns: ``pd.Series``, daily returns of the market
+
+        :Output:
+         :sharpe: ``float``, the Beta parameter of the stock
+        """
+        cov_mat = np.cov(
+            self.comp_daily_returns()[self.name],
+            market_daily_returns.to_frame()[market_daily_returns.name],
+        )
+
+        beta = cov_mat[0, 1] / cov_mat[1, 1]
+        self.beta = beta
+        return beta
 
     def properties(self):
         """Nicely prints out the properties of the stock: Expected Return,

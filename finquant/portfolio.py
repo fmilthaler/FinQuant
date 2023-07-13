@@ -18,6 +18,7 @@ and makes the most common quantitative calculations, such as:
 - Expected (annualised) Return,
 - Volatility,
 - Sharpe Ratio,
+- Beta parameter (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
 - the portfolio's covariance matrix.
@@ -57,6 +58,7 @@ from finquant.returns import daily_log_returns
 from finquant.stock import Stock
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
+from finquant.market import Market
 
 
 class Portfolio(object):
@@ -85,6 +87,11 @@ class Portfolio(object):
         # Monte Carlo optimisations
         self.ef = None
         self.mc = None
+        # instance variable for Market class
+        self.market_index = None
+        # dataframe containing beta values of stocks
+        self.beta_stocks = pd.DataFrame(index=["beta"])
+        self.beta = None
 
     @property
     def totalinvestment(self):
@@ -131,6 +138,18 @@ class Portfolio(object):
             # now that this changed, update other quantities
             self._update()
 
+    @property
+    def market_index(self) -> Market:
+        return self.__market_index
+
+    @market_index.setter
+    def market_index(self, index: Market) -> None:
+        """Set the market index to the portfolio.
+
+        :param index: An object of the ``Market`` class.
+        """
+        self.__market_index = index
+
     def add_stock(self, stock):
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
         is called, the following instance variables are updated:
@@ -159,20 +178,26 @@ class Portfolio(object):
         # setting an appropriate name for the portfolio
         self.portfolio.name = "Allocation of stocks"
         # also add stock data of stock to the dataframe
-        self._add_stock_data(stock.data)
+        self._add_stock_data(stock)
 
         # update quantities of portfolio
         self._update()
 
-    def _add_stock_data(self, df):
+    def _add_stock_data(self, stock: Stock) -> None:
         # loop over columns in given dataframe
-        for datacol in df.columns:
+        for datacol in stock.data.columns:
             cols = len(self.data.columns)
-            self.data.insert(loc=cols, column=datacol, value=df[datacol].values)
+            self.data.insert(loc=cols, column=datacol, value=stock.data[datacol].values)
         # set index correctly
-        self.data.set_index(df.index.values, inplace=True)
+        self.data.set_index(stock.data.index.values, inplace=True)
         # set index name:
         self.data.index.rename("Date", inplace=True)
+
+        if self.market_index is not None:
+            # compute beta parameter of stock
+            beta_stock = stock.comp_beta(self.market_index.daily_returns)
+            # add beta of stock to portfolio's betas dataframe
+            self.beta_stocks[stock.name] = [beta_stock]
 
     def _update(self):
         # sanity check (only update values if none of the below is empty):
@@ -183,6 +208,8 @@ class Portfolio(object):
             self.sharpe = self.comp_sharpe()
             self.skew = self._comp_skew()
             self.kurtosis = self._comp_kurtosis()
+            if self.market_index is not None:
+                self.beta = self.comp_beta()
 
     def get_stock(self, name):
         """Returns the instance of ``Stock`` with name ``name``.
@@ -323,6 +350,20 @@ class Portfolio(object):
         )
         self.sharpe = sharpe
         return sharpe
+
+    def comp_beta(self) -> float:
+        """Compute and return the Beta parameter of the portfolio.
+
+        :Output:
+         :sharpe: ``float``, the Beta parameter of the portfolio
+        """
+
+        # compute the Beta parameter of the portfolio
+        weights = self.comp_weights()
+        beta = weighted_mean(self.beta_stocks.transpose()["beta"].values, weights)
+
+        self.beta = beta
+        return beta
 
     def _comp_skew(self):
         """Computes and returns the skewness of the stocks in the portfolio."""
@@ -586,6 +627,7 @@ class Portfolio(object):
         - Expected Return,
         - Volatility,
         - Sharpe Ratio,
+        - Beta (optional),
         - skewness,
         - Kurtosis
 
@@ -595,11 +637,15 @@ class Portfolio(object):
         string = "-" * 70
         stocknames = self.portfolio.Name.values.tolist()
         string += "\nStocks: {}".format(", ".join(stocknames))
+        if self.market_index is not None:
+            string += "\nMarket Index: {}".format(self.market_index.name)
         string += "\nTime window/frequency: {}".format(self.freq)
         string += "\nRisk free rate: {}".format(self.risk_free_rate)
         string += "\nPortfolio Expected Return: {:0.3f}".format(self.expected_return)
         string += "\nPortfolio Volatility: {:0.3f}".format(self.volatility)
         string += "\nPortfolio Sharpe Ratio: {:0.3f}".format(self.sharpe)
+        if self.beta is not None:
+            string += "\nPortfolio Beta: {:0.3f}".format(self.beta)
         string += "\n\nSkewness:"
         string += "\n" + str(self.skew.to_frame().transpose())
         string += "\n\nKurtosis:"
@@ -799,7 +845,12 @@ def _get_stocks_data_columns(data, names, cols):
 
 
 def _build_portfolio_from_api(
-    names, pf_allocation=None, start_date=None, end_date=None, data_api="quandl"
+    names,
+    pf_allocation=None,
+    start_date=None,
+    end_date=None,
+    data_api="quandl",
+    market_index: str = None,
 ):
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
@@ -817,6 +868,8 @@ def _build_portfolio_from_api(
          obtain stock prices, if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
+     :market_index: (optional) ``string`` (default: ``None``) which determines the
+         market index to be used for the computation of the beta parameter of the stocks.
 
     :Output:
      :pf: Instance of Portfolio which contains all the information
@@ -824,16 +877,23 @@ def _build_portfolio_from_api(
     """
     # create an empty portfolio
     pf = Portfolio()
+    # create empty dataframe for market data
+    market_data = pd.DataFrame()
     # request data from service:
     if data_api == "yfinance":
         data = _yfinance_request(names, start_date, end_date)
+        if market_index is not None:
+            market_data = _yfinance_request([market_index], start_date, end_date)
     elif data_api == "quandl":
         data = _quandl_request(names, start_date, end_date)
+        if market_index is not None:
+            # only generated if user explicitly requests market index with quandl
+            raise Warning("Market index is not supported for quandl data.")
     # check pf_allocation:
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(names=names)
     # build portfolio:
-    pf = _build_portfolio_from_df(data, pf_allocation)
+    pf = _build_portfolio_from_df(data, pf_allocation, market_data=market_data)
     return pf
 
 
@@ -842,6 +902,20 @@ def _stocknames_in_data_columns(names, df):
     label in the dataframe df.
     """
     return any((name in label for name in names for label in df.columns))
+
+
+def _get_index_adj_clos_pr(data: pd.DataFrame) -> pd.Series:
+    """This function returns a subset of the given ``pandas.DataFrame`` data, which
+    contains only the data columns corresponding to Adjusted Closing Price.
+
+    :Input:
+     :data: A ``pandas.DataFrame`` which contains financial data.
+
+    :Output:
+     :data: A ``pandas.Series`` which contains only the data column of
+         data corresponding to Adjusted Closing Price.
+    """
+    return data["Adj Close"].squeeze()
 
 
 def _generate_pf_allocation(names=None, data=None):
@@ -905,7 +979,12 @@ def _generate_pf_allocation(names=None, data=None):
     return pd.DataFrame({"Allocation": weights, "Name": names})
 
 
-def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"]):
+def _build_portfolio_from_df(
+    data: pd.DataFrame,
+    pf_allocation: pd.DataFrame = None,
+    datacolumns: list = ["Adj. Close"],
+    market_data: pd.DataFrame = None,
+) -> Portfolio:
     """Returns a portfolio based on input in form of ``pandas.DataFrame``.
 
     :Input:
@@ -917,6 +996,8 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
          in the resulting portfolio.
      :datacolumns: (optional) A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
+     :market_data: (optional) A ``pandas.DataFrame`` which contains data of the
+         market index (default: ``None``).
 
     :Output:
      :pf: Instance of Portfolio which contains all the information
@@ -936,6 +1017,11 @@ def _build_portfolio_from_df(data, pf_allocation=None, datacolumns=["Adj. Close"
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
     # building portfolio:
     pf = Portfolio()
+    if market_data is not None and not market_data.empty:
+        # extract only "Adjusted Close" price column from market data
+        market_data = _get_index_adj_clos_pr(market_data)
+        # set market index of portfolio
+        pf.market_index = Market(data=market_data)
     for i in range(len(pf_allocation)):
         # get name of stock
         name = pf_allocation.loc[i].Name
@@ -987,13 +1073,16 @@ def build_portfolio(**kwargs):
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
+     :market_index: (optional) ``string`` (default: ``None``) which determines the
+         market index to be used for the computation of the beta parameter of the stocks.
+
     :Output:
      :pf: Instance of ``Portfolio`` which contains all the information
          requested by the user.
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional), ``market_index`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:
@@ -1030,6 +1119,7 @@ def build_portfolio(**kwargs):
         "end_date",
         "data",
         "data_api",
+        "market_index",
     ]
 
     # check if no input argument was passed
@@ -1047,7 +1137,7 @@ def build_portfolio(**kwargs):
     # create an empty portfolio
     pf = Portfolio()
 
-    # 1. pf_allocation, names, start_date, end_date, data_api
+    # 1. pf_allocation, names, start_date, end_date, data_api, market_index
     allowed_mandatory_args = ["names"]
     allowed_input_args = [
         "names",
@@ -1055,6 +1145,7 @@ def build_portfolio(**kwargs):
         "start_date",
         "end_date",
         "data_api",
+        "market_index",
     ]
     complement_input_args = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
