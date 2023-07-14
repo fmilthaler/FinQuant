@@ -5,8 +5,8 @@ Every time a new instance of ``Stock`` is added to ``Portfolio``, the quantities
 
 import numpy as np
 import pandas as pd
-from finquant.returns import historical_mean_return
-from finquant.returns import daily_returns
+
+from finquant.returns import daily_returns, historical_mean_return
 
 
 class Stock(object):
@@ -35,7 +35,7 @@ class Stock(object):
     data in additional columns.
     """
 
-    def __init__(self, investmentinfo, data):
+    def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series):
         """
         :Input:
          :investmentinfo: ``pandas.DataFrame`` of investment information
@@ -85,11 +85,11 @@ class Stock(object):
 
     def _comp_skew(self):
         """Computes and returns the skewness of the stock."""
-        return self.data.skew().values[0]
+        return self.data.skew()
 
     def _comp_kurtosis(self):
         """Computes and returns the Kurtosis of the stock."""
-        return self.data.kurt().values[0]
+        return self.data.kurt()
 
     def comp_beta(self, market_daily_returns: pd.Series) -> float:
         """Compute and return the Beta parameter of the stock.
@@ -101,7 +101,7 @@ class Stock(object):
          :sharpe: ``float``, the Beta parameter of the stock
         """
         cov_mat = np.cov(
-            self.comp_daily_returns()[self.name],
+            self.comp_daily_returns(),
             market_daily_returns.to_frame()[market_daily_returns.name],
         )
 
@@ -117,8 +117,8 @@ class Stock(object):
         # nicely printing out information and quantities of the stock
         string = "-" * 50
         string += "\nStock: {}".format(self.name)
-        string += "\nExpected Return:{:0.3f}".format(self.expected_return.values[0])
-        string += "\nVolatility: {:0.3f}".format(self.volatility.values[0])
+        string += "\nExpected Return: {:0.3f}".format(self.expected_return)
+        string += "\nVolatility: {:0.3f}".format(self.volatility)
         string += "\nSkewness: {:0.5f}".format(self.skew)
         string += "\nKurtosis: {:0.5f}".format(self.kurtosis)
         string += "\nInformation:"
