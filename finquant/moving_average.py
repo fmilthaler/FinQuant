@@ -19,7 +19,8 @@ def compute_ma(data, fun, spans, plot=True):
     Averages with the shortest/longest spans.
 
     :Input:
-     :data: pandas.DataFrame with stock prices, only one column is expected.
+     :data: pandas.DataFrame, or pandas.Series, with stock prices
+         (if pandas.DataFrame: only one column is expected)
      :fun: function that computes a moving average, e.g. sma (simple) or
          ema (exponential).
      :spans: list of integers, time windows to compute the Moving Average on.
@@ -30,10 +31,13 @@ def compute_ma(data, fun, spans, plot=True):
     :Output:
      :ma: pandas.DataFrame with moving averages of given data.
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data must be of type pandas.DataFrame")
-    # compute moving averages
+    if not isinstance(data, (pd.Series, pd.DataFrame)):
+        raise ValueError("data is expected to be of type pandas.Series or pandas.DataFrame")
     ma = data.copy(deep=True)
+    # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
+    if isinstance(ma, pd.Series):
+        ma = ma.to_frame()
+    # compute moving averages
     for span in spans:
         ma[str(span) + "d"] = fun(data, span=span)
     if plot:
@@ -150,18 +154,21 @@ def plot_bollinger_band(data, fun, span):
     """Computes and visualises a Bolling Band.
 
     :Input:
-     :data: pandas.DataFrame with stock prices in columns
+     :data: pandas.Series or pandas.DataFrame with stock prices in columns
      :fun: function that computes a moving average, e.g. sma (simple) or
          ema (exponential).
      :span: int (defaul: 100), number of days/values over which
          the average is computed
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data is expected to be a pandas.DataFrame")
-    if not len(data.columns.values) == 1:
+    if not isinstance(data, (pd.Series, pd.DataFrame)):
+        raise ValueError("data is expected to be of type pandas.Series or pandas.DataFrame")
+    if isinstance(data, pd.DataFrame) and not len(data.columns.values) == 1:
         raise ValueError("data is expected to have only one column.")
     if not isinstance(span, int):
         raise ValueError("span must be an integer.")
+    # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
+    if isinstance(data, pd.Series):
+        data = data.to_frame()
     # compute moving average
     ma = compute_ma(data, fun, [span], plot=False)
     # create dataframes for bollinger band object and standard
