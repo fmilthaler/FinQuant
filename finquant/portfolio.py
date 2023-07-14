@@ -55,10 +55,10 @@ from finquant.quants import weighted_mean, weighted_std, sharpe_ratio
 from finquant.returns import historical_mean_return
 from finquant.returns import daily_returns, cumulative_returns
 from finquant.returns import daily_log_returns
+from finquant.market import Market
 from finquant.stock import Stock
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.monte_carlo import MonteCarloOpt
-from finquant.market import Market
 
 
 class Portfolio(object):
@@ -150,7 +150,7 @@ class Portfolio(object):
         """
         self.__market_index = index
 
-    def add_stock(self, stock):
+    def add_stock(self, stock: Stock) -> None:
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
         is called, the following instance variables are updated:
 
@@ -184,10 +184,8 @@ class Portfolio(object):
         self._update()
 
     def _add_stock_data(self, stock: Stock) -> None:
-        # loop over columns in given dataframe
-        for datacol in stock.data.columns:
-            cols = len(self.data.columns)
-            self.data.insert(loc=cols, column=datacol, value=stock.data[datacol].values)
+        # insert given data into portfolio stocks dataframe:
+        self.data.insert(loc=len(self.data.columns), column=stock.name, value=stock.data)
         # set index correctly
         self.data.set_index(stock.data.index.values, inplace=True)
         # set index name:
@@ -881,19 +879,20 @@ def _build_portfolio_from_api(
     market_data = pd.DataFrame()
     # request data from service:
     if data_api == "yfinance":
-        data = _yfinance_request(names, start_date, end_date)
+        stock_data = _yfinance_request(names, start_date, end_date)
         if market_index is not None:
             market_data = _yfinance_request([market_index], start_date, end_date)
     elif data_api == "quandl":
-        data = _quandl_request(names, start_date, end_date)
+        stock_data = _quandl_request(names, start_date, end_date)
         if market_index is not None:
             # only generated if user explicitly requests market index with quandl
             raise Warning("Market index is not supported for quandl data.")
+
     # check pf_allocation:
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(names=names)
     # build portfolio:
-    pf = _build_portfolio_from_df(data, pf_allocation, market_data=market_data)
+    pf = _build_portfolio_from_df(stock_data, pf_allocation, market_data=market_data)
     return pf
 
 
@@ -1015,6 +1014,7 @@ def _build_portfolio_from_df(
     # extract only "Adjusted Close" price ("Adj. Close" in quandl, "Adj Close" in yfinance)
     # column from DataFrame:
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
+
     # building portfolio:
     pf = Portfolio()
     if market_data is not None and not market_data.empty:
@@ -1025,11 +1025,8 @@ def _build_portfolio_from_df(
     for i in range(len(pf_allocation)):
         # get name of stock
         name = pf_allocation.loc[i].Name
-        # extract data column(s) of said stock
-        stock_data = data.loc[:, [name]].copy(deep=True)
-        # if only one data column per stock exists, give dataframe a name
-        if len(datacolumns) == 1:
-            stock_data.name = datacolumns[0]
+        # extract data column of said stock
+        stock_data = data.loc[:, [name]].copy(deep=True).squeeze()
         # create Stock instance and add it to portfolio
         pf.add_stock(Stock(pf_allocation.loc[i], data=stock_data))
     return pf
