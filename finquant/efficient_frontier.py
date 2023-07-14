@@ -3,10 +3,11 @@ optimise a portfolio by minimising a cost/objective function.
 """
 
 
+import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 import scipy.optimize as sco
-import matplotlib.pylab as plt
+
 import finquant.minimise_fun as min_fun
 from finquant.quants import annualised_portfolio_quantities
 

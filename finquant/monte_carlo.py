@@ -4,9 +4,10 @@ Monte Carlo run to find optimised financial portfolios, given an intial portfoli
 """
 
 
+import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pylab as plt
+
 from finquant.quants import annualised_portfolio_quantities
 
 

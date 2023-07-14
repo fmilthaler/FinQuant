@@ -1,8 +1,15 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from finquant.moving_average import compute_ma, sma, ema, sma_std, ema_std
-from finquant.moving_average import plot_bollinger_band
+
+from finquant.moving_average import (
+    compute_ma,
+    ema,
+    ema_std,
+    plot_bollinger_band,
+    sma,
+    sma_std,
+)
 
 plt.switch_backend("Agg")
 

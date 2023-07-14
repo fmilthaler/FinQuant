@@ -2,14 +2,16 @@
 # tests for Stock #
 ###################
 
+import datetime
 import os
 import pathlib
+
 import numpy as np
 import pandas as pd
-import datetime
+import pytest
 import quandl
 import yfinance
-import pytest
+
 from finquant.portfolio import build_portfolio
 from finquant.stock import Stock
 

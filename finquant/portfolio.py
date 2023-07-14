@@ -48,17 +48,21 @@ Finally, functions are implemented to generated the following plots:
 """
 
 
+import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pylab as plt
-from finquant.quants import weighted_mean, weighted_std, sharpe_ratio
-from finquant.returns import historical_mean_return
-from finquant.returns import daily_returns, cumulative_returns
-from finquant.returns import daily_log_returns
-from finquant.market import Market
-from finquant.stock import Stock
+
 from finquant.efficient_frontier import EfficientFrontier
+from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
+from finquant.quants import sharpe_ratio, weighted_mean, weighted_std
+from finquant.returns import (
+    cumulative_returns,
+    daily_log_returns,
+    daily_returns,
+    historical_mean_return,
+)
+from finquant.stock import Stock
 
 
 class Portfolio(object):

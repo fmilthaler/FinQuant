@@ -1,6 +1,11 @@
 import pandas as pd
-from finquant.returns import cumulative_returns, daily_returns
-from finquant.returns import daily_log_returns, historical_mean_return
+
+from finquant.returns import (
+    cumulative_returns,
+    daily_log_returns,
+    daily_returns,
+    historical_mean_return,
+)
 
 
 def test_cumulative_returns():

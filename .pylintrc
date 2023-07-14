@@ -1,0 +1,23 @@
+[MASTER]
+# Set the output format for `pylint` messages (text, colorized, json, etc.)
+output-format=text
+
+# Ignore certain files or directories during analysis
+ignore-patterns=tests/, docs/
+
+[MESSAGES CONTROL]
+# Specify the maximum allowed line length
+max-line-length=120
+
+# Disable some pylint messages that may be too strict or not relevant for your project
+disable=
+    C0103,  # Naming convention violation
+    # C0114,  # Missing module, function, class docstring
+    R0913,  # Too many arguments
+    R0914,  # Too many local variables
+    # R0903,  # Too few public methods
+
+# Include additional pylint messages or message categories
+enable=
+    C0114,  # Missing module, function, class docstring
+    R0903,  # Too few public methods
