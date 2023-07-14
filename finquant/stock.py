@@ -98,7 +98,7 @@ class Stock:
          :market_daily_returns: ``pd.Series``, daily returns of the market
 
         :Output:
-         :sharpe: ``float``, the Beta parameter of the stock
+         :beta: ``float``, the Beta parameter of the stock
         """
         cov_mat = np.cov(
             self.comp_daily_returns(),
