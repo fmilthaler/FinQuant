@@ -1,4 +1,5 @@
 black==23.1.0
 pylint
+mypy
 jupyter
 notebook
