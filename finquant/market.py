@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from finquant.returns import historical_mean_return, daily_returns
+from finquant.returns import daily_returns, historical_mean_return
 
 
 class Market(object):

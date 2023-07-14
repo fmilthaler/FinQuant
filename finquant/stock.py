@@ -5,8 +5,7 @@ Every time a new instance of ``Stock`` is added to ``Portfolio``, the quantities
 
 import numpy as np
 import pandas as pd
-from finquant.returns import historical_mean_return
-from finquant.returns import daily_returns
+from finquant.returns import daily_returns, historical_mean_return
 
 
 class Stock(object):
