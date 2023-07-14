@@ -185,7 +185,9 @@ class Portfolio(object):
 
     def _add_stock_data(self, stock: Stock) -> None:
         # insert given data into portfolio stocks dataframe:
-        self.data.insert(loc=len(self.data.columns), column=stock.name, value=stock.data)
+        self.data.insert(
+            loc=len(self.data.columns), column=stock.name, value=stock.data
+        )
         # set index correctly
         self.data.set_index(stock.data.index.values, inplace=True)
         # set index name:

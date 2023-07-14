@@ -348,8 +348,8 @@ class EfficientFrontier(object):
     def plot_optimal_portfolios(self):
         """Plots markers of the optimised portfolios for
 
-         - minimum Volatility, and
-         - maximum Sharpe Ratio.
+        - minimum Volatility, and
+        - maximum Sharpe Ratio.
         """
         # compute optimal portfolios
         min_vol_weights = self.minimum_volatility(save_weights=False)

@@ -13,7 +13,9 @@ import pandas as pd
 from typing import Callable, List
 
 
-def compute_ma(data, fun: Callable, spans: List[int], plot: bool = True) -> pd.DataFrame:
+def compute_ma(
+    data, fun: Callable, spans: List[int], plot: bool = True
+) -> pd.DataFrame:
     """Computes a band of moving averages (sma or ema, depends on the input argument
     `fun`) for a number of different time windows. If `plot` is `True`, it also
     computes and sets markers for buy/sell signals based on crossovers of the Moving
@@ -33,7 +35,9 @@ def compute_ma(data, fun: Callable, spans: List[int], plot: bool = True) -> pd.D
      :ma: pandas.DataFrame with moving averages of given data.
     """
     if not isinstance(data, (pd.Series, pd.DataFrame)):
-        raise ValueError("data is expected to be of type pandas.Series or pandas.DataFrame")
+        raise ValueError(
+            "data is expected to be of type pandas.Series or pandas.DataFrame"
+        )
     ma = data.copy(deep=True)
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(ma, pd.Series):
@@ -162,7 +166,9 @@ def plot_bollinger_band(data, fun: Callable, span: int = 100) -> None:
          the average is computed
     """
     if not isinstance(data, (pd.Series, pd.DataFrame)):
-        raise ValueError("data is expected to be of type pandas.Series or pandas.DataFrame")
+        raise ValueError(
+            "data is expected to be of type pandas.Series or pandas.DataFrame"
+        )
     if isinstance(data, pd.DataFrame) and not len(data.columns.values) == 1:
         raise ValueError("data is expected to have only one column.")
     if not isinstance(span, int):
