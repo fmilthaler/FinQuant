@@ -2,18 +2,20 @@
 # testing modules portfolio, optimisation, efficient_frontier #
 # all through the interfaces in Portfolio                     #
 ###############################################################
+import datetime
 import os
 import pathlib
+
+import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pylab as plt
-import datetime
+import pytest
 import quandl
 import yfinance
-import pytest
-from finquant.portfolio import build_portfolio, Portfolio
-from finquant.stock import Stock
+
 from finquant.efficient_frontier import EfficientFrontier
+from finquant.portfolio import Portfolio, build_portfolio
+from finquant.stock import Stock
 
 # comparisons
 strong_abse = 1e-15

@@ -7,10 +7,11 @@
 """
 
 
+from typing import Callable, List
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from typing import Callable, List
 
 
 def compute_ma(

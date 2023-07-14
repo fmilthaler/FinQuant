@@ -4,10 +4,11 @@
 
 import numpy as np
 import pandas as pd
-import yfinance
 import pytest
-from finquant.portfolio import build_portfolio
+import yfinance
+
 from finquant.market import Market
+from finquant.portfolio import build_portfolio
 
 d = {
     0: {"Name": "GOOG", "Allocation": 20},
