@@ -113,14 +113,14 @@ class MonteCarloOpt(MonteCarlo):
              list of [expected return, volatility, sharpe ratio].
         """
         # select random weights for portfolio
-        w = np.array(np.random.random(self.num_stocks))
+        weights = np.array(np.random.random(self.num_stocks))
         # rebalance weights
-        w = w / np.sum(w)
+        weights = weights / np.sum(weights)
         # compute portfolio return and volatility
         portfolio_values = annualised_portfolio_quantities(
-            w, self.return_means, self.cov_matrix, self.risk_free_rate, self.freq
+            weights, self.return_means, self.cov_matrix, self.risk_free_rate, self.freq
         )
-        return (w, np.array(portfolio_values))
+        return (weights, np.array(portfolio_values))
 
     def _random_portfolios(self):
         """Performs a Monte Carlo run and gets a list of random portfolios
