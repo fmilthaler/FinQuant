@@ -1,17 +1,22 @@
 import setuptools
 
+
+def read_file(file_path):
+    with open(file_path, "r") as f:
+        return f.read()
+
+
 # get version/release from file
-with open("version", "r") as f:
-    version = dict(x.rstrip().split("=") for x in f)
+version = dict(line.rstrip().split("=") for line in read_file("version").splitlines())
 
 # get long description from README
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+long_description = read_file("README.md")
+
 
 # get dependencies
 def read_requirements(file_path):
-    with open(file_path, "r") as f:
-        return [line.strip() for line in f if line.strip()]
+    return [line.strip() for line in read_file(file_path).splitlines() if line.strip()]
+
 
 install_requires = read_requirements("requirements.txt")
 
@@ -31,9 +36,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/fmilthaler/FinQuant",
-    download_url="https://github.com/fmilthaler/FinQuant/archive/v{}.tar.gz".format(
-        version["release"]
-    ),
+    download_url=f"https://github.com/fmilthaler/FinQuant/archive/v{version['release']}.tar.gz",
     license="MIT",
     packages=setuptools.find_packages(),
     classifiers=[

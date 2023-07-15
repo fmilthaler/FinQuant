@@ -9,7 +9,7 @@ import pandas as pd
 from finquant.returns import daily_returns, historical_mean_return
 
 
-class Stock(object):
+class Stock:
     """Object that contains information about a stock/fund.
     To initialise the object, it requires a name, information about
     the stock/fund given as one of the following data structures:
@@ -116,11 +116,11 @@ class Stock(object):
         """
         # nicely printing out information and quantities of the stock
         string = "-" * 50
-        string += "\nStock: {}".format(self.name)
-        string += "\nExpected Return: {:0.3f}".format(self.expected_return)
-        string += "\nVolatility: {:0.3f}".format(self.volatility)
-        string += "\nSkewness: {:0.5f}".format(self.skew)
-        string += "\nKurtosis: {:0.5f}".format(self.kurtosis)
+        string += f"\nStock: {self.name}"
+        string += f"\nExpected Return: {self.expected_return:0.3f}"
+        string += f"\nVolatility: {self.volatility:0.3f}"
+        string += f"\nSkewness: {self.skew:0.5f}"
+        string += f"\nKurtosis: {self.kurtosis:0.5f}"
         string += "\nInformation:"
         string += "\n" + str(self.investmentinfo.to_frame().transpose())
         string += "\n"

@@ -12,7 +12,7 @@ import finquant.minimise_fun as min_fun
 from finquant.quants import annualised_portfolio_quantities
 
 
-class EfficientFrontier(object):
+class EfficientFrontier:
     """An object designed to perform optimisations based on minimising a cost/objective function.
     It can find parameters for portfolios with
 
@@ -126,8 +126,10 @@ class EfficientFrontier(object):
         """
         if not isinstance(save_weights, bool):
             raise ValueError("save_weights is expected to be a boolean.")
+
         args = (self.mean_returns.values, self.cov_matrix.values)
-        # optimisation
+
+        # Optimization
         result = sco.minimize(
             min_fun.portfolio_volatility,
             args=args,
@@ -136,9 +138,11 @@ class EfficientFrontier(object):
             bounds=self.bounds,
             constraints=self.constraints,
         )
-        # if successful, set self.last_optimisation
+
+        # Set the last optimization
         self.last_optimisation = "Minimum Volatility"
-        # set optimal weights
+
+        # Set optimal weights
         if save_weights:
             self.weights = result["x"]
             self.df_weights = self._dataframe_weights(self.weights)
@@ -307,7 +311,7 @@ class EfficientFrontier(object):
         """
         if targets is not None and not isinstance(targets, (list, np.ndarray)):
             raise ValueError("targets is expected to be a list or numpy.ndarray")
-        elif targets is None:
+        if targets is None:
             # set range of target returns from the individual expected
             # returns of the stocks in the portfolio.
             min_return = self.mean_returns.min() * self.freq
@@ -420,14 +424,14 @@ class EfficientFrontier(object):
         )
         if verbose:
             string = "-" * 70
-            string += "\nOptimised portfolio for {}".format(self.last_optimisation)
-            string += "\n\nTime window/frequency: {}".format(self.freq)
-            string += "\nRisk free rate: {}".format(self.risk_free_rate)
-            string += "\nExpected annual Return: {:.3f}".format(expected_return)
-            string += "\nAnnual Volatility: {:.3f}".format(volatility)
-            string += "\nSharpe Ratio: {:.3f}".format(sharpe)
+            string += f"\nOptimised portfolio for {self.last_optimisation}"
+            string += f"\n\nTime window/frequency: {self.freq}"
+            string += f"\nRisk free rate: {self.risk_free_rate}"
+            string += f"\nExpected annual Return: {expected_return:.3f}"
+            string += f"\nAnnual Volatility: {volatility:.3f}"
+            string += f"\nSharpe Ratio: {sharpe:.3f}"
             string += "\n\nOptimal weights:"
-            string += "\n" + str(self.df_weights.transpose())
+            string += f"\n{str(self.df_weights.transpose())}"
             string += "\n"
             string += "-" * 70
             print(string)
