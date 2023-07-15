@@ -12,6 +12,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/finquant
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python
@@ -21,19 +24,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install build setuptools wheel twine
+          python -m pip install .[cd]
       - name: Build package
-        run: python -m build
+        run: python setup.py sdist bdist_wheel
       - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
-          repository-url: https://test.pypi.org/legacy/
-
-
-- name: Publish package to PyPI
-  uses: pypa/gh-action-pypi-publish@release/v1
-  with:
-    password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-    repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_FINQUANT_API_TOKEN }}
