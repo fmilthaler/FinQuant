@@ -1,5 +1,4 @@
 black==23.1.0
-pylint
 mypy
 isort
 jupyter
