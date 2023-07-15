@@ -13,7 +13,8 @@ max-line-length=120
 # Disable some pylint messages that may be too strict or not relevant for your project
 disable=
     C0103,  # Naming convention violation
-    C0114,  # Missing module, function, class docstring
+    C0114,  # Missing module docstring
+    C0116,  # Missing function docstring
     R0903,  # Too few public methods
     R0913,  # Too many arguments
     R0914,  # Too many local variables
