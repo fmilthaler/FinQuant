@@ -6,7 +6,7 @@ import pandas as pd
 from finquant.returns import daily_returns, historical_mean_return
 
 
-class Market(object):
+class Market:
     """Object that contains information about a market index.
     To initialise the object, it requires a name and information about
     the index given as ``pandas.Series`` data structure.
@@ -72,11 +72,11 @@ class Market(object):
         """
         # nicely printing out information and quantities of market index
         string = "-" * 50
-        string += "\Market index: {}".format(self.name)
-        string += "\nExpected Return:{:0.3f}".format(self.expected_return)
-        string += "\nVolatility: {:0.3f}".format(self.volatility)
-        string += "\nSkewness: {:0.5f}".format(self.skew)
-        string += "\nKurtosis: {:0.5f}".format(self.kurtosis)
+        string += f"\nMarket index: {self.name}"
+        string += f"\nExpected Return:{self.expected_return:0.3f}"
+        string += f"\nVolatility: {self.volatility:0.3f}"
+        string += f"\nSkewness: {self.skew:0.5f}"
+        string += f"\nKurtosis: {self.kurtosis:0.5f}"
         string += "-" * 50
         print(string)
 
