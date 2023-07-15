@@ -1,12 +1,12 @@
 [MASTER]
+# Ignore certain files or directories during analysis
+ignore-paths=tests/,docs/,example/
+
 [REPORTS]
 # Set the output format for `pylint` messages (text, colorized, json, etc.)
 output-format=text
 
 [MESSAGES CONTROL]
-# Ignore certain files or directories during analysis
-ignore-patterns=tests/, docs/
-
 # Specify the maximum allowed line length
 max-line-length=120
 
@@ -18,7 +18,6 @@ disable=
     R0903,  # Too few public methods
     R0913,  # Too many arguments
     R0914,  # Too many local variables
-    W1514,  # Using open without explicitly specifying an encoding
 
 # Include additional pylint messages or message categories
 #enable=
