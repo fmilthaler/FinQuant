@@ -19,6 +19,7 @@ extras_require = {
     "test": read_requirements("requirements_test.txt"),
     "dev": read_requirements("requirements_dev.txt"),
     "docs": read_requirements("requirements_docs.txt"),
+    "cd": read_requirements("requirements_cd.txt"),
 }
 
 setuptools.setup(
