@@ -12,6 +12,7 @@
 import pathlib
 import pandas as pd
 import datetime
+
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
 
@@ -24,8 +25,8 @@ from finquant.portfolio import build_portfolio
 
 # stock data was previously pulled from quandl and stored in ex1-stockdata.csv
 # commands used to save data:
-# pf.getPortfolio().to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
-# pf.getPfStockData().to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
+# pf.portfolio.to_csv("ex1-portfolio.csv", encoding='utf-8', index=False, header=True)
+# pf.data.to_csv("ex1-stockdata.csv", encoding='utf-8', index=True, index_label="Date")
 # read data from files:
 df_pf_path = pathlib.Path.cwd() / ".." / "data" / "ex1-portfolio.csv"
 df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"

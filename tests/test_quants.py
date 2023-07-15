@@ -1,6 +1,11 @@
 import numpy as np
-from finquant.quants import weighted_mean, weighted_std
-from finquant.quants import sharpe_ratio, annualised_portfolio_quantities
+
+from finquant.quants import (
+    annualised_portfolio_quantities,
+    sharpe_ratio,
+    weighted_mean,
+    weighted_std,
+)
 
 
 def test_weighted_mean():

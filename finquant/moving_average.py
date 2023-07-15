@@ -7,33 +7,43 @@
 """
 
 
+from typing import Callable, List
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 
-def compute_ma(data, fun, spans, plot=True):
+def compute_ma(
+    data, fun: Callable, spans: List[int], plot: bool = True
+) -> pd.DataFrame:
     """Computes a band of moving averages (sma or ema, depends on the input argument
     `fun`) for a number of different time windows. If `plot` is `True`, it also
     computes and sets markers for buy/sell signals based on crossovers of the Moving
     Averages with the shortest/longest spans.
 
     :Input:
-     :data: pandas.DataFrame with stock prices, only one column is expected.
+     :data: pandas.DataFrame, or pandas.Series, with stock prices
+         (if pandas.DataFrame: only one column is expected)
      :fun: function that computes a moving average, e.g. sma (simple) or
          ema (exponential).
      :spans: list of integers, time windows to compute the Moving Average on.
      :plot: boolean (default: True), whether to plot the moving averages
-         and buy/sell signales based on crossovers of shortest and longest
+         and buy/sell signals based on crossovers of shortest and longest
          moving average.
 
     :Output:
      :ma: pandas.DataFrame with moving averages of given data.
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data must be of type pandas.DataFrame")
-    # compute moving averages
+    if not isinstance(data, (pd.Series, pd.DataFrame)):
+        raise ValueError(
+            "data is expected to be of type pandas.Series or pandas.DataFrame"
+        )
     ma = data.copy(deep=True)
+    # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
+    if isinstance(ma, pd.Series):
+        ma = ma.to_frame()
+    # compute moving averages
     for span in spans:
         ma[str(span) + "d"] = fun(data, span=span)
     if plot:
@@ -57,7 +67,7 @@ def compute_ma(data, fun, spans, plot=True):
         ax.plot(
             signals.loc[signals["signal"] == 1.0].index.values,
             signals[minlabel][signals["signal"] == 1.0].values,
-            "^",
+            marker="^",
             markersize=10,
             color="r",
             label="buy signal",
@@ -66,7 +76,7 @@ def compute_ma(data, fun, spans, plot=True):
         ax.plot(
             signals.loc[signals["signal"] == -1.0].index.values,
             signals[minlabel][signals["signal"] == -1.0].values,
-            "v",
+            marker="v",
             markersize=10,
             color="b",
             label="sell signal",
@@ -82,14 +92,14 @@ def compute_ma(data, fun, spans, plot=True):
     return ma
 
 
-def sma(data, span=100):
+def sma(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     """Computes and returns the simple moving average.
 
     Note: the moving average is computed on all columns.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: int (defaul: 100), number of days/values over which
+     :span: int (default: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -98,14 +108,14 @@ def sma(data, span=100):
     return data.rolling(window=span, center=False).mean()
 
 
-def ema(data, span=100):
+def ema(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     """Computes and returns the exponential moving average.
 
     Note: the moving average is computed on all columns.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: int (defaul: 100), number of days/values over which
+     :span: int (default: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -114,13 +124,13 @@ def ema(data, span=100):
     return data.ewm(span=span, adjust=False, min_periods=span).mean()
 
 
-def sma_std(data, span=100):
+def sma_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     """Computes and returns the standard deviation of the simple moving
     average.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: int (defaul: 100), number of days/values over which
+     :span: int (default: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -130,13 +140,13 @@ def sma_std(data, span=100):
     return data.rolling(window=span, center=False).std()
 
 
-def ema_std(data, span=100):
+def ema_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     """Computes and returns the standard deviation of the exponential
     moving average.
 
     :Input:
      :data: pandas.DataFrame with stock prices in columns
-     :span: int (defaul: 100), number of days/values over which
+     :span: int (default: 100), number of days/values over which
          the average is computed
 
     :Output:
@@ -146,22 +156,27 @@ def ema_std(data, span=100):
     return data.ewm(span=span, adjust=False, min_periods=span).std()
 
 
-def plot_bollinger_band(data, fun, span):
+def plot_bollinger_band(data, fun: Callable, span: int = 100) -> None:
     """Computes and visualises a Bolling Band.
 
     :Input:
-     :data: pandas.DataFrame with stock prices in columns
+     :data: pandas.Series or pandas.DataFrame with stock prices in columns
      :fun: function that computes a moving average, e.g. sma (simple) or
          ema (exponential).
-     :span: int (defaul: 100), number of days/values over which
+     :span: int (default: 100), number of days/values over which
          the average is computed
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data is expected to be a pandas.DataFrame")
-    if not len(data.columns.values) == 1:
+    if not isinstance(data, (pd.Series, pd.DataFrame)):
+        raise ValueError(
+            "data is expected to be of type pandas.Series or pandas.DataFrame"
+        )
+    if isinstance(data, pd.DataFrame) and not len(data.columns.values) == 1:
         raise ValueError("data is expected to have only one column.")
     if not isinstance(span, int):
         raise ValueError("span must be an integer.")
+    # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
+    if isinstance(data, pd.Series):
+        data = data.to_frame()
     # compute moving average
     ma = compute_ma(data, fun, [span], plot=False)
     # create dataframes for bollinger band object and standard

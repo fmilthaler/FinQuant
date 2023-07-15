@@ -1,0 +1,5 @@
+black==23.1.0
+mypy
+isort
+jupyter
+notebook

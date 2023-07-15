@@ -13,13 +13,14 @@ import pathlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import datetime
+
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
 
 # <codecell>
 
 # plotting style:
-plt.style.use("seaborn-darkgrid")
+plt.style.use("seaborn-v0_8-darkgrid")
 # set line width
 plt.rcParams["lines.linewidth"] = 2
 # set font size for titles
@@ -116,11 +117,11 @@ plt.show()
 
 # <markdowncell>
 
-# The stock prices of Google and Amazon are much higher than those for McDonald's and Disney. Hence the fluctuations of the latter ones are barely seen in the above plot. One can use pandas.plot() method to create a secondary y axis.
+# The stock prices of Google and Amazon are much higher than those for McDonald's and Disney. Hence the fluctuations of the latter ones are barely seen in the above plot. One can use `pandas.plot()` method to create a secondary y axis.
 
 # <codecell>
 
-pf.data.plot(secondary_y=["MCD", "DIS"], grid=True)
+pf.data.plot(secondary_y=["WIKI/MCD", "WIKI/DIS"], grid=True)
 plt.show()
 
 # <codecell>
@@ -157,10 +158,10 @@ plt.show()
 from finquant.moving_average import sma
 
 # simple moving average
-ax = pf.data.plot(secondary_y=["MCD", "DIS"], grid=True)
+ax = pf.data.plot(secondary_y=["WIKI/MCD", "WIKI/DIS"], grid=True)
 # computing simple moving average over a span of 50 (trading) days
 # and plotting it
-sma(pf.data, span=50).plot(ax=ax, secondary_y=["MCD", "DIS"], grid=True)
+sma(pf.data, span=50).plot(ax=ax, secondary_y=["WIKI/MCD", "WIKI/DIS"], grid=True)
 plt.show()
 
 # <codecell>
@@ -168,9 +169,9 @@ plt.show()
 from finquant.moving_average import ema
 
 # exponential moving average
-ax = pf.data.plot(secondary_y=["MCD", "DIS"], grid=True)
+ax = pf.data.plot(secondary_y=["WIKI/MCD", "WIKI/DIS"], grid=True)
 # computing exponential moving average and plotting it
-ema(pf.data).plot(ax=ax, secondary_y=["MCD", "DIS"])
+ema(pf.data).plot(ax=ax, secondary_y=["WIKI/MCD", "WIKI/DIS"])
 plt.show()
 
 # <markdowncell>
@@ -188,7 +189,7 @@ print(compute_ma.__doc__)
 # <codecell>
 
 # get stock data for disney
-dis = pf.get_stock("DIS").data.copy(deep=True)
+dis = pf.get_stock("WIKI/DIS").data.copy(deep=True)
 # we want moving averages of 10, 50, 100, and 200 days.
 spans = [10, 50, 100, 150, 200]
 # compute and plot moving averages
@@ -206,7 +207,7 @@ plt.show()
 from finquant.moving_average import plot_bollinger_band
 
 # get stock data for disney
-dis = pf.get_stock("DIS").data.copy(deep=True)
+dis = pf.get_stock("WIKI/DIS").data.copy(deep=True)
 span = 20
 # for simple moving average:
 plot_bollinger_band(dis, sma, span)
@@ -255,7 +256,7 @@ pf.properties()
 # <codecell>
 
 # getting Stock object from portfolio, for Google's stock
-goog = pf.get_stock("GOOG")
+goog = pf.get_stock("WIKI/GOOG")
 # getting the stock prices
 goog_prices = goog.data
 print(goog_prices.head(3))

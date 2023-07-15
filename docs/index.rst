@@ -8,7 +8,7 @@
     :width: 30
     :align: middle
 
-.. _Travis Ci: https://travis-ci.org/fmilthaler/FinQuant
+.. _GitHub Actions: https://github.com/fmilthaler/finquant/actions/workflows/pytest.yml/badge.svg?branch=master
 
 .. _GitHub: https://github.com/fmilthaler/FinQuant/
 
@@ -22,7 +22,7 @@ Welcome to FinQuant's documentation
 
 *FinQuant* is made to be easily extended. I hope it proves itself useful for hobby investors, students, geeks, and the intellectual curious.
 
-.. caution:: While *FinQuant* has tests in place that are run automatically by `Travis CI`_, it cannot guarantee to be bug free, nor that the analysis or optimised portfolio yield to wealth. Please use at your own discretion and refer to the :ref:`license`.
+.. caution:: While *FinQuant* has tests in place that are run automatically by `GitHub Actions`_, it cannot guarantee to be bug free, nor that the analysis or optimised portfolio yield to wealth. Please use at your own discretion and refer to the :ref:`license`.
 
 
 Installation
@@ -34,14 +34,13 @@ Dependencies
 
 *FinQuant* depends on the following Python packages:
 
-- ``python>=3.5.0``
+- ``python>=3.10.0``
 - ``numpy>=1.15``
-- ``pandas>=0.24``
-- ``matplotlib>=1.5.1``
+- ``scipy>=1.2.0``
+- ``pandas>=2.0``
+- ``matplotlib>=3.0``
 - ``quandl>=3.4.5``
 - ``yfinance>=0.1.43``
-- ``scipy>=1.2.0``
-- ``pytest>=2.8.7``
 
 From PyPI
 ---------

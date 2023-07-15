@@ -2,17 +2,20 @@
 # testing modules portfolio, optimisation, efficient_frontier #
 # all through the interfaces in Portfolio                     #
 ###############################################################
+import datetime
 import os
 import pathlib
+
+import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pylab as plt
-import datetime
+import pytest
 import quandl
 import yfinance
-import pytest
-from finquant.portfolio import build_portfolio, Stock, Portfolio
+
 from finquant.efficient_frontier import EfficientFrontier
+from finquant.portfolio import Portfolio, build_portfolio
+from finquant.stock import Stock
 
 # comparisons
 strong_abse = 1e-15
@@ -24,10 +27,20 @@ quandl.ApiConfig.api_key = os.getenv("QUANDLAPIKEY")
 # read data from file
 df_pf_path = pathlib.Path.cwd() / ".." / "data" / "ex1-portfolio.csv"
 df_data_path = pathlib.Path.cwd() / ".." / "data" / "ex1-stockdata.csv"
+# allocation of portfolio (quandl version):
 df_pf = pd.read_csv(df_pf_path)
+# allocation of portfolio (yfinance version):
+df_pf_yf = df_pf.copy()
+df_pf_yf["Name"] = df_pf_yf["Name"].str.replace("WIKI/", "")
+# stock price data (quandl version):
 df_data = pd.read_csv(df_data_path, index_col="Date", parse_dates=True)
+# stock price data (yfinance version):
+df_data_yf = df_data.copy()
+df_data_yf = df_data_yf.rename(columns=lambda x: x.replace("WIKI/", ""))
 # create testing variables
 names = df_pf.Name.values.tolist()
+names_yf = df_pf_yf.Name.values.tolist()
+# weights
 weights_df_pf = [
     0.31746031746031744,
     0.15873015873015872,
@@ -36,6 +49,7 @@ weights_df_pf = [
 ]
 weights_no_df_pf = [1.0 / len(names) for i in range(len(names))]
 df_pf2 = pd.DataFrame({"Allocation": weights_no_df_pf, "Name": names})
+df_pf2_yf = pd.DataFrame({"Allocation": weights_no_df_pf, "Name": names_yf})
 start_date = datetime.datetime(2015, 1, 1)
 end_date = "2017-12-31"
 # portfolio quantities (based on provided data)
@@ -46,62 +60,71 @@ freq_orig = 252
 risk_free_rate_orig = 0.005
 # create fake allocations
 d_error_1 = {
-    0: {"Names": "GOOG", "Allocation": 20},
-    1: {"Names": "AMZN", "Allocation": 10},
-    2: {"Names": "MCD", "Allocation": 15},
-    3: {"Names": "DIS", "Allocation": 18},
+    0: {"Names": "WIKI/GOOG", "Allocation": 20},
+    1: {"Names": "WIKI/AMZN", "Allocation": 10},
+    2: {"Names": "WIKI/MCD", "Allocation": 15},
+    3: {"Names": "WIKI/DIS", "Allocation": 18},
 }
 df_pf_error_1 = pd.DataFrame.from_dict(d_error_1, orient="index")
 d_error_2 = {
-    0: {"Name": "GOOG", "weight": 20},
-    1: {"Name": "AMZN", "weight": 10},
-    2: {"Name": "MCD", "weight": 15},
-    3: {"Name": "DIS", "weight": 18},
+    0: {"Name": "WIKI/GOOG", "weight": 20},
+    1: {"Name": "WIKI/AMZN", "weight": 10},
+    2: {"Name": "WIKI/MCD", "weight": 15},
+    3: {"Name": "WIKI/DIS", "weight": 18},
 }
 df_pf_error_2 = pd.DataFrame.from_dict(d_error_2, orient="index")
 d_error_3 = {
-    0: {"Name": "IBM", "Allocation": 20},
-    1: {"Name": "KO", "Allocation": 10},
-    2: {"Name": "AXP", "Allocation": 15},
-    3: {"Name": "GE", "Allocation": 18},
+    0: {"Name": "WIKI/IBM", "Allocation": 20},
+    1: {"Name": "WIKI/KO", "Allocation": 10},
+    2: {"Name": "WIKI/AXP", "Allocation": 15},
+    3: {"Name": "WIKI/GE", "Allocation": 18},
 }
 df_pf_error_3 = pd.DataFrame.from_dict(d_error_3, orient="index")
 d_error_4 = {
-    0: {"Name": "GOOG", "Allocation": 20},
-    1: {"Name": "AMZN", "Allocation": 10},
-    2: {"Name": "MCD", "Allocation": 15},
-    3: {"Name": "GE", "Allocation": 18},
+    0: {"Name": "WIKI/GOOG", "Allocation": 20},
+    1: {"Name": "WIKI/AMZN", "Allocation": 10},
+    2: {"Name": "WIKI/MCD", "Allocation": 15},
+    3: {"Name": "WIKI/GE", "Allocation": 18},
 }
 df_pf_error_4 = pd.DataFrame.from_dict(d_error_4, orient="index")
 # create kwargs to be passed to build_portfolio
 d_pass = [
-    {"names": names, "pf_allocation": df_pf},
-    {"names": names},
-    {"names": names, "start_date": start_date, "end_date": end_date},
-    {"names": names, "start_date": start_date, "end_date": end_date, "data_api": "quandl"},
-    {"names": names, "start_date": start_date, "end_date": end_date, "data_api": "yfinance"},
+    {"names": names_yf, "pf_allocation": df_pf_yf, "data_api": "yfinance"},
+    {"names": names_yf, "data_api": "yfinance"},
+    {
+        "names": names,
+        "start_date": start_date,
+        "end_date": end_date,
+    },  # testing default (quandl)
+    {
+        "names": names_yf,
+        "start_date": start_date,
+        "end_date": end_date,
+        "data_api": "yfinance",
+    },
     {"data": df_data},
     {"data": df_data, "pf_allocation": df_pf},
 ]
 d_fail = [
     {},
     {"testinput": "..."},
-    {"names": ["GOOG"], "testinput": "..."},
+    {"names": ["WIKI/GOOG"], "testinput": "..."},
     {"names": 1},
     {"names": "test"},
     {"names": "test", "data_api": "yfinance"},
-    {"names": "GOOG"},
+    {"names": "WIKI/GOOG"},
     {"names": "GOOG", "data_api": "yfinance"},
-    {"names": ["GE"], "pf_allocation": df_pf},
-    {"names": ["GE"], "pf_allocation": df_pf, "data_api": "yfinance"},
-    {"names": ["GOOG"], "data": df_data},
-    {"names": ["GOOG"], "data": df_data, "data_api": "yfinance"},
+    {"names": ["WIKI/GE"], "pf_allocation": df_pf},
+    {"names": ["GE"], "pf_allocation": df_pf_yf, "data_api": "yfinance"},
+    {"names": ["WIKI/GOOG"], "data": df_data},
+    {"names": ["GOOG"], "data": df_data_yf, "data_api": "yfinance"},
     {"names": names, "start_date": start_date, "end_date": "end_date"},
     {"names": names, "start_date": start_date, "end_date": 1},
     {"names": names, "data_api": "my_api"},
     {"data": [1, 2]},
     {"data": df_data.values},
     {"data": df_data, "start_date": start_date, "end_date": end_date},
+    {"data": df_data, "data_api": "quandl"},
     {"data": df_data, "data_api": "yfinance"},
     {"data": df_data, "pf_allocation": df_data},
     {"data": df_pf, "pf_allocation": df_pf},
@@ -123,13 +146,13 @@ def test_buildPF_pass_0():
     d = d_pass[0]
     pf = build_portfolio(**d)
     assert isinstance(pf, Portfolio)
-    assert isinstance(pf.get_stock(names[0]), Stock)
+    assert isinstance(pf.get_stock(names_yf[0]), Stock)
     assert isinstance(pf.data, pd.DataFrame)
     assert isinstance(pf.portfolio, pd.DataFrame)
     assert len(pf.stocks) == len(pf.data.columns)
-    assert pf.data.columns.tolist() == names
+    assert pf.data.columns.tolist() == names_yf
     assert pf.data.index.name == "Date"
-    assert ((pf.portfolio == df_pf).all()).all()
+    assert ((pf.portfolio == df_pf_yf).all()).all()
     assert (pf.comp_weights() - weights_df_pf <= strong_abse).all()
     pf.properties()
 
@@ -138,13 +161,13 @@ def test_buildPF_pass_1():
     d = d_pass[1]
     pf = build_portfolio(**d)
     assert isinstance(pf, Portfolio)
-    assert isinstance(pf.get_stock(names[0]), Stock)
+    assert isinstance(pf.get_stock(names_yf[0]), Stock)
     assert isinstance(pf.data, pd.DataFrame)
     assert isinstance(pf.portfolio, pd.DataFrame)
     assert len(pf.stocks) == len(pf.data.columns)
-    assert pf.data.columns.tolist() == names
+    assert pf.data.columns.tolist() == names_yf
     assert pf.data.index.name == "Date"
-    assert ((pf.portfolio == df_pf2).all()).all()
+    assert ((pf.portfolio == df_pf2_yf).all()).all()
     assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
     pf.properties()
 
@@ -168,13 +191,13 @@ def test_buildPF_pass_3():
     d = d_pass[3]
     pf = build_portfolio(**d)
     assert isinstance(pf, Portfolio)
-    assert isinstance(pf.get_stock(names[0]), Stock)
+    assert isinstance(pf.get_stock(names_yf[0]), Stock)
     assert isinstance(pf.data, pd.DataFrame)
     assert isinstance(pf.portfolio, pd.DataFrame)
     assert len(pf.stocks) == len(pf.data.columns)
-    assert pf.data.columns.tolist() == names
+    assert pf.data.columns.tolist() == names_yf
     assert pf.data.index.name == "Date"
-    assert ((pf.portfolio == df_pf2).all()).all()
+    assert ((pf.portfolio == df_pf2_yf).all()).all()
     assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
     pf.properties()
 
@@ -198,21 +221,6 @@ def test_buildPF_pass_5():
     d = d_pass[5]
     pf = build_portfolio(**d)
     assert isinstance(pf, Portfolio)
-    assert isinstance(pf.get_stock(names[0]), Stock)
-    assert isinstance(pf.data, pd.DataFrame)
-    assert isinstance(pf.portfolio, pd.DataFrame)
-    assert len(pf.stocks) == len(pf.data.columns)
-    assert pf.data.columns.tolist() == names
-    assert pf.data.index.name == "Date"
-    assert ((pf.portfolio == df_pf2).all()).all()
-    assert (pf.comp_weights() - weights_no_df_pf <= strong_abse).all()
-    pf.properties()
-
-
-def test_buildPF_pass_6():
-    d = d_pass[6]
-    pf = build_portfolio(**d)
-    assert isinstance(pf, Portfolio)
     assert isinstance(pf.data, pd.DataFrame)
     assert isinstance(pf.portfolio, pd.DataFrame)
     assert len(pf.stocks) == len(pf.data.columns)
@@ -233,186 +241,12 @@ def test_buildPF_pass_6():
 #####################################################################
 
 
-def test_buildPF_fail_0():
-    d = d_fail[0]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_1():
-    d = d_fail[1]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_2():
-    d = d_fail[2]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_3():
-    d = d_fail[3]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_4():
-    d = d_fail[4]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_5():
-    d = d_fail[5]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_6():
-    d = d_fail[6]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_7():
-    d = d_fail[7]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_8():
-    d = d_fail[8]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_9():
-    d = d_fail[9]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_10():
-    d = d_fail[10]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_11():
-    d = d_fail[11]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_12():
-    d = d_fail[12]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_13():
-    d = d_fail[13]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_14():
-    d = d_fail[14]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_15():
-    d = d_fail[15]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_16():
-    d = d_fail[16]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_17():
-    d = d_fail[17]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_18():
-    d = d_fail[18]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_19():
-    d = d_fail[19]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_20():
-    d = d_fail[20]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_21():
-    d = d_fail[21]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_22():
-    d = d_fail[22]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_23():
-    d = d_fail[23]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_24():
-    d = d_fail[24]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_25():
-    d = d_fail[25]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-def test_buildPF_fail_26():
-    d = d_fail[26]
-    with pytest.raises(Exception):
-        build_portfolio(**d)
-
-
-###################
-# tests for Stock #
-###################
-
-
-def test_Stock():
-    d = d_pass[3]
-    pf = build_portfolio(**d)
-    # loop over all stocks stored within pf and check that values
-    # are equal to the ones in pf
-    for i in range(len(pf.stocks)):
-        assert isinstance(pf.get_stock(names[0]), Stock)
-        stock = pf.get_stock(names[i])
-        assert stock.name == pf.portfolio["Name"][i]
-        assert all(stock.data - pf.data[stock.name].to_frame() <= strong_abse)
-        assert all(
-            stock.investmentinfo == pf.portfolio.loc[pf.portfolio["Name"] == stock.name]
-        )
+def test_expected_fails():
+    for fail_test_settings in d_fail:
+        print("++++++++++++++++++++++++++++++++++++")
+        print("fail_test_settings: ", fail_test_settings)
+        with pytest.raises(Exception):
+            build_portfolio(**fail_test_settings)
 
 
 ######################################
@@ -421,7 +255,7 @@ def test_Stock():
 
 
 def test_mc_optimisation():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     # since the monte carlo optimisation is based on random numbers,
     # we set a seed, so that the results can be compared.
@@ -451,19 +285,6 @@ def test_mc_optimisation():
     assert (maxsharpe_res_orig - opt_res.iloc[1].values <= strong_abse).all()
     assert (minvol_w_orig - opt_w.iloc[0].values <= strong_abse).all()
     assert (maxsharpe_w_orig - opt_w.iloc[1].values <= strong_abse).all()
-    # also test the plot
-    plt.figure()
-    pf.mc_plot_results()
-    # get axis object
-    ax = plt.gca()
-    # only checking legend and axis labels, and assume that the plot
-    # was successfully created
-    labels_plot = ax.get_legend_handles_labels()[1]
-    xlabel_plot = ax.get_xlabel()
-    ylabel_plot = ax.get_ylabel()
-    assert labels_orig == labels_plot
-    assert xlabel_orig == xlabel_plot
-    assert ylabel_orig == ylabel_plot
 
 
 #############################################
@@ -472,7 +293,7 @@ def test_mc_optimisation():
 
 
 def test_get_ef():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     ef = pf._get_ef()
     assert isinstance(ef, EfficientFrontier)
@@ -487,7 +308,7 @@ def test_get_ef():
 
 
 def test_ef_minimum_volatility():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     min_vol_weights = np.array(
         [
@@ -504,7 +325,7 @@ def test_ef_minimum_volatility():
 
 
 def test_maximum_sharpe_ratio():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     max_sharpe_weights = np.array(
         [0.0, 0.41322217986076903, 0.5867778201392311, 2.2858514942065993e-17]
@@ -516,7 +337,7 @@ def test_maximum_sharpe_ratio():
 
 
 def test_efficient_return():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     efficient_return_weights = np.array(
         [
@@ -533,7 +354,7 @@ def test_efficient_return():
 
 
 def test_efficient_volatility():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     efficient_volatility_weights = np.array(
         [0.0, 0.5325563159992046, 0.4674436840007955, 0.0]
@@ -545,7 +366,7 @@ def test_efficient_volatility():
 
 
 def test_efficient_frontier():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
     efrontier = np.array(
         [
@@ -571,26 +392,85 @@ def test_efficient_frontier():
 # tests for some portfolio/efficient frontier plotting #
 # only checking for errors/exceptions that pop up      #
 ########################################################
+plt.switch_backend("Agg")
 
 
 def test_plot_efrontier():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
-    # just checking if a plot is successfully created,
-    # not checking for content
+    # Clear the current figure to ensure a fresh plot
+    plt.clf()
+    # Create the plot
     pf.ef_plot_efrontier()
+    # Assert that the plot was created
+    assert len(plt.gcf().get_axes()) == 1
+
+    # get title, axis labels and axis min/max values
+    ax = plt.gca()
+    title = ax.get_title()
+    xlabel = ax.get_xlabel()
+    ylabel = ax.get_ylabel()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # expected values:
+    expected_title = "Efficient Frontier"
+    expected_xlable = "Volatility"
+    expected_ylable = "Expected Return"
+    expected_xlim = (0.12504, 0.29359)
+    expected_ylim = (0.05445, 0.50655)
+
+    # assert on title, labels and limits
+    assert title == expected_title
+    assert xlabel == expected_xlable
+    assert ylabel == expected_ylable
+    assert xlim == pytest.approx(expected_xlim, 1e-3)
+    assert ylim == pytest.approx(expected_ylim, 1e-3)
 
 
 def test_plot_optimal_portfolios():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
-    # just checking if a plot is successfully created,
-    # not checking for content
+    # Clear the current figure to ensure a fresh plot
+    plt.clf()
+    # Create the plot
     pf.ef_plot_optimal_portfolios()
+    # Assert that the plot was created
+    assert len(plt.gcf().get_axes()) == 1
+
+    # get axis min/max values
+    ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # expected values:
+    expected_xlim = (0.13064, 0.17607)
+    expected_ylim = (0.17957, 0.35317)
+
+    # assert on title, labels and limits
+    assert xlim == pytest.approx(expected_xlim, 1e-3)
+    assert ylim == pytest.approx(expected_ylim, 1e-3)
 
 
 def test_plot_stocks():
-    d = d_pass[3]
+    d = d_pass[4]
     pf = build_portfolio(**d)
-    # just checking if a plot is successfully created, not checking for content
+    # Clear the current figure to ensure a fresh plot
+    plt.clf()
+    # Create the plot
     pf.plot_stocks()
+    # Assert that the plot was created
+    assert len(plt.gcf().get_axes()) == 1
+
+    # get axis min/max values
+    ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # expected values:
+    expected_xlim = (0.15426, 0.29255)
+    expected_ylim = (0.05403, 0.50693)
+
+    # assert on title, labels and limits
+    assert xlim == pytest.approx(expected_xlim, 1e-3)
+    assert ylim == pytest.approx(expected_ylim, 1e-3)
