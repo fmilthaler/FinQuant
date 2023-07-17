@@ -3,7 +3,6 @@
 update_version_readme() {
 	local version_file="version"
 	local readme_md="README.md"
-	local readme_tex="README.tex.md"
 
 	# Read the current version from the "version" file
 	local current_version=$(grep -Eo 'version=([0-9]+\.){2}[0-9]+' "$version_file" | cut -d'=' -f2)
@@ -16,9 +15,6 @@ update_version_readme() {
 
 	# Update version in README.md
 	update_file "$readme_md"
-
-	# Update version in README.tex
-	update_file "$readme_tex"
 }
 
 # Call the update_version function
