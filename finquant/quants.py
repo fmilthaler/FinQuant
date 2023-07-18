@@ -75,6 +75,7 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
     return (exp_return - risk_free_rate) / float(volatility)
 
+
 def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
     """Computes the Sharpe Ratio
 
@@ -101,13 +102,14 @@ def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
     return (exp_return - risk_free_rate) / float(downside_risk)
 
+
 def downside_risk(data, weights, risk_free_rate=0.005):
     """Computes the downside risk (target semideviation of returns, given a risk free rate)
     :Input:
       :data: ``pandas.DataFrame`` with daily stock prices
       :weights: ``numpy.ndarray``/``pd.Series`` of weights
       :risk_free_rate: ``int``/``float`` (default=``0.005``), risk free rate
-    
+
     :Output:
       :downside_risk: ``float`` (can be NaN if all returns outperform the risk free rate)
     """
@@ -118,7 +120,6 @@ def downside_risk(data, weights, risk_free_rate=0.005):
         return np.NaN
     downside = under - risk_free_rate
     return np.sqrt((downside * downside).mean())
-
 
 
 def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:

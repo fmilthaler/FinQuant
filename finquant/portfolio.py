@@ -60,6 +60,13 @@ from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
 from finquant.quants import sharpe_ratio, value_at_risk, weighted_mean, weighted_std
 from finquant.quants import sharpe_ratio, weighted_mean, weighted_std, sortino_ratio, downside_risk
+from finquant.quants import (
+    sharpe_ratio,
+    weighted_mean,
+    weighted_std,
+    sortino_ratio,
+    downside_risk,
+)
 from finquant.returns import (
     cumulative_returns,
     daily_log_returns,
@@ -363,8 +370,9 @@ class Portfolio:
         :Output:
          :volatility: Downside risk of stock.
         """
-        return downside_risk(self.data, self.comp_weights(), self.risk_free_rate) * np.sqrt(freq)
-
+        return downside_risk(
+            self.data, self.comp_weights(), self.risk_free_rate
+        ) * np.sqrt(freq)
 
     def comp_cov(self):
         """Compute and return a ``pandas.DataFrame`` of the covariance matrix
@@ -427,7 +435,9 @@ class Portfolio:
          :sortino: ``float``, the Sortino Ratio of the portfolio
          May be NaN if the portoflio outperformed the risk free rate at every point
         """
-        return sortino_ratio(self.expected_return, self.downside_risk, self.risk_free_rate)
+        return sortino_ratio(
+            self.expected_return, self.downside_risk, self.risk_free_rate
+        )
 
     def _comp_skew(self):
         """Computes and returns the skewness of the stocks in the portfolio."""
