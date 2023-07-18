@@ -32,14 +32,14 @@ from finquant.returns import daily_returns, historical_mean_return
 class Stock(Asset):
     """Class that contains information about a stock/fund.
 
-    :param investmentinfo: Investment information for the stock as a pandas.DataFrame.
-    :param data: Historical price data for the stock as a pandas.DataFrame.
+    :param investmentinfo: Investment information for the stock as a ``pandas.DataFrame``.
+    :param data: Historical price data for the stock as a ``pandas.DataFrame``.
 
-    The `Stock` class extends the `Asset` class and represents a specific type of asset,
+    The ``Stock`` class extends the ``Asset`` class and represents a specific type of asset,
     namely a stock within a portfolio.
     It requires investment information and historical price data for the stock to initialize an instance.
 
-    In addition to the attributes inherited from the `Asset` class, the `Stock` class provides
+    In addition to the attributes inherited from the ``Asset`` class, the ``Stock`` class provides
     a method to compute the beta parameter specific to stocks in a portfolio when compared to
     the market index.
 

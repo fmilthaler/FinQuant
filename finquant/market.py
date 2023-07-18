@@ -22,7 +22,7 @@ class Market(Asset):
     """
     Class representing a market index.
 
-    :param data: Historical price data of the market index as a pandas.Series.
+    :param data: Historical price data of the market index as a ``pandas.Series``.
 
     The ``Market`` class extends the ``Asset`` class and represents a specific type of asset,
     specifically a market index.
