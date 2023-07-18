@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from finquant.returns import (
@@ -5,15 +6,8 @@ from finquant.returns import (
     daily_log_returns,
     daily_returns,
     historical_mean_return,
-)
-
-import numpy as np
-from finquant.returns import (
-    cumulative_returns,
-    daily_returns,
     weighted_mean_daily_returns,
 )
-from finquant.returns import daily_log_returns, historical_mean_return
 
 
 def test_cumulative_returns():

@@ -7,6 +7,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
+
 from finquant.returns import weighted_mean_daily_returns
 
 

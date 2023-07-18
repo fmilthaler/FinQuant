@@ -55,17 +55,18 @@ from typing import List
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
+
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
 from finquant.quants import sharpe_ratio, value_at_risk, weighted_mean, weighted_std
 from finquant.quants import sharpe_ratio, weighted_mean, weighted_std, sortino_ratio, downside_risk
 from finquant.quants import (
+    downside_risk,
     sharpe_ratio,
+    sortino_ratio,
     weighted_mean,
     weighted_std,
-    sortino_ratio,
-    downside_risk,
 )
 from finquant.returns import (
     cumulative_returns,

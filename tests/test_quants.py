@@ -1,18 +1,17 @@
+import pdb
+
 import numpy as np
 import pytest
+import pandas as pd
 
 from finquant.quants import (
     annualised_portfolio_quantities,
+    downside_risk,
     sharpe_ratio,
     value_at_risk,
     weighted_mean,
     weighted_std,
 )
-
-import pandas as pd
-from finquant.quants import weighted_mean, weighted_std, downside_risk
-from finquant.quants import sharpe_ratio, annualised_portfolio_quantities
-import pdb
 
 
 def test_weighted_mean():
