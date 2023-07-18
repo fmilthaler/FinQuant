@@ -25,7 +25,7 @@ functionality and attributes for financial assets.
 
 import numpy as np
 import pandas as pd
-
+from finquant.asset import Asset
 from finquant.returns import daily_returns, historical_mean_return
 
 
@@ -92,8 +92,3 @@ class Stock(Asset):
         string += "\n" + str(self.investmentinfo.to_frame().transpose())
         string += "\n" + "-" * 50
         print(string)
-
-    def __str__(self):
-        # print short description
-        string = "Contains information about " + str(self.name) + "."
-        return string
