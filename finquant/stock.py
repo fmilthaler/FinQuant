@@ -1,6 +1,26 @@
-""" This module provides a public class ``Stock`` that holds and calculates quantities of a single stock.
-Instances of this class are used in the ``Portfolio`` class (provided in ``finquant.portfolio``).   
-Every time a new instance of ``Stock`` is added to ``Portfolio``, the quantities of the portfolio are updated.  
+"""
+This module provides a public class ``Stock`` that represents a single stock or fund.
+Instances of this class are used within the ``Portfolio`` class (provided in ``finquant.portfolio``).
+
+The ``Stock`` class is designed to hold and calculate quantities related to a single stock or fund.
+To initialize an instance of ``Stock``, it requires the following information:
+
+    - ``investmentinfo``: Information about the stock or fund provided as a ``pandas.DataFrame``.
+        The required column labels are ``Name`` and ``Allocation`` for the stock/fund name and allocation,
+        respectively. However, the DataFrame can contain more information beyond these columns,
+        such as year, strategy, currency (CCY), etc.
+
+    - ``data``: Historical price data for the stock or fund provided as a ``pandas.DataFrame``.
+        The data must contain `<stock_name> - Adj. Close`, which represents the closing price used to
+        compute the return on investment. The DataFrame can contain additional columns as well.
+
+The ``Stock`` class computes various quantities related to the stock or fund, such as expected return,
+volatility, skewness, and kurtosis. It also provides functionality to calculate the beta parameter
+of the stock using the CAPM (Capital Asset Pricing Model).
+
+The ``Stock`` class inherits from the ``Asset`` class in ``finquant.asset``, which provides common
+functionality and attributes for financial assets.
+
 """
 
 import numpy as np
@@ -9,87 +29,34 @@ import pandas as pd
 from finquant.returns import daily_returns, historical_mean_return
 
 
-class Stock:
-    """Object that contains information about a stock/fund.
-    To initialise the object, it requires a name, information about
-    the stock/fund given as one of the following data structures:
+class Stock(Asset):
+    """Class that contains information about a stock/fund.
 
-    - ``pandas.Series``
-    - ``pandas.DataFrame``
+    :param investmentinfo: Investment information for the stock as a pandas.DataFrame.
+    :param data: Historical price data for the stock as a pandas.DataFrame.
 
-    The investment information can contain as little information as its name,
-    and the amount invested in it, the column labels must be ``Name`` and ``Allocation``
-    respectively, but it can also contain more information, such as
+    The `Stock` class extends the `Asset` class and represents a specific type of asset,
+    namely a stock within a portfolio.
+    It requires investment information and historical price data for the stock to initialize an instance.
 
-    - Year
-    - Strategy
-    - CCY
-    - etc.
+    In addition to the attributes inherited from the `Asset` class, the `Stock` class provides
+    a method to compute the beta parameter specific to stocks in a portfolio when compared to
+    the market index.
 
-    It also requires either data, e.g. daily closing prices as a
-    ``pandas.DataFrame`` or ``pandas.Series``.
-    ``data`` must be given as a ``pandas.DataFrame``, and at least one data column
-    is required to containing the closing price, hence it is required to
-    contain one column label ``<stock_name> - Adj. Close`` which is used to
-    compute the return of investment. However, ``data`` can contain more
-    data in additional columns.
     """
 
-    def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series):
+
+    def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series) -> None:
         """
         :Input:
          :investmentinfo: ``pandas.DataFrame`` of investment information
-         :data: ``pandas.DataFrame`` of stock price
+         :data: ``pandas.Series`` of stock price
         """
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
-        self.data = data
-        # compute expected return and volatility of stock
-        self.expected_return = self.comp_expected_return()
-        self.volatility = self.comp_volatility()
-        self.skew = self._comp_skew()
-        self.kurtosis = self._comp_kurtosis()
+        super().__init__(data, self.name, asset_type="Stock")
         # beta parameter of stock (CAPM)
         self.beta = None
-
-    # functions to compute quantities
-    def comp_daily_returns(self):
-        """Computes the daily returns (percentage change).
-        See ``finquant.returns.daily_returns``.
-        """
-        return daily_returns(self.data)
-
-    def comp_expected_return(self, freq=252):
-        """Computes the Expected Return of the stock.
-
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
-
-        :Output:
-         :expected_return: Expected Return of stock.
-        """
-        return historical_mean_return(self.data, freq=freq)
-
-    def comp_volatility(self, freq=252):
-        """Computes the Volatility of the stock.
-
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
-
-        :Output:
-         :volatility: Volatility of stock.
-        """
-        return self.comp_daily_returns().std() * np.sqrt(freq)
-
-    def _comp_skew(self):
-        """Computes and returns the skewness of the stock."""
-        return self.data.skew()
-
-    def _comp_kurtosis(self):
-        """Computes and returns the Kurtosis of the stock."""
-        return self.data.kurt()
 
     def comp_beta(self, market_daily_returns: pd.Series) -> float:
         """Compute and return the Beta parameter of the stock.
@@ -116,15 +83,14 @@ class Stock:
         """
         # nicely printing out information and quantities of the stock
         string = "-" * 50
-        string += f"\nStock: {self.name}"
+        string += f"\n{self.asset_type}: {self.name}"
         string += f"\nExpected Return: {self.expected_return:0.3f}"
         string += f"\nVolatility: {self.volatility:0.3f}"
         string += f"\nSkewness: {self.skew:0.5f}"
         string += f"\nKurtosis: {self.kurtosis:0.5f}"
         string += "\nInformation:"
         string += "\n" + str(self.investmentinfo.to_frame().transpose())
-        string += "\n"
-        string += "-" * 50
+        string += "\n" + "-" * 50
         print(string)
 
     def __str__(self):
