@@ -71,6 +71,7 @@ class Asset:
 
     def comp_expected_return(self, freq=252) -> float:
         """Computes the Expected Return of the asset.
+        See ``finquant.returns.historical_mean_return``.
 
         :Input:
          :freq: ``int`` (default: ``252``), number of trading days, default
