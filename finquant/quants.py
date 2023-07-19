@@ -101,17 +101,13 @@ def annualised_portfolio_quantities(
     return (expected_return, volatility, sharpe)
 
 
-def value_at_risk(
-    investment, returns: pd.DataFrame, freq=252, conf_level=0.95
-) -> float:
+def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
     """Computes and returns the expected value at risk of an investment/assets.
 
     :Input:
      :investment: ``float``/``int``, total value of the investment
-     :returns: ``pandas.DataFrame`` of historical returns,
-         assumed to be normally distributed
-     :freq: ``int`` (default= ``252``), number of trading days, default
-         value corresponds to trading days in a year
+     :mu: ``float``/``int`` average/mean return of the investment
+     :sigma: ``float``/``int`` standard deviation of the investment
      :conf_level: ``float``/``int`` (default= ``0.95``), confidence level of the VaR
 
     :Output:
@@ -121,14 +117,11 @@ def value_at_risk(
         investment, (int, float, np.int32, np.int64, np.float32, np.float64)
     ):
         raise ValueError("investment is expected to be an integer or float.")
-    if not isinstance(returns, pd.DataFrame):
-        raise ValueError("returns is expected to be a pandas.DataFrame")
-    if not isinstance(freq, int):
-        raise ValueError("freq is expected to be an integer.")
+    if not isinstance(mu, (int, float, np.int32, np.int64, np.float32, np.float64)):
+        raise ValueError("mu is expected to be an integer or float")
+    if not isinstance(sigma, (int, float, np.int32, np.int64, np.float32, np.float64)):
+        raise ValueError("sigma is expected to be an integer or float")
     if not isinstance(conf_level, (int, float)):
         raise ValueError("conf_level is expected to be an integer or float.")
 
-    mu = np.mean(returns)
-    sigma = np.std(returns)
-
-    return investment * (mu * freq - sigma * np.sqrt(freq) * norm.ppf(1 - conf_level))
+    return investment * (mu - sigma * norm.ppf(1 - conf_level))
