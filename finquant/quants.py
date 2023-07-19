@@ -122,6 +122,8 @@ def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
     if not isinstance(sigma, (int, float, np.int32, np.int64, np.float32, np.float64)):
         raise ValueError("sigma is expected to be an integer or float")
     if not isinstance(conf_level, (int, float)):
-        raise ValueError("conf_level is expected to be an integer or float.")
+        raise ValueError("confidence level is expected to be an integer or float.")
+    if conf_level >= 1 or conf_level <= 0:
+        raise ValueError("confidence level is expected to be between 0 and 1.")
 
     return investment * (mu - sigma * norm.ppf(1 - conf_level))
