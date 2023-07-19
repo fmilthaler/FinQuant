@@ -108,7 +108,7 @@ def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
      :investment: ``float``/``int``, total value of the investment
      :mu: ``float``/``int`` average/mean return of the investment
      :sigma: ``float``/``int`` standard deviation of the investment
-     :conf_level: ``float``/``int`` (default= ``0.95``), confidence level of the VaR
+     :conf_level: ``float`` (default= ``0.95``), confidence level of the VaR
 
     :Output:
      :Value at Risk: ``float``, VaR of the investment
@@ -121,8 +121,8 @@ def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
         raise ValueError("mu is expected to be an integer or float")
     if not isinstance(sigma, (int, float, np.int32, np.int64, np.float32, np.float64)):
         raise ValueError("sigma is expected to be an integer or float")
-    if not isinstance(conf_level, (int, float)):
-        raise ValueError("confidence level is expected to be an integer or float.")
+    if not isinstance(conf_level, float):
+        raise ValueError("confidence level is expected to be a float.")
     if conf_level >= 1 or conf_level <= 0:
         raise ValueError("confidence level is expected to be between 0 and 1.")
 

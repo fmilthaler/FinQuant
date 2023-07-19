@@ -90,6 +90,7 @@ class Portfolio:
         self.skew = None
         self.kurtosis = None
         self.totalinvestment = None
+        self.var_confidence_level = 0.95
         self.risk_free_rate = 0.005
         self.freq = 252
         # instance variables for Efficient Frontier and
@@ -155,6 +156,20 @@ class Portfolio:
         :param index: An object of the ``Market`` class.
         """
         self.__market_index = index
+
+    @property
+    def var_confidence_level(self):
+        return self.__var_confidence_level
+
+    @var_confidence_level.setter
+    def var_confidence_level(self, val):
+        if not isinstance(val, float):
+            raise ValueError("confidence level is expected to be a float.")
+        if val >= 1 or val <= 0:
+            raise ValueError("confidence level is expected to be between 0 and 1.")
+        self.__var_confidence_level = val
+        # now that this changed, update VaR
+        self._update()
 
     def add_stock(self, stock: Stock) -> None:
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
@@ -369,6 +384,7 @@ class Portfolio:
             investment=self.totalinvestment,
             mu=self.expected_return,
             sigma=self.volatility,
+            conf_level=self.var_confidence_level,
         )
         self.var = var
         return var
@@ -668,6 +684,8 @@ class Portfolio:
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
         string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
+        string += f"\nConfidence level of Value at Risk: "
+        string += str(round(self.var_confidence_level * 100)) + "%"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
         string += "\n\nSkewness:"
