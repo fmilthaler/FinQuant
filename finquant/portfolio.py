@@ -59,7 +59,7 @@ import pandas as pd
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
-from finquant.quants import sharpe_ratio, weighted_mean, weighted_std, value_at_risk
+from finquant.quants import sharpe_ratio, value_at_risk, weighted_mean, weighted_std
 from finquant.returns import (
     cumulative_returns,
     daily_log_returns,

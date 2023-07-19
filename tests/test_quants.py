@@ -3,9 +3,9 @@ import numpy as np
 from finquant.quants import (
     annualised_portfolio_quantities,
     sharpe_ratio,
+    value_at_risk,
     weighted_mean,
     weighted_std,
-    value_at_risk,
 )
 
 
@@ -33,6 +33,11 @@ def test_sharpe_ratio():
     assert sharpe_ratio(0.5, 0.22, 0.005) == 2.25
 
 
+def test_value_at_risk():
+    assert abs(value_at_risk(1e2, 0.5, 0.25, 0.95) - 91.12) <= 1e-1
+    assert abs(value_at_risk(1e3, 0.8, 0.5, 0.99) - 1963.17) <= 1e-1
+
+
 def test_annualised_portfolio_quantities():
     x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
     y = np.array([9, 8, 7, 6, 5, 4, 3, 2, 1])
@@ -44,8 +49,3 @@ def test_annualised_portfolio_quantities():
     orig = (1764, 347.79304190854657, 5.071981861166303)
     for i in range(len(res)):
         assert abs(res[i] - orig[i]) <= 1e-15
-
-
-def test_value_at_risk():
-    assert abs(value_at_risk(1e2, 0.5, 0.25, 0.95) - 91.12) <= 1e-1
-    assert abs(value_at_risk(1e3, 0.8, 0.5, 0.99) - 1963.17) <= 1e-1

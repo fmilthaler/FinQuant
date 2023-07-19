@@ -75,32 +75,6 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
     return (exp_return - risk_free_rate) / float(volatility)
 
 
-def annualised_portfolio_quantities(
-    weights, means, cov_matrix, risk_free_rate=0.005, freq=252
-):
-    """Computes and returns the expected annualised return, volatility
-    and Sharpe Ratio of a portfolio.
-
-    :Input:
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
-     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
-     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
-     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
-     :freq: ``int`` (default= ``252``), number of trading days, default
-         value corresponds to trading days in a year
-
-    :Output:
-     :(Expected Return, Volatility, Sharpe Ratio): tuple of those
-         three quantities
-    """
-    if not isinstance(freq, int):
-        raise ValueError("freq is expected to be an integer.")
-    expected_return = weighted_mean(means, weights) * freq
-    volatility = weighted_std(cov_matrix, weights) * np.sqrt(freq)
-    sharpe = sharpe_ratio(expected_return, volatility, risk_free_rate)
-    return (expected_return, volatility, sharpe)
-
-
 def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
     """Computes and returns the expected value at risk of an investment/assets.
 
@@ -127,3 +101,29 @@ def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
         raise ValueError("confidence level is expected to be between 0 and 1.")
 
     return investment * (mu - sigma * norm.ppf(1 - conf_level))
+
+
+def annualised_portfolio_quantities(
+    weights, means, cov_matrix, risk_free_rate=0.005, freq=252
+):
+    """Computes and returns the expected annualised return, volatility
+    and Sharpe Ratio of a portfolio.
+
+    :Input:
+     :weights: ``numpy.ndarray``/``pd.Series`` of weights
+     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
+     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
+     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
+     :freq: ``int`` (default= ``252``), number of trading days, default
+         value corresponds to trading days in a year
+
+    :Output:
+     :(Expected Return, Volatility, Sharpe Ratio): tuple of those
+         three quantities
+    """
+    if not isinstance(freq, int):
+        raise ValueError("freq is expected to be an integer.")
+    expected_return = weighted_mean(means, weights) * freq
+    volatility = weighted_std(cov_matrix, weights) * np.sqrt(freq)
+    sharpe = sharpe_ratio(expected_return, volatility, risk_free_rate)
+    return (expected_return, volatility, sharpe)
