@@ -6,6 +6,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 
 import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
 
 def weighted_mean(means, weights):
@@ -98,3 +99,36 @@ def annualised_portfolio_quantities(
     volatility = weighted_std(cov_matrix, weights) * np.sqrt(freq)
     sharpe = sharpe_ratio(expected_return, volatility, risk_free_rate)
     return (expected_return, volatility, sharpe)
+
+
+def value_at_risk(
+    investment, returns: pd.DataFrame, freq=252, conf_level=0.95
+) -> float:
+    """Computes and returns the expected value at risk of an investment/assets.
+
+    :Input:
+     :investment: ``float``/``int``, total value of the investment
+     :returns: ``pandas.DataFrame`` of historical returns,
+         assumed to be normally distributed
+     :freq: ``int`` (default= ``252``), number of trading days, default
+         value corresponds to trading days in a year
+     :conf_level: ``float``/``int`` (default= ``0.95``), confidence level of the VaR
+
+    :Output:
+     :Value at Risk: ``float``, VaR of the investment
+    """
+    if not isinstance(
+        investment, (int, float, np.int32, np.int64, np.float32, np.float64)
+    ):
+        raise ValueError("investment is expected to be an integer or float.")
+    if not isinstance(returns, pd.DataFrame):
+        raise ValueError("returns is expected to be a pandas.DataFrame")
+    if not isinstance(freq, int):
+        raise ValueError("freq is expected to be an integer.")
+    if not isinstance(conf_level, (int, float)):
+        raise ValueError("conf_level is expected to be an integer or float.")
+
+    mu = np.mean(returns)
+    sigma = np.std(returns)
+
+    return investment * (mu * freq - sigma * np.sqrt(freq) * norm.ppf(1 - conf_level))
