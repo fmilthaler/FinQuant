@@ -648,12 +648,12 @@ class Portfolio:
         string += f"\nPortfolio Expected Return: {self.expected_return:0.3f}"
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
+        if self.beta is not None:
+            string += f"\nPortfolio Beta: {self.beta:0.3f}"            
         string += "\n\nSkewness:"
         string += "\n" + str(self.skew.to_frame().transpose())
         string += "\n\nKurtosis:"
-        string += "\n" + str(self.kurtosis.to_frame().transpose())
-        if self.beta is not None:
-            string += f"\nPortfolio Beta: {self.beta:0.3f}"        
+        string += "\n" + str(self.kurtosis.to_frame().transpose())    
         string += "\n\nInformation:"
         string += "\n" + str(self.portfolio)
         string += "\n"
