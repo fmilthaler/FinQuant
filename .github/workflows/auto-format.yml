@@ -1,11 +1,9 @@
-name: AutoFormatting
+name: AutoUpdateFormatting
 on:
   push:
     branches:
       - master
-  pull_request:
-    branches:
-      - master
+      - develop
 
 jobs:
   code-formatting:
