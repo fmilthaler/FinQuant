@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from finquant.quants import (
     annualised_portfolio_quantities,
@@ -36,6 +37,33 @@ def test_sharpe_ratio():
 def test_value_at_risk():
     assert abs(value_at_risk(1e2, 0.5, 0.25, 0.95) - 91.12) <= 1e-1
     assert abs(value_at_risk(1e3, 0.8, 0.5, 0.99) - 1963.17) <= 1e-1
+    assert abs(value_at_risk(1e4, -0.1, 0.25, 0.9) - 2203.88) <= 1e-1
+    assert abs(value_at_risk(1e4, 0.1, -0.25, 0.9) - (-2203.88)) <= 1e-1
+    assert abs(value_at_risk(1e4, -0.1, -0.25, 0.9) - (-4203.88)) <= 1e-1
+    assert value_at_risk(0, 0.1, 0.5, 0.9) == 0
+    assert abs(value_at_risk(1e4, 0, 0.5, 0.9) - 6407.76) <= 1e-1
+    assert abs(value_at_risk(1e4, 0.1, 0, 0.9) - 1000) <= 1e-1
+    assert value_at_risk(1e4, 0, 0, 0.9) == 0
+
+
+def test_value_at_risk_invalid_types():
+    with pytest.raises(ValueError):
+        value_at_risk("10000", 0.05, 0.02, 0.95)
+
+    with pytest.raises(ValueError):
+        value_at_risk(10000, 0.05, "0.02", 0.95)
+
+    with pytest.raises(ValueError):
+        value_at_risk(10000, [0.05], 0.02, 0.95)
+
+    with pytest.raises(ValueError):
+        value_at_risk(10000, 0.05, 0.02, "0.95")
+
+    with pytest.raises(ValueError):
+        value_at_risk(10000, 0.05, 0.02, 1.5)
+
+    with pytest.raises(ValueError):
+        value_at_risk(10000, 0.05, 0.02, -0.5)
 
 
 def test_annualised_portfolio_quantities():
