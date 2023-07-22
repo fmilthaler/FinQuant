@@ -7,7 +7,6 @@ COMMITMSG=$1
 if [ -z "$COMMITMSG" ]; then
 	COMMITMSG="Automated formatting changes"
 fi
-echo "COMMITMSG: $COMMITMSG"
 
 # Stage changes
 git add --update
