@@ -9,8 +9,9 @@
 
 # <codecell>
 
-import pandas as pd
 import datetime
+
+import pandas as pd
 
 # importing some custom functions/objects
 from finquant.portfolio import build_portfolio
