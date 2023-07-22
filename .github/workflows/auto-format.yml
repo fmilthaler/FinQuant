@@ -27,16 +27,21 @@ jobs:
           pip install -r requirements_test.txt
 
       - name: Updating README files
+        id: update_readme
         run: |
           sh scripts/update-readme.sh
           sh scripts/auto-commit.sh "Updating README files"
+        continue-on-error: true
 
       - name: Code formatting and committing changes
+        id: code_format
         run: |
-          sh scripts/auto-format-commit.sh
+          sh scripts/auto-format.sh
           sh scripts/auto-commit.sh "Automated formatting changes"
+        continue-on-error: true
 
       - name: Push changes
+        if: ${{ steps.update_readme.outcome == 'success' || steps.code_format.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
           branch: ${{ github.head_ref }}
