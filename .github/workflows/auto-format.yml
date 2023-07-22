@@ -26,18 +26,15 @@ jobs:
         run: |
           pip install -r requirements_test.txt
 
+      - name: Updating README files
+        run: |
+          sh scripts/update-readme.sh
+          sh scripts/auto-commit.sh "Updating README files"
+
       - name: Code formatting and committing changes
         run: |
           sh scripts/auto-format-commit.sh
-
-      - name: Print github.ref
-        run: |
-          echo "github.ref:"
-          echo ${{ github.ref }}
-          echo "git branch:"
-          git branch
-          echo "github.head_ref"
-          echo ${{ github.head_ref }}
+          sh scripts/auto-commit.sh "Automated formatting changes"
 
       - name: Push changes
         uses: ad-m/github-push-action@master

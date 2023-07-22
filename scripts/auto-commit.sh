@@ -1,15 +1,11 @@
 #!/bin/sh
 
-echo "Updating README files:"
-# Update version number in README files:
-scripts/update_version_readme.sh
-# Update README.tex.md
-scripts/update_readme.tex.md.sh
+COMMITMSG=$1
 
-# Code formatting with isort and black
-echo "Code formatting with isort and black:"
-isort $(git ls-files '*.py')
-black $(git ls-files '*.py')
+if [ -z $COMMITMSG ]; then
+	COMMITMSG="Automated formatting changes"
+fi
+echo "COMMITMSG: $COMMITMSG"
 
 # Stage changes
 #git add $(git ls-files)
@@ -24,7 +20,7 @@ else
 	echo "Changes found. Preparing commit."
 	git config --local user.email "github-actions[bot]@users.noreply.github.com"
 	git config --local user.name "github-actions[bot]"
-	git commit -m "Automated formatting changes"
+	git commit -m "${COMMITMSG}"
 fi
 
 git log | head

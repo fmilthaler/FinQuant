@@ -38,5 +38,6 @@ update_readme_tex() {
 }
 
 # Update both readme files:
+echo "Updating README files:"
 update_version_readme "README.md"
 update_readme_tex "README.tex.md"
