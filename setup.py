@@ -21,10 +21,10 @@ def read_requirements(file_path):
 install_requires = read_requirements("requirements.txt")
 
 extras_require = {
-    "test": read_requirements("requirements_test.txt"),
+    "cd": read_requirements("requirements_cd.txt"),
     "dev": read_requirements("requirements_dev.txt"),
     "docs": read_requirements("requirements_docs.txt"),
-    "cd": read_requirements("requirements_cd.txt"),
+    "test": read_requirements("requirements_test.txt"),
 }
 
 setuptools.setup(
