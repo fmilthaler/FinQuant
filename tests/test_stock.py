@@ -1,16 +1,18 @@
 ###################
 # tests for Stock #
 ###################
-from finquant.quants import test_weighted_mean
 import datetime
 import os
 import pathlib
+
 import numpy as np
 import pandas as pd
 import pytest
 import quandl
 import yfinance
+
 from finquant.portfolio import build_portfolio
+from finquant.quants import test_weighted_mean
 from finquant.stock import Stock
 
 # comparisons
@@ -64,8 +66,5 @@ def test_Stock():
         assert all(
             stock.investmentinfo == pf.portfolio.loc[pf.portfolio["Name"] == stock.name]
         )
-
-
-
 
     print("THE END")
