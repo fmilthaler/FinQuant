@@ -685,7 +685,7 @@ class Portfolio:
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
         string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
         string += f"\nConfidence level of Value at Risk: "
-        string += str(round(self.var_confidence_level * 100)) + "%"
+        string += f"{str(round(self.var_confidence_level * 100))} %"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
         string += "\n\nSkewness:"
