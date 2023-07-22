@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 COMMITMSG=$1
 
-if [ -z $COMMITMSG ]; then
+if [ -z "$COMMITMSG" ]; then
 	COMMITMSG="Automated formatting changes"
 fi
 echo "COMMITMSG: $COMMITMSG"

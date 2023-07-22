@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Code formatting with isort and black
 echo "Code formatting with isort and black:"
