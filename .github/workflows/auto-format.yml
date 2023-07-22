@@ -31,4 +31,7 @@ jobs:
         run: |
           echo "github.ref:"
           echo ${{ github.ref }}
+          echo "git branch:"
           git branch
+          echo "github.head_ref"
+          echo ${{ github.head_ref }}
