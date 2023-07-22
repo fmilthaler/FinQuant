@@ -21,7 +21,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements_ci.txt
+          pip install -r requirements_test.txt
 
       - name: Code formatting and committing changes
         run: |
