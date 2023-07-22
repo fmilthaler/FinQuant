@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Running auto commit"
+
 COMMITMSG=$1
 
 if [ -z "$COMMITMSG" ]; then
