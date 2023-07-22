@@ -1,10 +1,19 @@
 #!/bin/sh
 
+echo "Updating README files:"
+# Update version number in README files:
+scripts/update_version_readme.sh
+# Update README.tex.md
+scripts/update_readme.tex.md.sh
+
 # Code formatting with isort and black
+echo "Code formatting with isort and black:"
 isort $(git ls-files '*.py')
 black $(git ls-files '*.py')
 
-git add $(git ls-files)
+# Stage changes
+#git add $(git ls-files)
+git add --udpate
 
 # Check Git diff-index
 git diff-index --quiet HEAD --
