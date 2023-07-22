@@ -10,7 +10,6 @@ fi
 echo "COMMITMSG: $COMMITMSG"
 
 # Stage changes
-#git add $(git ls-files)
 git add --update
 
 # Check Git diff-index
