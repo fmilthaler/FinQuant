@@ -1,4 +1,4 @@
-black==23.1.0
+black
 mypy
 isort
 jupyter
