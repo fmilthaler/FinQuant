@@ -26,6 +26,9 @@
   </a>
 </p>
 
+# TEST
+here is some new line in the readme.
+
 # FinQuant
 *FinQuant* is a program for financial **portfolio management, analysis and optimisation**.
 
@@ -268,3 +271,5 @@ Furthermore, it is also shown how the entire *Efficient Frontier* and the optima
 Also, the optimisation of a portfolio and its visualisation based on a *Monte Carlo* is shown.
 
 Finally, *FinQuant*'s visualisation methods allow for overlays, if this is desired. Thus, with only the following few lines of code, one can create an overlay of the *Monte Carlo* run, the *Efficient Frontier*, its optimised portfolios for *Minimum Volatility* and *Maximum Sharpe Ratio*, as well as the portfolio's individual stocks.
+
+bla
