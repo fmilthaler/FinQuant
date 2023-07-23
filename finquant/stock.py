@@ -78,7 +78,7 @@ class Stock(Asset):
 
     def properties(self):
         """Nicely prints out the properties of the stock: Expected Return,
-        Volatility, Skewness, Kurtosis as well as the ``Allocation`` (and other
+        Volatility, Beta (optional), Skewness, Kurtosis as well as the ``Allocation`` (and other
         information provided in investmentinfo.)
         """
         # nicely printing out information and quantities of the stock
@@ -86,10 +86,10 @@ class Stock(Asset):
         string += f"\n{self.asset_type}: {self.name}"
         string += f"\nExpected Return: {self.expected_return:0.3f}"
         string += f"\nVolatility: {self.volatility:0.3f}"
-        string += f"\nSkewness: {self.skew:0.5f}"
-        string += f"\nKurtosis: {self.kurtosis:0.5f}"
         if self.beta is not None:
             string += f"\n{self.asset_type} Beta: {self.beta:0.3f}"
+        string += f"\nSkewness: {self.skew:0.5f}"
+        string += f"\nKurtosis: {self.kurtosis:0.5f}"
         string += "\nInformation:"
         string += "\n" + str(self.investmentinfo.to_frame().transpose())
         string += "\n" + "-" * 50
