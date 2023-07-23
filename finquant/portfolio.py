@@ -18,6 +18,7 @@ and makes the most common quantitative calculations, such as:
 - Expected (annualised) Return,
 - Volatility,
 - Sharpe Ratio,
+- Value at Risk,
 - Beta parameter (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
@@ -58,7 +59,7 @@ import pandas as pd
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
-from finquant.quants import sharpe_ratio, weighted_mean, weighted_std
+from finquant.quants import sharpe_ratio, value_at_risk, weighted_mean, weighted_std
 from finquant.returns import (
     cumulative_returns,
     daily_log_returns,
@@ -85,9 +86,11 @@ class Portfolio:
         self.expected_return = None
         self.volatility = None
         self.sharpe = None
+        self.var = None
         self.skew = None
         self.kurtosis = None
         self.totalinvestment = None
+        self.var_confidence_level = 0.95
         self.risk_free_rate = 0.005
         self.freq = 252
         # instance variables for Efficient Frontier and
@@ -154,6 +157,20 @@ class Portfolio:
         """
         self.__market_index = index
 
+    @property
+    def var_confidence_level(self):
+        return self.__var_confidence_level
+
+    @var_confidence_level.setter
+    def var_confidence_level(self, val):
+        if not isinstance(val, float):
+            raise ValueError("confidence level is expected to be a float.")
+        if val >= 1 or val <= 0:
+            raise ValueError("confidence level is expected to be between 0 and 1.")
+        self.__var_confidence_level = val
+        # now that this changed, update VaR
+        self._update()
+
     def add_stock(self, stock: Stock) -> None:
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
         is called, the following instance variables are updated:
@@ -210,6 +227,7 @@ class Portfolio:
             self.expected_return = self.comp_expected_return(freq=self.freq)
             self.volatility = self.comp_volatility(freq=self.freq)
             self.sharpe = self.comp_sharpe()
+            self.var = self.comp_var()
             self.skew = self._comp_skew()
             self.kurtosis = self._comp_kurtosis()
             if self.market_index is not None:
@@ -354,6 +372,22 @@ class Portfolio:
         )
         self.sharpe = sharpe
         return sharpe
+
+    def comp_var(self):
+        """Compute and return the Value at Risk of the portfolio.
+
+        :Output:
+         :VaR: ``float``, the Value at Risk of the portfolio
+        """
+        # compute the Value at Risk of the portfolio
+        var = value_at_risk(
+            investment=self.totalinvestment,
+            mu=self.expected_return,
+            sigma=self.volatility,
+            conf_level=self.var_confidence_level,
+        )
+        self.var = var
+        return var
 
     def comp_beta(self) -> float:
         """Compute and return the Beta parameter of the portfolio.
@@ -631,6 +665,7 @@ class Portfolio:
         - Expected Return,
         - Volatility,
         - Sharpe Ratio,
+        - Value at Risk,
         - Beta (optional),
         - skewness,
         - Kurtosis
@@ -648,6 +683,9 @@ class Portfolio:
         string += f"\nPortfolio Expected Return: {self.expected_return:0.3f}"
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
+        string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
+        string += f"\nConfidence level of Value at Risk: "
+        string += f"{self.var_confidence_level * 100:0.2f} %"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
         string += "\n\nSkewness:"
