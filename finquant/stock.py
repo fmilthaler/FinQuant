@@ -45,7 +45,6 @@ class Stock(Asset):
 
     """
 
-
     def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series) -> None:
         """
         :Input:
