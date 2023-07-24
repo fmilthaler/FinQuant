@@ -4,6 +4,10 @@ on:
     branches:
       - master
       - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   code-formatting:
