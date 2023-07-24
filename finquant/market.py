@@ -14,6 +14,7 @@ and attributes specific to market indices.
 
 import numpy as np
 import pandas as pd
+
 from finquant.asset import Asset
 from finquant.returns import daily_returns, historical_mean_return
 

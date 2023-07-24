@@ -45,7 +45,9 @@ class Asset:
 
     """
 
-    def __init__(self, data: pd.Series, name: str, asset_type: str = 'Market index') -> None:
+    def __init__(
+        self, data: pd.Series, name: str, asset_type: str = "Market index"
+    ) -> None:
         """
         :Input:
          :data: ``pandas.Series``, of asset prices
