@@ -1,8 +1,14 @@
 name: AutoFormatting
+
 on:
   push:
     branches:
       - master
+      - develop
+  pull_request:
+    branches:
+      - master
+      - develop
 
 jobs:
   code-formatting:
@@ -23,6 +29,13 @@ jobs:
         run: |
           pip install -r requirements_test.txt
 
+      - name: Updating README files
+        id: update_readme
+        run: |
+          bash scripts/update_readme.sh
+          bash scripts/auto_commit.sh "Updating README files"
+        continue-on-error: true
+
       - name: Code formatting and committing changes
         id: code_format
         run: |
@@ -31,7 +44,7 @@ jobs:
         continue-on-error: true
 
       - name: Push changes
-        if: ${{ steps.code_format.outcome == 'success' }}
+        if: ${{ steps.update_readme.outcome == 'success' || steps.code_format.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
           branch: ${{ github.head_ref }}
