@@ -1,16 +1,16 @@
 #!/bin/bash
 
-update_version_readme() {
+update_release_readme() {
 	local version_file="version"
 	local readme_md="$1"
 
-	# Read the current version from the "version" file
-	local current_version=$(grep -Eo 'version=([0-9]+\.){2}[0-9]+' "$version_file" | cut -d'=' -f2)
+	# Read the current release from the "version" file
+	local current_release=$(grep -Eo 'release=([0-9]+\.){2}[0-9]+' "$version_file" | cut -d'=' -f2)
 
 	update_file() {
 		local file=$1
-		sed -i "s/pypi-v[0-9]\+\.[0-9]\+\.[0-9]\+/pypi-v$current_version/" "$file"
-		echo "Version updated to $current_version in $file"
+		sed -i "s/pypi-v[0-9]\+\.[0-9]\+\.[0-9]\+/pypi-v$current_release/" "$file"
+		echo "Release updated to $current_release in $file"
 	}
 
 	# Update version in README.md
@@ -39,5 +39,5 @@ update_readme_tex() {
 
 # Update both readme files:
 echo "Updating README files:"
-update_version_readme "README.md"
+update_release_readme "README.md"
 update_readme_tex "README.tex.md"
