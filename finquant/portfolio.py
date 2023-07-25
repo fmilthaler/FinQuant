@@ -49,8 +49,8 @@ Finally, functions are implemented to generated the following plots:
 - Individual stocks of the portfolio (Expected Return over Volatility)
 """
 
-from typing import List
 import datetime
+from typing import List
 
 import matplotlib.pylab as plt
 import numpy as np

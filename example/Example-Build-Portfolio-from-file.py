@@ -9,9 +9,10 @@
 
 # <codecell>
 
-import pathlib
-import pandas as pd
 import datetime
+import pathlib
+
+import pandas as pd
 
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
