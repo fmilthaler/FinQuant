@@ -108,27 +108,6 @@ def write_version_to_file(filename, version, release=None):
         file.truncate()
 
 
-# Get the current branch name from Git
-def get_git_branch_name():
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"], capture_output=True, text=True
-        )
-        branch_name = result.stdout.strip()
-        return branch_name
-    except Exception as e:
-        print(f"Error while getting branch name from Git: {e}")
-        return None
-
-
-# Function to parse command-line arguments
-def parse_args():
-    parser = argparse.ArgumentParser(description="Update version based on branch name.")
-    parser.add_argument("base_branch", help="Base branch name")
-    parser.add_argument("source_branch", help="Source branch name")
-    return parser.parse_args()
-
-
 # Main function
 def main():
     args = parse_args()
