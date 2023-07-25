@@ -1,6 +1,5 @@
 import argparse
 import re
-import subprocess
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -32,15 +31,6 @@ def increment_version(version, branch_name):
                     increment_version_by(version, increment) if increment else version
                 )
 
-    if branch_name.startswith("release/"):
-        version_parts = version.split("\n")
-        for i, line in enumerate(version_parts):
-            key_value = line.strip().split("=")
-            if len(key_value) == 2 and key_value[0] == "version":
-                version_parts[i] = f"release={key_value[1]}"
-
-        return "\n".join(version_parts)
-
     return version
 
 
@@ -70,42 +60,42 @@ def increment_version_by(version, increment):
     return ".".join(new_version_parts)
 
 
-# Read the version and release from the file
+# Read the version from the file
 def read_version_from_file(filename):
     with open(filename, "r") as file:
         version_content = file.read()
         version_match = re.search(r"version=(\d+\.\d+\.\d+)", version_content)
-        release_match = re.search(r"release=(\d+\.\d+\.\d+)", version_content)
 
         if version_match:
             version = version_match.group(1)
         else:
             version = None
 
-        if release_match:
-            release = release_match.group(1)
-        else:
-            release = None
-
-        return version, release
-
-    return None, None
+        return version
 
 
 # Write the updated version back to the file
-def write_version_to_file(filename, version, release=None):
+def write_version_to_file(filename, version):
     with open(filename, "r+") as file:
         file_content = file.read()
         updated_content = re.sub(
             r"version=\d+\.\d+\.\d+", f"version={version}", file_content
         )
-        if release:
-            updated_content = re.sub(
-                r"release=\d+\.\d+\.\d+", f"release={release}", updated_content
-            )
+        # Always set the release number to match the updated version number
+        updated_content = re.sub(
+            r"release=\d+\.\d+\.\d+", f"release={version}", updated_content
+        )
         file.seek(0)
         file.write(updated_content)
         file.truncate()
+
+
+# Function to parse command-line arguments
+def parse_args():
+    parser = argparse.ArgumentParser(description="Update version based on branch name.")
+    parser.add_argument("base_branch", help="Base branch name")
+    parser.add_argument("source_branch", help="Source branch name")
+    return parser.parse_args()
 
 
 # Main function
@@ -122,28 +112,21 @@ def main():
     if source_branch_name is None:
         raise ValueError("Source branch name must not be empty/None.")
 
-    current_version, current_release = read_version_from_file(file_path)
-    if current_version is None or current_release is None:
+    current_version = read_version_from_file(file_path)
+    if current_version is None:
         raise VersionFileReadError("Failed to read the current version from the file.")
 
-    if source_branch_name.startswith("release/"):
-        # When the branch starts with "release/", update the "release" value to match the "version" value
-        updated_release = current_version
-        write_version_to_file(file_path, current_version, updated_release)
-        print("Release updated in the file.")
+    updated_version = increment_version(current_version, source_branch_name)
+    print(f"Base branch: {base_branch_name}")
+    print(f"Source branch: {source_branch_name}")
+    print(f"Current version: {current_version}")
+    print(f"Updated version: {updated_version}")
 
+    if updated_version == current_version:
+        print("Version did not change.")
     else:
-        updated_version = increment_version(current_version, source_branch_name)
-        print(f"Base branch: {base_branch_name}")
-        print(f"Source branch: {source_branch_name}")
-        print(f"Current version: {current_version}")
-        print(f"Updated version: {updated_version}")
-
-        if updated_version == current_version:
-            print("Version did not change.")
-        else:
-            write_version_to_file(file_path, updated_version)
-            print("Version updated in the file.")
+        write_version_to_file(file_path, updated_version)
+        print("Version updated in the file.")
 
 
 if __name__ == "__main__":
