@@ -106,8 +106,8 @@ def main():
 
     file_path = "version"
 
-    if base_branch_name not in ["main", "develop"]:
-        raise ValueError("Base branch name must be 'main' or 'develop'.")
+    if base_branch_name not in ["master", "develop"]:
+        raise ValueError("Base branch name must be 'master' or 'develop'.")
 
     if source_branch_name is None:
         raise ValueError("Source branch name must not be empty/None.")
