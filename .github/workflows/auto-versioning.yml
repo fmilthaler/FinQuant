@@ -2,17 +2,21 @@ name: AutoVersion
 on:
   pull_request:
     types:
-      - opened
+      - closed
 
+env:
+  SOURCE_BRANCH: ${{ github.head_ref }}
+  BASE_BRANCH: ${{ github.base_ref }}
 
 jobs:
   auto-versioning:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'develop') }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.head_ref }}
+          ref: ${{ github.base_ref }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -27,7 +31,7 @@ jobs:
       - name: Automated versioning and committing changes
         id: auto_version
         run: |
-          python scripts/update_version.py
+          python scripts/update_version.py ${{ env.BASE_BRANCH }} ${{ env.SOURCE_BRANCH }}
           bash scripts/auto_commit.sh "Automated version changes"
         continue-on-error: true
 
@@ -38,8 +42,8 @@ jobs:
           bash scripts/auto_commit.sh "Updating README files"
         continue-on-error: true
 
-      - name: Push changes
+      - name: Push changes to base branch (master or develop)
         if: ${{ steps.update_readme.outcome == 'success' || steps.auto_version.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
-          branch: ${{ github.head_ref }}
+          branch: ${{ env.BASE_BRANCH }}

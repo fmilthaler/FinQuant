@@ -1,5 +1,6 @@
 import re
 import subprocess
+import argparse
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -14,6 +15,10 @@ branch_prefixes = {
     "minor": ["feature/"],
     "major": None,
 }
+
+class VersionFileReadError(Exception):
+    pass
+
 
 
 # Function to increment the version based on the branch name pattern
@@ -55,6 +60,11 @@ def increment_version_by(version, increment):
 
     # If increment is "0.1.0", reset the third digit to 0
     if increment == "0.1.0" and len(version_parts) > 2:
+        new_version_parts[2] = "0"
+
+    # If increment is "1.0.0", reset the second and third digit to 0
+    if increment == "1.0.0" and len(version_parts) > 2:
+        new_version_parts[1] = "0"
         new_version_parts[2] = "0"
 
     return ".".join(new_version_parts)
@@ -111,29 +121,42 @@ def get_git_branch_name():
         return None
 
 
+# Function to parse command-line arguments
+def parse_args():
+    parser = argparse.ArgumentParser(description="Update version based on branch name.")
+    parser.add_argument("base_branch", help="Base branch name")
+    parser.add_argument("source_branch", help="Source branch name")
+    return parser.parse_args()
+
+
 # Main function
 def main():
-    file_path = "version"
-    branch_name = get_git_branch_name()
+    args = parse_args()
+    base_branch_name = args.base_branch
+    source_branch_name = args.source_branch
 
-    if branch_name is None:
-        print("Failed to get the current branch name.")
-        return
+    file_path = "version"
+
+    if base_branch_name not in ["main", "develop"]:
+        raise ValueError("Base branch name must be 'main' or 'develop'.")
+
+    if source_branch_name is None:
+        raise ValueError("Source branch name must not be empty/None.")
 
     current_version, current_release = read_version_from_file(file_path)
-    if current_version is None:
-        print("Failed to read the current version from the file.")
-        return
+    if current_version is None or current_release is None:
+        raise VersionFileReadError("Failed to read the current version from the file.")
 
-    if branch_name.startswith("release/"):
+    if source_branch_name.startswith("release/"):
         # When the branch starts with "release/", update the "release" value to match the "version" value
         updated_release = current_version
         write_version_to_file(file_path, current_version, updated_release)
         print("Release updated in the file.")
 
     else:
-        updated_version = increment_version(current_version, branch_name)
-        print(f"Current branch: {branch_name}")
+        updated_version = increment_version(current_version, source_branch_name)
+        print(f"Base branch: {base_branch_name}")
+        print(f"Source branch: {source_branch_name}")
         print(f"Current version: {current_version}")
         print(f"Updated version: {updated_version}")
 
