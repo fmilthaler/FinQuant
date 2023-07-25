@@ -1,6 +1,6 @@
+import argparse
 import re
 import subprocess
-import argparse
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -16,9 +16,9 @@ branch_prefixes = {
     "major": None,
 }
 
+
 class VersionFileReadError(Exception):
     pass
-
 
 
 # Function to increment the version based on the branch name pattern
