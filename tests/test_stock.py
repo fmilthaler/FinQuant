@@ -1,6 +1,7 @@
 ###################
 # tests for Stock #
 ###################
+
 import datetime
 import os
 import pathlib
