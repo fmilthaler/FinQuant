@@ -32,7 +32,7 @@ jobs:
         run: |
           python scripts/update_version.py ${{ env.BASE_BRANCH }} ${{ env.SOURCE_BRANCH }}
           bash scripts/auto_commit.sh "Automated version changes"
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Updating README files
         id: update_readme
