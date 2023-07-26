@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/github/stars/fmilthaler/FinQuant.svg?style=social&label=Star" alt='pypi'>
   </a>
   <a href="https://pypi.org/project/FinQuant">
-    <img src="https://img.shields.io/badge/pypi-v0.4.0-brightgreen.svg?style=popout" alt='pypi'>
+    <img src="https://img.shields.io/badge/pypi-v0.5.0-brightgreen.svg?style=popout" alt='pypi'>
   </a>
   <a href="https://github.com/fmilthaler/FinQuant">
     <img src="https://github.com/fmilthaler/finquant/actions/workflows/pytest.yml/badge.svg?branch=master" alt='GitHub Actions'>
