@@ -14,6 +14,7 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
+          token: ${{ secrets.FINQUANT_TEST_PAT }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -42,4 +43,5 @@ jobs:
         if: ${{ steps.update_readme.outcome == 'success' || steps.code_format.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
+          github_token: ${{ secrets.FINQUANT_TEST_PAT }}
           branch: ${{ github.head_ref }}
