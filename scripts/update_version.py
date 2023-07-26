@@ -1,5 +1,6 @@
 import argparse
 import re
+import sys
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -74,6 +75,22 @@ def read_version_from_file(filename):
         return version
 
 
+# Function to get the version from the base branch
+def get_version_from_base(filename, base_branch_name ="master"):
+    cmd = ["git", "show", f"{base_branch_name}:{filename}"]
+    try:
+        version_content = subprocess.check_output(cmd).decode("utf-8")
+        version_match = re.search(r"version=(\d+\.\d+\.\d+)", version_content)
+
+        if version_match:
+            version = version_match.group(1)
+            return version
+        else:
+            raise VersionFileReadError(f"Version not found in the {base_branch_name} branch.")
+    except subprocess.CalledProcessError as e:
+        raise VersionFileReadError(f"Failed to read the version from the {base_branch_name} branch.") from e
+
+
 # Write the updated version back to the file
 def write_version_to_file(filename, version):
     with open(filename, "r+") as file:
@@ -112,21 +129,34 @@ def main():
     if source_branch_name is None:
         raise ValueError("Source branch name must not be empty/None.")
 
-    current_version = read_version_from_file(file_path)
-    if current_version is None:
-        raise VersionFileReadError("Failed to read the current version from the file.")
+    # Get the version from the master branch
+    current_version_base = get_version_from_base(file_path, base_branch_name)
+    # Get the version from current branch
+    current_version_source = read_version_from_file(file_path)
 
-    updated_version = increment_version(current_version, source_branch_name)
+    if current_version_base is None or current_version_source is None:
+        raise VersionFileReadError(f"Failed to read the version from {base_branch_name} or from branch.")
+
+    # Increment the version based on the branch name pattern
+    updated_version = increment_version(current_version_base, source_branch_name)
+
     print(f"Base branch: {base_branch_name}")
     print(f"Source branch: {source_branch_name}")
-    print(f"Current version: {current_version}")
+    print(f"Current version (master): {current_version_base}")
+    print(f"Current version (branch): {current_version_source}")
     print(f"Updated version: {updated_version}")
 
-    if updated_version == current_version:
-        print("Version did not change.")
+    if updated_version == current_version_base:
+        print("Version does not increase.")
+        # Exit with error code 1
+        sys.exit(1)
+    elif updated_version == current_version_source:
+        print("Version is already updated.")
+        # Exit with error code 1
+        sys.exit(1)
     else:
         write_version_to_file(file_path, updated_version)
-        print("Version updated in the file.")
+        print("Version updated in the file 'version'.")
 
 
 if __name__ == "__main__":
