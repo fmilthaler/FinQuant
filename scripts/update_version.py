@@ -1,5 +1,7 @@
 import argparse
 import re
+import subprocess
+import sys
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -17,6 +19,10 @@ branch_prefixes = {
 
 
 class VersionFileReadError(Exception):
+    pass
+
+
+class VersionUpdateError(Exception):
     pass
 
 
@@ -74,6 +80,43 @@ def read_version_from_file(filename):
         return version
 
 
+# Function to checkout a specific branch
+def checkout_branch(branch_name):
+    # Fetch the latest changes from the remote repository
+    subprocess.run(["git", "fetch", "origin", branch_name], check=True)
+
+    # Checkout the branch to access its content
+    subprocess.run(["git", "checkout", branch_name], check=True)
+
+
+# Function to get version number from a specific branch
+def get_version_from_branch(filename, branch_name):
+    # Checkout branch
+    checkout_branch(branch_name)
+
+    # Get version from version file
+    version = read_version_from_file(filename)
+
+    # Read the version from the file
+    return version
+
+
+# Function to compare 2 strings of version numbers
+def compare_versions(version1, version2):
+    def parse_version(version_str):
+        return tuple(map(int, version_str.split(".")))
+
+    parsed_version1 = parse_version(version1)
+    parsed_version2 = parse_version(version2)
+
+    if parsed_version1 < parsed_version2:
+        return -1
+    elif parsed_version1 > parsed_version2:
+        return 1
+    else:
+        return 0
+
+
 # Write the updated version back to the file
 def write_version_to_file(filename, version):
     with open(filename, "r+") as file:
@@ -106,27 +149,50 @@ def main():
 
     file_path = "version"
 
-    if base_branch_name not in ["master", "develop"]:
-        raise ValueError("Base branch name must be 'master' or 'develop'.")
+    if base_branch_name != "master":
+        raise ValueError("Base branch name must be 'master'.")
 
     if source_branch_name is None:
         raise ValueError("Source branch name must not be empty/None.")
 
-    current_version = read_version_from_file(file_path)
-    if current_version is None:
-        raise VersionFileReadError("Failed to read the current version from the file.")
+    # Get the version from the base branch
+    current_version_base = get_version_from_branch(file_path, base_branch_name)
+    # Get the version from source branch
+    current_version_source = get_version_from_branch(file_path, source_branch_name)
 
-    updated_version = increment_version(current_version, source_branch_name)
+    # Sanity check for version numbers of base and source branch
+    if current_version_base is None or current_version_source is None:
+        raise VersionFileReadError(
+            f"Failed to read the version from {base_branch_name} or from branch."
+        )
+
+    # Increment the version based on the branch name pattern
+    updated_version = increment_version(current_version_base, source_branch_name)
+
     print(f"Base branch: {base_branch_name}")
     print(f"Source branch: {source_branch_name}")
-    print(f"Current version: {current_version}")
+    print(f"Current version (base):   {current_version_base}")
+    print(f"Current version (source): {current_version_source}")
     print(f"Updated version: {updated_version}")
 
-    if updated_version == current_version:
-        print("Version did not change.")
-    else:
-        write_version_to_file(file_path, updated_version)
-        print("Version updated in the file.")
+    # Check if updated version is higher than version in base branch:
+    version_comparison = compare_versions(updated_version, current_version_base)
+    if version_comparison < 0:
+        raise VersionUpdateError(
+            "Error: Updated version is lower than version in base branch."
+        )
+    elif version_comparison == 0:
+        print("Version does not increase.")
+        # Exit with error code 1
+        sys.exit(1)
+    elif version_comparison > 0:
+        if updated_version == current_version_source:
+            print("Version is already updated.")
+            # Exit with error code 1
+            sys.exit(1)
+        else:
+            write_version_to_file(file_path, updated_version)
+            print("Version updated in the file 'version'.")
 
 
 if __name__ == "__main__":
