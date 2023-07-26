@@ -16,8 +16,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
         with:
-          ref: ${{ github.base_ref }}
+          ref: ${{ env.BASE_BRANCH }}
           fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -46,4 +47,6 @@ jobs:
         if: ${{ steps.update_readme.outcome == 'success' || steps.auto_version.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
+          github_token: ${{ secrets.PAT_TOKEN }}
           branch: ${{ env.BASE_BRANCH }}
+          force_with_lease: true
