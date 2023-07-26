@@ -80,42 +80,29 @@ def read_version_from_file(filename):
         return version
 
 
-# Function to get the version from the base branch
-def get_version_from_base_bkup(filename, base_branch_name="master"):
-    cmd = ["git", "show", f"{base_branch_name}:{filename}"]
-    try:
-        version_content = subprocess.check_output(cmd).decode("utf-8")
-        version_match = re.search(r"version=(\d+\.\d+\.\d+)", version_content)
 
-        if version_match:
-            version = version_match.group(1)
-            return version
-        else:
-            raise VersionFileReadError(
-                f"Version not found in the {base_branch_name} branch."
-            )
-    except subprocess.CalledProcessError as e:
-        raise VersionFileReadError(
-            f"Failed to read the version from the {base_branch_name} branch."
-        ) from e
-
-
-def get_version_from_base(filename, source_branch_name, base_branch_name="master"):
+# Function to checkout a specific branch
+def checkout_branch(branch_name):
     # Fetch the latest changes from the remote repository
-    subprocess.run(["git", "fetch", "origin", base_branch_name], check=True)
+    subprocess.run(["git", "fetch", "origin", branch_name], check=True)
 
-    # Checkout the base branch to access its content
-    subprocess.run(["git", "checkout", base_branch_name], check=True)
+    # Checkout the branch to access its content
+    subprocess.run(["git", "checkout", branch_name], check=True)
 
+
+# Function to get version number from a specific branch
+def get_version_from_branch(filename, branch_name):
+    # Checkout branch
+    checkout_branch(branch_name)
+
+    # Get version from version file
     version = read_version_from_file(filename)
-
-    # Checkout the base branch to access its content
-    subprocess.run(["git", "checkout", source_branch_name], check=True)
 
     # Read the version from the file
     return version
 
 
+# Function to compare 2 strings of version numbers
 def compare_versions(version1, version2):
     def parse_version(version_str):
         return tuple(map(int, version_str.split(".")))
@@ -169,11 +156,12 @@ def main():
     if source_branch_name is None:
         raise ValueError("Source branch name must not be empty/None.")
 
-    # Get the version from the master branch
-    current_version_base = get_version_from_base(file_path, source_branch_name, base_branch_name)
-    # Get the version from current branch
-    current_version_source = read_version_from_file(file_path)
+    # Get the version from the base branch
+    current_version_base = get_version_from_branch(file_path, base_branch_name)
+    # Get the version from source branch
+    current_version_source = get_version_from_branch(file_path, source_branch_name)
 
+    # Sanity check for version numbers of base and source branch
     if current_version_base is None or current_version_source is None:
         raise VersionFileReadError(
             f"Failed to read the version from {base_branch_name} or from branch."
