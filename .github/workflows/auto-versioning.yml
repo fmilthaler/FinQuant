@@ -11,7 +11,7 @@ env:
 jobs:
   auto-versioning:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.merged == true && (github.event.pull_request.base.ref == 'master' || github.event.pull_request.base.ref == 'develop') }}
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master' }}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -43,10 +43,9 @@ jobs:
           bash scripts/auto_commit.sh "Updating README files"
         continue-on-error: true
 
-      - name: Push changes to base branch (master or develop)
+      - name: Push changes to base branch (master)
         if: ${{ steps.update_readme.outcome == 'success' || steps.auto_version.outcome == 'success' }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.FINQUANT_PAT }}
           branch: ${{ env.BASE_BRANCH }}
-          force_with_lease: true
