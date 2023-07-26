@@ -1,7 +1,7 @@
 import argparse
 import re
-import sys
 import subprocess
+import sys
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -20,6 +20,8 @@ branch_prefixes = {
 
 class VersionFileReadError(Exception):
     pass
+
+
 class VersionUpdateError(Exception):
     pass
 
@@ -79,7 +81,7 @@ def read_version_from_file(filename):
 
 
 # Function to get the version from the base branch
-def get_version_from_base(filename, base_branch_name ="master"):
+def get_version_from_base(filename, base_branch_name="master"):
     cmd = ["git", "show", f"{base_branch_name}:{filename}"]
     try:
         version_content = subprocess.check_output(cmd).decode("utf-8")
@@ -89,9 +91,13 @@ def get_version_from_base(filename, base_branch_name ="master"):
             version = version_match.group(1)
             return version
         else:
-            raise VersionFileReadError(f"Version not found in the {base_branch_name} branch.")
+            raise VersionFileReadError(
+                f"Version not found in the {base_branch_name} branch."
+            )
     except subprocess.CalledProcessError as e:
-        raise VersionFileReadError(f"Failed to read the version from the {base_branch_name} branch.") from e
+        raise VersionFileReadError(
+            f"Failed to read the version from the {base_branch_name} branch."
+        ) from e
 
 
 def compare_versions(version1, version2):
@@ -153,7 +159,9 @@ def main():
     current_version_source = read_version_from_file(file_path)
 
     if current_version_base is None or current_version_source is None:
-        raise VersionFileReadError(f"Failed to read the version from {base_branch_name} or from branch.")
+        raise VersionFileReadError(
+            f"Failed to read the version from {base_branch_name} or from branch."
+        )
 
     # Increment the version based on the branch name pattern
     updated_version = increment_version(current_version_base, source_branch_name)
@@ -164,11 +172,12 @@ def main():
     print(f"Current version (source): {current_version_source}")
     print(f"Updated version: {updated_version}")
 
-
     # Check if updated version is higher than version in base branch:
     version_comparison = compare_versions(updated_version, current_version_base)
     if version_comparison < 0:
-        raise VersionUpdateError("Error: Updated version is lower than version in base branch.")
+        raise VersionUpdateError(
+            "Error: Updated version is lower than version in base branch."
+        )
     elif version_comparison == 0:
         print("Version does not increase.")
         # Exit with error code 1
