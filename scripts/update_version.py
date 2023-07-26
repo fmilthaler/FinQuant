@@ -80,7 +80,6 @@ def read_version_from_file(filename):
         return version
 
 
-
 # Function to checkout a specific branch
 def checkout_branch(branch_name):
     # Fetch the latest changes from the remote repository
