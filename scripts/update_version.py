@@ -81,7 +81,7 @@ def read_version_from_file(filename):
 
 
 # Function to get the version from the base branch
-def get_version_from_base(filename, base_branch_name="master"):
+def get_version_from_base_bkup(filename, base_branch_name="master"):
     cmd = ["git", "show", f"{base_branch_name}:{filename}"]
     try:
         version_content = subprocess.check_output(cmd).decode("utf-8")
@@ -98,6 +98,22 @@ def get_version_from_base(filename, base_branch_name="master"):
         raise VersionFileReadError(
             f"Failed to read the version from the {base_branch_name} branch."
         ) from e
+
+
+def get_version_from_base(filename, source_branch_name, base_branch_name="master"):
+    # Fetch the latest changes from the remote repository
+    subprocess.run(["git", "fetch", "origin", base_branch_name], check=True)
+
+    # Checkout the base branch to access its content
+    subprocess.run(["git", "checkout", base_branch_name], check=True)
+
+    version = read_version_from_file(filename)
+
+    # Checkout the base branch to access its content
+    subprocess.run(["git", "checkout", source_branch_name], check=True)
+
+    # Read the version from the file
+    return version
 
 
 def compare_versions(version1, version2):
@@ -154,7 +170,7 @@ def main():
         raise ValueError("Source branch name must not be empty/None.")
 
     # Get the version from the master branch
-    current_version_base = get_version_from_base(file_path, base_branch_name)
+    current_version_base = get_version_from_base(file_path, source_branch_name, base_branch_name)
     # Get the version from current branch
     current_version_source = read_version_from_file(file_path)
 
