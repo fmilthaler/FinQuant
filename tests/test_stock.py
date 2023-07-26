@@ -5,8 +5,6 @@
 import datetime
 import os
 import pathlib
-from finquant.portfolio import build_portfolio
-
 
 import numpy as np
 import pandas as pd
@@ -68,17 +66,3 @@ def test_Stock():
         assert all(
             stock.investmentinfo == pf.portfolio.loc[pf.portfolio["Name"] == stock.name]
         )
-
-
-
-
-
-def hello_world(s:    str)    -> None:
-
-
-
-    print("hi")
-
-
-
-    return None
