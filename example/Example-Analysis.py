@@ -9,10 +9,11 @@
 
 # <codecell>
 
+import datetime
 import pathlib
+
 import matplotlib.pyplot as plt
 import pandas as pd
-import datetime
 
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
@@ -20,7 +21,7 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # plotting style:
-plt.style.use("seaborn-darkgrid")
+plt.style.use("seaborn-v0_8-darkgrid")
 # set line width
 plt.rcParams["lines.linewidth"] = 2
 # set font size for titles
@@ -49,9 +50,10 @@ pf = build_portfolio(data=df_data)
 
 # <markdowncell>
 
-# ## Expected Return, Volatility and Sharpe Ratio of Portfolio
-# The annualised expected return and volatility as well as the Sharpe Ratio are automatically computed. They are obtained as shown below.
-# The expected return and volatility are based on 252 trading days by default. The Sharpe Ratio is computed with a risk free rate of 0.005 by default.
+# ## Expected Return, Volatility, Sharpe Ratio and Value at Risk of Portfolio
+# The annualised expected return and volatility, as well as the Sharpe Ratio and Value at Risk are automatically computed. They are obtained as shown below.
+# The expected return and volatility are based on 252 trading days by default.
+# The Sharpe Ratio is computed with a risk free rate of 0.005 by default. The Value at Risk is computed with a confidence level of 0.95 by default.
 
 # <codecell>
 
@@ -67,6 +69,11 @@ print(pf.volatility)
 
 # Sharpe ratio (computed with a risk free rate of 0.005 by default)
 print(pf.sharpe)
+
+# <codecell>
+
+# Value at Risk (computed with a confidence level of 0.95 by default)
+print(pf.var)
 
 # <markdowncell>
 

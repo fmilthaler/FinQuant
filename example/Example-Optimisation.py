@@ -26,11 +26,12 @@
 
 # <codecell>
 
+import datetime
 import pathlib
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import datetime
 
 # importing FinQuant's function to automatically build the portfolio
 from finquant.portfolio import build_portfolio
@@ -38,7 +39,7 @@ from finquant.portfolio import build_portfolio
 # <codecell>
 
 # plotting style:
-plt.style.use("seaborn-darkgrid")
+plt.style.use("seaborn-v0_8-darkgrid")
 # set line width
 plt.rcParams["lines.linewidth"] = 2
 # set font size for titles

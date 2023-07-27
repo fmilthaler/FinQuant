@@ -16,9 +16,24 @@ Before creating a new issue/bug report, check the list of existing [issues](http
 So you wish to fix bugs yourself, or contribute by adding a new feature. Awesome! Here are a few guidelines I would like you to respect.
 
 ### Create a fork
-First off, you should create a fork. Within your fork, create a new branch. Depending on what you want to do, choose one of the following prefixes for your branch:
-- bugfix/<name of your fix>: to be used for bug fixes
-- feature/<name of new feature>: to be used for adding a new feature
+First off, you should create a fork. Within your fork, create a new branch. Depending on what you want to do,
+choose one of the following prefixes for your branch name:
+- `bugfix/` followed by something like `<name of your fix>`: to be used for bug fixes
+- `feature/` followed by something like `<name of new feature>`: to be used for adding a new feature
+
+If you simply want to refactor the code base, or do other types of chores, use one of the following branch name prefixes:
+- `refactor/` followed by something like `<what you are refactoring>`
+- `chore/` followed by something like `<other type of contribution>`
+
+**NOTE**: It is _mandatory_ to use one of the above prefixes for your branch name. FinQuant uses GitHub workflows
+to automatically bump the version number when a PR is merged into `master` (or `develop`).
+The new version number depends on the source branch name of the merged PR.
+
+Example:
+. If you are working on a bugfix to fix a print statement of the portfolio properties,
+your branch name should be something like bugfix/print-statement-portfolio-properties.
+For the automated versioning to work, the branch name is required to start with `bugfix/` or one of the other
+above mentioned patterns.
 
 ### Commit your changes
 Make your changes to the code, and write sensible commit messages.
@@ -27,15 +42,22 @@ Make your changes to the code, and write sensible commit messages.
 In the root directory of your version of FinQuant, run `make test` and make sure all tests are passing.
 If applicable, add new tests in the `./tests/` directory. Tests should be written with `pytest`.
 
+Some few tests require you to have a [Quandl API key](https://docs.quandl.com/docs#section-authentication).
+If you do not have one locally, you can ignore the tests that are failing due to a missing Quandl API key.
+Once you open a PR, all tests are run by GitHub Actions with a pre-configured key.
+
 ### Documentation
-If applicable, please add docstrings to new functions/classes/modules. Follow example of existing docstrings. FinQuant uses `sphinx` to generate Documentation for [ReadTheDocs](https://finquant.readthedocs.io) automatically from docstrings.
+If applicable, please add docstrings to new functions/classes/modules.
+Follow example of existing docstrings. FinQuant uses `sphinx` to generate Documentation
+for [ReadTheDocs](https://finquant.readthedocs.io) automatically from docstrings.
 
 ### Style
-To keep everything consistent, please use [Black](https://github.com/psf/black) with default settings.
+Fortunately for you, you can ignore code formatting and fully focus on your contribution.
+FinQuant uses a GitHub workflow that is automatically triggered and runs [Black](https://github.com/psf/black) and
+[isort](https://pycqa.github.io/isort/) to format the code base for you.
 
 ### Create a Pull Request
-Create a new [Pull Request](https://github.com/fmilthaler/FinQuant/pulls). Describe what your changes are in the Pull Request. If your contribution fixes a bug, or adds a features listed under [issues](https://github.com/fmilthaler/FinQuant/issues) as "#12", please add "fixes #12" or "closes #12". 
-
-If you do not have a [Quandl API key](https://docs.quandl.com/docs#section-authentication) set on your Travis account, some of the tests are most likely going to fail. There are two ways forward:
-1. you get a [Quandl API key](https://docs.quandl.com/docs#section-authentication), and set it as an environment variable under your Travis account settings.
-2. Or you set the target of your Pull Request to either `feature/new-feature` or `bugfix/new-bugfix`, if your contribution is a new feature of bugfix respectively. That way your changes can be merged into a branch of FinQuant, and all the tests can be ran with my [Quandl API key](https://docs.quandl.com/docs#section-authentication).
+Create a new [Pull Request](https://github.com/fmilthaler/FinQuant/pulls).
+Describe what your changes are in the Pull Request.
+If your contribution fixes a bug, or adds a features listed under
+[issues](https://github.com/fmilthaler/FinQuant/issues) as "#12", please add "fixes #12" or "closes #12".

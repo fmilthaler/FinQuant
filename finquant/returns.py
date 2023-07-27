@@ -8,7 +8,8 @@ import pandas as pd
 def cumulative_returns(data, dividend=0):
     """Returns DataFrame with cumulative returns
 
-    :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_0} + \\text{dividend}}{\\text{price}_{t_0}}`
+    :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_0} + \\text{dividend}}
+    {\\text{price}_{t_0}}`
 
     :Input:
      :data: ``pandas.DataFrame`` with daily stock prices
@@ -39,7 +40,8 @@ def daily_log_returns(data):
     """
     Returns DataFrame with daily log returns
 
-    :math:`R_{\\log} = \\log\\left(1 + \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}\\right)`
+    :math:`R_{\\log} = \\log\\left(1 + \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}
+    {\\text{price}_{t_{i-1}}}\\right)`
 
     :Input:
      :data: ``pandas.DataFrame`` with daily stock prices
@@ -55,13 +57,13 @@ def historical_mean_return(data, freq=252):
     """Returns the mean return based on historical stock price data.
 
     :Input:
-     :data: ``pandas.DataFrame`` with daily stock prices
+     :data: ``pandas.DataFrame`` or ``pandas.Series`` with daily stock prices
      :freq: ``int`` (default= ``252``), number of trading days, default
              value corresponds to trading days in a year
 
     :Output:
-     :ret: a ``pandas.DataFrame`` of historical mean Returns.
+     :ret: a ``pandas.Series`` or ``numpy.float`` of historical mean Returns.
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data must be a pandas.DataFrame")
+    if not isinstance(data, (pd.DataFrame, pd.Series)):
+        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
     return daily_returns(data).mean() * freq

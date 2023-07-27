@@ -6,6 +6,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 
 import numpy as np
 import pandas as pd
+from scipy.stats import norm
 
 
 def weighted_mean(means, weights):
@@ -72,6 +73,34 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
     ):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
     return (exp_return - risk_free_rate) / float(volatility)
+
+
+def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
+    """Computes and returns the expected value at risk of an investment/assets.
+
+    :Input:
+     :investment: ``float``/``int``, total value of the investment
+     :mu: ``float``/``int`` average/mean return of the investment
+     :sigma: ``float``/``int`` standard deviation of the investment
+     :conf_level: ``float`` (default= ``0.95``), confidence level of the VaR
+
+    :Output:
+     :Value at Risk: ``float``, VaR of the investment
+    """
+    if not isinstance(
+        investment, (int, float, np.int32, np.int64, np.float32, np.float64)
+    ):
+        raise ValueError("investment is expected to be an integer or float.")
+    if not isinstance(mu, (int, float, np.int32, np.int64, np.float32, np.float64)):
+        raise ValueError("mu is expected to be an integer or float")
+    if not isinstance(sigma, (int, float, np.int32, np.int64, np.float32, np.float64)):
+        raise ValueError("sigma is expected to be an integer or float")
+    if not isinstance(conf_level, float):
+        raise ValueError("confidence level is expected to be a float.")
+    if conf_level >= 1 or conf_level <= 0:
+        raise ValueError("confidence level is expected to be between 0 and 1.")
+
+    return investment * (mu - sigma * norm.ppf(1 - conf_level))
 
 
 def annualised_portfolio_quantities(

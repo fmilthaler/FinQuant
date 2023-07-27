@@ -1,8 +1,7 @@
-numpy==1.19.3
-pandas>=0.24
-matplotlib>=1.5.1
+numpy>=1.21.0
+scipy>=1.2.0
+pandas>=2.0
+scikit-learn>=0.23.2
+matplotlib>=3.0
 quandl>=3.4.5
 yfinance>=0.1.43
-scipy>=1.2.0
-pytest>=2.8.7
-scikit-learn>=0.23.2
