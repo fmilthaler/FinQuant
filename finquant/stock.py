@@ -27,7 +27,10 @@ import numpy as np
 import pandas as pd
 
 from finquant.asset import Asset
-from finquant.returns import daily_returns, historical_mean_return
+from finquant.returns import (  # pylint: disable=W0611
+    daily_returns,
+    historical_mean_return,
+)
 
 
 class Stock(Asset):
@@ -76,7 +79,7 @@ class Stock(Asset):
         self.beta = beta
         return beta
 
-    def properties(self):
+    def properties(self) -> None:
         """Nicely prints out the properties of the stock: Expected Return,
         Volatility, Beta (optional), Skewness, Kurtosis as well as the ``Allocation`` (and other
         information provided in investmentinfo.)
