@@ -1,9 +1,11 @@
+from typing import List
+
 import setuptools
 
 
-def read_file(file_path):
-    with open(file_path, "r") as f:
-        return f.read()
+def read_file(file_path: str) -> str:
+    with open(file_path, "r") as file:
+        return file.read()
 
 
 # get version/release from file
@@ -14,7 +16,7 @@ long_description = read_file("README.md")
 
 
 # get dependencies
-def read_requirements(file_path):
+def read_requirements(file_path: str) -> List[str]:
     return [line.strip() for line in read_file(file_path).splitlines() if line.strip()]
 
 
