@@ -116,13 +116,13 @@ def downside_risk(data, weights, risk_free_rate=0.005):
     """
     wtd_daily_mean = weighted_mean_daily_returns(data, weights)
     under = np.where(wtd_daily_mean < risk_free_rate, wtd_daily_mean, np.NaN)
-    #print(len(under))
-    #print(type(under))
-    #print(under)
-    #print(pd.isnull(under))
+    # print(len(under))
+    # print(type(under))
+    # print(under)
+    # print(pd.isnull(under))
     under = under[np.logical_not(pd.isnull(under))]
     if len(under) == 0:
-       return np.NaN
+        return np.NaN
     downside = under - risk_free_rate
     return np.sqrt((downside * downside).mean())
 
