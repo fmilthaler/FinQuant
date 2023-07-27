@@ -3,14 +3,3 @@ line-length = 88
 
 [tool.isort]
 profile = "black"
-
-[mypy]
-python_version = "3.10"
-strict = false
-strict_optional = false
-ignore_missing_imports = false
-disallow_untyped_defs = false
-warn_unused_configs = false
-show_error_context = false
-warn_return_any = false
-warn_unused_ignores = false
