@@ -483,6 +483,9 @@ def test_plot_stocks():
 ########################################################
 
 def test_cluster_stocks_fail_0():
+    # TODO `d_pass[4]` probably refers to a different item now than it did
+    #  when the branch was originally created. Make sure we use the same item now:
+    #  probably requires using a different index now!
     d = d_pass[4]
     pf = build_portfolio(**d)
     with pytest.raises(Exception):
@@ -490,6 +493,9 @@ def test_cluster_stocks_fail_0():
 
 
 def test_cluster_stocks_fail_1():
+    # TODO `d_pass[4]` probably refers to a different item now than it did
+    #  when the branch was originally created. Make sure we use the same item now:
+    #  probably requires using a different index now!
     d = d_pass[4]
     pf = build_portfolio(**d)
     with pytest.raises(Exception):
@@ -500,6 +506,10 @@ def test_cluster_stocks_fail_1():
 ########################################################
 
 def test_cluster_stocks_pass_0():
+    # TODO `d_pass[4]` probably refers to a different item now than it did
+    #  when the branch was originally created. Make sure we use the same item now:
+    #  probably requires using a different index now!
     d = d_pass[4]
     pf = build_portfolio(**d)
     pf.cluster_stocks(n_clusters=4, verbose=True)
+    # TODO: insert some assert statements below
