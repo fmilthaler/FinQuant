@@ -1,6 +1,7 @@
 [MASTER]
 # Ignore certain files or directories during analysis
 ignore-paths=tests/,docs/,example/
+extension-pkg-whitelist=pydantic
 
 [REPORTS]
 # Set the output format for `pylint` messages (text, colorized, json, etc.)
@@ -17,6 +18,7 @@ disable=
     R0903,  # Too few public methods
     R0913,  # Too many arguments
     R0914,  # Too many local variables
+    W1514,  # Unspecified encoding,
 
 # Include additional pylint messages or message categories
 #enable=
