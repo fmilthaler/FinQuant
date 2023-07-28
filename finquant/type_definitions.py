@@ -49,8 +49,8 @@ ArrayOrDataFrame = Union[np.ndarray, pd.DataFrame]
 # Number types
 FloatNumber = Union[np.floating[Any], float]
 IntNumber = Union[np.integer[Any], int]
-NPFloat = np.floating[Any]
-NPInteger = np.integer[Any]
+# NPFloat = np.floating[Any]
+# NPInteger = np.integer[Any]
 Number = Union[IntNumber, FloatNumber]
 
 

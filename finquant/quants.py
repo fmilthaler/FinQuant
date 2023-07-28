@@ -15,11 +15,10 @@ from finquant.type_definitions import (
     ArrayOrSeries,
     FloatNumber,
     IntNumber,
-    NPFloat,
     Number,
 )
 
-def weighted_mean(means: ArrayOrSeries, weights: ArrayOrSeries) -> NPFloat:
+def weighted_mean(means: ArrayOrSeries, weights: ArrayOrSeries) -> FloatNumber:
     """Computes the weighted mean/average, or in the case of a
     financial portfolio, it can be used for the Expected Return
     of said portfolio.
@@ -35,11 +34,11 @@ def weighted_mean(means: ArrayOrSeries, weights: ArrayOrSeries) -> NPFloat:
         raise ValueError("weights is expected to be a numpy.ndarray/pandas.Series")
     if not isinstance(means, (np.ndarray, pd.Series)):
         raise ValueError("means is expected to be a numpy.ndarray/pandas.Series")
-    weighted_mu: NPFloat = np.sum(means * weights)
+    weighted_mu: FloatNumber = np.sum(means * weights)
     return weighted_mu
 
 
-def weighted_std(cov_matrix: ArrayOrDataFrame, weights: ArrayOrSeries) -> NPFloat:
+def weighted_std(cov_matrix: ArrayOrDataFrame, weights: ArrayOrSeries) -> FloatNumber:
     """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
@@ -57,7 +56,7 @@ def weighted_std(cov_matrix: ArrayOrDataFrame, weights: ArrayOrSeries) -> NPFloa
         raise ValueError(
             "cov_matrix is expected to be a numpy.ndarray/pandas.DataFrame"
         )
-    weighted_sigma: NPFloat = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+    weighted_sigma: FloatNumber = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
     return weighted_sigma
 
 
