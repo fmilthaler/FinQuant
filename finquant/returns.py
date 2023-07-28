@@ -15,12 +15,14 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_0} + \\text{dividend}}
     {\\text{price}_{t_0}}`
 
-    :Input:
-     :data: ``pandas.DataFrame`` with daily stock prices
-     :dividend: ``float`` (default= ``0``), paid dividend
+    :param data: A dataframe of daily stock prices
+    :type data: pandas.DataFrame
 
-    :Output:
-     :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
+    :param dividend: Paid dividend
+    :type dividend: :py:data:`~.finquant.type_definitions.NUMERIC`, default: 0
+
+    :return: A dataframe of cumulative returns of given stock prices.
+    :rtype: pandas.DataFrame
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
@@ -32,12 +34,11 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
 
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}`
 
-    :Input:
-     :data: ``pandas.DataFrame`` with daily stock prices
+    :param data: A dataframe of daily stock prices
+    :type data: pandas.DataFrame
 
-    :Output:
-     :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
-         of given stock prices.
+    :return: A dataframe of daily percentage change of returns of given stock prices.
+    :rtype: pandas.DataFrame
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
@@ -51,12 +52,11 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     :math:`R_{\\log} = \\log\\left(1 + \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}
     {\\text{price}_{t_{i-1}}}\\right)`
 
-    :Input:
-     :data: ``pandas.DataFrame`` with daily stock prices
+    :param data: A dataframe of daily stock prices
+    :type data: pandas.DataFrame
 
-    :Output:
-     :ret: a ``pandas.DataFrame`` of
-         log(1 + daily percentage change of Returns)
+    :return: A dataframe of daily log returns
+    :rtype: pandas.DataFrame
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
@@ -64,15 +64,16 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Series:
-    """Returns the mean return based on historical stock price data.
+    """Returns the *mean return* based on historical stock price data.
 
-    :Input:
-     :data: ``pandas.DataFrame`` or ``pandas.Series`` with daily stock prices
-     :freq: ``int`` (default= ``252``), number of trading days, default
-             value corresponds to trading days in a year
+    :param data: A dataframe of daily stock prices
+    :type data: :py:data:`~.finquant.type_definitions.SERIES_OR_DATAFRAME`
 
-    :Output:
-     :ret: a ``pandas.Series`` or ``numpy.float`` of historical mean Returns.
+    :param freq: Number of trading days in a year
+    :type freq: :py:data:`~.finquant.type_definitions.INT`, default: 252
+
+    :return: A series of historical mean returns
+    :rtype: pandas.Series
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
