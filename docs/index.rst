@@ -81,6 +81,7 @@ Table of Contents
     efficientfrontier
     montecarlo
     examples
+    typedefinitions
     license
     about
 
