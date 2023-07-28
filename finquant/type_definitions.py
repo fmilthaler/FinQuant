@@ -42,6 +42,7 @@ import pandas as pd
 # Type Aliases:
 ARRAY_OR_SERIES = Union[np.ndarray, pd.Series]
 ARRAY_OR_DATAFRAME = Union[np.ndarray, pd.DataFrame]
+# SERIES_OR_DATAFRAME = Union[pd.Series, pd.DataFrame]
 
 # Number types
 FLOAT = Union[np.floating[Any], float]

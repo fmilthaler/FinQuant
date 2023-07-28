@@ -4,8 +4,13 @@
 import numpy as np
 import pandas as pd
 
+from finquant.type_definitions import (
+    INT,
+    NUMERIC,
+)
 
-def cumulative_returns(data, dividend=0):
+
+def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFrame:
     """Returns DataFrame with cumulative returns
 
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_0} + \\text{dividend}}
@@ -18,10 +23,12 @@ def cumulative_returns(data, dividend=0):
     :Output:
      :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
     """
+    if not isinstance(data, (pd.DataFrame, pd.Series)):
+        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
     return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0])
 
 
-def daily_returns(data):
+def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
     """Returns DataFrame with daily returns (percentage change)
 
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}`
@@ -33,10 +40,12 @@ def daily_returns(data):
      :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
          of given stock prices.
     """
+    if not isinstance(data, (pd.DataFrame, pd.Series)):
+        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
     return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan)
 
 
-def daily_log_returns(data):
+def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     Returns DataFrame with daily log returns
 
@@ -50,10 +59,12 @@ def daily_log_returns(data):
      :ret: a ``pandas.DataFrame`` of
          log(1 + daily percentage change of Returns)
     """
+    if not isinstance(data, (pd.DataFrame, pd.Series)):
+        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
     return np.log(1 + daily_returns(data)).dropna(how="all")
 
 
-def historical_mean_return(data, freq=252):
+def historical_mean_return(data: pd.DataFrame, freq: INT = 252) -> pd.Series:
     """Returns the mean return based on historical stock price data.
 
     :Input:
