@@ -250,6 +250,7 @@ look at the examples provided in `./example`.
  - Expected Returns,
  - Volatility,
  - Sharpe Ratio,
+ - Sortino Ratio,
  - Value at Risk.
 
 It also shows how to extract individual stocks from the given portfolio. Moreover it shows how to compute and visualise:

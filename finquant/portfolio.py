@@ -17,8 +17,10 @@ and makes the most common quantitative calculations, such as:
 - daily log returns of the portfolio's stocks,
 - Expected (annualised) Return,
 - Volatility,
-- Sharpe Ratio,
+- Downside Risk,
 - Value at Risk,
+- Sharpe Ratio,
+- Sortino Ratio,
 - Beta parameter (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
@@ -93,8 +95,8 @@ class Portfolio:
         self.expected_return = None
         self.volatility = None
         self.downside_risk = None
-        self.sharpe = None
         self.var = None
+        self.sharpe = None
         self.sortino = None
         self.skew = None
         self.kurtosis = None
@@ -188,14 +190,6 @@ class Portfolio:
         - ``stocks``: ``dictionary``, adds an entry for ``stock``
         - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
-        Also, the following instance variables are (re-)computed:
-
-        - ``expected_return``: Expected Return of the portfolio
-        - ``volatility``: Volatility of the portfolio
-        - ``sharpe``: Sharpe Ratio of the portfolio
-        - ``skew``: Skewness of the portfolio's stocks
-        - ``kurtosis``: Kurtosis of the portfolio's stocks
-
         :Input:
          :stock: an object of ``Stock``
         """
@@ -236,8 +230,8 @@ class Portfolio:
             self.expected_return = self.comp_expected_return(freq=self.freq)
             self.volatility = self.comp_volatility(freq=self.freq)
             self.downside_risk = self.comp_downside_risk(freq=self.freq)
-            self.sharpe = self.comp_sharpe()
             self.var = self.comp_var()
+            self.sharpe = self.comp_sharpe()
             self.sortino = self.comp_sortino()
             self.skew = self._comp_skew()
             self.kurtosis = self._comp_kurtosis()
@@ -700,8 +694,11 @@ class Portfolio:
 
         - Expected Return,
         - Volatility,
+        - Downside Risk,
+        - Value at Risk (VaR),
+        - Confidence level of VaR,
         - Sharpe Ratio,
-        - Value at Risk,
+        - Sortino Ratio,
         - Beta (optional),
         - skewness,
         - Kurtosis
@@ -719,10 +716,10 @@ class Portfolio:
         string += f"\nPortfolio Expected Return: {self.expected_return:0.3f}"
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
         string += f"\nPortfolio Downside Risk: {self.downside_risk:0.3f}"
-        string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
-        string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
+        string += f"\nPortfolio Value at Risk: {self.var:0.3f}"        
         string += f"\nConfidence level of Value at Risk: "
         string += f"{self.var_confidence_level * 100:0.2f} %"
+        string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
         string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
@@ -1254,6 +1251,7 @@ def build_portfolio(**kwargs):
         or pf.volatility is None
         or pf.downside_risk is None
         or pf.sharpe is None
+        or pf.sortino is None
         or pf.skew is None
         or pf.kurtosis is None
     ):
