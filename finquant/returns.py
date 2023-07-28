@@ -76,5 +76,4 @@ def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Ser
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
-    res_historical_mean_return: FLOAT = daily_returns(data).mean() * freq
-    return res_historical_mean_return
+    return daily_returns(data).mean() * freq
