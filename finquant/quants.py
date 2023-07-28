@@ -24,12 +24,14 @@ def weighted_mean(means: ARRAY_OR_SERIES, weights: ARRAY_OR_SERIES) -> FLOAT:
     financial portfolio, it can be used for the Expected Return
     of said portfolio.
 
-    :Input:
-     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
+    :param means: An array of mean/average values
+    :type means: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
 
-    :Output:
-     :weighted mu: ``numpy.float64``: ``np.sum(means*weights)``
+    :param weights: An array of weights
+    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+
+    :return: The weighted mean as a floating point number: ``np.sum(means*weights)``
+    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
     """
     if not isinstance(weights, (np.ndarray, pd.Series)):
         raise ValueError("weights is expected to be a numpy.ndarray/pandas.Series")
@@ -43,13 +45,15 @@ def weighted_std(cov_matrix: ARRAY_OR_DATAFRAME, weights: ARRAY_OR_SERIES) -> FL
     """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
-    :Input:
-     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
+    :param cov_matrix: An array representing the covariance matrix
+    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
 
-    :Output:
-     :weighted sigma: ``numpy.float64``:
-         ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
+    :param weights: An array representing weights
+    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+
+    :return: Weighted sigma (standard deviation) as a floating point number:
+        ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
+    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
     """
     if not isinstance(weights, (np.ndarray, pd.Series)):
         raise ValueError("weights is expected to be a numpy.ndarray/pandas.Series")
@@ -66,13 +70,18 @@ def sharpe_ratio(
 ) -> FLOAT:
     """Computes the Sharpe Ratio
 
-    :Input:
-     :exp_return: ``int``/``float``, Expected Return of a portfolio
-     :volatility: ``int``/``float``, Volatility of a portfolio
-     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
+    :param exp_return: Expected Return of a portfolio
+    :type exp_return: :py:data:`~.finquant.type_definitions.NUMERIC`
 
-    :Output:
-     :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
+    :param volatility: Volatility of a portfolio
+    :type volatility: :py:data:`~.finquant.type_definitions.NUMERIC`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.type_definitions.FLOAT`, default: 0.005
+
+    :return: Sharpe Ratio as a floating point number:
+        ``(exp_return-risk_free_rate)/float(volatility)``
+    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
     """
     if not isinstance(exp_return, (np.number, int, float)):
         raise ValueError("exp_return is expected to be an integer or float.")
@@ -89,14 +98,20 @@ def value_at_risk(
 ) -> FLOAT:
     """Computes and returns the expected value at risk of an investment/assets.
 
-    :Input:
-     :investment: ``float``/``int``, total value of the investment
-     :mu: ``float``/``int`` average/mean return of the investment
-     :sigma: ``float``/``int`` standard deviation of the investment
-     :conf_level: ``float`` (default= ``0.95``), confidence level of the VaR
+    :param investment: Total value of the investment
+    :type investment: :py:data:`~.finquant.type_definitions.NUMERIC`
 
-    :Output:
-     :Value at Risk: ``float``, VaR of the investment
+    :param mu: Average/mean return of the investment
+    :type mu: :py:data:`~.finquant.type_definitions.NUMERIC`
+
+    :param sigma: Standard deviation of the investment
+    :type sigma: :py:data:`~.finquant.type_definitions.NUMERIC`
+
+    :param conf_level: Confidence level of the VaR
+    :type conf_level: :py:data:`~.finquant.type_definitions.FLOAT`, default: 0.95
+
+    :return: Value at Risk (VaR) of the investment: ``investment*(mu-sigma*norm.ppf(1-conf_level))``
+    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
     """
     if not isinstance(investment, (np.number, int, float)):
         raise ValueError("investment is expected to be an integer or float.")
@@ -122,17 +137,25 @@ def annualised_portfolio_quantities(
     """Computes and returns the expected annualised return, volatility
     and Sharpe Ratio of a portfolio.
 
-    :Input:
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
-     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
-     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
-     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
-     :freq: ``int`` (default= ``252``), number of trading days, default
-         value corresponds to trading days in a year
+    :param weights: An array of weights
+    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
 
-    :Output:
-     :(Expected Return, Volatility, Sharpe Ratio): tuple of those
-         three quantities
+    :param means: An array of mean/average values
+    :type means: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+
+    :param cov_matrix: Covariance matrix
+    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.type_definitions.FLOAT`, default: 0.005
+
+    :param freq: Number of trading days in a year
+    :type freq: :py:data:`~.finquant.type_definitions.INT`, default: 252
+
+    :return: Tuple of Expected Return, Volatility, Sharpe Ratio
+    :rtype: Tuple[:py:data:`~.finquant.type_definitions.NUMERIC`,
+        :py:data:`~.finquant.type_definitions.FLOAT`,
+        :py:data:`~.finquant.type_definitions.FLOAT`]
     """
     if not isinstance(freq, int):
         raise ValueError("freq is expected to be an integer.")
