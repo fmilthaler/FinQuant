@@ -25,10 +25,9 @@ This module requires the following external libraries:
 
 Usage Example:
 --------------
-from finquant.type_definitions import ArrayOrDataFrame, Number
 
-
->>> # Use the defined type aliases
+>>> from finquant.type_definitions import ArrayOrDataFrame, Number
+# Use the defined type aliases
 def process_data(data: ArrayOrDataFrame) -> FloatNumber:
     # Process the data and return a numeric result
     return 5.0
