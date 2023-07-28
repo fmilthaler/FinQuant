@@ -4,16 +4,14 @@ and various numeric types in Python, utilizing the 'numpy', 'numpy.typing', and 
 
 Type Aliases:
 --------------
-- ``ArrayOrSeries``: A type alias representing either a NumPy ``ndarray`` or a pandas ``Series``.
-- ``ArrayOrDataFrame``: A type alias representing either a NumPy ``ndarray`` or a pandas ``DataFrame``.
+- ``ARRAY_OR_SERIES``: A type alias representing either a NumPy ``ndarray`` or a pandas ``Series``.
+- ``ARRAY_OR_DATAFRAME``: A type alias representing either a NumPy ``ndarray`` or a pandas ``DataFrame``.
 
 Number Types:
 -------------
-- ``FloatNumber``: A type alias representing either a NumPy floating-point number or a Python float.
-- ``NPFloat``: A type alias representing a NumPy floating-point number.
-- ``NPInteger``: A type alias representing a NumPy integer.
-- ``IntNumber``: A type alias representing either a NumPy integer or a Python int.
-- ``Number``: A type alias representing either an ``IntNumber`` or a ``FloatNumber``.
+- ``FLOAT``: A type alias representing either a NumPy floating-point number or a Python float.
+- ``INT``: A type alias representing either a NumPy integer or a Python int.
+- ``NUMERIC``: A type alias representing either an ``INT`` or a ``FLOAT``.
 
 Dependencies:
 -------------
@@ -26,9 +24,9 @@ This module requires the following external libraries:
 Usage Example:
 --------------
 
->>> from finquant.type_definitions import ArrayOrDataFrame, Number
+>>> from finquant.type_definitions import ARRAY_OR_DATAFRAME, NUMERIC
 # Use the defined type aliases
-def process_data(data: ArrayOrDataFrame) -> FloatNumber:
+def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
     # Process the data and return a numeric result
     return 5.0
 
@@ -42,20 +40,19 @@ import numpy.typing as npt
 import pandas as pd
 
 # Type Aliases:
-# ArrayOrSeries = Union[npt.ArrayLike, pd.Series]
-ArrayOrSeries = Union[np.ndarray, pd.Series]
-ArrayOrDataFrame = Union[np.ndarray, pd.DataFrame]
+ARRAY_OR_SERIES = Union[np.ndarray, pd.Series]
+ARRAY_OR_DATAFRAME = Union[np.ndarray, pd.DataFrame]
 
 # Number types
-FloatNumber = Union[np.floating[Any], float]
-IntNumber = Union[np.integer[Any], int]
+FLOAT = Union[np.floating[Any], float]
+INT = Union[np.integer[Any], int]
 # NPFloat = np.floating[Any]
 # NPInteger = np.integer[Any]
-Number = Union[IntNumber, FloatNumber]
+NUMERIC = Union[INT, FLOAT]
 
 
 
-def mytest(x: Number, y: float) -> FloatNumber:
+def mytest(x: NUMERIC, y: float) -> FLOAT:
     """
     Calculate the result of a custom test function.
 
@@ -82,10 +79,10 @@ def mytest(x: Number, y: float) -> FloatNumber:
     >>> mytest(7.5, 1.2)
     5.0
     """
-    res: FloatNumber = float(5)
+    res: FLOAT = float(5)
     return res
 
-def mytest2(x: Number, z: FloatNumber, y: float = 3.14) -> FloatNumber:
+def mytest2(x: NUMERIC, z: FLOAT, y: float = 3.14) -> FLOAT:
     """
     This is a brief description of the function.
 
@@ -106,5 +103,5 @@ def mytest2(x: Number, z: FloatNumber, y: float = 3.14) -> FloatNumber:
     >>> myfunction(42, 'hello')
     3.14
     """
-    res: FloatNumber = float(5)
+    res: FLOAT = float(5)
     return res
