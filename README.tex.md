@@ -249,10 +249,8 @@ look at the examples provided in `./example`.
 `./example/Example-Analysis.py`: This example shows how to use an instance of `finquant.portfolio.Portfolio`, get the portfolio's quantities, such as
  - Expected Returns,
  - Volatility,
- - Downside Risk,  
- - Value at Risk, 
  - Sharpe Ratio,
- - Sortino Ratio.
+ - Value at Risk.
 
 It also shows how to extract individual stocks from the given portfolio. Moreover it shows how to compute and visualise:
  - the different Returns provided by the module `finquant.returns`,
