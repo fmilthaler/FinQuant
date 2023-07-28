@@ -716,7 +716,7 @@ class Portfolio:
         string += f"\nPortfolio Expected Return: {self.expected_return:0.3f}"
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
         string += f"\nPortfolio Downside Risk: {self.downside_risk:0.3f}"
-        string += f"\nPortfolio Value at Risk: {self.var:0.3f}"        
+        string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
         string += f"\nConfidence level of Value at Risk: "
         string += f"{self.var_confidence_level * 100:0.2f} %"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
