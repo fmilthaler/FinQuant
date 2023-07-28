@@ -80,8 +80,8 @@ def sharpe_ratio(
         raise ValueError("volatility is expected to be an integer or float.")
     if not isinstance(risk_free_rate, (np.number, int, float)):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
-    sharpe_ratio: FloatNumber = (exp_return - risk_free_rate) / float(volatility)
-    return sharpe_ratio
+    res_sharpe_ratio: FloatNumber = (exp_return - risk_free_rate) / float(volatility)
+    return res_sharpe_ratio
 
 
 def value_at_risk(
@@ -108,8 +108,8 @@ def value_at_risk(
         raise ValueError("confidence level is expected to be a float.")
     if conf_level >= 1 or conf_level <= 0:
         raise ValueError("confidence level is expected to be between 0 and 1.")
-    value_at_risk: FloatNumber = investment * (mu - sigma * norm.ppf(1 - conf_level))
-    return value_at_risk
+    res_value_at_risk: FloatNumber = investment * (mu - sigma * norm.ppf(1 - conf_level))
+    return res_value_at_risk
 
 
 def annualised_portfolio_quantities(
