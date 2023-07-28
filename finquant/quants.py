@@ -24,10 +24,10 @@ def weighted_mean(means: ARRAY_OR_SERIES, weights: ARRAY_OR_SERIES) -> FLOAT:
     financial portfolio, it can be used for the Expected Return
     of said portfolio.
 
-    :param means: An array of mean/average values
+    :param means: An array representing mean/average values
     :type means: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
 
-    :param weights: An array of weights
+    :param weights: An array representing weights
     :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
 
     :return: The weighted mean as a floating point number: ``np.sum(means*weights)``
@@ -45,7 +45,7 @@ def weighted_std(cov_matrix: ARRAY_OR_DATAFRAME, weights: ARRAY_OR_SERIES) -> FL
     """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
-    :param cov_matrix: An array representing the covariance matrix
+    :param cov_matrix: Covariance matrix
     :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
 
     :param weights: An array representing weights

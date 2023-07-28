@@ -16,28 +16,22 @@ Custom Types
 ArrayLike Types
 ===============
 
-.. autodata:: finquant.type_definitions.ArrayOrSeries
+.. autodata:: finquant.type_definitions.ARRAY_OR_SERIES
    :annotation:
 
-.. autodata:: finquant.type_definitions.ArrayOrDataFrame
+.. autodata:: finquant.type_definitions.ARRAY_OR_DATAFRAME
    :annotation:
 
 Numeric Types
 =============
 
-.. autodata:: finquant.type_definitions.FloatNumber
+.. autodata:: finquant.type_definitions.FLOAT
    :annotation:
 
-.. autodata:: finquant.type_definitions.NPInteger
+.. autodata:: finquant.type_definitions.INT
    :annotation:
 
-.. autodata:: finquant.type_definitions.NPFloat
-   :annotation:
-
-.. autodata:: finquant.type_definitions.IntNumber
-   :annotation:
-
-.. autodata:: finquant.type_definitions.Number
+.. autodata:: finquant.type_definitions.NUMERIC
    :annotation:
 
 
