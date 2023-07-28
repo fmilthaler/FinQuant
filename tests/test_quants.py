@@ -70,10 +70,9 @@ def test_annualised_portfolio_quantities():
     x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9])
     y = np.array([9, 8, 7, 6, 5, 4, 3, 2, 1])
     Sigma = np.cov(x, y)
-    weights = np.array([1, 1])
     mean = np.array([1, 2])
     weights = np.array([-3, 5])
     res = annualised_portfolio_quantities(weights, mean, Sigma, 0, 252)
-    orig = (1764, 347.79304190854657, 5.071981861166303)
+    orig = (1764.0, 347.79304190854657, 5.071981861166303)
     for i in range(len(res)):
         assert abs(res[i] - orig[i]) <= 1e-15

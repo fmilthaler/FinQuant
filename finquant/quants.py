@@ -4,12 +4,22 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 """
 
 
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
+from finquant.type_definitions import (
+    ArrayOrDataFrame,
+    ArrayOrSeries,
+    Float64,
+    FloatNumber,
+    IntNumber,
+    Number,
+)
 
-def weighted_mean(means, weights):
+def weighted_mean(means: ArrayOrSeries, weights: ArrayOrSeries) -> Float64:
     """Computes the weighted mean/average, or in the case of a
     financial portfolio, it can be used for the Expected Return
     of said portfolio.
@@ -19,16 +29,17 @@ def weighted_mean(means, weights):
      :weights: ``numpy.ndarray``/``pd.Series`` of weights
 
     :Output:
-     :weighted mu: ``numpy.ndarray``: ``(np.sum(means*weights))``
+     :weighted mu: ``numpy.float64``: ``np.sum(means*weights)``
     """
-    if not isinstance(weights, (pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a pandas.Series/np.ndarray")
-    if not isinstance(means, (pd.Series, np.ndarray)):
-        raise ValueError("means is expected to be a pandas.Series/np.ndarray")
-    return np.sum(means * weights)
+    if not isinstance(weights, (np.ndarray, pd.Series)):
+        raise ValueError("weights is expected to be a numpy.ndarray/pandas.Series")
+    if not isinstance(means, (np.ndarray, pd.Series)):
+        raise ValueError("means is expected to be a numpy.ndarray/pandas.Series")
+    weighted_mu: Float64 = np.sum(means * weights)
+    return weighted_mu
 
 
-def weighted_std(cov_matrix, weights):
+def weighted_std(cov_matrix: ArrayOrDataFrame, weights: ArrayOrSeries) -> Float64:
     """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
@@ -37,45 +48,45 @@ def weighted_std(cov_matrix, weights):
      :weights: ``numpy.ndarray``/``pd.Series`` of weights
 
     :Output:
-     :weighted sigma: ``numpy.ndarray``:
+     :weighted sigma: ``numpy.float64``:
          ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
     """
-    if not isinstance(weights, (pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a pandas.Series, np.array")
-    if not isinstance(cov_matrix, (np.ndarray, (np.ndarray, pd.DataFrame))):
+    if not isinstance(weights, (np.ndarray, pd.Series)):
+        raise ValueError("weights is expected to be a numpy.ndarray/pandas.Series")
+    if not isinstance(cov_matrix, (np.ndarray, pd.DataFrame)):
         raise ValueError(
             "cov_matrix is expected to be a numpy.ndarray/pandas.DataFrame"
         )
-    return np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+    weighted_sigma: Float64 = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+    return weighted_sigma
 
 
-def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
+def sharpe_ratio(
+    exp_return: Number, volatility: Number, risk_free_rate: FloatNumber = 0.005
+) -> FloatNumber:
     """Computes the Sharpe Ratio
 
     :Input:
      :exp_return: ``int``/``float``, Expected Return of a portfolio
      :volatility: ``int``/``float``, Volatility of a portfolio
-     :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
+     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
 
     :Output:
      :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
     """
-    if not isinstance(
-        exp_return, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
+    if not isinstance(exp_return, (np.number, int, float)):
         raise ValueError("exp_return is expected to be an integer or float.")
-    if not isinstance(
-        volatility, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
+    if not isinstance(volatility, (np.number, int, float)):
         raise ValueError("volatility is expected to be an integer or float.")
-    if not isinstance(
-        risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
+    if not isinstance(risk_free_rate, (np.number, int, float)):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
-    return (exp_return - risk_free_rate) / float(volatility)
+    sharpe_ratio: FloatNumber = (exp_return - risk_free_rate) / float(volatility)
+    return sharpe_ratio
 
 
-def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
+def value_at_risk(
+    investment: Number, mu: Number, sigma: Number, conf_level: FloatNumber = 0.95
+) -> FloatNumber:
     """Computes and returns the expected value at risk of an investment/assets.
 
     :Input:
@@ -87,25 +98,27 @@ def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
     :Output:
      :Value at Risk: ``float``, VaR of the investment
     """
-    if not isinstance(
-        investment, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
+    if not isinstance(investment, (np.number, int, float)):
         raise ValueError("investment is expected to be an integer or float.")
-    if not isinstance(mu, (int, float, np.int32, np.int64, np.float32, np.float64)):
+    if not isinstance(mu, (np.number, int, float)):
         raise ValueError("mu is expected to be an integer or float")
-    if not isinstance(sigma, (int, float, np.int32, np.int64, np.float32, np.float64)):
+    if not isinstance(sigma, (np.number, int, float)):
         raise ValueError("sigma is expected to be an integer or float")
-    if not isinstance(conf_level, float):
+    if not isinstance(conf_level, (float, np.floating)):
         raise ValueError("confidence level is expected to be a float.")
     if conf_level >= 1 or conf_level <= 0:
         raise ValueError("confidence level is expected to be between 0 and 1.")
-
-    return investment * (mu - sigma * norm.ppf(1 - conf_level))
+    value_at_risk: FloatNumber = investment * (mu - sigma * norm.ppf(1 - conf_level))
+    return value_at_risk
 
 
 def annualised_portfolio_quantities(
-    weights, means, cov_matrix, risk_free_rate=0.005, freq=252
-):
+    weights: ArrayOrSeries,
+    means: ArrayOrSeries,
+    cov_matrix: ArrayOrDataFrame,
+    risk_free_rate: FloatNumber = 0.005,
+    freq: IntNumber = 252,
+) -> Tuple[Number, FloatNumber, FloatNumber]:
     """Computes and returns the expected annualised return, volatility
     and Sharpe Ratio of a portfolio.
 
