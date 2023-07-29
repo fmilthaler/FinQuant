@@ -75,6 +75,7 @@ Table of Contents
 
     quickstart
     portfolio
+    assets
     quants
     returns
     movingaverage
