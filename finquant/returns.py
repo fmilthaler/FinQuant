@@ -1,12 +1,14 @@
 """The module provides functions to compute different kinds of returns of stocks."""
 
 
+from typing import Union
 import numpy as np
 import pandas as pd
 
 from finquant.type_definitions import (
     INT,
     NUMERIC,
+    SERIES_OR_DATAFRAME
 )
 
 
@@ -64,7 +66,7 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     return np.log(1 + daily_returns(data)).dropna(how="all")
 
 
-def historical_mean_return(data: pd.DataFrame, freq: INT = 252) -> pd.Series:
+def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Series:
     """Returns the mean return based on historical stock price data.
 
     :Input:
