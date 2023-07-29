@@ -22,6 +22,9 @@ ArrayLike Types
 .. autodata:: finquant.type_definitions.ARRAY_OR_DATAFRAME
    :annotation:
 
+.. autodata:: finquant.type_definitions.SERIES_OR_DATAFRAME
+   :annotation:
+
 Numeric Types
 =============
 
