@@ -13,11 +13,11 @@ and add specific functionality tailored to their respective types.
 
 """
 
-
 import numpy as np
 import pandas as pd
 
 from finquant.returns import daily_returns, historical_mean_return
+from finquant.type_definitions import FLOAT, INT
 
 
 class Asset:
@@ -45,6 +45,14 @@ class Asset:
 
     """
 
+    data: pd.Series
+    name: str
+    asset_type: str
+    expected_return: pd.Series
+    volatility: FLOAT
+    skew: FLOAT
+    kurtosis: FLOAT
+
     def __init__(
         self, data: pd.Series, name: str, asset_type: str = "Market index"
     ) -> None:
@@ -71,7 +79,7 @@ class Asset:
         """
         return daily_returns(self.data)
 
-    def comp_expected_return(self, freq=252) -> float:
+    def comp_expected_return(self, freq: INT = 252) -> pd.Series:
         """Computes the Expected Return of the asset.
         See ``finquant.returns.historical_mean_return``.
 
@@ -84,7 +92,7 @@ class Asset:
         """
         return historical_mean_return(self.data, freq=freq)
 
-    def comp_volatility(self, freq=252) -> float:
+    def comp_volatility(self, freq: INT = 252) -> FLOAT:
         """Computes the Volatility of the asset.
 
         :Input:
@@ -94,17 +102,20 @@ class Asset:
         :Output:
          :volatility: ``float``, Volatility of asset.
         """
-        return self.comp_daily_returns().std() * np.sqrt(freq)
+        volatility: FLOAT = self.comp_daily_returns().std() * np.sqrt(freq)
+        return volatility
 
-    def _comp_skew(self) -> float:
+    def _comp_skew(self) -> FLOAT:
         """Computes and returns the skewness of the asset."""
-        return self.data.skew()
+        skew: FLOAT = self.data.skew()
+        return skew
 
-    def _comp_kurtosis(self) -> float:
+    def _comp_kurtosis(self) -> FLOAT:
         """Computes and returns the kurtosis of the asset."""
-        return self.data.kurt()
+        kurtosis: FLOAT = self.data.kurt()
+        return kurtosis
 
-    def properties(self):
+    def properties(self) -> None:
         """Nicely prints out the properties of the asset,
         with customized messages based on the asset type.
         """
@@ -118,7 +129,7 @@ class Asset:
         string += "\n" + "-" * 50
         print(string)
 
-    def __str__(self):
+    def __str__(self) -> str:
         # print short description
         string = f"Contains information about {self.asset_type}: {self.name}."
         return string
