@@ -13,9 +13,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from finquant.type_definitions import SERIES_OR_DATAFRAME
+
 
 def compute_ma(
-    data, fun: Callable, spans: List[int], plot: bool = True
+    data: SERIES_OR_DATAFRAME,
+    fun: Callable[[SERIES_OR_DATAFRAME, int], pd.Series],
+    spans: List[int],
+    plot: bool = True,
 ) -> pd.DataFrame:
     """Computes a band of moving averages (sma or ema, depends on the input argument
     `fun`) for a number of different time windows. If `plot` is `True`, it also
@@ -33,7 +38,7 @@ def compute_ma(
          moving average.
 
     :Output:
-     :ma: pandas.DataFrame with moving averages of given data.
+     :m_a: pandas.DataFrame with moving averages of given data.
     """
     if not isinstance(data, (pd.Series, pd.DataFrame)):
         raise ValueError(
@@ -45,7 +50,7 @@ def compute_ma(
         m_a = m_a.to_frame()
     # compute moving averages
     for span in spans:
-        m_a[str(span) + "d"] = fun(data, span=span)
+        m_a[str(span) + "d"] = fun(data, span)
     if plot:
         fig = plt.figure()
         axis = fig.add_subplot(111)
@@ -156,7 +161,11 @@ def ema_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     return data.ewm(span=span, adjust=False, min_periods=span).std()
 
 
-def plot_bollinger_band(data, fun: Callable, span: int = 100) -> None:
+def plot_bollinger_band(
+    data: pd.DataFrame,
+    fun: Callable[[pd.DataFrame, int], pd.DataFrame],
+    span: int = 100,
+) -> None:
     """Computes and visualises a Bolling Band.
 
     :Input:
