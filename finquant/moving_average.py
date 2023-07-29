@@ -39,32 +39,32 @@ def compute_ma(
         raise ValueError(
             "data is expected to be of type pandas.Series or pandas.DataFrame"
         )
-    ma = data.copy(deep=True)
+    m_a = data.copy(deep=True)
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
-    if isinstance(ma, pd.Series):
-        ma = ma.to_frame()
+    if isinstance(m_a, pd.Series):
+        m_a = m_a.to_frame()
     # compute moving averages
     for span in spans:
-        ma[str(span) + "d"] = fun(data, span=span)
+        m_a[str(span) + "d"] = fun(data, span=span)
     if plot:
         fig = plt.figure()
-        ax = fig.add_subplot(111)
+        axis = fig.add_subplot(111)
         # plot moving averages
-        ma.plot(ax=ax)
+        m_a.plot(ax=axis)
         # Create buy/sell signals of shortest and longest span
         minspan = min(spans)
         minlabel = str(minspan) + "d"
         maxspan = max(spans)
         maxlabel = str(maxspan) + "d"
-        signals = ma.copy(deep=True)
+        signals = m_a.copy(deep=True)
         signals["diff"] = 0.0
         signals["diff"][minspan:] = np.where(
-            ma[minlabel][minspan:] > ma[maxlabel][minspan:], 1.0, 0.0
+            m_a[minlabel][minspan:] > m_a[maxlabel][minspan:], 1.0, 0.0
         )
         # Generate trading orders
         signals["signal"] = signals["diff"].diff()
         # marker for buy signal
-        ax.plot(
+        axis.plot(
             signals.loc[signals["signal"] == 1.0].index.values,
             signals[minlabel][signals["signal"] == 1.0].values,
             marker="^",
@@ -73,7 +73,7 @@ def compute_ma(
             label="buy signal",
         )
         # marker for sell signal
-        ax.plot(
+        axis.plot(
             signals.loc[signals["signal"] == -1.0].index.values,
             signals[minlabel][signals["signal"] == -1.0].values,
             marker="v",
@@ -89,7 +89,7 @@ def compute_ma(
         # axis labels
         plt.xlabel(data.index.name)
         plt.ylabel("Price")
-    return ma
+    return m_a
 
 
 def sma(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
@@ -178,26 +178,26 @@ def plot_bollinger_band(data, fun: Callable, span: int = 100) -> None:
     if isinstance(data, pd.Series):
         data = data.to_frame()
     # compute moving average
-    ma = compute_ma(data, fun, [span], plot=False)
+    m_a = compute_ma(data, fun, [span], plot=False)
     # create dataframes for bollinger band object and standard
     # deviation
-    bol = ma.copy(deep=True)
-    std = ma.copy(deep=True)
+    bol = m_a.copy(deep=True)
+    std = m_a.copy(deep=True)
     # get column label
     collabel = data.columns.values[0]
     # get standard deviation
-    if fun == sma:
+    if fun is sma:
         std[str(span) + "d std"] = sma_std(data[collabel], span=span)
-    elif fun == ema:
+    elif fun is ema:
         std[str(span) + "d std"] = ema_std(data[collabel], span=span)
     # compute upper and lower band
     bol["Lower Band"] = bol[str(span) + "d"] - (std[str(span) + "d std"] * 2)
     bol["Upper Band"] = bol[str(span) + "d"] + (std[str(span) + "d std"] * 2)
     # plot
     fig = plt.figure()
-    ax = fig.add_subplot(111)
+    axis = fig.add_subplot(111)
     # bollinger band
-    ax.fill_between(
+    axis.fill_between(
         data.index.values,
         bol["Upper Band"],
         bol["Lower Band"],
@@ -205,8 +205,8 @@ def plot_bollinger_band(data, fun: Callable, span: int = 100) -> None:
         label="Bollinger Band",
     )
     # plot data and moving average
-    bol[collabel].plot(ax=ax)
-    bol[str(span) + "d"].plot(ax=ax)
+    bol[collabel].plot(ax=axis)
+    bol[str(span) + "d"].plot(ax=axis)
     # title
     title = (
         "Bollinger Band of +/- 2$\\sigma$, Moving Average of "
