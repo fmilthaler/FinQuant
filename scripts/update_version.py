@@ -2,6 +2,7 @@ import argparse
 import re
 import subprocess
 import sys
+from typing import Optional, Tuple
 
 # Define the version increments based on the change type (patch, minor, major)
 version_increments = {
@@ -19,15 +20,19 @@ branch_prefixes = {
 
 
 class VersionFileReadError(Exception):
-    pass
+    """
+    Exception raised when there is an error reading a version file.
+    """
 
 
 class VersionUpdateError(Exception):
-    pass
+    """
+    Exception raised when an error occurs during the update of a version.
+    """
 
 
 # Function to increment the version based on the branch name pattern
-def increment_version(version, branch_name):
+def increment_version(version: str, branch_name: str) -> str:
     for change_type, prefixes in branch_prefixes.items():
         prefixes = prefixes or []  # If None, set to an empty list
         for prefix in prefixes:
@@ -36,21 +41,18 @@ def increment_version(version, branch_name):
                 return (
                     increment_version_by(version, increment) if increment else version
                 )
-
     return version
 
 
 # Function to increment the version by a given increment (e.g., "0.0.1" or "0.1.0" or "1.0.0")
-def increment_version_by(version, increment):
+def increment_version_by(version: str, increment: str) -> str:
     version_parts = version.split(".")
     increment_parts = increment.split(".")
 
     new_version_parts = []
-    for i in range(len(version_parts)):
+    for i, part in enumerate(version_parts):
         if i < len(increment_parts):
-            new_version_parts.append(
-                str(int(version_parts[i]) + int(increment_parts[i]))
-            )
+            new_version_parts.append(str(int(part) + int(increment_parts[i])))
         else:
             new_version_parts.append("0")
 
@@ -67,21 +69,19 @@ def increment_version_by(version, increment):
 
 
 # Read the version from the file
-def read_version_from_file(filename):
+def read_version_from_file(filename: str) -> Optional[str]:
     with open(filename, "r") as file:
         version_content = file.read()
         version_match = re.search(r"version=(\d+\.\d+\.\d+)", version_content)
-
         if version_match:
             version = version_match.group(1)
         else:
             version = None
-
         return version
 
 
 # Function to checkout a specific branch
-def checkout_branch(branch_name):
+def checkout_branch(branch_name: str) -> None:
     # Fetch the latest changes from the remote repository
     subprocess.run(["git", "fetch", "origin", branch_name], check=True)
 
@@ -90,7 +90,7 @@ def checkout_branch(branch_name):
 
 
 # Function to get version number from a specific branch
-def get_version_from_branch(filename, branch_name):
+def get_version_from_branch(filename: str, branch_name: str) -> Optional[str]:
     # Checkout branch
     checkout_branch(branch_name)
 
@@ -102,8 +102,8 @@ def get_version_from_branch(filename, branch_name):
 
 
 # Function to compare 2 strings of version numbers
-def compare_versions(version1, version2):
-    def parse_version(version_str):
+def compare_versions(version1: str, version2: str) -> int:
+    def parse_version(version_str: str) -> Tuple[int, ...]:
         return tuple(map(int, version_str.split(".")))
 
     parsed_version1 = parse_version(version1)
@@ -118,7 +118,7 @@ def compare_versions(version1, version2):
 
 
 # Write the updated version back to the file
-def write_version_to_file(filename, version):
+def write_version_to_file(filename: str, version: str) -> None:
     with open(filename, "r+") as file:
         file_content = file.read()
         updated_content = re.sub(
@@ -134,7 +134,7 @@ def write_version_to_file(filename, version):
 
 
 # Function to parse command-line arguments
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Update version based on branch name.")
     parser.add_argument("base_branch", help="Base branch name")
     parser.add_argument("source_branch", help="Source branch name")
@@ -142,7 +142,7 @@ def parse_args():
 
 
 # Main function
-def main():
+def main() -> None:
     args = parse_args()
     base_branch_name = args.base_branch
     source_branch_name = args.source_branch
