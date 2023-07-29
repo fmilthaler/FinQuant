@@ -3,12 +3,13 @@ This module defines type aliases and utility functions for working with arrays, 
 and various numeric types in Python, utilizing the 'numpy', 'numpy.typing', and 'pandas' libraries.
 
 Type Aliases:
---------------
+-------------
 - ``ARRAY_OR_SERIES``: A type alias representing either a NumPy ``ndarray`` or a pandas ``Series``.
 - ``ARRAY_OR_DATAFRAME``: A type alias representing either a NumPy ``ndarray`` or a pandas ``DataFrame``.
+- ``SERIES_OR_DATAFRAME``: A type alias representing either a pandas ``Series`` or a pandas ``DataFrame``.
 
-Number Types:
--------------
+Numeric Types:
+--------------
 - ``FLOAT``: A type alias representing either a NumPy floating-point number or a Python float.
 - ``INT``: A type alias representing either a NumPy integer or a Python int.
 - ``NUMERIC``: A type alias representing either an ``INT`` or a ``FLOAT``.
@@ -44,7 +45,7 @@ ARRAY_OR_SERIES = Union[np.ndarray, pd.Series]
 ARRAY_OR_DATAFRAME = Union[np.ndarray, pd.DataFrame]
 SERIES_OR_DATAFRAME = Union[pd.Series, pd.DataFrame]
 
-# Number types
+# Numeric types
 FLOAT = Union[np.floating[Any], float]
 INT = Union[np.integer[Any], int]
 # NPFloat = np.floating[Any]
