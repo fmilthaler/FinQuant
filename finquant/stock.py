@@ -23,14 +23,12 @@ functionality and attributes for financial assets.
 
 """
 
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 
 from finquant.asset import Asset
-from finquant.returns import (  # pylint: disable=W0611
-    daily_returns,
-    historical_mean_return,
-)
 
 
 class Stock(Asset):
@@ -59,7 +57,7 @@ class Stock(Asset):
         self.investmentinfo = investmentinfo
         super().__init__(data, self.name, asset_type="Stock")
         # beta parameter of stock (CAPM)
-        self.beta = None
+        self.beta: Optional[float] = None
 
     def comp_beta(self, market_daily_returns: pd.Series) -> float:
         """Compute and return the Beta parameter of the stock.
@@ -75,7 +73,7 @@ class Stock(Asset):
             market_daily_returns.to_frame()[market_daily_returns.name],
         )
 
-        beta = cov_mat[0, 1] / cov_mat[1, 1]
+        beta = float(cov_mat[0, 1] / cov_mat[1, 1])
         self.beta = beta
         return beta
 
