@@ -65,7 +65,7 @@ class Stock(Asset):
         self.beta: Optional[float] = None
 
     def comp_beta(self, market_daily_returns: pd.Series) -> float:
-        """Compute and return the Beta parameter of the stock.
+        """Computes and returns the Beta parameter of the stock.
 
         :param market_daily_returns: Daily returns of the market index.
         :return: Beta parameter of the stock
