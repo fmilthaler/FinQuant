@@ -18,6 +18,7 @@ from finquant.type_definitions import (
     NUMERIC,
 )
 
+
 def weighted_mean(means: ARRAY_OR_SERIES, weights: ARRAY_OR_SERIES) -> FLOAT:
     """Computes the weighted mean/average, or in the case of a
     financial portfolio, it can be used for the Expected Return

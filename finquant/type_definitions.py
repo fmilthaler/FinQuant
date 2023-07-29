@@ -53,7 +53,6 @@ INT = Union[np.integer[Any], int]
 NUMERIC = Union[INT, FLOAT]
 
 
-
 def mytest(x: NUMERIC, y: float) -> FLOAT:
     """
     Calculate the result of a custom test function.
@@ -83,6 +82,7 @@ def mytest(x: NUMERIC, y: float) -> FLOAT:
     """
     res: FLOAT = float(5)
     return res
+
 
 def mytest2(x: NUMERIC, z: FLOAT, y: float = 3.14) -> FLOAT:
     """

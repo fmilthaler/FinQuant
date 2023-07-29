@@ -2,14 +2,11 @@
 
 
 from typing import Union
+
 import numpy as np
 import pandas as pd
 
-from finquant.type_definitions import (
-    INT,
-    NUMERIC,
-    SERIES_OR_DATAFRAME
-)
+from finquant.type_definitions import INT, NUMERIC, SERIES_OR_DATAFRAME
 
 
 def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFrame:
