@@ -1,7 +1,9 @@
 """This module is the **core** of `FinQuant`. It provides
 
 - a public class ``Portfolio`` that holds and calculates quantities of a financial
-  portfolio, which is a collection of ``Stock`` instances (the ``Stock`` class is provided in ``finquant.stock``).
+  portfolio, which is a collection of ``Stock`` instances (the ``Stock`` class is
+  provided in ``finquant.stock`` and is a child class of ``Asset`` defined in
+  ``finquant.asset``).
 - a public function ``build_portfolio()`` that automatically constructs and returns
   an instance of ``Portfolio`` and instances of ``Stock``. 
   The relevant stock data is either retrieved through `quandl`/`yfinance` or provided by the user as a
