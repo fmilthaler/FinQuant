@@ -1,8 +1,10 @@
 """The module provides a class ``MonteCarlo`` which is an implementation of the
 Monte Carlo method and a class ``MonteCarloOpt`` which allows the user to perform a
-Monte Carlo run to find optimised financial portfolios, given an intial portfolio.
+Monte Carlo run to find optimised financial portfolios, given an initial portfolio.
 """
 
+
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -14,7 +16,9 @@ from finquant.quants import annualised_portfolio_quantities
 class MonteCarlo:
     """An object to perform a Monte Carlo run/simulation."""
 
-    def __init__(self, num_trials=1000):
+    num_trials: int
+
+    def __init__(self, num_trials: int = 1000):
         """
         :Input:
          :num_trials: ``int`` (default: ``1000``), number of iterations of the
@@ -22,7 +26,9 @@ class MonteCarlo:
         """
         self.num_trials = num_trials
 
-    def run(self, fun, **kwargs):
+    def run(
+        self, fun: Callable[..., Any], **kwargs: Dict[str, Any]
+    ) -> np.ndarray[float, Any]:
         """
         :Input:
          :fun: Function to call at each iteration of the Monte Carlo run.
@@ -35,7 +41,7 @@ class MonteCarlo:
         for _ in range(self.num_trials):
             res = fun(**kwargs)
             result.append(res)
-        return np.asarray(result, dtype=object)
+        return np.asarray(result, dtype=float)
 
 
 class MonteCarloOpt(MonteCarlo):
@@ -47,11 +53,11 @@ class MonteCarloOpt(MonteCarlo):
 
     def __init__(
         self,
-        returns,
-        num_trials=1000,
-        risk_free_rate=0.005,
-        freq=252,
-        initial_weights=None,
+        returns: pd.DataFrame,
+        num_trials: int = 1000,
+        risk_free_rate: float = 0.005,
+        freq: int = 252,
+        initial_weights: Optional[np.ndarray[float, Any]] = None,
     ):
         """
         :Input:
@@ -104,7 +110,7 @@ class MonteCarloOpt(MonteCarlo):
         self.opt_weights = None
         self.opt_results = None
 
-    def _random_weights(self):
+    def _random_weights(self) -> Tuple[np.ndarray[float, Any], np.ndarray[float, Any]]:
         """Computes random weights for the stocks of a portfolio and the
         corresponding Expected Return, Volatility and Sharpe Ratio.
 
@@ -122,7 +128,7 @@ class MonteCarloOpt(MonteCarlo):
         )
         return (weights, np.array(portfolio_values))
 
-    def _random_portfolios(self):
+    def _random_portfolios(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Performs a Monte Carlo run and gets a list of random portfolios
         and their corresponding quantities (Expected Return, Volatility,
         Sharpe Ratio). Returns ``pandas.DataFrame`` of weights and results.
@@ -142,7 +148,7 @@ class MonteCarloOpt(MonteCarlo):
         df_results = pd.DataFrame(data=res[:, 1].tolist(), columns=result_columns)
         return (df_weights, df_results)
 
-    def optimisation(self):
+    def optimisation(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Optimisation of the portfolio by performing a Monte Carlo
         simulation.
 
@@ -174,7 +180,7 @@ class MonteCarloOpt(MonteCarlo):
         self.opt_results = opt_res
         return opt_w, opt_res
 
-    def plot_results(self):
+    def plot_results(self) -> None:
         """Plots the results of the Monte Carlo run, with all of the
         randomly generated weights/portfolios, as well as markers
         for the portfolios with the minimum Volatility and maximum
@@ -246,27 +252,34 @@ class MonteCarloOpt(MonteCarlo):
         cbar.ax.set_ylabel("Sharpe Ratio [period=" + str(self.freq) + "]", rotation=90)
         plt.legend()
 
-    def properties(self):
+    def properties(self) -> None:
         """Prints out the properties of the Monte Carlo optimisation."""
-        # print out results
-        opt_vals = ["Min Volatility", "Max Sharpe Ratio"]
-        string = ""
-        for val in opt_vals:
+        if self.opt_weights is None or self.opt_results is None:
+            print(
+                "Error: Optimal weights and/or results are not computed. Please perform a Monte Carlo run first."
+            )
+        else:
+            # print out results
+            opt_vals = ["Min Volatility", "Max Sharpe Ratio"]
+            string = ""
+            for val in opt_vals:
+                string += "-" * 70
+                string += f"\nOptimised portfolio for {val.replace('Min', 'Minimum').replace('Max', 'Maximum')}"
+                string += f"\n\nTime period: {self.freq} days"
+                string += f"\nExpected return: {self.opt_results.loc[val]['Expected Return']:0.3f}"
+                string += (
+                    f"\nVolatility: {self.opt_results.loc[val]['Volatility']:0.3f}"
+                )
+                string += (
+                    f"\nSharpe Ratio: {self.opt_results.loc[val]['Sharpe Ratio']:0.3f}"
+                )
+                string += "\n\nOptimal weights:"
+                string += "\n" + str(
+                    self.opt_weights.loc[val]
+                    .to_frame()
+                    .transpose()
+                    .rename(index={val: "Allocation"})
+                )
+                string += "\n"
             string += "-" * 70
-            string += f"\nOptimised portfolio for {val.replace('Min', 'Minimum').replace('Max', 'Maximum')}"
-            string += f"\n\nTime period: {self.freq} days"
-            string += f"\nExpected return: {self.opt_results.loc[val]['Expected Return']:0.3f}"
-            string += f"\nVolatility: {self.opt_results.loc[val]['Volatility']:0.3f}"
-            string += (
-                f"\nSharpe Ratio: {self.opt_results.loc[val]['Sharpe Ratio']:0.3f}"
-            )
-            string += "\n\nOptimal weights:"
-            string += "\n" + str(
-                self.opt_weights.loc[val]
-                .to_frame()
-                .transpose()
-                .rename(index={val: "Allocation"})
-            )
-            string += "\n"
-        string += "-" * 70
-        print(string)
+            print(string)
