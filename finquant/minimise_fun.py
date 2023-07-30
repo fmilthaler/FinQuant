@@ -4,9 +4,20 @@ scipy.optimize.minimize in order to find the minimal/optimal value.
 
 
 from finquant.quants import annualised_portfolio_quantities
+from finquant.type_definitions import (
+    ARRAY_OR_DATAFRAME,
+    ARRAY_OR_SERIES,
+    FLOAT,
+    INT,
+    NUMERIC,
+)
 
 
-def portfolio_volatility(weights, mean_returns, cov_matrix):
+def portfolio_volatility(
+    weights: ARRAY_OR_SERIES,
+    mean_returns: ARRAY_OR_DATAFRAME,
+    cov_matrix: ARRAY_OR_DATAFRAME,
+) -> FLOAT:
     """Calculates the volatility of a portfolio
 
     :Input:
@@ -21,7 +32,12 @@ def portfolio_volatility(weights, mean_returns, cov_matrix):
     return annualised_portfolio_quantities(weights, mean_returns, cov_matrix)[1]
 
 
-def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
+def negative_sharpe_ratio(
+    weights: ARRAY_OR_SERIES,
+    mean_returns: ARRAY_OR_SERIES,
+    cov_matrix: ARRAY_OR_DATAFRAME,
+    risk_free_rate: FLOAT,
+) -> FLOAT:
     """Calculates the negative Sharpe ratio of a portfolio
 
     :Input:
@@ -42,7 +58,11 @@ def negative_sharpe_ratio(weights, mean_returns, cov_matrix, risk_free_rate):
     return -sharpe
 
 
-def portfolio_return(weights, mean_returns, cov_matrix):
+def portfolio_return(
+    weights: ARRAY_OR_SERIES,
+    mean_returns: ARRAY_OR_SERIES,
+    cov_matrix: ARRAY_OR_DATAFRAME,
+) -> NUMERIC:
     """Calculates the expected annualised return of a portfolio
 
     :Input:
