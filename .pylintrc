@@ -15,9 +15,11 @@ max-line-length=120
 disable=
     C0114,  # Missing module docstring
     C0116,  # Missing function docstring
+    R0902,  # Too many instance attributes
     R0903,  # Too few public methods
     R0913,  # Too many arguments
     R0914,  # Too many local variables
+    R1705,  # Unnecessary "else" after "return"
     W1514,  # Unspecified encoding,
 
 # Include additional pylint messages or message categories
