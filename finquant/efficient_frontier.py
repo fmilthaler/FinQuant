@@ -3,6 +3,8 @@ optimise a portfolio by minimising a cost/objective function.
 """
 
 
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
@@ -10,6 +12,7 @@ import scipy.optimize as sco
 
 import finquant.minimise_fun as min_fun
 from finquant.quants import annualised_portfolio_quantities
+from finquant.type_definitions import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, NUMERIC
 
 
 class EfficientFrontier:
@@ -26,8 +29,29 @@ class EfficientFrontier:
     (minimum Volatility and maximum Sharpe Ratio).
     """
 
+    # Attributes:
+    mean_returns: pd.Series
+    cov_matrix: pd.DataFrame
+    risk_free_rate: float
+    freq: int
+    method: str
+    names: List[str]
+    num_stocks: int
+    last_optimisation: str
+    bounds: Tuple[Tuple[int, int], ...]
+    x_0: np.ndarray[float, Any]
+    constraints: Dict[str, Union[str, Callable[[Any], float]]]
+    weights: np.ndarray[float, Any]
+    df_weights: pd.DataFrame
+    efrontier: np.ndarray[float, Any]
+
     def __init__(
-        self, mean_returns, cov_matrix, risk_free_rate=0.005, freq=252, method="SLSQP"
+        self,
+        mean_returns: pd.Series,
+        cov_matrix: pd.DataFrame,
+        risk_free_rate: float = 0.005,
+        freq: int = 252,
+        method: str = "SLSQP",
     ):
         """
         :Input:
@@ -97,15 +121,15 @@ class EfficientFrontier:
         # set numerical parameters
         bound = (0, 1)
         self.bounds = tuple(bound for stock in range(self.num_stocks))
-        self.x0 = np.array(self.num_stocks * [1.0 / self.num_stocks])
+        self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=float)
         self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
 
         # placeholder for optimised values/weights
-        self.weights = None
-        self.df_weights = None
-        self.efrontier = None
+        self.weights = np.empty(0, dtype=float)
+        self.df_weights = pd.DataFrame()
+        self.efrontier = np.empty(0, dtype=float)
 
-    def minimum_volatility(self, save_weights=True):
+    def minimum_volatility(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
         """Finds the portfolio with the minimum volatility.
 
         :Input:
@@ -133,7 +157,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.portfolio_volatility,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=self.constraints,
@@ -152,7 +176,7 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def maximum_sharpe_ratio(self, save_weights=True):
+    def maximum_sharpe_ratio(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
         """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
@@ -179,7 +203,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.negative_sharpe_ratio,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=self.constraints,
@@ -196,7 +220,9 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def efficient_return(self, target, save_weights=True):
+    def efficient_return(
+        self, target: NUMERIC, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME:
         """Finds the portfolio with the minimum volatility for a given target
         return.
 
@@ -237,7 +263,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.portfolio_volatility,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=constraints,
@@ -254,7 +280,7 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def efficient_volatility(self, target):
+    def efficient_volatility(self, target: NUMERIC) -> pd.DataFrame:
         """Finds the portfolio with the maximum Sharpe ratio for a given
         target volatility.
 
@@ -283,7 +309,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.negative_sharpe_ratio,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=constraints,
@@ -295,7 +321,9 @@ class EfficientFrontier:
         self.df_weights = self._dataframe_weights(self.weights)
         return self.df_weights
 
-    def efficient_frontier(self, targets=None):
+    def efficient_frontier(
+        self, targets: Optional[ARRAY_OR_LIST] = None
+    ) -> np.ndarray[float, Any]:
         """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
         and maximum returns of the portfolio's individual stocks, and set
@@ -329,28 +357,31 @@ class EfficientFrontier:
                     target,
                 ]
             )
-        self.efrontier = np.array(efrontier)
+        self.efrontier = np.array(efrontier, dtype=float)
         return self.efrontier
 
-    def plot_efrontier(self):
+    def plot_efrontier(self) -> None:
         """Plots the Efficient Frontier."""
         if self.efrontier is None:
             # compute efficient frontier first
             self.efficient_frontier()
-        plt.plot(
-            self.efrontier[:, 0],
-            self.efrontier[:, 1],
-            linestyle="-.",
-            color="black",
-            lw=2,
-            label="Efficient Frontier",
-        )
-        plt.title("Efficient Frontier")
-        plt.xlabel("Volatility")
-        plt.ylabel("Expected Return")
-        plt.legend()
+        if self.efrontier is not None:
+            plt.plot(
+                self.efrontier[:, 0],
+                self.efrontier[:, 1],
+                linestyle="-.",
+                color="black",
+                lw=2,
+                label="Efficient Frontier",
+            )
+            plt.title("Efficient Frontier")
+            plt.xlabel("Volatility")
+            plt.ylabel("Expected Return")
+            plt.legend()
+        else:
+            raise ValueError("Error: Efficient frontier could not be computed.")
 
-    def plot_optimal_portfolios(self):
+    def plot_optimal_portfolios(self) -> None:
         """Plots markers of the optimised portfolios for
 
         - minimum Volatility, and
@@ -390,7 +421,9 @@ class EfficientFrontier:
         )
         plt.legend()
 
-    def _dataframe_weights(self, weights):
+    def _dataframe_weights(
+        self, weights: Optional[np.ndarray[float, Any]]
+    ) -> pd.DataFrame:
         """Generates and returns a ``pandas.DataFrame`` from given
         array weights.
 
@@ -404,7 +437,7 @@ class EfficientFrontier:
             raise ValueError("weights is expected to be a numpy.ndarray")
         return pd.DataFrame(weights, index=self.names, columns=["Allocation"])
 
-    def properties(self, verbose=False):
+    def properties(self, verbose: bool = False) -> Tuple[NUMERIC, FLOAT, FLOAT]:
         """Calculates and prints out Expected annualised Return,
         Volatility and Sharpe Ratio of optimised portfolio.
 
@@ -413,7 +446,7 @@ class EfficientFrontier:
         """
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
-        if self.weights is None:
+        if self.weights.size == 0:
             raise ValueError("Perform an optimisation first.")
         expected_return, volatility, sharpe = annualised_portfolio_quantities(
             self.weights,

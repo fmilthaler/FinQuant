@@ -43,6 +43,7 @@ import pandas as pd
 # Type Aliases:
 ARRAY_OR_SERIES = Union[np.ndarray, pd.Series]
 ARRAY_OR_DATAFRAME = Union[np.ndarray, pd.DataFrame]
+ARRAY_OR_LIST = Union[np.ndarray, List]
 SERIES_OR_DATAFRAME = Union[pd.Series, pd.DataFrame]
 
 # Numeric types
