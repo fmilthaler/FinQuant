@@ -51,6 +51,18 @@ class MonteCarloOpt(MonteCarlo):
     Inherits from `MonteCarlo`.
     """
 
+    returns: pd.DataFrame
+    risk_free_rate: float
+    freq: int
+    initial_weights: Optional[np.ndarray[float, Any]]
+    num_stocks: int
+    return_means: pd.Series
+    cov_matrix: pd.DataFrame
+    df_weights: pd.DataFrame
+    df_results: pd.DataFrame
+    opt_weights: pd.DataFrame
+    opt_results: pd.DataFrame
+
     def __init__(
         self,
         returns: pd.DataFrame,
@@ -97,7 +109,7 @@ class MonteCarloOpt(MonteCarlo):
         self.num_trials = num_trials
         self.risk_free_rate = risk_free_rate
         self.freq = freq
-        self.initial_weights = initial_weights
+        self.initial_weights: np.ndarray[float, Any] = initial_weights
         # initiate super class
         super().__init__(num_trials=self.num_trials)
         # setting additional variables
