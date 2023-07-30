@@ -36,7 +36,7 @@ or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
 
-Finally, functions are implemented to generated the following plots:
+Finally, functions are implemented to generate the following plots:
 
 - Monte Carlo run to find optimal portfolio(s)
 - Efficient Frontier
