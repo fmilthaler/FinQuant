@@ -8,7 +8,6 @@ from finquant.type_definitions import (
     ARRAY_OR_DATAFRAME,
     ARRAY_OR_SERIES,
     FLOAT,
-    INT,
     NUMERIC,
 )
 
