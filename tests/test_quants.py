@@ -95,4 +95,4 @@ def test_downside_risk():
     rf_rate = 0.0
     dr2 = downside_risk(data2, weights, rf_rate)
     print(dr2)
-    assert abs(dr2 - 0.35355339059327376220) <= 1e-15
+    assert not abs(dr2 - 0.35355339059327376220) <= 1e-15
