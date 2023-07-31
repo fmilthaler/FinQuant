@@ -78,16 +78,16 @@ def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
 
 
 def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
-    """Computes the Sharpe Ratio
+    """Computes the Sortino Ratio
 
     :Input:
      :exp_return: ``int``/``float``, Expected Return of a portfolio
-     :downside_risk: ``int``/``float``/``NaN``, Downside Risk of a portfolio
+     :downside_risk: ``int``/``float``, Downside Risk of a portfolio
      :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
 
     :Output:
-     :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(downside_risk)``
-     Can be ``NaN`` if ``downside_risk`` is NaN
+     :sortino ratio: ``float``/``NaN`` ``(exp_return - risk_free_rate)/float(downside_risk)``.
+     Can be ``NaN`` if ``downside_risk`` is zero
     """
     if not isinstance(
         exp_return, (int, float, np.int32, np.int64, np.float32, np.float64)
@@ -101,22 +101,34 @@ def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
         risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
     ):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
-    return (exp_return - risk_free_rate) / float(downside_risk)
+    if float(downside_risk) == 0:
+        return np.nan
+    else:
+        return (exp_return - risk_free_rate) / float(downside_risk)
 
 
-def downside_risk(data, weights, risk_free_rate=0.005):
-    """Computes the downside risk (target semideviation of returns, given a risk free rate)
+def downside_risk(data: pd.DataFrame, weights, risk_free_rate=0.005) -> float:
+    """Computes the downside risk (target downside deviation of returns).
+
     :Input:
       :data: ``pandas.DataFrame`` with daily stock prices
       :weights: ``numpy.ndarray``/``pd.Series`` of weights
       :risk_free_rate: ``int``/``float`` (default=``0.005``), risk free rate
 
     :Output:
-      :downside_risk: ``float`` (can be NaN if all returns outperform the risk free rate)
+      :downside_risk: ``float``, target downside deviation
     """
+    if not isinstance(data, pd.DataFrame):
+        raise ValueError("data is expected to be a Pandas.DataFrame.")
+    if not isinstance(weights, (pd.Series, np.ndarray)):
+        raise ValueError("weights is expected to be a pandas.Series/np.ndarray.")
+    if not isinstance(
+        risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
+    ):
+        raise ValueError("risk_free_rate is expected to be an integer or float.")
+
     wtd_daily_mean = weighted_mean_daily_returns(data, weights)
-    downside_dev_sq = np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2)
-    return np.sqrt(downside_dev_sq)
+    return np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2))
 
 
 def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
