@@ -52,4 +52,3 @@ INT = Union[np.integer[Any], int]
 # NPFloat = np.floating[Any]
 # NPInteger = np.integer[Any]
 NUMERIC = Union[INT, FLOAT]
-
