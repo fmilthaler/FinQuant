@@ -62,7 +62,7 @@ class Asset:
          :name: ``str``, Name of the asset
          :asset_type: ``str`` (default: ``'Market index'``), Type of the asset (e.g., "Stock" or "Market index")
         """
-        self.data = data
+        self.data = data.astype(np.float64)
         self.name = name
         # compute expected return and volatility of asset
         self.expected_return = self.comp_expected_return()

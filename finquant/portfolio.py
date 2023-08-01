@@ -312,7 +312,7 @@ class Portfolio:
         """
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
-        return self.portfolio["Allocation"] / self.totalinvestment
+        return (self.portfolio["Allocation"] / self.totalinvestment).astype(np.float64)
 
     def comp_expected_return(self, freq=252):
         """Computes the Expected Return of the portfolio.
@@ -956,7 +956,7 @@ def _get_index_adj_clos_pr(data: pd.DataFrame) -> pd.Series:
      :data: A ``pandas.Series`` which contains only the data column of
          data corresponding to Adjusted Closing Price.
     """
-    return data["Adj Close"].squeeze()
+    return data["Adj Close"].squeeze().astype(np.float64)
 
 
 def _generate_pf_allocation(names=None, data=None):
@@ -1042,6 +1042,8 @@ def _build_portfolio_from_df(
         pf_allocation = _generate_pf_allocation(data=data)
     if datacolumns is None:
         datacolumns = ["Adj. Close"]
+    # Enforcing types for pf_allocation:
+    pf_allocation = pf_allocation.astype({"Allocation": np.float64, "Name": str})
     # make sure stock names are in data dataframe
     if not _stocknames_in_data_columns(pf_allocation.Name.values, data):
         raise ValueError(
