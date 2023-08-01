@@ -38,12 +38,12 @@ class EfficientFrontier:
     names: List[str]
     num_stocks: int
     last_optimisation: str
-    bounds: Tuple[Tuple[int, int], ...]
-    x_0: np.ndarray[float, Any]
-    constraints: Dict[str, Union[str, Callable[[Any], float]]]
-    weights: np.ndarray[float, Any]
+    bounds: Tuple[Tuple[int, int], Tuple[int, int]]
+    x_0: np.ndarray[np.float64, 1]
+    constraints: Dict[str, Union[str, Callable[[Any], FLOAT]]]
+    weights: np.ndarray[np.float64, 1]
     df_weights: pd.DataFrame
-    efrontier: np.ndarray[float, Any]
+    efrontier: np.ndarray[np.float64, 2]
 
     def __init__(
         self,
@@ -120,14 +120,14 @@ class EfficientFrontier:
 
         # set numerical parameters
         bound = (0, 1)
-        self.bounds = tuple(bound for stock in range(self.num_stocks))
-        self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=float)
+        self.bounds = tuple(bound for _ in range(self.num_stocks))
+        self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=np.float64)
         self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
 
         # placeholder for optimised values/weights
-        self.weights = np.empty(0, dtype=float)
+        self.weights = np.empty(0, dtype=np.float64)
         self.df_weights = pd.DataFrame()
-        self.efrontier = np.empty(0, dtype=float)
+        self.efrontier = np.empty((0, 2), dtype=np.float64)
 
     def minimum_volatility(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
         """Finds the portfolio with the minimum volatility.
@@ -323,7 +323,7 @@ class EfficientFrontier:
 
     def efficient_frontier(
         self, targets: Optional[ARRAY_OR_LIST] = None
-    ) -> np.ndarray[float, Any]:
+    ) -> np.ndarray[np.float64, 2]:
         """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
         and maximum returns of the portfolio's individual stocks, and set
@@ -357,29 +357,29 @@ class EfficientFrontier:
                     target,
                 ]
             )
-        self.efrontier = np.array(efrontier, dtype=float)
+        self.efrontier: np.ndarray[np.float64, 2] = np.array(efrontier, dtype=np.float64)
+        if self.efrontier.size == 0 or self.efrontier.ndim != 2:
+            raise ValueError("Error: Efficient frontier could not be computed.")
         return self.efrontier
 
     def plot_efrontier(self) -> None:
         """Plots the Efficient Frontier."""
-        if self.efrontier is None:
+        if self.efrontier.size == 0:
             # compute efficient frontier first
             self.efficient_frontier()
-        if self.efrontier is not None:
-            plt.plot(
-                self.efrontier[:, 0],
-                self.efrontier[:, 1],
-                linestyle="-.",
-                color="black",
-                lw=2,
-                label="Efficient Frontier",
-            )
-            plt.title("Efficient Frontier")
-            plt.xlabel("Volatility")
-            plt.ylabel("Expected Return")
-            plt.legend()
-        else:
-            raise ValueError("Error: Efficient frontier could not be computed.")
+        plt.plot(
+            self.efrontier[:, 0],
+            self.efrontier[:, 1],
+            linestyle="-.",
+            color="black",
+            lw=2,
+            label="Efficient Frontier",
+        )
+        plt.title("Efficient Frontier")
+        plt.xlabel("Volatility")
+        plt.ylabel("Expected Return")
+        plt.legend()
+
 
     def plot_optimal_portfolios(self) -> None:
         """Plots markers of the optimised portfolios for
@@ -447,7 +447,7 @@ class EfficientFrontier:
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
         if self.weights.size == 0:
-            raise ValueError("Perform an optimisation first.")
+            raise ValueError("Error: weights are empty. Please perform an optimisation first.")
         expected_return, volatility, sharpe = annualised_portfolio_quantities(
             self.weights,
             self.mean_returns,
