@@ -362,11 +362,13 @@ class Portfolio:
              value corresponds to trading days in a year
 
         :Output:
-         :volatility: Downside risk of stock.
+         :downside risk: ``float`` downside risk of the portfolio.
         """
-        return downside_risk(
+        downs_risk = downside_risk(
             self.data, self.comp_weights(), self.risk_free_rate
         ) * np.sqrt(freq)
+        self.downside_risk = downs_risk
+        return downs_risk
 
     def comp_cov(self):
         """Compute and return a ``pandas.DataFrame`` of the covariance matrix
