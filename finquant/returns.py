@@ -24,7 +24,7 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
-    return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0])
+    return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0]).astype(np.float64)
 
 
 def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
@@ -41,7 +41,7 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
-    return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan)
+    return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan).astype(np.float64)
 
 
 def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
@@ -60,7 +60,7 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)):
         raise ValueError("data must be a pandas.DataFrame or pandas.Series")
-    return np.log(1 + daily_returns(data)).dropna(how="all")
+    return np.log(1 + daily_returns(data)).dropna(how="all").astype(np.float64)
 
 
 def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Series:
