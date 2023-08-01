@@ -80,3 +80,85 @@ def relative_strength_index(data, window_length: int = 14, oversold: int = 30,
         data[stock].plot(xlabel = 'Date', ylabel = 'Price', ax = ax[1], grid = True,
                          color = next(colors)["color"], legend = True)
         plt.legend()
+
+def macd(data, longer_ema_window: int = 26, shorter_ema_window: int = 12,
+         signal_ema_window: int = 9, standalone: bool = False) -> None:
+    """
+    Computes and visualizes a MACD (Moving Average Convergence Divergence)
+    plotted along with price chart in another sub-graph for comparison.
+
+    Ref: https://www.alpharithms.com/calculate-macd-python-272222/
+
+    :Input
+     :data: pandas.Series or pandas.DataFrame with stock prices in columns
+     :longer_ema_window:  Window length (in days) for the longer EMA
+     :shorter_ema_window: Window length (in days) for the shorter EMA
+     :signal_ema_window:  Window length (in days) for the signal
+     :standalone: If true, plot only the MACD signal
+    """
+
+    if not isinstance(data, (pd.Series, pd.DataFrame)):
+        raise ValueError(
+            "data is expected to be of type pandas.Series or pandas.DataFrame"
+        )
+    if isinstance(data, pd.DataFrame) and not len(data.columns.values) == 1:
+        raise ValueError("data is expected to have only one column.")
+    # checking integer fields
+    for field in (longer_ema_window, shorter_ema_window, signal_ema_window):
+        if not isinstance(field, int):
+            raise ValueError(f"{field} must be an integer.")
+    # validating windows
+    if longer_ema_window < shorter_ema_window:
+        raise ValueError("longer ema window should be > shorter ema window")
+    if longer_ema_window < signal_ema_window:
+        raise ValueError("longer ema window should be > signal ema window")    
+
+    # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
+    if isinstance(data, pd.Series):
+        data = data.to_frame()
+    # get the stock key
+    stock = data.keys()[0]
+    # calculate EMA short period
+    ema_short = data.ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window).mean()
+    # calculate EMA long period
+    ema_long = data.ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window).mean()
+    # Subtract the longwer window EMA from the shorter window EMA to get the MACD
+    data['macd'] = ema_long - ema_short
+    # Get the signal window MACD for the Trigger line
+    data['macd_s'] = data['macd'].ewm(span=signal_ema_window, adjust=False, min_periods=signal_ema_window).mean()
+    # Calculate the difference between the MACD - Trigger for the Convergence/Divergence value
+    data['diff'] = data['macd'] - data['macd_s']
+    hist = data['diff']
+        
+    # Plot it
+    if standalone:
+        fig=plt.figure()
+        ax = fig.add_subplot(111)
+        data['macd'].plot(ylabel = 'MACD', xlabel='Date', ax = ax, grid = True, label='MACD', color='green',
+                          linewidth=1.5, legend=True)
+        hist.plot(ax = ax, grid = True, label='diff', color='black', linewidth=0.5, legend=True)
+        data['macd_s'].plot(ax = ax, grid = True, label='SIGNAL', color='red', linewidth=1.5, legend=True)
+        
+        for i in range(len(hist)):
+            if hist[i] < 0:
+                ax.bar(data.index[i], hist[i], color = 'orange')
+            else:
+                ax.bar(data.index[i], hist[i], color = 'black')
+    else:
+        # RSI against price in 2 plots
+        fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
+        ax[0].set_title('MACD + Price Plot')
+        data['macd'].plot(ylabel = 'MACD', xlabel='Date', ax = ax[0], grid = True,
+                          label='MACD', color='green', linewidth=1.5, legend=True)
+        hist.plot(ax = ax[0], grid = True, label='diff', color='black', linewidth=0.5, legend=True)
+        data['macd_s'].plot(ax = ax[0], grid = True, label='SIGNAL', color='red', linewidth=1.5, legend=True)
+        
+        for i in range(len(hist)):
+            if hist[i] < 0:
+                ax[0].bar(data.index[i], hist[i], color = 'orange')
+            else:
+                ax[0].bar(data.index[i], hist[i], color = 'black')
+
+        data[stock].plot(xlabel = 'Date', ylabel = 'Price', ax = ax[1], grid = True,
+                         color = 'orange', legend = True)
+        plt.legend()            
