@@ -950,8 +950,11 @@ def _common_type_checks(**kwargs) -> None:
             if not isinstance(arg_values, list):
                 arg_values = [arg_values]
 
+            if (arg_name == 'names' or arg_name == 'cols') and not all(isinstance(val, str) for val in arg_values):
+                raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[str].")
+
             for arg_value in arg_values:
-                if not isinstance(arg_value, arg_type) or (isinstance(arg_value, pd.DataFrame) and arg_value.empty):
+                if not isinstance(arg_value, arg_type) or (isinstance(arg_value, Union[pd.Series, pd.DataFrame]) and arg_value.empty):
                     raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
 
 
