@@ -29,6 +29,7 @@ import numpy as np
 import pandas as pd
 
 from finquant.asset import Asset
+from finquant.type_definitions import FLOAT
 
 
 class Stock(Asset):
@@ -48,7 +49,7 @@ class Stock(Asset):
     """
 
     investmentinfo: pd.DataFrame
-    beta: Optional[float]
+    beta: Optional[FLOAT]
 
     def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series) -> None:
         """
@@ -62,7 +63,7 @@ class Stock(Asset):
         # beta parameter of stock (CAPM)
         self.beta = None
 
-    def comp_beta(self, market_daily_returns: pd.Series) -> float:
+    def comp_beta(self, market_daily_returns: pd.Series) -> FLOAT:
         """Compute and return the Beta parameter of the stock.
 
         :Input:
