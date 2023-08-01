@@ -22,8 +22,10 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     :Output:
      :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
     """
-    if not isinstance(data, (pd.DataFrame, pd.Series)):
-        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
+    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
+        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
+    if not isinstance(dividend, (float, int, np.floating, np.integer)):
+        raise ValueError("dividend is expected to be an integer or float.")
     return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0]).astype(np.float64)
 
 
@@ -39,8 +41,8 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
      :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
          of given stock prices.
     """
-    if not isinstance(data, (pd.DataFrame, pd.Series)):
-        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
+    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
+        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan).astype(np.float64)
 
 
@@ -58,8 +60,8 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
      :ret: a ``pandas.DataFrame`` of
          log(1 + daily percentage change of Returns)
     """
-    if not isinstance(data, (pd.DataFrame, pd.Series)):
-        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
+    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
+        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     return np.log(1 + daily_returns(data)).dropna(how="all").astype(np.float64)
 
 
@@ -74,6 +76,8 @@ def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Ser
     :Output:
      :ret: a ``pandas.Series`` or ``numpy.float`` of historical mean Returns.
     """
-    if not isinstance(data, (pd.DataFrame, pd.Series)):
-        raise ValueError("data must be a pandas.DataFrame or pandas.Series")
+    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
+        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
+    if not isinstance(freq, (int, np.integer)):
+        raise ValueError("freq is expected to be an integer.")
     return daily_returns(data).mean() * freq
