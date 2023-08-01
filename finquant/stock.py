@@ -47,6 +47,9 @@ class Stock(Asset):
 
     """
 
+    investmentinfo: pd.DataFrame
+    beta: Optional[float]
+
     def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series) -> None:
         """
         :Input:
@@ -57,7 +60,7 @@ class Stock(Asset):
         self.investmentinfo = investmentinfo
         super().__init__(data, self.name, asset_type="Stock")
         # beta parameter of stock (CAPM)
-        self.beta: Optional[float] = None
+        self.beta = None
 
     def comp_beta(self, market_daily_returns: pd.Series) -> float:
         """Compute and return the Beta parameter of the stock.

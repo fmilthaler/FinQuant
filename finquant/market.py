@@ -31,6 +31,8 @@ class Market(Asset):
 
     """
 
+    daily_returns: pd.DataFrame
+
     def __init__(self, data: pd.Series) -> None:
         """
         :Input:
