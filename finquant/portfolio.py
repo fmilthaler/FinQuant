@@ -634,6 +634,8 @@ class Portfolio:
         self.mc = None
         # get instance of MonteCarloOpt
         mc: MonteCarloOpt = self._get_mc(num_trials)
+        opt_weights: pd.DataFrame
+        opt_results: pd.DataFrame
         opt_weights, opt_results = mc.optimisation()
         return opt_weights, opt_results
 
@@ -695,7 +697,7 @@ class Portfolio:
         as well as the allocation of the stocks across the portfolio.
         """
         # nicely printing out information and quantities of the portfolio
-        string = "-" * 70
+        string: str = "-" * 70
         stocknames = self.portfolio.Name.values.tolist()
         string += f"\nStocks: {', '.join(stocknames)}"
         if self.market_index is not None:
@@ -722,11 +724,11 @@ class Portfolio:
 
     def __str__(self)->str:
         # print short description
-        string = "Contains information about a portfolio."
-        return string
+        return "Contains information about a portfolio."
 
 
-def _correct_quandl_request_stock_name(names):
+
+def _correct_quandl_request_stock_name(names: Union[str, List[str]])->List[str]:
     """If given input argument is of type string,
     this function converts it to a list, assuming the input argument
     is only one stock name.
@@ -737,7 +739,11 @@ def _correct_quandl_request_stock_name(names):
     return names
 
 
-def _quandl_request(names, start_date=None, end_date=None):
+def _quandl_request(
+        names: List[str],
+        start_date:Optional[STRING_OR_DATETIME]=None,
+        end_date:Optional[STRING_OR_DATETIME]=None
+)->pd.DataFrame:
     """This function performs a simple request from `quandl` and returns
     a ``pandas.DataFrame`` containing stock data.
 
@@ -755,13 +761,20 @@ def _quandl_request(names, start_date=None, end_date=None):
             "The following package is required:\n - `quandl`\n"
             + "Please make sure that it is installed."
         )
+    # Type checks:
+    _common_type_checks(names=names)
+    if start_date is not None:
+        _common_type_checks(start_date=start_date)
+    if end_date is not None:
+        _common_type_checks(end_date=end_date)
+
     # get correct stock names that quandl.get can request,
     # e.g. "WIKI/GOOG" for Google
-    reqnames = _correct_quandl_request_stock_name(names)
+    reqnames: List[str] = _correct_quandl_request_stock_name(names)
     try:
-        resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
+        resp: pd.DataFrame = quandl.get(reqnames, start_date=start_date, end_date=end_date)
     except Exception as exc:
-        errormsg = (
+        errormsg: str = (
             "Error during download of stock data from Quandl.\n"
             + "Make sure all the requested stock names/tickers are "
             + "supported by Quandl."
@@ -770,7 +783,7 @@ def _quandl_request(names, start_date=None, end_date=None):
     return resp
 
 
-def _yfinance_request(names, start_date=None, end_date=None):
+def _yfinance_request(names:List[str], start_date:Optional[STRING_OR_DATETIME]=None, end_date:Optional[STRING_OR_DATETIME]=None)->pd.DataFrame:
     """This function performs a simple request from Yahoo Finance
     (using `yfinance`) and returns a ``pandas.DataFrame``
     containing stock data.
@@ -789,6 +802,13 @@ def _yfinance_request(names, start_date=None, end_date=None):
             "The following package is required:\n - `yfinance`\n"
             + "Please make sure that it is installed."
         )
+    # Type checks:
+    _common_type_checks(names=names)
+    if start_date is not None:
+        _common_type_checks(start_date=start_date)
+    if end_date is not None:
+        _common_type_checks(end_date=end_date)
+
     # yfinance does not exit safely if start/end date were not given correctly:
     # this step is not required for quandl as it handles this exception properly
     try:
@@ -796,20 +816,16 @@ def _yfinance_request(names, start_date=None, end_date=None):
             start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         if isinstance(end_date, str):
             end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-    except ImportError:
-        print(
-            "The following package is required:\n - `datetime`\n"
-            + "Please make sure that it is installed."
-        )
     except Exception as exc:
         raise Exception(
-            "Please provide valid values for <start_date> and <end_date>"
+            "Please provide valid values for <start_date> and <end_date> "
+            "(either as datetime object, or as String in the format '%Y-%m-%d')."
         ) from exc
 
     # unlike quandl, yfinance does not have a prefix in front of the ticker
     # thus we do not need to correct them
     try:
-        resp = yf.download(names, start=start_date, end=end_date)
+        resp: pd.DataFrame = yf.download(names, start=start_date, end=end_date)
         if not isinstance(resp.columns, pd.MultiIndex) and len(names) > 0:
             # for single stock must make the dataframe multiindex
             stock_tuples = [(col, names[0]) for col in list(resp.columns)]
@@ -821,7 +837,7 @@ def _yfinance_request(names, start_date=None, end_date=None):
     return resp
 
 
-def _get_quandl_data_column_label(stock_name, data_label):
+def _get_quandl_data_column_label(stock_name:str, data_label:str)->str:
     """Given stock name and label of a data column, this function returns
     the string "<stock_name> - <data_label>" as it can be found in a
     ``pandas.DataFrame`` returned by `quandl`.
@@ -829,7 +845,7 @@ def _get_quandl_data_column_label(stock_name, data_label):
     return stock_name + " - " + data_label
 
 
-def _get_stocks_data_columns(data, names, cols):
+def _get_stocks_data_columns(data:pd.DataFrame, names:ARRAY_OR_LIST, cols:List[str])->pd.DataFrame:
     """This function returns a subset of the given ``pandas.DataFrame`` data, which
     contains only the data columns as specified in the input cols.
 
@@ -845,12 +861,13 @@ def _get_stocks_data_columns(data, names, cols):
      :data: A ``pandas.DataFrame`` which contains only the data columns of
          data as specified in cols.
     """
+    _common_type_checks(data=data, names=names, cols=cols)
     # get correct stock names that quandl get request
-    reqnames = _correct_quandl_request_stock_name(names)
+    reqnames: List[str] = _correct_quandl_request_stock_name(names)
     # get current column labels and replacement labels
-    reqcolnames = []
+    reqcolnames: List[str] = []
     # if dataframe is of type multiindex, also get first level colname
-    firstlevel_colnames = []
+    firstlevel_colnames: List[str] = []
     for i in range(len(names)):
         for col in cols:
             # differ between dataframe directly from quandl and
@@ -858,23 +875,23 @@ def _get_stocks_data_columns(data, names, cols):
             # read in from disk with slightly modified column labels
             # 1. if <stock_name> in column labels
             if names[i] in data.columns:
-                colname = names[i]
+                colname: str = names[i]
             # 2. if "WIKI/<stock_name> - <col>" in column labels
             elif _get_quandl_data_column_label(reqnames[i], col) in data.columns:
-                colname = _get_quandl_data_column_label(reqnames[i], col)
+                colname: str = _get_quandl_data_column_label(reqnames[i], col)
             # 3. if "<stock_name> - <col>" in column labels
             elif _get_quandl_data_column_label(names[i], col) in data.columns:
-                colname = _get_quandl_data_column_label(names[i], col)
+                colname: str = _get_quandl_data_column_label(names[i], col)
             # if column labels is of type multiindex, and the "Adj Close" is in
             # first level labels, we assume the dataframe comes from yfinance:
             elif isinstance(data.columns, pd.MultiIndex):
                 # alter col for yfinance, as it returns column labels without '.'
-                col = col.replace(".", "")
+                col: str = col.replace(".", "")
                 if col in data.columns:
                     if not col in firstlevel_colnames:
                         firstlevel_colnames.append(col)
                     if names[i] in data[col].columns:
-                        colname = names[i]
+                        colname: str = names[i]
                     else:  # error, it must find names[i] on second level of column header
                         raise ValueError(
                             "Could not find column labels in second level of MultiIndex pd.DataFrame"
@@ -898,7 +915,7 @@ def _get_stocks_data_columns(data, names, cols):
 
     # if only one data column per stock exists, rename column labels
     # to the name of the corresponding stock
-    newcolnames = {}
+    newcolnames: Dict = {}
     if len(cols) == 1:
         for i, name in enumerate(names):
             newcolnames.update({_get_quandl_data_column_label(name, cols[0]): name})
@@ -947,25 +964,25 @@ def _common_type_checks(**kwargs) -> None:
     for arg_name, (arg_type, expected_type) in type_checks.items():
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
-            if not isinstance(arg_values, list):
+            if not isinstance(arg_values, Union[List, np.ndarray]):
                 arg_values = [arg_values]
 
             if (arg_name == 'names' or arg_name == 'cols') and not all(isinstance(val, str) for val in arg_values):
                 raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[str].")
-
-            for arg_value in arg_values:
-                if not isinstance(arg_value, arg_type) or (isinstance(arg_value, Union[pd.Series, pd.DataFrame]) and arg_value.empty):
-                    raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
+            elif arg_name != 'names' and arg_name != 'cols':
+                for arg_value in arg_values:
+                    if not isinstance(arg_value, arg_type) or (isinstance(arg_value, Union[pd.Series, pd.DataFrame]) and arg_value.empty):
+                        raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
 
 
 def _build_portfolio_from_api(
-    names,
-    pf_allocation=None,
-    start_date=None,
-    end_date=None,
-    data_api="quandl",
-    market_index: str = None,
-):
+    names: ARRAY_OR_LIST,
+    pf_allocation: Optional[pd.DataFrame]=None,
+    start_date: Optional[STRING_OR_DATETIME]=None,
+    end_date: Optional[STRING_OR_DATETIME]=None,
+    data_api:str="quandl",
+    market_index: Optional[str]= None,
+)->Portfolio:
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
 
@@ -989,30 +1006,34 @@ def _build_portfolio_from_api(
      :pf: Instance of Portfolio which contains all the information
          requested by the user.
     """
-    # create an empty portfolio
-    pf = Portfolio()
+    # Type checks:
+    _common_type_checks(names=names, pf_allocation=pf_allocation, start_date=start_date, end_date=end_date, data_api=data_api, market_index=market_index)
+
     # create empty dataframe for market data
-    market_data = pd.DataFrame()
+    market_data: pd.DataFrame = pd.DataFrame()
     # request data from service:
     if data_api == "yfinance":
-        stock_data = _yfinance_request(names, start_date, end_date)
+        stock_data: pd.DataFrame = _yfinance_request(list(names), start_date, end_date)
         if market_index is not None:
-            market_data = _yfinance_request([market_index], start_date, end_date)
+            market_data: pd.DataFrame = _yfinance_request([market_index], start_date, end_date)
     elif data_api == "quandl":
-        stock_data = _quandl_request(names, start_date, end_date)
+        stock_data: pd.DataFrame = _quandl_request(list(names), start_date, end_date)
         if market_index is not None:
             # only generated if user explicitly requests market index with quandl
             raise Warning("Market index is not supported for quandl data.")
-
+    else:
+        raise ValueError(
+            f"Error: value of data_api '{data_api}' is not supported. "
+            + "Choose between 'yfinance' and 'quandl'.")
     # check pf_allocation:
     if pf_allocation is None:
-        pf_allocation = _generate_pf_allocation(names=names)
+        pf_allocation: pd.DataFrame = _generate_pf_allocation(names=list(names))
     # build portfolio:
-    pf = _build_portfolio_from_df(stock_data, pf_allocation, market_data=market_data)
+    pf: Portfolio = _build_portfolio_from_df(stock_data, pf_allocation, market_data=market_data)
     return pf
 
 
-def _stocknames_in_data_columns(names, df):
+def _stocknames_in_data_columns(names:ARRAY_OR_LIST, df:pd.DataFrame)->bool:
     """Returns True if at least one element of names was found as a column
     label in the dataframe df.
     """
@@ -1033,7 +1054,7 @@ def _get_index_adj_clos_pr(data: pd.DataFrame) -> pd.Series:
     return data["Adj Close"].squeeze().astype(np.float64)
 
 
-def _generate_pf_allocation(names=None, data=None):
+def _generate_pf_allocation(names:Optional[List[str]]=None, data:Optional[pd.DataFrame]=None)->pd.DataFrame:
     """Takes column names of provided ``pandas.DataFrame`` ``data``, and generates a
     ``pandas.DataFrame`` with columns ``Name`` and ``Allocation`` which contain the
     names found in input ``data`` and 1.0/len(data.columns) respectively.
@@ -1048,17 +1069,16 @@ def _generate_pf_allocation(names=None, data=None):
     # checking input arguments
     if names is not None and data is not None or names is None and data is None:
         raise ValueError("Pass one of the two: 'names' or 'data'.")
-    if names is not None and not isinstance(names, list):
-        raise ValueError("names is expected to be of type 'list'.")
-    if data is not None and not isinstance(data, pd.DataFrame):
-        raise ValueError("data is expected to be of type 'pandas.DataFrame'.")
+    # Type checks:
+    _common_type_checks(names=names, data=data)
+
     # if data is given:
     if data is not None:
         # this case is more complex, as we need to check for column labels in
         # data
-        names = data.columns
+        names: List[str] = data.columns.tolist()
         # potential error message
-        errormsg = (
+        errormsg: str = (
             "'data' pandas.DataFrame contains conflicting column labels."
             + "\nMultiple columns with a substring of\n {}\n"
             + "were found. You have two options:"
@@ -1075,9 +1095,9 @@ def _generate_pf_allocation(names=None, data=None):
         # split string, and check if this occurs in any of the other names.
         # if so, we treat this as a duplication, and ask the user to provide
         # a DataFrame with one data column per stock.
-        splitnames = [name.split("-")[0].strip() for name in names]
+        splitnames: List[str] = [name.split("-")[0].strip() for name in names]
         for i, splitname in enumerate(splitnames):
-            reducedlist = [elt for num, elt in enumerate(splitnames) if num != i]
+            reducedlist: List[str] = [elt for num, elt in enumerate(splitnames) if num != i]
             if splitname in reducedlist:
                 errormsg = errormsg.format(str(splitname))
                 raise ValueError(errormsg)
@@ -1124,12 +1144,12 @@ def _build_portfolio_from_df(
             "Error: None of the provided stock names were"
             + "found in the provided dataframe."
         )
-    # extract only "Adjusted Close" price ("Adj. Close" in quandl, "Adj Close" in yfinance)
-    # column from DataFrame:
+    # extract only "Adjusted Close" price column from DataFrame:
+    # in quandl: "Adj. Close"; in yfinance: "Adj Close"
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
 
     # building portfolio:
-    pf = Portfolio()
+    pf: Portfolio = Portfolio()
     if market_data is not None and not market_data.empty:
         # extract only "Adjusted Close" price column from market data
         market_data = _get_index_adj_clos_pr(market_data)
@@ -1137,32 +1157,32 @@ def _build_portfolio_from_df(
         pf.market_index = Market(data=market_data)
     for i in range(len(pf_allocation)):
         # get name of stock
-        name = pf_allocation.iloc[i].Name
+        name: str = pf_allocation.iloc[i].Name
         # extract data column of said stock
-        stock_data = data.loc[:, [name]].copy(deep=True).squeeze()
+        stock_data: pd.Series = data.loc[:, [name]].copy(deep=True).squeeze()
         # create Stock instance and add it to portfolio
-        pf.add_stock(Stock(pf_allocation.iloc[i], data=stock_data))
+        pf.add_stock(Stock(investmentinfo=pf_allocation.iloc[i], data=stock_data))
     # update the portfolio
     pf._update()
     return pf
 
 
-def _all_list_ele_in_other(l1, l2):
+def _all_list_ele_in_other(l1: ARRAY_OR_LIST, l2: ARRAY_OR_LIST) -> bool:
     """Returns True if all elements of list l1 are found in list l2."""
     return all(ele in l2 for ele in l1)
 
 
-def _any_list_ele_in_other(l1, l2):
+def _any_list_ele_in_other(l1: ARRAY_OR_LIST, l2: ARRAY_OR_LIST) -> bool:
     """Returns True if any element of list l1 is found in list l2."""
     return any(ele in l2 for ele in l1)
 
 
-def _list_complement(A, B):
+def _list_complement(A: ARRAY_OR_LIST, B: ARRAY_OR_LIST) -> List:
     """Returns the relative complement of A in B (also denoted as A\\B)"""
     return list(set(B) - set(A))
 
 
-def build_portfolio(**kwargs):
+def build_portfolio(**kwargs) -> Portfolio:
     """This function builds and returns an instance of ``Portfolio``
     given a set of input arguments.
 
@@ -1206,25 +1226,25 @@ def build_portfolio(**kwargs):
      If used in an unsupported way, the function (or subsequently called function)
      raises appropriate Exceptions with useful information what went wrong.
     """
-    docstring_msg = (
+    docstring_msg: str = (
         "Please read through the docstring, "
         "'build_portfolio.__doc__' and/or have a look at the "
         "examples in `examples/`."
     )
-    input_error = (
+    input_error: str = (
         "You passed an unsupported argument to "
         "build_portfolio. The following arguments are not "
         "supported:"
         "\n {}\nOnly the following arguments are allowed:\n "
         "{}\n" + docstring_msg
     )
-    input_comb_error = (
+    input_comb_error: str = (
         "Error: None of the input arguments {} are allowed "
         "in combination with {}.\n" + docstring_msg
     )
 
     # list of all valid optional input arguments
-    all_input_args = [
+    all_input_args: List[str] = [
         "pf_allocation",
         "names",
         "start_date",
@@ -1241,17 +1261,17 @@ def build_portfolio(**kwargs):
         )
     # check for valid input arguments
     if not _all_list_ele_in_other(kwargs.keys(), all_input_args):
-        unsupported_input = _list_complement(all_input_args, kwargs.keys())
+        unsupported_input: List[str] = _list_complement(all_input_args, kwargs.keys())
         raise ValueError(
             "Error:\n" + input_error.format(unsupported_input, all_input_args)
         )
 
     # create an empty portfolio
-    pf = Portfolio()
+    pf: Portfolio = Portfolio()
 
     # 1. pf_allocation, names, start_date, end_date, data_api, market_index
-    allowed_mandatory_args = ["names"]
-    allowed_input_args = [
+    allowed_mandatory_args: List[str] = ["names"]
+    allowed_input_args: List[str] = [
         "names",
         "pf_allocation",
         "start_date",
@@ -1259,7 +1279,7 @@ def build_portfolio(**kwargs):
         "data_api",
         "market_index",
     ]
-    complement_input_args = _list_complement(allowed_input_args, all_input_args)
+    complement_input_args: List[str] = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
         if _any_list_ele_in_other(complement_input_args, kwargs.keys()):
@@ -1270,9 +1290,9 @@ def build_portfolio(**kwargs):
         pf = _build_portfolio_from_api(**kwargs)
 
     # 2. pf_allocation, data
-    allowed_mandatory_args = ["data"]
-    allowed_input_args = ["data", "pf_allocation"]
-    complement_input_args = _list_complement(allowed_input_args, all_input_args)
+    allowed_mandatory_args: List[str] = ["data"]
+    allowed_input_args: List[str] = ["data", "pf_allocation"]
+    complement_input_args: List[str] = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
         if _any_list_ele_in_other(complement_input_args, kwargs.keys()):
