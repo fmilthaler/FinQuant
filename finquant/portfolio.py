@@ -68,7 +68,7 @@ from finquant.returns import (
 )
 from finquant.stock import Stock
 from finquant.type_definitions import FLOAT, INT, NUMERIC,\
-    SERIES_OR_DATAFRAME, ARRAY_OR_LIST
+    SERIES_OR_DATAFRAME, ARRAY_OR_LIST, STRING_OR_DATETIME
 
 
 class Portfolio:
@@ -902,6 +902,55 @@ def _get_stocks_data_columns(data, names, cols):
             newcolnames.update({_get_quandl_data_column_label(name, cols[0]): name})
         data.rename(columns=newcolnames, inplace=True)
     return data
+
+
+def _common_type_checks(**kwargs) -> None:
+    """
+    Perform generic type checks on input variables.
+
+    This function performs various type checks on a set of input variables. It helps to ensure that the input
+    values conform to the expected types and conditions, raising a TypeError with a descriptive error message
+    if any check fails.
+
+    Parameters:
+        **kwargs: Arbitrary keyword arguments representing the input variables to be checked.
+
+    Raises:
+        TypeError: If any of the type checks fail, a TypeError is raised with a descriptive error message
+                   indicating the expected type and conditions for each variable.
+
+    Example usage:
+        _common_type_checks(data=pd.DataFrame(), names=['name1', 'name2'], start_date='2023-08-01', freq=10, generic_df=[df1, df2])
+    """
+
+    type_checks = {
+        'data': (pd.DataFrame, "a non-empty pandas.DataFrame"),
+        'pf_allocation': (pd.DataFrame, "a non-empty pd.DataFrame"),
+        'names': (Union[List, np.ndarray], "a non-empty List[str] or np.ndarray[str]"),
+        'cols': (List, "a non-empty List[str]"),
+        'start_date': (Union[str, datetime.datetime], "of type str or datetime.datetime"),
+        'end_date': (Union[str, datetime.datetime], "of type str or datetime.datetime"),
+        'data_api': (str, "of type str"),
+        'market_index': (str, "of type str"),
+        'freq': ((int, np.integer), "of type integer"),
+        'generic_str': (str, "of type str"),
+        'generic_int': ((int, np.integer), "of type integer"),
+        'generic_float': ((float, np.floating), "of type float"),
+        'generic_numeric': ((int, np.integer, float, np.floating), "of type integer or float"),
+        'generic_df': (pd.DataFrame, "a non-empty pd.DataFrame"),
+        'generic_series': (pd.Series, "a non-empty pandas.Series"),
+        'generic_datetime': (Union[str, datetime.datetime], "of type str or datetime.datetime"),
+    }
+
+    for arg_name, (arg_type, expected_type) in type_checks.items():
+        arg_values = kwargs.get(arg_name)
+        if arg_values is not None:
+            if not isinstance(arg_values, list):
+                arg_values = [arg_values]
+
+            for arg_value in arg_values:
+                if not isinstance(arg_value, arg_type) or (isinstance(arg_value, pd.DataFrame) and arg_value.empty):
+                    raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
 
 
 def _build_portfolio_from_api(

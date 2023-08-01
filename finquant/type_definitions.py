@@ -34,6 +34,7 @@ def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
 """
 
 
+from datetime import datetime
 from typing import Any, List, TypeVar, Union
 
 import numpy as np
@@ -52,3 +53,5 @@ INT = Union[np.integer[Any], int]
 # NPFloat = np.floating[Any]
 # NPInteger = np.integer[Any]
 NUMERIC = Union[INT, FLOAT]
+# String/Datetime types
+STRING_OR_DATETIME = Union[str, datetime]
