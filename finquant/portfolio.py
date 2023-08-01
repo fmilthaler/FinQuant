@@ -50,7 +50,7 @@ Finally, functions are implemented to generate the following plots:
 """
 
 import datetime
-from typing import List
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib.pylab as plt
 import numpy as np
@@ -67,6 +67,8 @@ from finquant.returns import (
     historical_mean_return,
 )
 from finquant.stock import Stock
+from finquant.type_definitions import FLOAT, INT, NUMERIC,\
+    SERIES_OR_DATAFRAME, ARRAY_OR_LIST
 
 
 class Portfolio:
@@ -77,7 +79,26 @@ class Portfolio:
     an object of ``Stock``.
     """
 
-    def __init__(self):
+    portfolio: pd.DataFrame
+    stocks: Dict[str, Stock]
+    data: pd.DataFrame
+    expected_return: Optional[FLOAT]
+    volatility: Optional[FLOAT]
+    sharpe: Optional[FLOAT]
+    var: Optional[FLOAT]
+    skew: Optional[pd.Series]
+    kurtosis: Optional[pd.Series]
+    __totalinvestment: Optional[NUMERIC]
+    __var_confidence_level: FLOAT
+    __risk_free_rate: NUMERIC
+    __freq: INT
+    ef: Optional[EfficientFrontier]
+    mc: Optional[MonteCarloOpt]
+    __market_index: Optional[Market]
+    beta_stocks: pd.DataFrame
+    beta: Optional[FLOAT]
+
+    def __init__(self) -> None:
         """Initiates ``Portfolio``."""
         # initilisating instance variables
         self.portfolio = pd.DataFrame()
@@ -89,26 +110,25 @@ class Portfolio:
         self.var = None
         self.skew = None
         self.kurtosis = None
-        self.totalinvestment = None
-        self.var_confidence_level = 0.95
-        self.risk_free_rate = 0.005
-        self.freq = 252
-        # instance variables for Efficient Frontier and
-        # Monte Carlo optimisations
+        self.__totalinvestment = None
+        self.__var_confidence_level = 0.95
+        self.__risk_free_rate = 0.005
+        self.__freq = 252
+        # instance variables for Efficient Frontier and Monte Carlo optimisations
         self.ef = None
         self.mc = None
         # instance variable for Market class
-        self.market_index = None
+        self.__market_index = None
         # dataframe containing beta values of stocks
         self.beta_stocks = pd.DataFrame(index=["beta"])
         self.beta = None
 
     @property
-    def totalinvestment(self):
+    def totalinvestment(self) -> Optional[NUMERIC]:
         return self.__totalinvestment
 
     @totalinvestment.setter
-    def totalinvestment(self, val):
+    def totalinvestment(self, val: NUMERIC) -> None:
         if val is not None:
             # treat "None" as initialisation
             if not isinstance(val, (float, int, np.floating, np.integer)):
@@ -120,12 +140,12 @@ class Portfolio:
             self.__totalinvestment = val
 
     @property
-    def freq(self):
+    def freq(self) -> INT:
         return self.__freq
 
     @freq.setter
-    def freq(self, val):
-        if not isinstance(val, int):
+    def freq(self, val: INT) -> None:
+        if not isinstance(val, (int, np.integer)):
             raise ValueError("Time window/frequency must be an integer.")
         if val <= 0:
             raise ValueError("freq must be > 0.")
@@ -134,19 +154,19 @@ class Portfolio:
         self._update()
 
     @property
-    def risk_free_rate(self):
+    def risk_free_rate(self) -> NUMERIC:
         return self.__risk_free_rate
 
     @risk_free_rate.setter
-    def risk_free_rate(self, val):
-        if not isinstance(val, (float, int)):
+    def risk_free_rate(self, val: NUMERIC) -> None:
+        if not isinstance(val, (float, int, np.floating, np.integer)):
             raise ValueError("Risk free rate must be a float or an integer.")
         self.__risk_free_rate = val
         # now that this changed, update other quantities
         self._update()
 
     @property
-    def market_index(self) -> Market:
+    def market_index(self) -> Optional[Market]:
         return self.__market_index
 
     @market_index.setter
@@ -158,12 +178,12 @@ class Portfolio:
         self.__market_index = index
 
     @property
-    def var_confidence_level(self):
+    def var_confidence_level(self) -> FLOAT:
         return self.__var_confidence_level
 
     @var_confidence_level.setter
-    def var_confidence_level(self, val):
-        if not isinstance(val, float):
+    def var_confidence_level(self, val: FLOAT) -> None:
+        if not isinstance(val, (float, np.floating)):
             raise ValueError("confidence level is expected to be a float.")
         if val >= 1 or val <= 0:
             raise ValueError("confidence level is expected to be between 0 and 1.")
@@ -220,7 +240,7 @@ class Portfolio:
             # add beta of stock to portfolio's betas dataframe
             self.beta_stocks[stock.name] = [beta_stock]
 
-    def _update(self):
+    def _update(self) -> None:
         # sanity check (only update values if none of the below is empty):
         if not (self.portfolio.empty or not self.stocks or self.data.empty):
             self.totalinvestment = self.portfolio.Allocation.sum()
@@ -233,7 +253,7 @@ class Portfolio:
             if self.market_index is not None:
                 self.beta = self.comp_beta()
 
-    def get_stock(self, name):
+    def get_stock(self, name: str) -> Stock:
         """Returns the instance of ``Stock`` with name ``name``.
 
         :Input:
