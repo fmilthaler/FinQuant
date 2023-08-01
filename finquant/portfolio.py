@@ -265,7 +265,7 @@ class Portfolio:
         """
         return self.stocks[name]
 
-    def comp_cumulative_returns(self):
+    def comp_cumulative_returns(self) -> pd.DataFrame:
         """Computes the cumulative returns of all stocks in the
         portfolio.
         See ``finquant.returns.cumulative_returns``.
@@ -275,7 +275,7 @@ class Portfolio:
         """
         return cumulative_returns(self.data)
 
-    def comp_daily_returns(self):
+    def comp_daily_returns(self) -> pd.DataFrame:
         """Computes the daily returns (percentage change) of all
         stocks in the portfolio. See ``finquant.returns.daily_returns``.
 
@@ -285,7 +285,7 @@ class Portfolio:
         """
         return daily_returns(self.data)
 
-    def comp_daily_log_returns(self):
+    def comp_daily_log_returns(self) -> pd.DataFrame:
         """Computes the daily log returns of all stocks in the portfolio.
         See ``finquant.returns.daily_log_returns``.
 
@@ -294,7 +294,7 @@ class Portfolio:
         """
         return daily_log_returns(self.data)
 
-    def comp_mean_returns(self, freq=252):
+    def comp_mean_returns(self, freq:INT=252) -> pd.Series:
         """Computes the mean returns based on historical stock price data.
         See ``finquant.returns.historical_mean_return``.
 
@@ -305,9 +305,10 @@ class Portfolio:
         :Output:
          :ret: a ``pandas.DataFrame`` of historical mean Returns.
         """
+        _common_type_checks(freq=freq)
         return historical_mean_return(self.data, freq=freq)
 
-    def comp_stock_volatility(self, freq=252):
+    def comp_stock_volatility(self, freq:INT=252) -> pd.Series:
         """Computes the Volatilities of all the stocks individually
 
         :Input:
@@ -318,11 +319,10 @@ class Portfolio:
          :volatilies: ``pandas.DataFrame`` with the individual Volatilities of all stocks
              of the portfolio.
         """
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
+        _common_type_checks(freq=freq)
         return self.comp_daily_returns().std() * np.sqrt(freq)
 
-    def comp_weights(self):
+    def comp_weights(self) -> pd.Series:
         """Computes and returns a ``pandas.Series`` of the weights/allocation
         of the stocks of the portfolio.
 
@@ -334,7 +334,7 @@ class Portfolio:
         # in respect of the total investment
         return (self.portfolio["Allocation"] / self.totalinvestment).astype(np.float64)
 
-    def comp_expected_return(self, freq=252):
+    def comp_expected_return(self, freq:INT=252) -> FLOAT:
         """Computes the Expected Return of the portfolio.
 
         :Input:
@@ -344,15 +344,14 @@ class Portfolio:
         :Output:
          :expected_return: ``float`` the Expected Return of the portfolio.
         """
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
-        pf_return_means = historical_mean_return(self.data, freq=freq)
-        weights = self.comp_weights()
-        expected_return = weighted_mean(pf_return_means.values, weights)
+        _common_type_checks(freq=freq)
+        pf_return_means: pd.Series = historical_mean_return(self.data, freq=freq)
+        weights: pd.Series = self.comp_weights()
+        expected_return: FLOAT = weighted_mean(pf_return_means.values, weights)
         self.expected_return = expected_return
         return expected_return
 
-    def comp_volatility(self, freq=252):
+    def comp_volatility(self, freq:INT=252)->FLOAT:
         """Computes the Volatility of the given portfolio.
 
         :Input:
@@ -362,14 +361,13 @@ class Portfolio:
         :Output:
          :volatility: ``float`` the Volatility of the portfolio.
         """
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
+        _common_type_checks(freq=freq)
         # computing the volatility of a portfolio
         volatility = weighted_std(self.comp_cov(), self.comp_weights()) * np.sqrt(freq)
         self.volatility = volatility
         return volatility
 
-    def comp_cov(self):
+    def comp_cov(self)->pd.DataFrame:
         """Compute and return a ``pandas.DataFrame`` of the covariance matrix
         of the portfolio.
 
@@ -380,7 +378,7 @@ class Portfolio:
         returns = daily_returns(self.data)
         return returns.cov()
 
-    def comp_sharpe(self):
+    def comp_sharpe(self)->FLOAT:
         """Compute and return the Sharpe Ratio of the portfolio.
 
         :Output:
@@ -393,14 +391,14 @@ class Portfolio:
         self.sharpe = sharpe
         return sharpe
 
-    def comp_var(self):
+    def comp_var(self) -> FLOAT:
         """Compute and return the Value at Risk of the portfolio.
 
         :Output:
          :VaR: ``float``, the Value at Risk of the portfolio
         """
         # compute the Value at Risk of the portfolio
-        var = value_at_risk(
+        var: FLOAT = value_at_risk(
             investment=self.totalinvestment,
             mu=self.expected_return,
             sigma=self.volatility,
@@ -409,7 +407,7 @@ class Portfolio:
         self.var = var
         return var
 
-    def comp_beta(self) -> float:
+    def comp_beta(self) -> Optional[FLOAT]:
         """Compute and return the Beta parameter of the portfolio.
 
         :Output:
@@ -417,22 +415,25 @@ class Portfolio:
         """
 
         # compute the Beta parameter of the portfolio
-        weights = self.comp_weights()
-        beta = weighted_mean(self.beta_stocks.transpose()["beta"].values, weights)
+        weights: pd.Series = self.comp_weights()
+        if weights.size == self.beta_stocks.size:
+            beta: FLOAT = weighted_mean(self.beta_stocks.transpose()["beta"].values, weights)
 
-        self.beta = beta
-        return beta
+            self.beta = beta
+            return beta
+        else:
+            return None
 
-    def _comp_skew(self):
+    def _comp_skew(self)->pd.Series:
         """Computes and returns the skewness of the stocks in the portfolio."""
         return self.data.skew()
 
-    def _comp_kurtosis(self):
+    def _comp_kurtosis(self)->pd.Series:
         """Computes and returns the Kurtosis of the stocks in the portfolio."""
         return self.data.kurt()
 
     # optimising the investments with the efficient frontier class
-    def _get_ef(self):
+    def _get_ef(self)->EfficientFrontier:
         """If self.ef does not exist, create and return an instance of
         finquant.efficient_frontier.EfficientFrontier, else, return the
         existing instance.
@@ -447,7 +448,7 @@ class Portfolio:
             )
         return self.ef
 
-    def ef_minimum_volatility(self, verbose=False):
+    def ef_minimum_volatility(self, verbose:bool=False)->pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.minimum_volatility``.
 
@@ -463,14 +464,14 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.minimum_volatility()
+        opt_weights: pd.DataFrame = ef.minimum_volatility()
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_maximum_sharpe_ratio(self, verbose=False):
+    def ef_maximum_sharpe_ratio(self, verbose:bool=False)->pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.maximum_sharpe_ratio``.
 
@@ -487,14 +488,14 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.maximum_sharpe_ratio()
+        opt_weights: pd.DataFrame = ef.maximum_sharpe_ratio()
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_return(self, target, verbose=False):
+    def ef_efficient_return(self, target: NUMERIC, verbose:bool=False)->pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_return``.
 
@@ -511,14 +512,14 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.efficient_return(target)
+        opt_weights: pd.DataFrame = ef.efficient_return(target)
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_volatility(self, target, verbose=False):
+    def ef_efficient_volatility(self, target: NUMERIC, verbose:bool=False)->pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_volatility``.
 
@@ -536,14 +537,14 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.efficient_volatility(target)
+        opt_weights: pd.DataFrame = ef.efficient_volatility(target)
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_frontier(self, targets=None):
+    def ef_efficient_frontier(self, targets: Optional[ARRAY_OR_LIST]=None)->np.ndarray[np.float64, 2] :
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_frontier``.
 
@@ -562,23 +563,23 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        efrontier = ef.efficient_frontier(targets)
+        efrontier: np.ndarray[np.float64, 2] = ef.efficient_frontier(targets)
         return efrontier
 
-    def ef_plot_efrontier(self):
+    def ef_plot_efrontier(self)->None:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.plot_efrontier``.
 
         Plots the Efficient Frontier."""
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # plot efficient frontier
         ef.plot_efrontier()
 
-    def ef_plot_optimal_portfolios(self):
+    def ef_plot_optimal_portfolios(self)->None:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.plot_optimal_portfolios``.
 
@@ -589,12 +590,12 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
     # optimising the investments with the efficient frontier class
-    def _get_mc(self, num_trials=1000):
+    def _get_mc(self, num_trials:int=1000)->MonteCarloOpt:
         """If self.mc does not exist, create and return an instance of
         finquant.monte_carlo.MonteCarloOpt, else, return the existing instance.
         """
@@ -611,7 +612,7 @@ class Portfolio:
 
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
-    def mc_optimisation(self, num_trials=1000):
+    def mc_optimisation(self, num_trials:int=1000)->Tuple[pd.DataFrame, pd.DataFrame]:
         """Interface to
         ``finquant.monte_carlo.MonteCarloOpt.optimisation``.
 
@@ -632,11 +633,11 @@ class Portfolio:
         # dismiss previous instance of mc, as we are performing a new MC optimisation:
         self.mc = None
         # get instance of MonteCarloOpt
-        mc = self._get_mc(num_trials)
+        mc: MonteCarloOpt = self._get_mc(num_trials)
         opt_weights, opt_results = mc.optimisation()
         return opt_weights, opt_results
 
-    def mc_plot_results(self):
+    def mc_plot_results(self)->None:
         """Plots the results of the Monte Carlo run, with all of the randomly
         generated weights/portfolios, as well as markers for the portfolios with the
 
@@ -644,18 +645,18 @@ class Portfolio:
         - maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
-        mc = self._get_mc()
+        mc: MonteCarloOpt = self._get_mc()
         mc.plot_results()
 
-    def mc_properties(self):
+    def mc_properties(self)->None:
         """Calculates and prints out Expected annualised Return,
         Volatility and Sharpe Ratio of optimised portfolio.
         """
         # get instance of MonteCarloOpt
-        mc = self._get_mc()
+        mc: MonteCarloOpt = self._get_mc()
         mc.properties()
 
-    def plot_stocks(self, freq=252):
+    def plot_stocks(self, freq:int=252)->None:
         """Plots the Expected annual Returns over annual Volatility of
         the stocks of the portfolio.
 
@@ -663,9 +664,10 @@ class Portfolio:
          :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
         """
+        _common_type_checks(freq=freq)
         # annual mean returns of all stocks
-        stock_returns = self.comp_mean_returns(freq=freq)
-        stock_volatility = self.comp_stock_volatility(freq=freq)
+        stock_returns: pd.Series = self.comp_mean_returns(freq=freq)
+        stock_volatility: pd.Series = self.comp_stock_volatility(freq=freq)
         # adding stocks of the portfolio to the plot
         # plot stocks individually:
         plt.scatter(stock_volatility, stock_returns, marker="o", s=100, label="Stocks")
@@ -679,7 +681,7 @@ class Portfolio:
                 label=i,
             )
 
-    def properties(self):
+    def properties(self)->None:
         """Nicely prints out the properties of the portfolio:
 
         - Expected Return,
@@ -718,7 +720,7 @@ class Portfolio:
         string += "-" * 70
         print(string)
 
-    def __str__(self):
+    def __str__(self)->str:
         # print short description
         string = "Contains information about a portfolio."
         return string
