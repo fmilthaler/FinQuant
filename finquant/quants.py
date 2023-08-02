@@ -79,13 +79,13 @@ def sharpe_ratio(
         raise ValueError("exp_return is expected to be an integer or float.")
     if not isinstance(volatility, (np.number, int, float)):
         raise ValueError("volatility is expected to be an integer or float.")
-    if not isinstance(risk_free_rate, (np.number, int, float)):
-        raise ValueError("risk_free_rate is expected to be an integer or float.")
+    if not isinstance(risk_free_rate, (np.floating, float)):
+        raise ValueError("risk_free_rate is expected to be a float.")
     res_sharpe_ratio: FLOAT = (exp_return - risk_free_rate) / float(volatility)
     return res_sharpe_ratio
 
 
-def sortino_ratio(exp_return, downs_risk, risk_free_rate=0.005):
+def sortino_ratio(exp_return: NUMERIC, downs_risk: NUMERIC, risk_free_rate: FLOAT=0.005) -> FLOAT:
     """Computes the Sortino Ratio
 
     :Input:
@@ -115,7 +115,7 @@ def sortino_ratio(exp_return, downs_risk, risk_free_rate=0.005):
         return (exp_return - risk_free_rate) / float(downs_risk)
 
 
-def downside_risk(data: pd.DataFrame, weights, risk_free_rate=0.005) -> float:
+def downside_risk(data: pd.DataFrame, weights: ARRAY_OR_SERIES, risk_free_rate: FLOAT=0.005) -> FLOAT:
     """Computes the downside risk (target downside deviation of returns).
 
     :Input:
