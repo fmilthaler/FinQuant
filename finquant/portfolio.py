@@ -190,6 +190,14 @@ class Portfolio:
         - ``stocks``: ``dictionary``, adds an entry for ``stock``
         - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
+        Also, the following instance variables are (re-)computed:
+
+        - ``expected_return``: Expected Return of the portfolio
+        - ``volatility``: Volatility of the portfolio
+        - ``sharpe``: Sharpe Ratio of the portfolio
+        - ``skew``: Skewness of the portfolio's stocks
+        - ``kurtosis``: Kurtosis of the portfolio's stocks
+
         :Input:
          :stock: an object of ``Stock``
         """
