@@ -26,7 +26,11 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
         raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     if not isinstance(dividend, (float, int, np.floating, np.integer)):
         raise ValueError("dividend is expected to be an integer or float.")
-    return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0]).astype(np.float64)
+    return (
+        data.dropna(axis=0, how="any")
+        .apply(lambda x: (x - x[0] + dividend) / x[0])
+        .astype(np.float64)
+    )
 
 
 def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
@@ -43,7 +47,12 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
         raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
-    return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan).astype(np.float64)
+    return (
+        data.pct_change()
+        .dropna(how="all")
+        .replace([np.inf, -np.inf], np.nan)
+        .astype(np.float64)
+    )
 
 
 def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:

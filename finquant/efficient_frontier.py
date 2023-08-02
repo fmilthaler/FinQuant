@@ -357,7 +357,9 @@ class EfficientFrontier:
                     target,
                 ]
             )
-        self.efrontier: np.ndarray[np.float64, 2] = np.array(efrontier, dtype=np.float64)
+        self.efrontier: np.ndarray[np.float64, 2] = np.array(
+            efrontier, dtype=np.float64
+        )
         if self.efrontier.size == 0 or self.efrontier.ndim != 2:
             raise ValueError("Error: Efficient frontier could not be computed.")
         return self.efrontier
@@ -379,7 +381,6 @@ class EfficientFrontier:
         plt.xlabel("Volatility")
         plt.ylabel("Expected Return")
         plt.legend()
-
 
     def plot_optimal_portfolios(self) -> None:
         """Plots markers of the optimised portfolios for
@@ -447,7 +448,9 @@ class EfficientFrontier:
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
         if self.weights.size == 0:
-            raise ValueError("Error: weights are empty. Please perform an optimisation first.")
+            raise ValueError(
+                "Error: weights are empty. Please perform an optimisation first."
+            )
         expected_return, volatility, sharpe = annualised_portfolio_quantities(
             self.weights,
             self.mean_returns,
