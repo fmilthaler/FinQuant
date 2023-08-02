@@ -85,12 +85,12 @@ def sharpe_ratio(
     return res_sharpe_ratio
 
 
-def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
+def sortino_ratio(exp_return, downs_risk, risk_free_rate=0.005):
     """Computes the Sortino Ratio
 
     :Input:
      :exp_return: ``int``/``float``, Expected Return of a portfolio
-     :downside_risk: ``int``/``float``, Downside Risk of a portfolio
+     :downs_risk: ``int``/``float``, Downside Risk of a portfolio
      :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
 
     :Output:
@@ -102,17 +102,17 @@ def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
     ):
         raise ValueError("exp_return is expected to be an integer or float.")
     if not isinstance(
-        downside_risk, (int, float, np.int32, np.int64, np.float32, np.float64)
+        downs_risk, (int, float, np.int32, np.int64, np.float32, np.float64)
     ):
         raise ValueError("volatility is expected to be an integer or float.")
     if not isinstance(
         risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
     ):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
-    if float(downside_risk) == 0:
+    if float(downs_risk) == 0:
         return np.nan
     else:
-        return (exp_return - risk_free_rate) / float(downside_risk)
+        return (exp_return - risk_free_rate) / float(downs_risk)
 
 
 def downside_risk(data: pd.DataFrame, weights, risk_free_rate=0.005) -> float:
@@ -135,13 +135,14 @@ def downside_risk(data: pd.DataFrame, weights, risk_free_rate=0.005) -> float:
     ):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
 
-    wtd_daily_mean = weighted_mean_daily_returns(data, weights)
+    wtd_daily_mean: np.ndarray = weighted_mean_daily_returns(data, weights)
     return np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2))
 
 
 def value_at_risk(
     investment: NUMERIC, mu: NUMERIC, sigma: NUMERIC, conf_level: FLOAT = 0.95
 ) -> FLOAT:
+    # pylint: disable=C0103 # pylint doesn't understand that "mu" is a perfectly fine var name
     """Computes and returns the expected value at risk of an investment/assets.
 
     :Input:
