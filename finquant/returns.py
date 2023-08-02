@@ -1,12 +1,18 @@
 """The module provides functions to compute different kinds of returns of stocks."""
 
 
-from typing import Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
-from finquant.type_definitions import INT, NUMERIC, SERIES_OR_DATAFRAME
+from finquant.type_definitions import (
+    ARRAY_OR_SERIES,
+    FLOAT,
+    INT,
+    NUMERIC,
+    SERIES_OR_DATAFRAME,
+)
 
 
 def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFrame:
@@ -28,7 +34,7 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
         raise ValueError("dividend is expected to be an integer or float.")
     return (
         data.dropna(axis=0, how="any")
-        .apply(lambda x: (x - x[0] + dividend) / x[0])
+        .apply(lambda x: (x - x[0] + dividend) / float(x[0]))
         .astype(np.float64)
     )
 
@@ -55,7 +61,9 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def weighted_mean_daily_returns(data, weights):
+def weighted_mean_daily_returns(
+    data: pd.DataFrame, weights: ARRAY_OR_SERIES
+) -> np.ndarray[FLOAT, Any]:
     """Returns DataFrame with the daily weighted mean returns
 
     :Input:
@@ -65,7 +73,8 @@ def weighted_mean_daily_returns(data, weights):
     :Output:
       :ret: ``numpy.array`` of weighted mean daily percentage change of Returns
     """
-    return np.dot(daily_returns(data), weights)
+    res: np.ndarray[FLOAT, Any] = np.dot(daily_returns(data), weights)
+    return res
 
 
 def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
