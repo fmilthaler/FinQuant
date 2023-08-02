@@ -33,13 +33,13 @@ def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
     return 5.0
 
 """
+# pylint: disable=C0103
 
 
 from datetime import datetime
-from typing import Any, List, TypeVar, Union
+from typing import List, Union
 
 import numpy as np
-import numpy.typing as npt
 import pandas as pd
 
 # Type Aliases:
