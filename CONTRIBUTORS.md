@@ -17,6 +17,7 @@ Thank you to all the individuals who have contributed to this project!
 - @drcsturm: bug fix for single stock portfolio
 - @donin1129: bug fix for pandas index reference
 - @aft90: helped to implement the Sortino Ratio
+- @nuvious: added `defer_update` flag to `add_stock` function so bulk adding of stocks can have update deferred until after all are added (improved performance).
 
 ## Special Thanks
 
