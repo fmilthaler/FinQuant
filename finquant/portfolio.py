@@ -194,7 +194,10 @@ class Portfolio:
 
         - ``expected_return``: Expected Return of the portfolio
         - ``volatility``: Volatility of the portfolio
+        - ``downside_risk``: Downside Risk
+        - ``var``: Value at Risk of the portfolio
         - ``sharpe``: Sharpe Ratio of the portfolio
+        - ``sortino``: Sortino Ratio of the portfolio
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
