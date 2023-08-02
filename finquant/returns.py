@@ -18,7 +18,8 @@ def cumulative_returns(data, dividend=0):
     :Output:
      :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
     """
-    return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0])
+    data = data.dropna(axis=0, how="any")
+    return ((data - data.iloc[0] + dividend) / data.iloc[0]).astype(np.float64)
 
 
 def daily_returns(data):
