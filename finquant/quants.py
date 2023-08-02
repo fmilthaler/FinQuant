@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
+from finquant.returns import weighted_mean_daily_returns
 from finquant.type_definitions import (
     ARRAY_OR_DATAFRAME,
     ARRAY_OR_SERIES,
@@ -17,7 +18,6 @@ from finquant.type_definitions import (
     INT,
     NUMERIC,
 )
-from finquant.returns import weighted_mean_daily_returns
 
 
 def weighted_mean(means: ARRAY_OR_SERIES, weights: ARRAY_OR_SERIES) -> FLOAT:
