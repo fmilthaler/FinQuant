@@ -964,15 +964,19 @@ def _common_type_checks(**kwargs) -> None:
     for arg_name, (arg_type, expected_type) in type_checks.items():
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
-            if not isinstance(arg_values, Union[List, np.ndarray]):
+            if (arg_name in ("names", "cols")):
+                if not isinstance(arg_values, arg_type) or (isinstance(arg_values, arg_type) and not all(isinstance(val, str) for val in arg_values)):
+                    raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
+                elif len(arg_values) == 0:
+                    raise ValueError(f"Error: {arg_name} is expected to be {expected_type}.")
+                continue
+            else:
                 arg_values = [arg_values]
-
-            if (arg_name == 'names' or arg_name == 'cols') and not all(isinstance(val, str) for val in arg_values):
-                raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[str].")
-            elif arg_name != 'names' and arg_name != 'cols':
                 for arg_value in arg_values:
-                    if not isinstance(arg_value, arg_type) or (isinstance(arg_value, Union[pd.Series, pd.DataFrame]) and arg_value.empty):
+                    if not isinstance(arg_value, arg_type):
                         raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
+                    elif (isinstance(arg_value, (pd.Series, pd.DataFrame)) and arg_value.empty) or (isinstance(arg_value, (List, np.ndarray)) and len(arg_value) == 0):
+                        raise ValueError(f"Error: {arg_name} is expected to be non-empty {expected_type}.")
 
 
 def _build_portfolio_from_api(
