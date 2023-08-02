@@ -6,6 +6,7 @@ Type Aliases:
 -------------
 - ``ARRAY_OR_SERIES``: A type alias representing either a NumPy ``ndarray`` or a pandas ``Series``.
 - ``ARRAY_OR_DATAFRAME``: A type alias representing either a NumPy ``ndarray`` or a pandas ``DataFrame``.
+- ``ARRAY_OR_LIST``: A type alias representing either a NumPy ``ndarray`` or a ``List``.
 - ``SERIES_OR_DATAFRAME``: A type alias representing either a pandas ``Series`` or a pandas ``DataFrame``.
 
 Numeric Types:
@@ -42,16 +43,15 @@ import numpy.typing as npt
 import pandas as pd
 
 # Type Aliases:
+ARRAY_OR_LIST = Union[np.ndarray, List]
 ARRAY_OR_SERIES = Union[np.ndarray, pd.Series]
 ARRAY_OR_DATAFRAME = Union[np.ndarray, pd.DataFrame]
-ARRAY_OR_LIST = Union[np.ndarray, List]
 SERIES_OR_DATAFRAME = Union[pd.Series, pd.DataFrame]
 
 # Numeric types
-FLOAT = Union[np.floating[Any], float]
-INT = Union[np.integer[Any], int]
-# NPFloat = np.floating[Any]
-# NPInteger = np.integer[Any]
+FLOAT = Union[np.floating, float]
+INT = Union[np.integer, int]
 NUMERIC = Union[INT, FLOAT]
+
 # String/Datetime types
 STRING_OR_DATETIME = Union[str, datetime]
