@@ -190,7 +190,8 @@ class Portfolio:
         - ``stocks``: ``dictionary``, adds an entry for ``stock``
         - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
-        Also, the following instance variables are (re-)computed:
+        Also, if argument ``defer_update`` is ``True``,
+        the following instance variables are (re-)computed:
 
         - ``expected_return``: Expected Return of the portfolio
         - ``volatility``: Volatility of the portfolio
