@@ -53,7 +53,7 @@ class MonteCarloOpt(MonteCarlo):
     """
 
     returns: pd.DataFrame
-    risk_free_rate: float
+    risk_free_rate: FLOAT
     freq: int
     initial_weights: Optional[np.ndarray[np.float64, 1]]
 
@@ -61,7 +61,7 @@ class MonteCarloOpt(MonteCarlo):
         self,
         returns: pd.DataFrame,
         num_trials: int = 1000,
-        risk_free_rate: float = 0.005,
+        risk_free_rate: FLOAT = 0.005,
         freq: int = 252,
         initial_weights=None,
     ):
@@ -95,8 +95,8 @@ class MonteCarloOpt(MonteCarlo):
             raise ValueError("returns is expected to be a pandas.DataFrame")
         if not isinstance(num_trials, int):
             raise ValueError("num_trials is expected to be an integer")
-        if not isinstance(risk_free_rate, (int, float)):
-            raise ValueError("risk_free_rate is expected to be an integer or float.")
+        if not isinstance(risk_free_rate, FLOAT):
+            raise ValueError("risk_free_rate is expected to be a float.")
         if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
         self.returns = returns

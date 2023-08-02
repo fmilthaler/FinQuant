@@ -104,7 +104,7 @@ class Portfolio:
     kurtosis: Optional[pd.Series]
     __totalinvestment: Optional[NUMERIC]
     __var_confidence_level: FLOAT
-    __risk_free_rate: NUMERIC
+    __risk_free_rate: FLOAT
     __freq: INT
     ef: Optional[EfficientFrontier]
     mc: Optional[MonteCarloOpt]
@@ -170,13 +170,13 @@ class Portfolio:
         self._update()
 
     @property
-    def risk_free_rate(self) -> NUMERIC:
+    def risk_free_rate(self) -> FLOAT:
         return self.__risk_free_rate
 
     @risk_free_rate.setter
-    def risk_free_rate(self, val: NUMERIC) -> None:
-        if not isinstance(val, (float, int, np.floating, np.integer)):
-            raise ValueError("Risk free rate must be a float or an integer.")
+    def risk_free_rate(self, val: FLOAT) -> None:
+        if not isinstance(val, (float, np.floating)):
+            raise ValueError("Risk free rate must be a float.")
         self.__risk_free_rate = val
         # now that this changed, update other quantities
         self._update()

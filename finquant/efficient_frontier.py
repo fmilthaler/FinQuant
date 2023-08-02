@@ -32,7 +32,7 @@ class EfficientFrontier:
     # Attributes:
     mean_returns: pd.Series
     cov_matrix: pd.DataFrame
-    risk_free_rate: float
+    risk_free_rate: FLOAT
     freq: int
     method: str
     names: List[str]
@@ -49,7 +49,7 @@ class EfficientFrontier:
         self,
         mean_returns: pd.Series,
         cov_matrix: pd.DataFrame,
-        risk_free_rate: float = 0.005,
+        risk_free_rate: FLOAT = 0.005,
         freq: int = 252,
         method: str = "SLSQP",
     ):
@@ -101,8 +101,8 @@ class EfficientFrontier:
             "trust-exact",
             "trust-krylov",
         ]
-        if not isinstance(risk_free_rate, (int, float)):
-            raise ValueError("risk_free_rate is expected to be an integer or float.")
+        if not isinstance(risk_free_rate, FLOAT):
+            raise ValueError("risk_free_rate is expected to be a float.")
         if not isinstance(method, str):
             raise ValueError("method is expected to be a string.")
         if method not in supported_methods:
