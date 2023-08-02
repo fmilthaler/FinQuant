@@ -38,12 +38,12 @@ class EfficientFrontier:
     names: List[str]
     num_stocks: int
     last_optimisation: str
-    bounds: Tuple[Tuple[int, int], Tuple[int, int]]
-    x_0: np.ndarray[np.float64, 1]
+    bounds: Tuple[Tuple[int, int], ...]
+    x_0: np.ndarray[np.float64, Any]
     constraints: Dict[str, Union[str, Callable[[Any], FLOAT]]]
-    weights: np.ndarray[np.float64, 1]
+    weights: np.ndarray[np.float64, Any]
     df_weights: pd.DataFrame
-    efrontier: np.ndarray[np.float64, 2]
+    efrontier: np.ndarray[np.float64, Any]
 
     def __init__(
         self,
@@ -101,7 +101,7 @@ class EfficientFrontier:
             "trust-exact",
             "trust-krylov",
         ]
-        if not isinstance(risk_free_rate, FLOAT):
+        if not isinstance(risk_free_rate, (np.floating, float)):
             raise ValueError("risk_free_rate is expected to be a float.")
         if not isinstance(method, str):
             raise ValueError("method is expected to be a string.")
@@ -122,7 +122,7 @@ class EfficientFrontier:
         bound = (0, 1)
         self.bounds = tuple(bound for _ in range(self.num_stocks))
         self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=np.float64)
-        self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
+        self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1.0}
 
         # placeholder for optimised values/weights
         self.weights = np.empty(0, dtype=np.float64)
@@ -323,7 +323,7 @@ class EfficientFrontier:
 
     def efficient_frontier(
         self, targets: Optional[ARRAY_OR_LIST] = None
-    ) -> np.ndarray[np.float64, 2]:
+    ) -> np.ndarray[np.float64, Any]:
         """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
         and maximum returns of the portfolio's individual stocks, and set
@@ -357,7 +357,7 @@ class EfficientFrontier:
                     target,
                 ]
             )
-        self.efrontier: np.ndarray[np.float64, 2] = np.array(
+        self.efrontier: np.ndarray[np.float64, Any] = np.array(
             efrontier, dtype=np.float64
         )
         if self.efrontier.size == 0 or self.efrontier.ndim != 2:
@@ -423,7 +423,7 @@ class EfficientFrontier:
         plt.legend()
 
     def _dataframe_weights(
-        self, weights: Optional[np.ndarray[float, Any]]
+        self, weights: Optional[np.ndarray[np.float64, Any]]
     ) -> pd.DataFrame:
         """Generates and returns a ``pandas.DataFrame`` from given
         array weights.
@@ -436,7 +436,7 @@ class EfficientFrontier:
         """
         if not isinstance(weights, np.ndarray):
             raise ValueError("weights is expected to be a numpy.ndarray")
-        return pd.DataFrame(weights, index=self.names, columns=["Allocation"])
+        return pd.DataFrame(weights, index=self.names, columns=["Allocation"]).astype(np.float64)
 
     def properties(self, verbose: bool = False) -> Tuple[NUMERIC, FLOAT, FLOAT]:
         """Calculates and prints out Expected annualised Return,
