@@ -4,7 +4,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 """
 
 
-from typing import Tuple
+from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
@@ -85,7 +85,9 @@ def sharpe_ratio(
     return res_sharpe_ratio
 
 
-def sortino_ratio(exp_return: NUMERIC, downs_risk: NUMERIC, risk_free_rate: FLOAT=0.005) -> FLOAT:
+def sortino_ratio(
+    exp_return: NUMERIC, downs_risk: FLOAT, risk_free_rate: FLOAT = 0.005
+) -> FLOAT:
     """Computes the Sortino Ratio
 
     :Input:
@@ -115,7 +117,9 @@ def sortino_ratio(exp_return: NUMERIC, downs_risk: NUMERIC, risk_free_rate: FLOA
         return (exp_return - risk_free_rate) / float(downs_risk)
 
 
-def downside_risk(data: pd.DataFrame, weights: ARRAY_OR_SERIES, risk_free_rate: FLOAT=0.005) -> FLOAT:
+def downside_risk(
+    data: pd.DataFrame, weights: ARRAY_OR_SERIES, risk_free_rate: FLOAT = 0.005
+) -> FLOAT:
     """Computes the downside risk (target downside deviation of returns).
 
     :Input:
@@ -135,8 +139,8 @@ def downside_risk(data: pd.DataFrame, weights: ARRAY_OR_SERIES, risk_free_rate: 
     ):
         raise ValueError("risk_free_rate is expected to be an integer or float.")
 
-    wtd_daily_mean: np.ndarray = weighted_mean_daily_returns(data, weights)
-    return np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2))
+    wtd_daily_mean = weighted_mean_daily_returns(data, weights)
+    return float(np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2)))
 
 
 def value_at_risk(
@@ -174,7 +178,7 @@ def annualised_portfolio_quantities(
     cov_matrix: ARRAY_OR_DATAFRAME,
     risk_free_rate: FLOAT = 0.005,
     freq: INT = 252,
-) -> Tuple[NUMERIC, FLOAT, FLOAT]:
+) -> Tuple[FLOAT, FLOAT, FLOAT]:
     """Computes and returns the expected annualised return, volatility
     and Sharpe Ratio of a portfolio.
 
