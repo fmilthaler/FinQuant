@@ -436,7 +436,9 @@ class EfficientFrontier:
         """
         if not isinstance(weights, np.ndarray):
             raise ValueError("weights is expected to be a numpy.ndarray")
-        return pd.DataFrame(weights, index=self.names, columns=["Allocation"]).astype(np.float64)
+        return pd.DataFrame(weights, index=self.names, columns=["Allocation"]).astype(
+            np.float64
+        )
 
     def properties(self, verbose: bool = False) -> Tuple[NUMERIC, FLOAT, FLOAT]:
         """Calculates and prints out Expected annualised Return,

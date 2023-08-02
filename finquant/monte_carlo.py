@@ -44,6 +44,7 @@ class MonteCarlo:
             result.append(res)
         return np.asarray(result, dtype=np.ndarray)
 
+
 class MonteCarloOpt(MonteCarlo):
     """An object to perform a Monte Carlo run/simulation for finding
     optimised financial portfolios.
@@ -115,7 +116,9 @@ class MonteCarloOpt(MonteCarlo):
         self.opt_weights = None
         self.opt_results = None
 
-    def _random_weights(self) -> Tuple[np.ndarray[np.float64, Any], np.ndarray[np.float64, Any]]:
+    def _random_weights(
+        self,
+    ) -> Tuple[np.ndarray[np.float64, Any], np.ndarray[np.float64, Any]]:
         """Computes random weights for the stocks of a portfolio and the
         corresponding Expected Return, Volatility and Sharpe Ratio.
 
@@ -124,7 +127,9 @@ class MonteCarloOpt(MonteCarlo):
              list of [expected return, volatility, sharpe ratio].
         """
         # select random weights for portfolio
-        weights: np.ndarray[np.float64, Any] = np.array(np.random.random(self.num_stocks), dtype=np.float64)
+        weights: np.ndarray[np.float64, Any] = np.array(
+            np.random.random(self.num_stocks), dtype=np.float64
+        )
         # rebalance weights
         weights = weights / np.sum(weights)
         # compute portfolio return and volatility
