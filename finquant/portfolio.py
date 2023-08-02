@@ -1066,7 +1066,8 @@ def _build_portfolio_from_df(
         name = pf_allocation.iloc[i].Name
         # extract data column of said stock
         stock_data = data.loc[:, [name]].copy(deep=True).squeeze()
-        # create Stock instance and add it to portfolio, defer updating until all stocks are added
+        # create Stock instance and add it to portfolio,
+        # and defer updating portfolio attributes until all stocks are added
         pf.add_stock(Stock(pf_allocation.iloc[i], data=stock_data), defer_update=True)
     # update the portfolio
     pf._update()
