@@ -29,7 +29,7 @@ class MonteCarlo:
 
     def run(
         self, fun: Callable[..., Any], **kwargs: Dict[str, Any]
-    ) -> np.ndarray[np.float64, 2]:
+    ) -> np.ndarray[np.float64, Any]:
         """
         :Input:
          :fun: Function to call at each iteration of the Monte Carlo run.
@@ -44,7 +44,6 @@ class MonteCarlo:
             result.append(res)
         return np.asarray(result, dtype=np.ndarray)
 
-
 class MonteCarloOpt(MonteCarlo):
     """An object to perform a Monte Carlo run/simulation for finding
     optimised financial portfolios.
@@ -55,7 +54,7 @@ class MonteCarloOpt(MonteCarlo):
     returns: pd.DataFrame
     risk_free_rate: FLOAT
     freq: int
-    initial_weights: Optional[np.ndarray[np.float64, 1]]
+    initial_weights: Optional[np.ndarray[np.float64, Any]]
 
     def __init__(
         self,
@@ -63,8 +62,8 @@ class MonteCarloOpt(MonteCarlo):
         num_trials: int = 1000,
         risk_free_rate: FLOAT = 0.005,
         freq: int = 252,
-        initial_weights=None,
-    ):
+        initial_weights: Optional[np.ndarray[np.float64, Any]] = None,
+    ) -> None:
         """
         :Input:
          :returns: A ``pandas.DataFrame`` which contains the returns of stocks.
@@ -95,7 +94,7 @@ class MonteCarloOpt(MonteCarlo):
             raise ValueError("returns is expected to be a pandas.DataFrame")
         if not isinstance(num_trials, int):
             raise ValueError("num_trials is expected to be an integer")
-        if not isinstance(risk_free_rate, FLOAT):
+        if not isinstance(risk_free_rate, (np.floating, float)):
             raise ValueError("risk_free_rate is expected to be a float.")
         if not isinstance(freq, int):
             raise ValueError("freq is expected to be an integer.")
@@ -116,7 +115,7 @@ class MonteCarloOpt(MonteCarlo):
         self.opt_weights = None
         self.opt_results = None
 
-    def _random_weights(self) -> Tuple[np.ndarray[FLOAT, 1], np.ndarray[FLOAT, 1]]:
+    def _random_weights(self) -> Tuple[np.ndarray[np.float64, Any], np.ndarray[np.float64, Any]]:
         """Computes random weights for the stocks of a portfolio and the
         corresponding Expected Return, Volatility and Sharpe Ratio.
 
@@ -125,11 +124,11 @@ class MonteCarloOpt(MonteCarlo):
              list of [expected return, volatility, sharpe ratio].
         """
         # select random weights for portfolio
-        weights = np.array(np.random.random(self.num_stocks), dtype=np.float64)
+        weights: np.ndarray[np.float64, Any] = np.array(np.random.random(self.num_stocks), dtype=np.float64)
         # rebalance weights
-        weights: np.ndarray[FLOAT, 1] = weights / np.sum(weights)
+        weights = weights / np.sum(weights)
         # compute portfolio return and volatility
-        portfolio_values: np.ndarray[FLOAT, 1] = np.array(
+        portfolio_values: np.ndarray[np.float64, Any] = np.array(
             annualised_portfolio_quantities(
                 weights,
                 self.return_means,
@@ -182,11 +181,11 @@ class MonteCarloOpt(MonteCarlo):
         index_min_volatility = df_results["Volatility"].idxmin()
         index_max_sharpe = df_results["Sharpe Ratio"].idxmax()
         # storing optimal results to DataFrames
-        opt_w = pd.DataFrame(
+        opt_w: pd.DataFrame = pd.DataFrame(
             [df_weights.iloc[index_min_volatility], df_weights.iloc[index_max_sharpe]],
             index=["Min Volatility", "Max Sharpe Ratio"],
         )
-        opt_res = pd.DataFrame(
+        opt_res: pd.DataFrame = pd.DataFrame(
             [df_results.iloc[index_min_volatility], df_results.iloc[index_max_sharpe]],
             index=["Min Volatility", "Max Sharpe Ratio"],
         )
