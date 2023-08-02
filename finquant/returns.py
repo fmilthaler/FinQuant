@@ -32,11 +32,8 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
         raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     if not isinstance(dividend, (float, int, np.floating, np.integer)):
         raise ValueError("dividend is expected to be an integer or float.")
-    return (
-        data.dropna(axis=0, how="any")
-        .apply(lambda x: (x - x[0] + dividend) / float(x[0]))
-        .astype(np.float64)
-    )
+    data = data.dropna(axis=0, how="any")
+    return ((data - data.iloc[0] + dividend) / data.iloc[0]).astype(np.float64)
 
 
 def daily_returns(data: pd.DataFrame) -> pd.DataFrame:

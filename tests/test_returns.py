@@ -20,6 +20,7 @@ def test_cumulative_returns():
     d = {"1": l1, "2": l2}
     df = pd.DataFrame(d)
     ret = cumulative_returns(df)
+    assert isinstance(ret, pd.DataFrame) and not ret.empty
     assert all(abs(ret["1"].values - orig[0]) <= 1e-15)
     assert all(abs(ret["2"].values - orig[1]) <= 1e-15)
     # with dividend of 0.2
@@ -28,6 +29,7 @@ def test_cumulative_returns():
         [0.005, -0.02, -0.045, -0.07, -0.095, -0.12, -0.145, -0.17, -0.195, -0.22],
     ]
     ret = cumulative_returns(df, 0.2)
+    assert isinstance(ret, pd.DataFrame) and not ret.empty
     assert all(abs(ret["1"].values - orig[0]) <= 1e-15)
     assert all(abs(ret["2"].values - orig[1]) <= 1e-15)
 
