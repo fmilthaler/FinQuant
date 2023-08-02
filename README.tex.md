@@ -252,6 +252,7 @@ look at the examples provided in `./example`.
  - Downside Risk,
  - Value at Risk, 
  - Sharpe Ratio,
+ - Sortino Ratio,
  - Beta parameter.
 
 It also shows how to extract individual stocks from the given portfolio. Moreover it shows how to compute and visualise:
