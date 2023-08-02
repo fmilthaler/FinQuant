@@ -11,10 +11,11 @@ Thank you to all the individuals who have contributed to this project!
 
 ## Contributors
 
-- Richard Stromer (@noxan): bug fixing
-- Stephen Pennington (@slpenn13): bug fixing
-- @herrfz: bug fixing
-- @drcsturm: bug fixing
+- Richard Stromer (@noxan): bug fixing code snippet in README.md
+- Stephen Pennington (@slpenn13): bug fixing pandas MultiIndex usage
+- @herrfz: bug fix for selecting stock data from portfolio, handling NaN values and type checks
+- @drcsturm: bug fix for single stock portfolio
+- @donin1129: bug fix for pandas index reference
 - @aft90: helped to implement the Sortino Ratio
 
 ## Special Thanks
