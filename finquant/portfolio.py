@@ -17,8 +17,10 @@ and makes the most common quantitative calculations, such as:
 - daily log returns of the portfolio's stocks,
 - Expected (annualised) Return,
 - Volatility,
-- Sharpe Ratio,
+- Downside Risk,
 - Value at Risk,
+- Sharpe Ratio,
+- Sortino Ratio,
 - Beta parameter (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
@@ -59,7 +61,14 @@ import pandas as pd
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
-from finquant.quants import sharpe_ratio, value_at_risk, weighted_mean, weighted_std
+from finquant.quants import (
+    downside_risk,
+    sharpe_ratio,
+    sortino_ratio,
+    value_at_risk,
+    weighted_mean,
+    weighted_std,
+)
 from finquant.returns import (
     cumulative_returns,
     daily_log_returns,
@@ -85,8 +94,10 @@ class Portfolio:
         self.data = pd.DataFrame()
         self.expected_return = None
         self.volatility = None
-        self.sharpe = None
+        self.downside_risk = None
         self.var = None
+        self.sharpe = None
+        self.sortino = None
         self.skew = None
         self.kurtosis = None
         self.totalinvestment = None
@@ -226,8 +237,10 @@ class Portfolio:
             self.totalinvestment = self.portfolio.Allocation.sum()
             self.expected_return = self.comp_expected_return(freq=self.freq)
             self.volatility = self.comp_volatility(freq=self.freq)
-            self.sharpe = self.comp_sharpe()
+            self.downside_risk = self.comp_downside_risk(freq=self.freq)
             self.var = self.comp_var()
+            self.sharpe = self.comp_sharpe()
+            self.sortino = self.comp_sortino()
             self.skew = self._comp_skew()
             self.kurtosis = self._comp_kurtosis()
             if self.market_index is not None:
@@ -349,6 +362,22 @@ class Portfolio:
         self.volatility = volatility
         return volatility
 
+    def comp_downside_risk(self, freq=252):
+        """Computes the downside risk of the portfolio.
+
+        :Input:
+         :freq: ``int`` (default: ``252``), number of trading days, default
+             value corresponds to trading days in a year
+
+        :Output:
+         :downside risk: ``float`` downside risk of the portfolio.
+        """
+        downs_risk = downside_risk(
+            self.data, self.comp_weights(), self.risk_free_rate
+        ) * np.sqrt(freq)
+        self.downside_risk = downs_risk
+        return downs_risk
+
     def comp_cov(self):
         """Compute and return a ``pandas.DataFrame`` of the covariance matrix
         of the portfolio.
@@ -402,6 +431,17 @@ class Portfolio:
 
         self.beta = beta
         return beta
+
+    def comp_sortino(self, freq=252):
+        """Compute and return the Sortino Ratio of the portfolio
+
+        :Output:
+         :sortino: ``float``, the Sortino Ratio of the portfolio
+         May be NaN if the portoflio outperformed the risk free rate at every point
+        """
+        return sortino_ratio(
+            self.expected_return, self.downside_risk, self.risk_free_rate
+        )
 
     def _comp_skew(self):
         """Computes and returns the skewness of the stocks in the portfolio."""
@@ -664,8 +704,11 @@ class Portfolio:
 
         - Expected Return,
         - Volatility,
+        - Downside Risk,
+        - Value at Risk (VaR),
+        - Confidence level of VaR,
         - Sharpe Ratio,
-        - Value at Risk,
+        - Sortino Ratio,
         - Beta (optional),
         - skewness,
         - Kurtosis
@@ -682,10 +725,12 @@ class Portfolio:
         string += f"\nRisk free rate: {self.risk_free_rate}"
         string += f"\nPortfolio Expected Return: {self.expected_return:0.3f}"
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
-        string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
+        string += f"\nPortfolio Downside Risk: {self.downside_risk:0.3f}"
         string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
         string += f"\nConfidence level of Value at Risk: "
         string += f"{self.var_confidence_level * 100:0.2f} %"
+        string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
+        string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
         string += "\n\nSkewness:"
@@ -1214,7 +1259,9 @@ def build_portfolio(**kwargs):
         or not pf.stocks
         or pf.expected_return is None
         or pf.volatility is None
+        or pf.downside_risk is None
         or pf.sharpe is None
+        or pf.sortino is None
         or pf.skew is None
         or pf.kurtosis is None
     ):

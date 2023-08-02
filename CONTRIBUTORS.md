@@ -15,6 +15,7 @@ Thank you to all the individuals who have contributed to this project!
 - Stephen Pennington (@slpenn13): bug fixing
 - @herrfz: bug fixing
 - @drcsturm: bug fixing
+- @aft90: helped to implement the Sortino Ratio
 
 ## Special Thanks
 
