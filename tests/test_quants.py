@@ -1,9 +1,14 @@
+import pdb
+
 import numpy as np
+import pandas as pd
 import pytest
 
 from finquant.quants import (
     annualised_portfolio_quantities,
+    downside_risk,
     sharpe_ratio,
+    sortino_ratio,
     value_at_risk,
     weighted_mean,
     weighted_std,
@@ -32,6 +37,11 @@ def test_weighted_std():
 def test_sharpe_ratio():
     assert sharpe_ratio(0.5, 0.2, 0.02) == 2.4
     assert sharpe_ratio(0.5, 0.22, 0.005) == 2.25
+
+
+def test_sortino_ratio():
+    assert sortino_ratio(0.5, 0.0, 0.02) is np.NaN
+    assert sortino_ratio(0.005, 8.5, 0.005) == 0.0
 
 
 def test_value_at_risk():
@@ -76,3 +86,17 @@ def test_annualised_portfolio_quantities():
     orig = (1764.0, 347.79304190854657, 5.071981861166303)
     for i in range(len(res)):
         assert abs(res[i] - orig[i]) <= 1e-15
+
+
+def test_downside_risk():
+    data1 = pd.DataFrame({"1": [1, 2, 4, 8], "2": [1, 2, 3, 4]})
+    weights = np.array([0.25, 0.75])
+    rf_rate = 0.005
+    dr1 = downside_risk(data1, weights, rf_rate)
+    assert dr1 == 0
+
+    data2 = pd.DataFrame({"1": [7, 6, 5, 4, 3]})
+    weights = np.array([1])
+    rf_rate = 0.0
+    dr2 = downside_risk(data2, weights, rf_rate)
+    assert abs(dr2 - 0.19409143531019335) <= 1e-15

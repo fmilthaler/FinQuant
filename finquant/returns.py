@@ -55,6 +55,19 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def weighted_mean_daily_returns(data, weights):
+    """Returns DataFrame with the daily weighted mean returns
+
+    :Input:
+      :data: ``pandas.DataFrame`` with daily stock prices
+      :weights: ``numpy.ndarray``/``pd.Series`` of weights
+
+    :Output:
+      :ret: ``numpy.array`` of weighted mean daily percentage change of Returns
+    """
+    return np.dot(daily_returns(data), weights)
+
+
 def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     Returns DataFrame with daily log returns
