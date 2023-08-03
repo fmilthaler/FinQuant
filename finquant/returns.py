@@ -59,7 +59,7 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def weighted_mean_daily_returns(
-    data: pd.DataFrame, weights: ARRAY_OR_SERIES
+    data: pd.DataFrame, weights: ARRAY_OR_SERIES[FLOAT]
 ) -> np.ndarray[FLOAT, Any]:
     """Returns DataFrame with the daily weighted mean returns
 
