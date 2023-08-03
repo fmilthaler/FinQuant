@@ -16,8 +16,8 @@ and add specific functionality tailored to their respective types.
 import numpy as np
 import pandas as pd
 
+from finquant.data_types import FLOAT, INT
 from finquant.returns import daily_returns, historical_mean_return
-from finquant.type_definitions import FLOAT, INT
 
 
 class Asset:

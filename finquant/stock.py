@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 
 from finquant.asset import Asset
-from finquant.type_definitions import FLOAT
+from finquant.data_types import FLOAT
 
 
 class Stock(Asset):

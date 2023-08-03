@@ -58,6 +58,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 
+from finquant.data_types import ARRAY_OR_LIST, FLOAT, INT, NUMERIC, STRING_OR_DATETIME
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
@@ -76,13 +77,6 @@ from finquant.returns import (
     historical_mean_return,
 )
 from finquant.stock import Stock
-from finquant.type_definitions import (
-    ARRAY_OR_LIST,
-    FLOAT,
-    INT,
-    NUMERIC,
-    STRING_OR_DATETIME,
-)
 from finquant.type_utilities import type_validation
 
 

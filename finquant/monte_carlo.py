@@ -10,8 +10,8 @@ import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 
+from finquant.data_types import FLOAT
 from finquant.quants import annualised_portfolio_quantities
-from finquant.type_definitions import FLOAT
 
 
 class MonteCarlo:

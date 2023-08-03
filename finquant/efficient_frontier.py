@@ -11,8 +11,8 @@ import pandas as pd
 import scipy.optimize as sco
 
 import finquant.minimise_fun as min_fun
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
-from finquant.type_definitions import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, NUMERIC
 
 
 class EfficientFrontier:

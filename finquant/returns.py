@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from finquant.type_definitions import (
+from finquant.data_types import (
     ARRAY_OR_SERIES,
     FLOAT,
     INT,

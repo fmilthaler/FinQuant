@@ -3,13 +3,8 @@ scipy.optimize.minimize in order to find the minimal/optimal value.
 """
 
 
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_SERIES, FLOAT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
-from finquant.type_definitions import (
-    ARRAY_OR_DATAFRAME,
-    ARRAY_OR_SERIES,
-    FLOAT,
-    NUMERIC,
-)
 
 
 def portfolio_volatility(

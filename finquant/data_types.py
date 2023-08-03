@@ -26,7 +26,7 @@ This module requires the following external libraries:
 Usage Example:
 --------------
 
->>> from finquant.type_definitions import ARRAY_OR_DATAFRAME, NUMERIC
+>>> from finquant.data_types import ARRAY_OR_DATAFRAME, NUMERIC
 # Use the defined type aliases
 def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
     # Process the data and return a numeric result
