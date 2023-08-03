@@ -37,16 +37,22 @@ def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
 
 
 from datetime import datetime
-from typing import List, Union
+from typing import Any, List, TypeVar, Union, KeysView
 
 import numpy as np
 import pandas as pd
 
+# Generic List Element Type
+ELEMENT_TYPE = TypeVar("ELEMENT_TYPE")
+
 # Type Aliases:
-ARRAY_OR_LIST = Union[np.ndarray, List]
-ARRAY_OR_SERIES = Union[np.ndarray, pd.Series]
-ARRAY_OR_DATAFRAME = Union[np.ndarray, pd.DataFrame]
+ARRAY_OR_LIST = Union[np.ndarray[ELEMENT_TYPE, Any], List[ELEMENT_TYPE]]
+ARRAY_OR_SERIES = Union[np.ndarray[ELEMENT_TYPE, Any], pd.Series]
+ARRAY_OR_DATAFRAME = Union[np.ndarray[ELEMENT_TYPE, Any], pd.DataFrame]
 SERIES_OR_DATAFRAME = Union[pd.Series, pd.DataFrame]
+
+# To support Dict listkeys:
+LIST_DICT_KEYS = Union[ARRAY_OR_LIST[ELEMENT_TYPE], KeysView[ELEMENT_TYPE]]
 
 # Numeric types
 FLOAT = Union[np.floating, float]
