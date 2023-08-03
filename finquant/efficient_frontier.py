@@ -129,7 +129,9 @@ class EfficientFrontier:
         self.df_weights = pd.DataFrame()
         self.efrontier = np.empty((0, 2), dtype=np.float64)
 
-    def minimum_volatility(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME[FLOAT]:
+    def minimum_volatility(
+        self, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility.
 
         :Input:
@@ -176,7 +178,9 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def maximum_sharpe_ratio(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME[FLOAT]:
+    def maximum_sharpe_ratio(
+        self, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 

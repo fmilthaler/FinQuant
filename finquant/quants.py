@@ -15,7 +15,9 @@ from finquant.returns import weighted_mean_daily_returns
 from finquant.type_utilities import type_validation
 
 
-def weighted_mean(means: ARRAY_OR_SERIES[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]) -> FLOAT:
+def weighted_mean(
+    means: ARRAY_OR_SERIES[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]
+) -> FLOAT:
     """Computes the weighted mean/average, or in the case of a
     financial portfolio, it can be used for the Expected Return
     of said portfolio.
@@ -35,7 +37,9 @@ def weighted_mean(means: ARRAY_OR_SERIES[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]
     return weighted_mu
 
 
-def weighted_std(cov_matrix: ARRAY_OR_DATAFRAME[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]) -> FLOAT:
+def weighted_std(
+    cov_matrix: ARRAY_OR_DATAFRAME[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]
+) -> FLOAT:
     """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
