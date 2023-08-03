@@ -94,6 +94,8 @@ class QuandlLimitError(Exception):
     pass
 class QuandlError(Exception):
     pass
+class YFinanceError(Exception):
+    pass
 
 
 class Portfolio:
@@ -913,9 +915,11 @@ def _yfinance_request(
             stock_tuples = [(col, names[0]) for col in list(resp.columns)]
             resp.columns = pd.MultiIndex.from_tuples(stock_tuples)
     except Exception as exc:
-        raise Exception(
-            "Error during download of stock data from Yahoo Finance with `yfinance`."
-        ) from exc
+        errormsg: str = (
+            "Error during download of stock data from Yahoo Finance with `yfinance`.\n"
+            + "YFinance error: "+str(exc)
+        )
+        raise YFinanceError(errormsg) from exc
     return resp
 
 
