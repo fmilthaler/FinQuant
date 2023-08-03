@@ -109,11 +109,16 @@ def type_validation(**kwargs: Any) -> None:
 
             # Validating common Array[FLOAT], Series[Float], DataFrame[FLOAT] types
             if arg_name in ("data", "means", "weights", "cov_matrix"):
-                if not isinstance(arg_values, arg_type) or (
+                if (
+                    not isinstance(arg_values, arg_type)
+                    or (
                         isinstance(arg_values, Union[np.ndarray, pd.Series])
                         and not arg_values.dtype == np.float64
-                ) or (
-                    isinstance(arg_values, pd.DataFrame) and not all(arg_values.dtypes == np.float64)
+                    )
+                    or (
+                        isinstance(arg_values, pd.DataFrame)
+                        and not all(arg_values.dtypes == np.float64)
+                    )
                 ):
                     raise TypeError(
                         f"Error: {arg_name} is expected to be {expected_type}."
@@ -123,7 +128,6 @@ def type_validation(**kwargs: Any) -> None:
                         f"Error: {arg_name} is expected to be {expected_type}."
                     )
                 continue
-
 
             # else (arg_name is not "names" nor "cols")
             if not isinstance(arg_values, (List, np.ndarray)):
