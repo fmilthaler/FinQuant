@@ -850,13 +850,13 @@ def _quandl_request(
             reqnames, start_date=start_date, end_date=end_date
         )
     except quandl.LimitExceededError as exc:
-        errormsg: str = (
+        errormsg = (
             "You exceeded Quandl's limit. Are you using your API key?\nQuandl Error: "
             + str(exc)
         )
         raise QuandlLimitError(errormsg) from exc
     except Exception as exc:
-        errormsg: str = (
+        errormsg = (
             "An error occurred while retrieving data from Quandl.\n"
             + "Make sure all the requested stock names/tickers are "
             + "supported by Quandl.\n"
