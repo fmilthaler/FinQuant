@@ -815,7 +815,7 @@ def _quandl_request(
             "The following package is required:\n - `quandl`\n"
             + "Please make sure that it is installed."
         )
-    # Type checks:
+    # Type validations:
     type_validation(names=names, start_date=start_date, end_date=end_date)
 
     # get correct stock names that quandl.get can request,
@@ -858,7 +858,7 @@ def _yfinance_request(
             "The following package is required:\n - `yfinance`\n"
             + "Please make sure that it is installed."
         )
-    # Type checks:
+    # Type validations:
     type_validation(names=names, start_date=start_date, end_date=end_date)
 
     # yfinance does not exit safely if start/end date were not given correctly:
@@ -1008,7 +1008,7 @@ def _build_portfolio_from_api(
      :pf: Instance of Portfolio which contains all the information
          requested by the user.
     """
-    # Type checks:
+    # Type validations:
     type_validation(
         names=names,
         pf_allocation=pf_allocation,
@@ -1085,7 +1085,7 @@ def _generate_pf_allocation(
     # checking input arguments
     if names is not None and data is not None or names is None and data is None:
         raise ValueError("Pass one of the two: 'names' or 'data'.")
-    # Type checks:
+    # Type validations:
     type_validation(names=names, data=data)
 
     # if data is given:

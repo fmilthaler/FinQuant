@@ -19,19 +19,19 @@ import pandas as pd
 
 def type_validation(**kwargs: Any) -> None:
     """
-    Perform generic type checks on input variables.
+    Perform generic type validations on input variables.
 
-    This function performs various type checks on a set of input variables. It helps to ensure that the input
+    This function performs various type validations on a set of input variables. It helps to ensure that the input
     values conform to the expected types and conditions, raising a TypeError with a descriptive error message
-    if any type check fails and a ValueError if a np.array or pd.Series/DataFrame is empty.
+    if any type validation fails and a ValueError if a np.array or pd.Series/DataFrame is empty.
 
     Parameters:
         **kwargs: Arbitrary keyword arguments representing the input variables to be checked.
 
     Raises:
-        TypeError: If any of the type checks fail, a TypeError is raised with a descriptive error message
+        TypeError: If any of the type validations fail, a TypeError is raised with a descriptive error message
                    indicating the expected type and conditions for each variable.
-        ValueError: If any of the value checks fail, a ValueError is raised with a descriptive error message
+        ValueError: If any of the value validations fail, a ValueError is raised with a descriptive error message
                     indicating the expected conditions for each variable.
 
     Example usage:
