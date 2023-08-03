@@ -432,7 +432,7 @@ class Portfolio:
         self.beta = beta
         return beta
 
-    def comp_sortino(self, freq=252):
+    def comp_sortino(self):
         """Compute and return the Sortino Ratio of the portfolio
 
         :Output:
