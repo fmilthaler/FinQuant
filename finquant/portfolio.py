@@ -88,6 +88,14 @@ from finquant.stock import Stock
 from finquant.type_utilities import type_validation
 
 
+class InvalidDateFormatError(Exception):
+    pass
+class QuandlLimitError(Exception):
+    pass
+class QuandlError(Exception):
+    pass
+
+
 class Portfolio:
     """Object that contains information about an investment portfolio.
     To initialise the object, it does not require any input.
@@ -827,7 +835,7 @@ def _quandl_request(
          relevant stock data.
     """
     try:
-        import quandl
+        import quandl  # pylint: disable=C0415
     except ImportError:
         print(
             "The following package is required:\n - `quandl`\n"
@@ -843,13 +851,17 @@ def _quandl_request(
         resp: pd.DataFrame = quandl.get(
             reqnames, start_date=start_date, end_date=end_date
         )
-    except quandl.QuandlError as exc:
+    except quandl.LimitExceededError as exc:
+        errormsg: str = "You exceeded Quandl's limit. Are you using your API key?\nQuandl Error: "+str(exc)
+        raise QuandlLimitError(errormsg) from exc
+    except Exception as exc:
         errormsg: str = (
-            "Error during download of stock data from Quandl.\n"
-            + "Make sure all the requested stock names/tickers are "
-            + "supported by Quandl."
+                "Error during download of stock data from Quandl.\n"
+                + "Make sure all the requested stock names/tickers are "
+                + "supported by Quandl.\nQuandl error: "+str(exc)
         )
-        raise Exception(errormsg) from exc
+        raise QuandlError(errormsg) from exc
+
     return resp
 
 
@@ -870,7 +882,7 @@ def _yfinance_request(
          relevant stock data.
     """
     try:
-        import yfinance
+        import yfinance  # pylint: disable=C0415
     except ImportError:
         print(
             "The following package is required:\n - `yfinance`\n"
@@ -886,10 +898,10 @@ def _yfinance_request(
             start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         if isinstance(end_date, str):
             end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-    except Exception as exc:
-        raise Exception(
+    except ValueError as exc:
+        raise InvalidDateFormatError(
             "Please provide valid values for <start_date> and <end_date> "
-            "(either as datetime object, or as String in the format '%Y-%m-%d')."
+            "(either as datetime object or as String in the format '%Y-%m-%d')."
         ) from exc
 
     # unlike quandl, yfinance does not have a prefix in front of the ticker
