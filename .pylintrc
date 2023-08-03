@@ -28,4 +28,4 @@ disable=
 #    R0903,  # Too few public methods
 
 [FORMAT]
-good-names = pf, ef, mc, mu
+good-names = pf, df, ef, mc, mu

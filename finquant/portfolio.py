@@ -739,13 +739,13 @@ class Portfolio:
         # plot stocks individually:
         plt.scatter(stock_volatility, stock_returns, marker="o", s=100, label="Stocks")
         # adding text to stocks in plot:
-        for i, txt in enumerate(stock_returns.index):
+        for idx, txt in enumerate(stock_returns.index):
             plt.annotate(
                 txt,
-                (stock_volatility[i], stock_returns[i]),
+                (stock_volatility[idx], stock_returns[idx]),
                 xytext=(10, 0),
                 textcoords="offset points",
-                label=i,
+                label=idx,
             )
 
     def properties(self) -> None:
@@ -776,7 +776,7 @@ class Portfolio:
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
         string += f"\nPortfolio Downside Risk: {self.downside_risk:0.3f}"
         string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
-        string += f"\nConfidence level of Value at Risk: "
+        string += "\nConfidence level of Value at Risk: "
         string += f"{self.var_confidence_level * 100:0.2f} %"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
         string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
@@ -959,38 +959,38 @@ def _get_stocks_data_columns(
     colname: str
     # if dataframe is of type multiindex, also get first level colname
     firstlevel_colnames: List[str] = []
-    for i in range(len(names)):
+    for idx, name in enumerate(names):
         for col in cols:
             # differ between dataframe directly from quandl and
             # possibly previously processed dataframe, e.g.
             # read in from disk with slightly modified column labels
             # 1. if <stock_name> in column labels
-            if names[i] in data.columns:
-                colname = names[i]
+            if name in data.columns:
+                colname = name
             # 2. if "WIKI/<stock_name> - <col>" in column labels
-            elif _get_quandl_data_column_label(reqnames[i], col) in data.columns:
-                colname = _get_quandl_data_column_label(reqnames[i], col)
+            elif _get_quandl_data_column_label(reqnames[idx], col) in data.columns:
+                colname = _get_quandl_data_column_label(reqnames[idx], col)
             # 3. if "<stock_name> - <col>" in column labels
-            elif _get_quandl_data_column_label(names[i], col) in data.columns:
-                colname = _get_quandl_data_column_label(names[i], col)
-            # if column labels is of type multiindex, and the "Adj Close" is in
-            # first level labels, we assume the dataframe comes from yfinance:
+            elif _get_quandl_data_column_label(name, col) in data.columns:
+                colname = _get_quandl_data_column_label(name, col)
+            # if column labels are of type multiindex, and the "Adj Close" is in
+            # first-level labels, we assume the dataframe comes from yfinance:
             elif isinstance(data.columns, pd.MultiIndex):
                 # alter col for yfinance, as it returns column labels without '.'
                 col = col.replace(".", "")
                 if col in data.columns:
                     if not col in firstlevel_colnames:
                         firstlevel_colnames.append(col)
-                    if names[i] in data[col].columns:
-                        colname = names[i]
-                    else:  # error, it must find names[i] on second level of column header
+                    if name in data[col].columns:
+                        colname = name
+                    else:  # error, it must find name on the second level of the column header
                         raise ValueError(
-                            "Could not find column labels in second level of MultiIndex pd.DataFrame"
+                            "Could not find column labels in the second level of MultiIndex pd.DataFrame"
                         )
             # else, error
             else:
-                raise ValueError("Could not find column labels in given dataframe.")
-            # append correct name to list of correct names
+                raise ValueError("Could not find column labels in the given dataframe.")
+            # append the correct name to the list of correct names
             reqcolnames.append(colname)
 
     # if data comes from yfinance, it is a multiindex dataframe:
@@ -1008,7 +1008,7 @@ def _get_stocks_data_columns(
     # to the name of the corresponding stock
     newcolnames: Dict[str, str] = {}
     if len(cols) == 1:
-        for i, name in enumerate(names):
+        for idx, name in enumerate(names):
             newcolnames.update({_get_quandl_data_column_label(name, cols[0]): name})
         data.rename(columns=newcolnames, inplace=True)
     return data
@@ -1152,9 +1152,9 @@ def _generate_pf_allocation(
         # if so, we treat this as a duplication, and ask the user to provide
         # a DataFrame with one data column per stock.
         splitnames: List[str] = [name.split("-")[0].strip() for name in stock_names]
-        for i, splitname in enumerate(splitnames):
+        for idx, splitname in enumerate(splitnames):
             reducedlist: List[str] = [
-                elt for num, elt in enumerate(splitnames) if num != i
+                elt for num, elt in enumerate(splitnames) if num != idx
             ]
             if splitname in reducedlist:
                 errormsg = errormsg.format(str(splitname))
@@ -1216,15 +1216,15 @@ def _build_portfolio_from_df(
         market_data = _get_index_adj_clos_pr(market_data)
         # set market index of portfolio
         pf.market_index = Market(data=market_data)
-    for i in range(len(pf_allocation)):
+    for idx in range(len(pf_allocation)):
         # get name of stock
-        name: str = pf_allocation.iloc[i].Name
+        name: str = pf_allocation.iloc[idx].Name
         # extract data column of said stock
         stock_data: pd.Series = data.loc[:, [name]].copy(deep=True).squeeze()
         # create Stock instance and add it to portfolio,
         # and defer updating portfolio attributes until all stocks are added
         pf.add_stock(
-            Stock(investmentinfo=pf_allocation.iloc[i], data=stock_data),
+            Stock(investmentinfo=pf_allocation.iloc[idx], data=stock_data),
             defer_update=True,
         )
     # update the portfolio
@@ -1233,24 +1233,24 @@ def _build_portfolio_from_df(
 
 
 def _all_list_ele_in_other(
-    l1: LIST_DICT_KEYS[ELEMENT_TYPE], l2: LIST_DICT_KEYS[ELEMENT_TYPE]
+    l_1: LIST_DICT_KEYS[ELEMENT_TYPE], l_2: LIST_DICT_KEYS[ELEMENT_TYPE]
 ) -> bool:
     """Returns True if all elements of list l1 are found in list l2."""
-    return all(ele in l2 for ele in l1)
+    return all(ele in l_2 for ele in l_1)
 
 
 def _any_list_ele_in_other(
-    l1: LIST_DICT_KEYS[ELEMENT_TYPE], l2: LIST_DICT_KEYS[ELEMENT_TYPE]
+    l_1: LIST_DICT_KEYS[ELEMENT_TYPE], l_2: LIST_DICT_KEYS[ELEMENT_TYPE]
 ) -> bool:
     """Returns True if any element of list l1 is found in list l2."""
-    return any(ele in l2 for ele in l1)
+    return any(ele in l_2 for ele in l_1)
 
 
 def _list_complement(
-    a: LIST_DICT_KEYS[ELEMENT_TYPE], b: LIST_DICT_KEYS[ELEMENT_TYPE]
+    set_a: LIST_DICT_KEYS[ELEMENT_TYPE], set_b: LIST_DICT_KEYS[ELEMENT_TYPE]
 ) -> List[ELEMENT_TYPE]:
     """Returns the relative complement of A in B (also denoted as A\\B)"""
-    return list(set(b) - set(a))
+    return list(set(set_b) - set(set_a))
 
 
 def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
