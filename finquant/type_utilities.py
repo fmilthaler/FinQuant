@@ -44,7 +44,7 @@ def type_validation(**kwargs: Any) -> None:
     )
     """
 
-    type_checks = {
+    type_dict = {
         "data": (pd.DataFrame, "a non-empty pandas.DataFrame"),
         "pf_allocation": (pd.DataFrame, "a non-empty pd.DataFrame"),
         "names": (Union[List, np.ndarray], "a non-empty List[str] or np.ndarray[str]"),
@@ -72,7 +72,7 @@ def type_validation(**kwargs: Any) -> None:
         ),
     }
 
-    for arg_name, (arg_type, expected_type) in type_checks.items():
+    for arg_name, (arg_type, expected_type) in type_dict.items():
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
             if arg_name in ("names", "cols"):
@@ -90,7 +90,8 @@ def type_validation(**kwargs: Any) -> None:
                 continue
 
             # else (arg_name is not "names" nor "cols")
-            arg_values = [arg_values]
+            if not isinstance(arg_values, (List, np.ndarray)):
+                arg_values = [arg_values]
             for arg_value in arg_values:
                 if not isinstance(arg_value, arg_type):
                     raise TypeError(
