@@ -843,7 +843,7 @@ def _quandl_request(
         resp: pd.DataFrame = quandl.get(
             reqnames, start_date=start_date, end_date=end_date
         )
-    except Exception as exc:
+    except quandl.QuandlError as exc:
         errormsg: str = (
             "Error during download of stock data from Quandl.\n"
             + "Make sure all the requested stock names/tickers are "
