@@ -332,6 +332,7 @@ class Portfolio:
         :Output:
          :ret: a ``pandas.DataFrame`` of historical mean Returns.
         """
+        # Type validations:
         type_validation(freq=freq)
         return historical_mean_return(self.data, freq=freq)
 
@@ -346,6 +347,7 @@ class Portfolio:
          :volatilies: ``pandas.DataFrame`` with the individual Volatilities of all stocks
              of the portfolio.
         """
+        # Type validations:
         type_validation(freq=freq)
         return self.comp_daily_returns().std() * np.sqrt(freq)
 
@@ -371,6 +373,7 @@ class Portfolio:
         :Output:
          :expected_return: ``float`` the Expected Return of the portfolio.
         """
+        # Type validations:
         type_validation(freq=freq)
         pf_return_means: pd.Series = historical_mean_return(self.data, freq=freq)
         weights: pd.Series = self.comp_weights()
@@ -388,6 +391,7 @@ class Portfolio:
         :Output:
          :volatility: ``float`` the Volatility of the portfolio.
         """
+        # Type validations:
         type_validation(freq=freq)
         # computing the volatility of a portfolio
         volatility: FLOAT = weighted_std(
@@ -732,6 +736,7 @@ class Portfolio:
          :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
         """
+        # Type validations:
         type_validation(freq=freq)
         # annual mean returns of all stocks
         stock_returns: pd.Series = self.comp_mean_returns(freq=freq)
@@ -952,6 +957,7 @@ def _get_stocks_data_columns(
      :data: A ``pandas.DataFrame`` which contains only the data columns of
          data as specified in cols.
     """
+    # Type validations:
     type_validation(data=data, names=names, cols=cols)
     # get correct stock names that quandl get request
     reqnames: List[str] = _correct_quandl_request_stock_name(names)

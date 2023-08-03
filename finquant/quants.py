@@ -74,7 +74,7 @@ def sharpe_ratio(
     :Output:
      :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
     """
-    # type validations:
+    # Type validations:
     type_validation(generic_float=[exp_return, volatility, risk_free_rate])
     res_sharpe_ratio: FLOAT = (exp_return - risk_free_rate) / float(volatility)
     return res_sharpe_ratio
