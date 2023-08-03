@@ -203,7 +203,7 @@ class Portfolio:
         # now that this changed, update VaR
         self._update()
 
-    def add_stock(self, stock: Stock) -> None:
+    def add_stock(self, stock: Stock, defer_update=False) -> None:
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
         is called, the following instance variables are updated:
 
@@ -211,16 +211,21 @@ class Portfolio:
         - ``stocks``: ``dictionary``, adds an entry for ``stock``
         - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
-        Also, the following instance variables are (re-)computed:
+        Also, if argument ``defer_update`` is ``True``,
+        the following instance variables are (re-)computed:
 
         - ``expected_return``: Expected Return of the portfolio
         - ``volatility``: Volatility of the portfolio
+        - ``downside_risk``: Downside Risk
+        - ``var``: Value at Risk of the portfolio
         - ``sharpe``: Sharpe Ratio of the portfolio
+        - ``sortino``: Sortino Ratio of the portfolio
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
         :Input:
          :stock: an object of ``Stock``
+         :defer_update: bool, if True _update() is not called after the stock is added.
         """
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
@@ -233,8 +238,9 @@ class Portfolio:
         # also add stock data of stock to the dataframe
         self._add_stock_data(stock)
 
-        # update quantities of portfolio
-        # self._update() # the update will be done at the end of building portfolio
+        if not defer_update:
+            # update quantities of portfolio
+            self._update()
 
     def _add_stock_data(self, stock: Stock) -> None:
         # insert given data into portfolio stocks dataframe:
@@ -458,7 +464,7 @@ class Portfolio:
         else:
             return None
 
-    def comp_sortino(self, freq: int = 252) -> FLOAT:
+    def comp_sortino(self) -> FLOAT:
         """Compute and return the Sortino Ratio of the portfolio
 
         :Output:
@@ -1197,8 +1203,9 @@ def _build_portfolio_from_df(
         name: str = pf_allocation.iloc[i].Name
         # extract data column of said stock
         stock_data: pd.Series = data.loc[:, [name]].copy(deep=True).squeeze()
-        # create Stock instance and add it to portfolio
-        pf.add_stock(Stock(investmentinfo=pf_allocation.iloc[i], data=stock_data))
+        # create Stock instance and add it to portfolio,
+        # and defer updating portfolio attributes until all stocks are added
+        pf.add_stock(Stock(investmentinfo=pf_allocation.iloc[i], data=stock_data), defer_update=True)
     # update the portfolio
     pf._update()
     return pf
