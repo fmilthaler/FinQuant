@@ -17,6 +17,7 @@ from finquant.quants import annualised_portfolio_quantities
 class MonteCarlo:
     """An object to perform a Monte Carlo run/simulation."""
 
+    # Attributes:
     num_trials: int
 
     def __init__(self, num_trials: int = 1000):
@@ -52,6 +53,7 @@ class MonteCarloOpt(MonteCarlo):
     Inherits from `MonteCarlo`.
     """
 
+    # Attributes:
     returns: pd.DataFrame
     risk_free_rate: FLOAT
     freq: INT

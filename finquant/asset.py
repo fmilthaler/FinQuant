@@ -45,6 +45,7 @@ class Asset:
 
     """
 
+    # Attributes:
     data: pd.Series
     name: str
     asset_type: str

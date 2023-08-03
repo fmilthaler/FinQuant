@@ -102,6 +102,7 @@ class Portfolio:
     an object of ``Stock``.
     """
 
+    # Attributes:
     portfolio: pd.DataFrame
     stocks: Dict[str, Stock]
     data: pd.DataFrame

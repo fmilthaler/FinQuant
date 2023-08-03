@@ -48,6 +48,7 @@ class Stock(Asset):
 
     """
 
+    # Attributes:
     investmentinfo: pd.DataFrame
     beta: Optional[FLOAT]
 
