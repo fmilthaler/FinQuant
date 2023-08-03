@@ -23,7 +23,7 @@ def type_validation(**kwargs: Any) -> None:
 
     This function performs various type validations on a set of input variables. It helps to ensure that the input
     values conform to the expected types and conditions, raising a TypeError with a descriptive error message
-    if any type validation fails and a ValueError if a np.array or pd.Series/DataFrame is empty.
+    if any type validation fails and a ValueError if a numpy.array or pd.Series/DataFrame is empty.
 
     Parameters:
         **kwargs: Arbitrary keyword arguments representing the input variables to be checked.
@@ -47,7 +47,10 @@ def type_validation(**kwargs: Any) -> None:
     type_dict = {
         "data": (pd.DataFrame, "a non-empty pandas.DataFrame"),
         "pf_allocation": (pd.DataFrame, "a non-empty pd.DataFrame"),
-        "names": (Union[List, np.ndarray], "a non-empty List[str] or np.ndarray[str]"),
+        "names": (
+            Union[List, np.ndarray],
+            "a non-empty List[str] or numpy.ndarray[str]",
+        ),
         "cols": (List, "a non-empty List[str]"),
         "start_date": (
             Union[str, datetime.datetime],
@@ -70,6 +73,10 @@ def type_validation(**kwargs: Any) -> None:
             Union[str, datetime.datetime],
             "of type str or datetime.datetime",
         ),
+        "means": (Union[np.ndarray, pd.Series], "a non-empty numpy.ndarray or pandas.Series"),
+        "weights": (Union[np.ndarray, pd.Series], "a non-empty numpy.ndarray or pandas.Series"),
+        "cov_matrix": (Union[np.ndarray, pd.DataFrame], "a non-empty numpy.ndarray or pandas.DataFrame"),
+
     }
 
     for arg_name, (arg_type, expected_type) in type_dict.items():
