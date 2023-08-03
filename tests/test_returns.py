@@ -13,10 +13,10 @@ from finquant.returns import (
 def test_cumulative_returns():
     orig = [
         list(range(10)),
-        [0, -0.025, -0.05, -0.075, -0.1, -0.125, -0.15, -0.175, -0.2, -0.225],
+        [0., -0.025, -0.05, -0.075, -0.1, -0.125, -0.15, -0.175, -0.2, -0.225],
     ]
-    l1 = range(1, 11)
-    l2 = [40 - i for i in range(10)]
+    l1 = np.array(range(1, 11)).astype(np.float64)
+    l2 = [float(40 - i) for i in range(10)]
     d = {"1": l1, "2": l2}
     df = pd.DataFrame(d)
     ret = cumulative_returns(df)
@@ -36,7 +36,7 @@ def test_cumulative_returns():
 
 def test_daily_returns():
     orig = [[1.0, 1.0 / 2, 1.0 / 3, 1.0 / 4], [1.0 / 9, 1.0 / 10, 1.0 / 11, 1.0 / 12]]
-    l1 = range(1, 6)
+    l1 = np.array(range(1, 6)).astype(np.float64)
     l2 = [10 * 0.2 + i * 0.25 for i in range(1, 6)]
     d = {"1": l1, "2": l2}
     df = pd.DataFrame(d)
@@ -58,7 +58,7 @@ def test_weighted_daily_mean_returns():
     d = {"1": l1}
     expected = [0.5 for i in range(len(l1) - 1)]
     df = pd.DataFrame(d)
-    ret = weighted_mean_daily_returns(df, np.array([1]))
+    ret = weighted_mean_daily_returns(df, np.array([1.]))
     assert all(abs(ret - expected) <= 1e-15)
 
 
@@ -77,7 +77,7 @@ def test_daily_log_returns():
             0.08004270767353636,
         ],
     ]
-    l1 = range(1, 6)
+    l1 = np.array(range(1, 6)).astype(np.float64)
     l2 = [10 * 0.2 + i * 0.25 for i in range(1, 6)]
     d = {"1": l1, "2": l2}
     df = pd.DataFrame(d)
@@ -90,7 +90,7 @@ def test_daily_log_returns():
 
 def test_historical_mean_return():
     orig = [13.178779135809942, 3.8135072274034982]
-    l1 = range(1, 101)
+    l1 = np.array(range(1, 101)).astype(np.float64)
     l2 = [10 * 0.2 + i * 0.25 for i in range(21, 121)]
     d = {"1": l1, "2": l2}
     df = pd.DataFrame(d)

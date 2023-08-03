@@ -127,7 +127,7 @@ def type_validation(**kwargs: Any) -> None:
                     )
                 continue
 
-            # Other types (str, numeric):
+            # Remaining types:
             if not isinstance(arg_values, arg_type):
                 raise TypeError(
                     f"Error: {arg_name} is expected to be {expected_type}."

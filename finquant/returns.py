@@ -13,6 +13,7 @@ from finquant.data_types import (
     NUMERIC,
     SERIES_OR_DATAFRAME,
 )
+from finquant.type_utilities import type_validation
 
 
 def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFrame:
@@ -28,6 +29,8 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     :Output:
      :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
     """
+    # Type validations:
+    type_validation(data=data, dividend=dividend)
     if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
         raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     if not isinstance(dividend, (float, int, np.floating, np.integer)):
@@ -48,8 +51,8 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
      :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
          of given stock prices.
     """
-    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
-        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
+    # Type validations:
+    type_validation(data=data)
     return (
         data.pct_change()
         .dropna(how="all")
@@ -70,6 +73,8 @@ def weighted_mean_daily_returns(
     :Output:
       :ret: ``numpy.array`` of weighted mean daily percentage change of Returns
     """
+    # Type validations:
+    type_validation(data=data, weights=weights)
     res: np.ndarray[FLOAT, Any] = np.dot(daily_returns(data), weights)
     return res
 
@@ -88,6 +93,8 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
      :ret: a ``pandas.DataFrame`` of
          log(1 + daily percentage change of Returns)
     """
+    # Type validations:
+    type_validation(data=data)
     if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
         raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     return np.log(1 + daily_returns(data)).dropna(how="all").astype(np.float64)
@@ -104,8 +111,6 @@ def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Ser
     :Output:
      :ret: a ``pandas.Series`` or ``numpy.float`` of historical mean Returns.
     """
-    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
-        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
-    if not isinstance(freq, (int, np.integer)):
-        raise ValueError("freq is expected to be an integer.")
+    # Type validations:
+    type_validation(data=data, freq=freq)
     return daily_returns(data).mean() * freq
