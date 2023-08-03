@@ -44,9 +44,23 @@ def type_validation(**kwargs: Any) -> None:
     )
     """
 
+    dtype_msg: str = " with dtype 'np.float64'"
+
     type_dict = {
         "data": (pd.DataFrame, "a non-empty pandas.DataFrame"),
         "pf_allocation": (pd.DataFrame, "a non-empty pd.DataFrame"),
+        "means": (
+            Union[np.ndarray, pd.Series],
+            f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
+        ),
+        "weights": (
+            Union[np.ndarray, pd.Series],
+            f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
+        ),
+        "cov_matrix": (
+            Union[np.ndarray, pd.DataFrame],
+            f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.",
+        ),
         "names": (
             Union[List, np.ndarray],
             "a non-empty List[str] or numpy.ndarray[str]",
@@ -73,15 +87,12 @@ def type_validation(**kwargs: Any) -> None:
             Union[str, datetime.datetime],
             "of type str or datetime.datetime",
         ),
-        "means": (Union[np.ndarray, pd.Series], "a non-empty numpy.ndarray or pandas.Series"),
-        "weights": (Union[np.ndarray, pd.Series], "a non-empty numpy.ndarray or pandas.Series"),
-        "cov_matrix": (Union[np.ndarray, pd.DataFrame], "a non-empty numpy.ndarray or pandas.DataFrame"),
-
     }
 
     for arg_name, (arg_type, expected_type) in type_dict.items():
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
+            # Validating List[str] types:
             if arg_name in ("names", "cols"):
                 if not isinstance(arg_values, arg_type) or (
                     isinstance(arg_values, arg_type)
@@ -95,6 +106,24 @@ def type_validation(**kwargs: Any) -> None:
                         f"Error: {arg_name} is expected to be {expected_type}."
                     )
                 continue
+
+            # Validating common Array[FLOAT], Series[Float], DataFrame[FLOAT] types
+            if arg_name in ("data", "means", "weights", "cov_matrix"):
+                if not isinstance(arg_values, arg_type) or (
+                        isinstance(arg_values, Union[np.ndarray, pd.Series])
+                        and not arg_values.dtype == np.float64
+                ) or (
+                    isinstance(arg_values, pd.DataFrame) and not all(arg_values.dtypes == np.float64)
+                ):
+                    raise TypeError(
+                        f"Error: {arg_name} is expected to be {expected_type}."
+                    )
+                if len(arg_values) == 0:
+                    raise ValueError(
+                        f"Error: {arg_name} is expected to be {expected_type}."
+                    )
+                continue
+
 
             # else (arg_name is not "names" nor "cols")
             if not isinstance(arg_values, (List, np.ndarray)):

@@ -16,11 +16,11 @@ from finquant.quants import (
 
 
 def test_weighted_mean():
-    means = np.array([1])
-    weights = np.array([1])
+    means = np.array([1.])
+    weights = np.array([1.])
     assert weighted_mean(means, weights) == 1
-    means = np.array(range(5))
-    weights = np.array(range(5, 10))
+    means = np.array(range(5)).astype(np.float64)
+    weights = np.array(range(5, 10)).astype(np.float64)
     assert weighted_mean(means, weights) == 80
 
 
