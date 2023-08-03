@@ -203,7 +203,7 @@ class Portfolio:
         # now that this changed, update VaR
         self._update()
 
-    def add_stock(self, stock: Stock, defer_update=False) -> None:
+    def add_stock(self, stock: Stock, defer_update: bool = False) -> None:
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
         is called, the following instance variables are updated:
 
@@ -1205,7 +1205,10 @@ def _build_portfolio_from_df(
         stock_data: pd.Series = data.loc[:, [name]].copy(deep=True).squeeze()
         # create Stock instance and add it to portfolio,
         # and defer updating portfolio attributes until all stocks are added
-        pf.add_stock(Stock(investmentinfo=pf_allocation.iloc[i], data=stock_data), defer_update=True)
+        pf.add_stock(
+            Stock(investmentinfo=pf_allocation.iloc[i], data=stock_data),
+            defer_update=True,
+        )
     # update the portfolio
     pf._update()
     return pf
