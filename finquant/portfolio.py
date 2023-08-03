@@ -83,6 +83,7 @@ from finquant.type_definitions import (
     NUMERIC,
     STRING_OR_DATETIME,
 )
+from finquant.type_utilities import type_validation
 
 
 class Portfolio:
@@ -323,7 +324,7 @@ class Portfolio:
         :Output:
          :ret: a ``pandas.DataFrame`` of historical mean Returns.
         """
-        _common_type_checks(freq=freq)
+        type_validation(freq=freq)
         return historical_mean_return(self.data, freq=freq)
 
     def comp_stock_volatility(self, freq: INT = 252) -> pd.Series:
@@ -337,7 +338,7 @@ class Portfolio:
          :volatilies: ``pandas.DataFrame`` with the individual Volatilities of all stocks
              of the portfolio.
         """
-        _common_type_checks(freq=freq)
+        type_validation(freq=freq)
         return self.comp_daily_returns().std() * np.sqrt(freq)
 
     def comp_weights(self) -> pd.Series:
@@ -362,7 +363,7 @@ class Portfolio:
         :Output:
          :expected_return: ``float`` the Expected Return of the portfolio.
         """
-        _common_type_checks(freq=freq)
+        type_validation(freq=freq)
         pf_return_means: pd.Series = historical_mean_return(self.data, freq=freq)
         weights: pd.Series = self.comp_weights()
         expected_return: FLOAT = weighted_mean(pf_return_means.values, weights)
@@ -379,7 +380,7 @@ class Portfolio:
         :Output:
          :volatility: ``float`` the Volatility of the portfolio.
         """
-        _common_type_checks(freq=freq)
+        type_validation(freq=freq)
         # computing the volatility of a portfolio
         volatility = weighted_std(self.comp_cov(), self.comp_weights()) * np.sqrt(freq)
         self.volatility = volatility
@@ -721,7 +722,7 @@ class Portfolio:
          :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
         """
-        _common_type_checks(freq=freq)
+        type_validation(freq=freq)
         # annual mean returns of all stocks
         stock_returns: pd.Series = self.comp_mean_returns(freq=freq)
         stock_volatility: pd.Series = self.comp_stock_volatility(freq=freq)
@@ -821,7 +822,7 @@ def _quandl_request(
             + "Please make sure that it is installed."
         )
     # Type checks:
-    _common_type_checks(names=names, start_date=start_date, end_date=end_date)
+    type_validation(names=names, start_date=start_date, end_date=end_date)
 
     # get correct stock names that quandl.get can request,
     # e.g. "WIKI/GOOG" for Google
@@ -864,7 +865,7 @@ def _yfinance_request(
             + "Please make sure that it is installed."
         )
     # Type checks:
-    _common_type_checks(names=names, start_date=start_date, end_date=end_date)
+    type_validation(names=names, start_date=start_date, end_date=end_date)
 
     # yfinance does not exit safely if start/end date were not given correctly:
     # this step is not required for quandl as it handles this exception properly
@@ -920,7 +921,7 @@ def _get_stocks_data_columns(
      :data: A ``pandas.DataFrame`` which contains only the data columns of
          data as specified in cols.
     """
-    _common_type_checks(data=data, names=names, cols=cols)
+    type_validation(data=data, names=names, cols=cols)
     # get correct stock names that quandl get request
     reqnames: List[str] = _correct_quandl_request_stock_name(names)
     # get current column labels and replacement labels
@@ -982,88 +983,6 @@ def _get_stocks_data_columns(
     return data
 
 
-def _common_type_checks(**kwargs) -> None:
-    """
-    Perform generic type checks on input variables.
-
-    This function performs various type checks on a set of input variables. It helps to ensure that the input
-    values conform to the expected types and conditions, raising a TypeError with a descriptive error message
-    if any check fails.
-
-    Parameters:
-        **kwargs: Arbitrary keyword arguments representing the input variables to be checked.
-
-    Raises:
-        TypeError: If any of the type checks fail, a TypeError is raised with a descriptive error message
-                   indicating the expected type and conditions for each variable.
-
-    Example usage:
-        _common_type_checks(data=pd.DataFrame(), names=['name1', 'name2'], start_date='2023-08-01', freq=10, generic_df=[df1, df2])
-    """
-
-    type_checks = {
-        "data": (pd.DataFrame, "a non-empty pandas.DataFrame"),
-        "pf_allocation": (pd.DataFrame, "a non-empty pd.DataFrame"),
-        "names": (Union[List, np.ndarray], "a non-empty List[str] or np.ndarray[str]"),
-        "cols": (List, "a non-empty List[str]"),
-        "start_date": (
-            Union[str, datetime.datetime],
-            "of type str or datetime.datetime",
-        ),
-        "end_date": (Union[str, datetime.datetime], "of type str or datetime.datetime"),
-        "data_api": (str, "of type str"),
-        "market_index": (str, "of type str"),
-        "freq": ((int, np.integer), "of type integer"),
-        "generic_str": (str, "of type str"),
-        "generic_int": ((int, np.integer), "of type integer"),
-        "generic_float": ((float, np.floating), "of type float"),
-        "generic_numeric": (
-            (int, np.integer, float, np.floating),
-            "of type integer or float",
-        ),
-        "generic_df": (pd.DataFrame, "a non-empty pd.DataFrame"),
-        "generic_series": (pd.Series, "a non-empty pandas.Series"),
-        "generic_datetime": (
-            Union[str, datetime.datetime],
-            "of type str or datetime.datetime",
-        ),
-    }
-
-    for arg_name, (arg_type, expected_type) in type_checks.items():
-        arg_values = kwargs.get(arg_name)
-        if arg_values is not None:
-            if arg_name in ("names", "cols"):
-                if not isinstance(arg_values, arg_type) or (
-                    isinstance(arg_values, arg_type)
-                    and not all(isinstance(val, str) for val in arg_values)
-                ):
-                    raise TypeError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                elif len(arg_values) == 0:
-                    raise ValueError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                continue
-            else:
-                arg_values = [arg_values]
-                for arg_value in arg_values:
-                    if not isinstance(arg_value, arg_type):
-                        raise TypeError(
-                            f"Error: {arg_name} is expected to be {expected_type}."
-                        )
-                    elif (
-                        isinstance(arg_value, (pd.Series, pd.DataFrame))
-                        and arg_value.empty
-                    ) or (
-                        isinstance(arg_value, (List, np.ndarray))
-                        and len(arg_value) == 0
-                    ):
-                        raise ValueError(
-                            f"Error: {arg_name} is expected to be non-empty {expected_type}."
-                        )
-
-
 def _build_portfolio_from_api(
     names: ARRAY_OR_LIST,
     pf_allocation: Optional[pd.DataFrame] = None,
@@ -1096,7 +1015,7 @@ def _build_portfolio_from_api(
          requested by the user.
     """
     # Type checks:
-    _common_type_checks(
+    type_validation(
         names=names,
         pf_allocation=pf_allocation,
         start_date=start_date,
@@ -1173,7 +1092,7 @@ def _generate_pf_allocation(
     if names is not None and data is not None or names is None and data is None:
         raise ValueError("Pass one of the two: 'names' or 'data'.")
     # Type checks:
-    _common_type_checks(names=names, data=data)
+    type_validation(names=names, data=data)
 
     # if data is given:
     if data is not None:
