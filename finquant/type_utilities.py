@@ -11,7 +11,7 @@ This module requires the following external libraries:
 """
 
 import datetime
-from typing import Any, List, Union
+from typing import Any, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -45,49 +45,45 @@ def type_validation(**kwargs: Any) -> None:
 
     dtype_msg: str = " with dtype 'np.float64'"
 
+    dataframe_type: Tuple = (pd.DataFrame, f"a non-empty pandas.DataFrame {dtype_msg}")
+    array_series_type: Tuple = (Union[np.ndarray, pd.Series], f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.")
+    array_dataframe_type: Tuple = (Union[np.ndarray, pd.DataFrame], f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.")
+    list_array_type: Tuple = (Union[List, np.ndarray], "a non-empty List[str] or numpy.ndarray[str]")
+    datetime_type: Tuple = (Union[str, datetime.datetime], "of type str or datetime.datetime")
+    string_type: Tuple = (str, "of type str")
+    float_type: Tuple = ((float, np.floating), "of type float")
+    int_type: Tuple = ((int, np.integer), "of type integer")
+    numeric_type: Tuple = ((int, np.integer, float, np.floating), "of type integer of float")
+
     type_dict = {
         # DataFrames, Series, Arrays:
-        "data": (pd.DataFrame, "a non-empty pandas.DataFrame"),
-        "pf_allocation": (pd.DataFrame, "a non-empty pd.DataFrame"),
-        "means": (
-            Union[np.ndarray, pd.Series],
-            f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
-        ),
-        "weights": (
-            Union[np.ndarray, pd.Series],
-            f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
-        ),
-        "cov_matrix": (
-            Union[np.ndarray, pd.DataFrame],
-            f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.",
-        ),
+        "data": dataframe_type,
+        "pf_allocation": dataframe_type,
+        "means": array_series_type,
+        "weights": array_series_type,
+        "cov_matrix": array_dataframe_type,
         # Lists:
-        "names": (
-            Union[List, np.ndarray],
-            "a non-empty List[str] or numpy.ndarray[str]",
-        ),
-        "cols": (List, "a non-empty List[str]"),
+        "names": list_array_type,
+        "cols": list_array_type,
         # Datatime objects:
-        "start_date": (
-            Union[str, datetime.datetime],
-            "of type str or datetime.datetime",
-        ),
-        "end_date": (Union[str, datetime.datetime], "of type str or datetime.datetime"),
+        "start_date": datetime_type,
+        "end_date": datetime_type,
         # Strings:
-        "data_api": (str, "of type str"),
-        "market_index": (str, "of type str"),
+        "data_api": string_type,
+        "market_index": string_type,
         # FLOATs
-        "expected_return": ((float, np.floating), "of type float"),
-        "volatility": ((float, np.floating), "of type float"),
-        "risk_free_rate": ((float, np.floating), "of type float"),
-        "downside_risk": ((float, np.floating), "of type float"),
-        "mu": ((float, np.floating), "of type float"),
-        "sigma": ((float, np.floating), "of type float"),
-        "conf_level": ((float, np.floating), "of type float"),
+        "expected_return": float_type,
+        "volatility": float_type,
+        "risk_free_rate": float_type,
+        "downside_risk": float_type,
+        "mu": float_type,
+        "sigma": float_type,
+        "conf_level": float_type,
         # INTs:
-        "freq": ((int, np.integer), "of type integer"),
+        "freq": int_type,
         # NUMERICs:
-        "investment": ((int, np.integer, float, np.floating), "of type integer of float"),
+        "investment": numeric_type,
+        "dividend": numeric_type,
     }
 
     for arg_name, (arg_type, expected_type) in type_dict.items():
