@@ -11,13 +11,13 @@ This module requires the following external libraries:
 """
 
 import datetime
-from typing import List, Union
+from typing import Any, List, Union
 
 import numpy as np
 import pandas as pd
 
 
-def type_validation(**kwargs) -> None:
+def type_validation(**kwargs: Any) -> None:
     """
     Perform generic type checks on input variables.
 
@@ -35,7 +35,13 @@ def type_validation(**kwargs) -> None:
                     indicating the expected conditions for each variable.
 
     Example usage:
-        type_validation(data=pd.DataFrame(), names=['name1', 'name2'], start_date='2023-08-01', freq=10, generic_df=[df1, df2])
+        type_validation(
+        data=pd.DataFrame(),
+        names=["name1", "name2"],
+        start_date="2023-08-01",
+        freq=10,
+        generic_df=[df1, df2],
+    )
     """
 
     type_checks = {
@@ -77,25 +83,24 @@ def type_validation(**kwargs) -> None:
                     raise TypeError(
                         f"Error: {arg_name} is expected to be {expected_type}."
                     )
-                elif len(arg_values) == 0:
+                if len(arg_values) == 0:
                     raise ValueError(
                         f"Error: {arg_name} is expected to be {expected_type}."
                     )
                 continue
-            else:
-                arg_values = [arg_values]
-                for arg_value in arg_values:
-                    if not isinstance(arg_value, arg_type):
-                        raise TypeError(
-                            f"Error: {arg_name} is expected to be {expected_type}."
-                        )
-                    elif (
-                        isinstance(arg_value, (pd.Series, pd.DataFrame))
-                        and arg_value.empty
-                    ) or (
-                        isinstance(arg_value, (List, np.ndarray))
-                        and len(arg_value) == 0
-                    ):
-                        raise ValueError(
-                            f"Error: {arg_name} is expected to be non-empty {expected_type}."
-                        )
+
+            # else (arg_name is not "names" nor "cols")
+            arg_values = [arg_values]
+            for arg_value in arg_values:
+                if not isinstance(arg_value, arg_type):
+                    raise TypeError(
+                        f"Error: {arg_name} is expected to be {expected_type}."
+                    )
+                if (
+                    isinstance(arg_value, (pd.Series, pd.DataFrame)) and arg_value.empty
+                ) or (
+                    isinstance(arg_value, (List, np.ndarray)) and len(arg_value) == 0
+                ):
+                    raise ValueError(
+                        f"Error: {arg_name} is expected to be non-empty {expected_type}."
+                    )
