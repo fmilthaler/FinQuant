@@ -857,7 +857,7 @@ def _yfinance_request(
          relevant stock data.
     """
     try:
-        import yfinance as yf
+        import yfinance
     except ImportError:
         print(
             "The following package is required:\n - `yfinance`\n"
@@ -882,7 +882,7 @@ def _yfinance_request(
     # unlike quandl, yfinance does not have a prefix in front of the ticker
     # thus we do not need to correct them
     try:
-        resp: pd.DataFrame = yf.download(names, start=start_date, end=end_date)
+        resp: pd.DataFrame = yfinance.download(names, start=start_date, end=end_date)
         if not isinstance(resp.columns, pd.MultiIndex) and len(names) > 0:
             # for single stock must make the dataframe multiindex
             stock_tuples = [(col, names[0]) for col in list(resp.columns)]
