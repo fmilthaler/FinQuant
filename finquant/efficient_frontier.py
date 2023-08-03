@@ -11,7 +11,7 @@ import pandas as pd
 import scipy.optimize as sco
 
 import finquant.minimise_fun as min_fun
-from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, NUMERIC
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, INT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
 
 
@@ -129,7 +129,7 @@ class EfficientFrontier:
         self.df_weights = pd.DataFrame()
         self.efrontier = np.empty((0, 2), dtype=np.float64)
 
-    def minimum_volatility(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
+    def minimum_volatility(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility.
 
         :Input:
@@ -176,7 +176,7 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def maximum_sharpe_ratio(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
+    def maximum_sharpe_ratio(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
@@ -222,7 +222,7 @@ class EfficientFrontier:
 
     def efficient_return(
         self, target: NUMERIC, save_weights: bool = True
-    ) -> ARRAY_OR_DATAFRAME:
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility for a given target
         return.
 
@@ -322,7 +322,7 @@ class EfficientFrontier:
         return self.df_weights
 
     def efficient_frontier(
-        self, targets: Optional[ARRAY_OR_LIST] = None
+        self, targets: Optional[ARRAY_OR_LIST[FLOAT]] = None
     ) -> np.ndarray[np.float64, Any]:
         """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
