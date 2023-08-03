@@ -821,11 +821,7 @@ def _quandl_request(
             + "Please make sure that it is installed."
         )
     # Type checks:
-    _common_type_checks(names=names)
-    if start_date is not None:
-        _common_type_checks(start_date=start_date)
-    if end_date is not None:
-        _common_type_checks(end_date=end_date)
+    _common_type_checks(names=names, start_date=start_date, end_date=end_date)
 
     # get correct stock names that quandl.get can request,
     # e.g. "WIKI/GOOG" for Google
@@ -868,11 +864,7 @@ def _yfinance_request(
             + "Please make sure that it is installed."
         )
     # Type checks:
-    _common_type_checks(names=names)
-    if start_date is not None:
-        _common_type_checks(start_date=start_date)
-    if end_date is not None:
-        _common_type_checks(end_date=end_date)
+    _common_type_checks(names=names, start_date=start_date, end_date=end_date)
 
     # yfinance does not exit safely if start/end date were not given correctly:
     # this step is not required for quandl as it handles this exception properly
