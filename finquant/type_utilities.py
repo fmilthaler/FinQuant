@@ -23,7 +23,7 @@ def type_validation(**kwargs) -> None:
 
     This function performs various type checks on a set of input variables. It helps to ensure that the input
     values conform to the expected types and conditions, raising a TypeError with a descriptive error message
-    if any check fails.
+    if any type check fails and a ValueError if a np.array or pd.Series/DataFrame is empty.
 
     Parameters:
         **kwargs: Arbitrary keyword arguments representing the input variables to be checked.
@@ -31,6 +31,8 @@ def type_validation(**kwargs) -> None:
     Raises:
         TypeError: If any of the type checks fail, a TypeError is raised with a descriptive error message
                    indicating the expected type and conditions for each variable.
+        ValueError: If any of the value checks fail, a ValueError is raised with a descriptive error message
+                    indicating the expected conditions for each variable.
 
     Example usage:
         type_validation(data=pd.DataFrame(), names=['name1', 'name2'], start_date='2023-08-01', freq=10, generic_df=[df1, df2])
