@@ -723,7 +723,7 @@ class Portfolio:
         mc: MonteCarloOpt = self._get_mc()
         mc.properties()
 
-    def plot_stocks(self, freq: int = 252) -> None:
+    def plot_stocks(self, freq: INT = 252) -> None:
         """Plots the Expected annual Returns over annual Volatility of
         the stocks of the portfolio.
 
