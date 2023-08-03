@@ -88,13 +88,19 @@ from finquant.stock import Stock
 from finquant.type_utilities import type_validation
 
 
-class InvalidDateFormatError(Exception):
+class InvalidDateFormatError(Exception):  # pylint: disable=C0115
     pass
-class QuandlLimitError(Exception):
+
+
+class QuandlLimitError(Exception):  # pylint: disable=C0115
     pass
-class QuandlError(Exception):
+
+
+class QuandlError(Exception):  # pylint: disable=C0115
     pass
-class YFinanceError(Exception):
+
+
+class YFinanceError(Exception):  # pylint: disable=C0115
     pass
 
 
@@ -854,13 +860,17 @@ def _quandl_request(
             reqnames, start_date=start_date, end_date=end_date
         )
     except quandl.LimitExceededError as exc:
-        errormsg: str = "You exceeded Quandl's limit. Are you using your API key?\nQuandl Error: "+str(exc)
+        errormsg: str = (
+            "You exceeded Quandl's limit. Are you using your API key?\nQuandl Error: "
+            + str(exc)
+        )
         raise QuandlLimitError(errormsg) from exc
     except Exception as exc:
         errormsg: str = (
-                "Error during download of stock data from Quandl.\n"
-                + "Make sure all the requested stock names/tickers are "
-                + "supported by Quandl.\nQuandl error: "+str(exc)
+            "Error during download of stock data from Quandl.\n"
+            + "Make sure all the requested stock names/tickers are "
+            + "supported by Quandl.\nQuandl error: "
+            + str(exc)
         )
         raise QuandlError(errormsg) from exc
 
@@ -917,7 +927,8 @@ def _yfinance_request(
     except Exception as exc:
         errormsg: str = (
             "Error during download of stock data from Yahoo Finance with `yfinance`.\n"
-            + "YFinance error: "+str(exc)
+            + "YFinance error: "
+            + str(exc)
         )
         raise YFinanceError(errormsg) from exc
     return resp
