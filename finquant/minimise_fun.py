@@ -8,9 +8,9 @@ from finquant.quants import annualised_portfolio_quantities
 
 
 def portfolio_volatility(
-    weights: ARRAY_OR_SERIES,
-    mean_returns: ARRAY_OR_DATAFRAME,
-    cov_matrix: ARRAY_OR_DATAFRAME,
+    weights: ARRAY_OR_SERIES[FLOAT],
+    mean_returns: ARRAY_OR_DATAFRAME[FLOAT],
+    cov_matrix: ARRAY_OR_DATAFRAME[FLOAT],
 ) -> FLOAT:
     """Calculates the volatility of a portfolio
 
@@ -27,9 +27,9 @@ def portfolio_volatility(
 
 
 def negative_sharpe_ratio(
-    weights: ARRAY_OR_SERIES,
-    mean_returns: ARRAY_OR_SERIES,
-    cov_matrix: ARRAY_OR_DATAFRAME,
+    weights: ARRAY_OR_SERIES[FLOAT],
+    mean_returns: ARRAY_OR_SERIES[FLOAT],
+    cov_matrix: ARRAY_OR_DATAFRAME[FLOAT],
     risk_free_rate: FLOAT,
 ) -> FLOAT:
     """Calculates the negative Sharpe ratio of a portfolio
@@ -53,9 +53,9 @@ def negative_sharpe_ratio(
 
 
 def portfolio_return(
-    weights: ARRAY_OR_SERIES,
-    mean_returns: ARRAY_OR_SERIES,
-    cov_matrix: ARRAY_OR_DATAFRAME,
+    weights: ARRAY_OR_SERIES[FLOAT],
+    mean_returns: ARRAY_OR_SERIES[FLOAT],
+    cov_matrix: ARRAY_OR_DATAFRAME[FLOAT],
 ) -> NUMERIC:
     """Calculates the expected annualised return of a portfolio
 
