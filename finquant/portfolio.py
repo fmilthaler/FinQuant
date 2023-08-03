@@ -52,13 +52,21 @@ Finally, functions are implemented to generate the following plots:
 """
 
 import datetime
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 
-from finquant.data_types import ARRAY_OR_LIST, FLOAT, INT, NUMERIC, STRING_OR_DATETIME
+from finquant.data_types import (
+    ARRAY_OR_LIST,
+    ELEMENT_TYPE,
+    FLOAT,
+    INT,
+    LIST_DICT_KEYS,
+    NUMERIC,
+    STRING_OR_DATETIME,
+)
 from finquant.efficient_frontier import EfficientFrontier
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
@@ -91,13 +99,15 @@ class Portfolio:
     portfolio: pd.DataFrame
     stocks: Dict[str, Stock]
     data: pd.DataFrame
-    expected_return: Optional[FLOAT]
-    volatility: Optional[FLOAT]
-    sharpe: Optional[FLOAT]
-    var: Optional[FLOAT]
-    skew: Optional[pd.Series]
-    kurtosis: Optional[pd.Series]
-    __totalinvestment: Optional[NUMERIC]
+    expected_return: FLOAT
+    volatility: FLOAT
+    downside_risk: FLOAT
+    var: FLOAT
+    sharpe: FLOAT
+    sortino: FLOAT
+    skew: pd.Series
+    kurtosis: pd.Series
+    __totalinvestment: NUMERIC
     __var_confidence_level: FLOAT
     __risk_free_rate: FLOAT
     __freq: INT
@@ -113,15 +123,6 @@ class Portfolio:
         self.portfolio = pd.DataFrame()
         self.stocks = {}
         self.data = pd.DataFrame()
-        self.expected_return = None
-        self.volatility = None
-        self.downside_risk = None
-        self.var = None
-        self.sharpe = None
-        self.sortino = None
-        self.skew = None
-        self.kurtosis = None
-        self.__totalinvestment = None
         self.__var_confidence_level = 0.95
         self.__risk_free_rate = 0.005
         self.__freq = 252
@@ -135,7 +136,7 @@ class Portfolio:
         self.beta = None
 
     @property
-    def totalinvestment(self) -> Optional[NUMERIC]:
+    def totalinvestment(self) -> NUMERIC:
         return self.__totalinvestment
 
     @totalinvestment.setter
@@ -376,11 +377,13 @@ class Portfolio:
         """
         type_validation(freq=freq)
         # computing the volatility of a portfolio
-        volatility = weighted_std(self.comp_cov(), self.comp_weights()) * np.sqrt(freq)
+        volatility: FLOAT = weighted_std(
+            self.comp_cov(), self.comp_weights()
+        ) * np.sqrt(freq)
         self.volatility = volatility
         return volatility
 
-    def comp_downside_risk(self, freq=252):
+    def comp_downside_risk(self, freq: INT = 252) -> FLOAT:
         """Computes the downside risk of the portfolio.
 
         :Input:
@@ -390,7 +393,7 @@ class Portfolio:
         :Output:
          :downside risk: ``float`` downside risk of the portfolio.
         """
-        downs_risk = downside_risk(
+        downs_risk: FLOAT = downside_risk(
             self.data, self.comp_weights(), self.risk_free_rate
         ) * np.sqrt(freq)
         self.downside_risk = downs_risk
@@ -414,7 +417,7 @@ class Portfolio:
          :sharpe: ``float``, the Sharpe Ratio of the portfolio
         """
         # compute the Sharpe Ratio of the portfolio
-        sharpe = sharpe_ratio(
+        sharpe: FLOAT = sharpe_ratio(
             self.expected_return, self.volatility, self.risk_free_rate
         )
         self.sharpe = sharpe
@@ -455,7 +458,7 @@ class Portfolio:
         else:
             return None
 
-    def comp_sortino(self, freq=252):
+    def comp_sortino(self, freq: int = 252) -> FLOAT:
         """Compute and return the Sortino Ratio of the portfolio
 
         :Output:
@@ -591,8 +594,8 @@ class Portfolio:
         return opt_weights
 
     def ef_efficient_frontier(
-        self, targets: Optional[ARRAY_OR_LIST] = None
-    ) -> np.ndarray[np.float64, 2]:
+        self, targets: Optional[ARRAY_OR_LIST[FLOAT]] = None
+    ) -> np.ndarray[np.float64, Any]:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_frontier``.
 
@@ -613,7 +616,7 @@ class Portfolio:
         # get/create instance of EfficientFrontier
         ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        efrontier: np.ndarray[np.float64, 2] = ef.efficient_frontier(targets)
+        efrontier: np.ndarray[np.float64, Any] = ef.efficient_frontier(targets)
         return efrontier
 
     def ef_plot_efrontier(self) -> None:
@@ -782,15 +785,24 @@ class Portfolio:
         return "Contains information about a portfolio."
 
 
-def _correct_quandl_request_stock_name(names: Union[str, List[str]]) -> List[str]:
+def _correct_quandl_request_stock_name(
+    names: Union[str, ARRAY_OR_LIST[str]]
+) -> List[str]:
     """If given input argument is of type string,
     this function converts it to a list, assuming the input argument
     is only one stock name.
     """
+    # Type validations:
+    type_validation(names=names)
     # make sure names is a list of names:
+    names_list: List[str]
     if isinstance(names, str):
-        names = [names]
-    return names
+        names_list = list(names)
+    elif isinstance(names, np.ndarray):
+        names_list = names.tolist()
+    else:
+        names_list = names
+    return names_list
 
 
 def _quandl_request(
@@ -898,7 +910,7 @@ def _get_quandl_data_column_label(stock_name: str, data_label: str) -> str:
 
 
 def _get_stocks_data_columns(
-    data: pd.DataFrame, names: ARRAY_OR_LIST, cols: List[str]
+    data: pd.DataFrame, names: ARRAY_OR_LIST[str], cols: List[str]
 ) -> pd.DataFrame:
     """This function returns a subset of the given ``pandas.DataFrame`` data, which
     contains only the data columns as specified in the input cols.
@@ -920,6 +932,7 @@ def _get_stocks_data_columns(
     reqnames: List[str] = _correct_quandl_request_stock_name(names)
     # get current column labels and replacement labels
     reqcolnames: List[str] = []
+    colname: str
     # if dataframe is of type multiindex, also get first level colname
     firstlevel_colnames: List[str] = []
     for i in range(len(names)):
@@ -929,23 +942,23 @@ def _get_stocks_data_columns(
             # read in from disk with slightly modified column labels
             # 1. if <stock_name> in column labels
             if names[i] in data.columns:
-                colname: str = names[i]
+                colname = names[i]
             # 2. if "WIKI/<stock_name> - <col>" in column labels
             elif _get_quandl_data_column_label(reqnames[i], col) in data.columns:
-                colname: str = _get_quandl_data_column_label(reqnames[i], col)
+                colname = _get_quandl_data_column_label(reqnames[i], col)
             # 3. if "<stock_name> - <col>" in column labels
             elif _get_quandl_data_column_label(names[i], col) in data.columns:
-                colname: str = _get_quandl_data_column_label(names[i], col)
+                colname = _get_quandl_data_column_label(names[i], col)
             # if column labels is of type multiindex, and the "Adj Close" is in
             # first level labels, we assume the dataframe comes from yfinance:
             elif isinstance(data.columns, pd.MultiIndex):
                 # alter col for yfinance, as it returns column labels without '.'
-                col: str = col.replace(".", "")
+                col = col.replace(".", "")
                 if col in data.columns:
                     if not col in firstlevel_colnames:
                         firstlevel_colnames.append(col)
                     if names[i] in data[col].columns:
-                        colname: str = names[i]
+                        colname = names[i]
                     else:  # error, it must find names[i] on second level of column header
                         raise ValueError(
                             "Could not find column labels in second level of MultiIndex pd.DataFrame"
@@ -969,7 +982,7 @@ def _get_stocks_data_columns(
 
     # if only one data column per stock exists, rename column labels
     # to the name of the corresponding stock
-    newcolnames: Dict = {}
+    newcolnames: Dict[str, str] = {}
     if len(cols) == 1:
         for i, name in enumerate(names):
             newcolnames.update({_get_quandl_data_column_label(name, cols[0]): name})
@@ -978,7 +991,7 @@ def _get_stocks_data_columns(
 
 
 def _build_portfolio_from_api(
-    names: ARRAY_OR_LIST,
+    names: ARRAY_OR_LIST[str],
     pf_allocation: Optional[pd.DataFrame] = None,
     start_date: Optional[STRING_OR_DATETIME] = None,
     end_date: Optional[STRING_OR_DATETIME] = None,
@@ -1018,17 +1031,17 @@ def _build_portfolio_from_api(
         market_index=market_index,
     )
 
+    # setting up variables:
+    stock_data: pd.DataFrame
     # create empty dataframe for market data
     market_data: pd.DataFrame = pd.DataFrame()
     # request data from service:
     if data_api == "yfinance":
-        stock_data: pd.DataFrame = _yfinance_request(list(names), start_date, end_date)
+        stock_data = _yfinance_request(list(names), start_date, end_date)
         if market_index is not None:
-            market_data: pd.DataFrame = _yfinance_request(
-                [market_index], start_date, end_date
-            )
+            market_data = _yfinance_request([market_index], start_date, end_date)
     elif data_api == "quandl":
-        stock_data: pd.DataFrame = _quandl_request(list(names), start_date, end_date)
+        stock_data = _quandl_request(list(names), start_date, end_date)
         if market_index is not None:
             # only generated if user explicitly requests market index with quandl
             raise Warning("Market index is not supported for quandl data.")
@@ -1039,7 +1052,7 @@ def _build_portfolio_from_api(
         )
     # check pf_allocation:
     if pf_allocation is None:
-        pf_allocation: pd.DataFrame = _generate_pf_allocation(names=list(names))
+        pf_allocation = _generate_pf_allocation(names=list(names))
     # build portfolio:
     pf: Portfolio = _build_portfolio_from_df(
         stock_data, pf_allocation, market_data=market_data
@@ -1047,7 +1060,7 @@ def _build_portfolio_from_api(
     return pf
 
 
-def _stocknames_in_data_columns(names: ARRAY_OR_LIST, df: pd.DataFrame) -> bool:
+def _stocknames_in_data_columns(names: ARRAY_OR_LIST[str], df: pd.DataFrame) -> bool:
     """Returns True if at least one element of names was found as a column
     label in the dataframe df.
     """
@@ -1088,11 +1101,14 @@ def _generate_pf_allocation(
     # Type validations:
     type_validation(names=names, data=data)
 
+    # defining new variable stock_names to circumvent the issue of "names" being Optional
+    stock_names: List[str]
+
     # if data is given:
     if data is not None:
         # this case is more complex, as we need to check for column labels in
         # data
-        names: List[str] = data.columns.tolist()
+        stock_names = data.columns.tolist()
         # potential error message
         errormsg: str = (
             "'data' pandas.DataFrame contains conflicting column labels."
@@ -1107,11 +1123,11 @@ def _generate_pf_allocation(
             + "that does not have conflicting column labels, e.g. 'GOOG' and "
             + "'GOOG - Adj. Close' are considered conflicting column headers."
         )
-        # sanity check: split names at '-' and take the leading part of the
-        # split string, and check if this occurs in any of the other names.
+        # sanity check: split stock_names at '-' and take the leading part of the
+        # split string, and check if this occurs in any of the other stock_names.
         # if so, we treat this as a duplication, and ask the user to provide
         # a DataFrame with one data column per stock.
-        splitnames: List[str] = [name.split("-")[0].strip() for name in names]
+        splitnames: List[str] = [name.split("-")[0].strip() for name in stock_names]
         for i, splitname in enumerate(splitnames):
             reducedlist: List[str] = [
                 elt for num, elt in enumerate(splitnames) if num != i
@@ -1119,16 +1135,19 @@ def _generate_pf_allocation(
             if splitname in reducedlist:
                 errormsg = errormsg.format(str(splitname))
                 raise ValueError(errormsg)
-    # if names is given, we go directly to the below:
+    elif names is not None:
+        # if names is given, we use names as stock_names:
+        stock_names = names
+    # no else needed, this is already covered at the beginning of the function
     # compute equal weights
-    weights = [1.0 / len(names) for i in range(len(names))]
-    return pd.DataFrame({"Allocation": weights, "Name": names})
+    weights = [1.0 / float(len(stock_names)) for _ in range(len(stock_names))]
+    return pd.DataFrame({"Allocation": weights, "Name": stock_names})
 
 
 def _build_portfolio_from_df(
     data: pd.DataFrame,
     pf_allocation: pd.DataFrame = None,
-    datacolumns: List[str] = None,
+    data_columns: Optional[List[str]] = None,
     market_data: pd.DataFrame = None,
 ) -> Portfolio:
     """Returns a portfolio based on input in form of ``pandas.DataFrame``.
@@ -1140,7 +1159,7 @@ def _build_portfolio_from_df(
          labels ``Name`` and ``Allocation`` of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     :datacolumns: (optional) A list of strings of data column labels
+     :data_columns: (optional) A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
      :market_data: (optional) A ``pandas.DataFrame`` which contains data of the
          market index (default: ``None``).
@@ -1152,8 +1171,8 @@ def _build_portfolio_from_df(
     # if pf_allocation is None, automatically generate it
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(data=data)
-    if datacolumns is None:
-        datacolumns = ["Adj. Close"]
+    if data_columns is None:
+        data_columns = ["Adj. Close"]
     # Enforcing types for pf_allocation:
     pf_allocation = pf_allocation.astype({"Allocation": np.float64, "Name": str})
     # make sure stock names are in data dataframe
@@ -1164,7 +1183,7 @@ def _build_portfolio_from_df(
         )
     # extract only "Adjusted Close" price column from DataFrame:
     # in quandl: "Adj. Close"; in yfinance: "Adj Close"
-    data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
+    data = _get_stocks_data_columns(data, pf_allocation.Name.values, data_columns)
 
     # building portfolio:
     pf: Portfolio = Portfolio()
@@ -1185,22 +1204,28 @@ def _build_portfolio_from_df(
     return pf
 
 
-def _all_list_ele_in_other(l1: ARRAY_OR_LIST, l2: ARRAY_OR_LIST) -> bool:
+def _all_list_ele_in_other(
+    l1: LIST_DICT_KEYS[ELEMENT_TYPE], l2: LIST_DICT_KEYS[ELEMENT_TYPE]
+) -> bool:
     """Returns True if all elements of list l1 are found in list l2."""
     return all(ele in l2 for ele in l1)
 
 
-def _any_list_ele_in_other(l1: ARRAY_OR_LIST, l2: ARRAY_OR_LIST) -> bool:
+def _any_list_ele_in_other(
+    l1: LIST_DICT_KEYS[ELEMENT_TYPE], l2: LIST_DICT_KEYS[ELEMENT_TYPE]
+) -> bool:
     """Returns True if any element of list l1 is found in list l2."""
     return any(ele in l2 for ele in l1)
 
 
-def _list_complement(A: ARRAY_OR_LIST, B: ARRAY_OR_LIST) -> List:
+def _list_complement(
+    a: LIST_DICT_KEYS[ELEMENT_TYPE], b: LIST_DICT_KEYS[ELEMENT_TYPE]
+) -> List[ELEMENT_TYPE]:
     """Returns the relative complement of A in B (also denoted as A\\B)"""
-    return list(set(B) - set(A))
+    return list(set(b) - set(a))
 
 
-def build_portfolio(**kwargs) -> Portfolio:
+def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
     """This function builds and returns an instance of ``Portfolio``
     given a set of input arguments.
 
@@ -1232,7 +1257,7 @@ def build_portfolio(**kwargs) -> Portfolio:
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional), ``market_index`` (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), ``data_api`` (optional), ``market_index`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:
@@ -1300,29 +1325,49 @@ def build_portfolio(**kwargs) -> Portfolio:
     complement_input_args: List[str] = _list_complement(
         allowed_input_args, all_input_args
     )
+
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
         if _any_list_ele_in_other(complement_input_args, kwargs.keys()):
             raise ValueError(
                 input_comb_error.format(complement_input_args, allowed_mandatory_args)
             )
+
+        # Extract given/potential arguments from kwargs:
+        names = cast(List[str], list(kwargs.get("names", [])))
+        pf_allocation = kwargs.get("pf_allocation", None)
+        start_date = cast(Optional[STRING_OR_DATETIME], kwargs.get("start_date", None))
+        end_date = cast(Optional[STRING_OR_DATETIME], kwargs.get("end_date", None))
+        data_api = cast(str, kwargs.get("data_api", "quandl"))
+        market_index = cast(Optional[str], kwargs.get("market_index", None))
+
         # get portfolio:
-        pf = _build_portfolio_from_api(**kwargs)
+        pf = _build_portfolio_from_api(
+            names=names,
+            pf_allocation=pf_allocation,
+            start_date=start_date,
+            end_date=end_date,
+            data_api=data_api,
+            market_index=market_index,
+        )
 
     # 2. pf_allocation, data
-    allowed_mandatory_args: List[str] = ["data"]
-    allowed_input_args: List[str] = ["data", "pf_allocation"]
-    complement_input_args: List[str] = _list_complement(
-        allowed_input_args, all_input_args
-    )
+    allowed_mandatory_args = ["data"]
+    allowed_input_args = ["data", "pf_allocation"]
+    complement_input_args = _list_complement(allowed_input_args, all_input_args)
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
         if _any_list_ele_in_other(complement_input_args, kwargs.keys()):
             raise ValueError(
                 input_comb_error.format(complement_input_args, allowed_mandatory_args)
             )
+
+        # Extract given/potential arguments from kwargs:
+        data = kwargs.get("data", pd.DataFrame())
+        pf_allocation = kwargs.get("pf_allocation", None)
+
         # get portfolio:
-        pf = _build_portfolio_from_df(**kwargs)
+        pf = _build_portfolio_from_df(data=data, pf_allocation=pf_allocation)
 
     # final check
     # pylint: disable=R0916
@@ -1330,17 +1375,18 @@ def build_portfolio(**kwargs) -> Portfolio:
         pf.portfolio.empty
         or pf.data.empty
         or not pf.stocks
-        or pf.expected_return is None
-        or pf.volatility is None
-        or pf.downside_risk is None
-        or pf.sharpe is None
-        or pf.sortino is None
-        or pf.skew is None
-        or pf.kurtosis is None
+        or not hasattr(pf, "expected_return")
+        or not hasattr(pf, "volatility")
+        or not hasattr(pf, "downside_risk")
+        or not hasattr(pf, "var")
+        or not hasattr(pf, "sharpe")
+        or not hasattr(pf, "sortino")
+        or pf.skew.empty
+        or pf.kurtosis.empty
     ):
         raise ValueError(
             "Should not get here. Something went wrong while "
-            + "creating an instance of Portfolio."
+            + "creating an instance of Portfolio. "
             + docstring_msg
         )
 

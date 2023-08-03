@@ -33,7 +33,7 @@ class EfficientFrontier:
     mean_returns: pd.Series
     cov_matrix: pd.DataFrame
     risk_free_rate: FLOAT
-    freq: int
+    freq: INT
     method: str
     names: List[str]
     num_stocks: int
@@ -50,7 +50,7 @@ class EfficientFrontier:
         mean_returns: pd.Series,
         cov_matrix: pd.DataFrame,
         risk_free_rate: FLOAT = 0.005,
-        freq: int = 252,
+        freq: INT = 252,
         method: str = "SLSQP",
     ):
         """

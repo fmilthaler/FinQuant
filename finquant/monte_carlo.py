@@ -10,7 +10,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 
-from finquant.data_types import FLOAT
+from finquant.data_types import FLOAT, INT
 from finquant.quants import annualised_portfolio_quantities
 
 
@@ -54,7 +54,7 @@ class MonteCarloOpt(MonteCarlo):
 
     returns: pd.DataFrame
     risk_free_rate: FLOAT
-    freq: int
+    freq: INT
     initial_weights: Optional[np.ndarray[np.float64, Any]]
 
     def __init__(
@@ -62,7 +62,7 @@ class MonteCarloOpt(MonteCarlo):
         returns: pd.DataFrame,
         num_trials: int = 1000,
         risk_free_rate: FLOAT = 0.005,
-        freq: int = 252,
+        freq: INT = 252,
         initial_weights: Optional[np.ndarray[np.float64, Any]] = None,
     ) -> None:
         """
