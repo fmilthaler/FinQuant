@@ -141,7 +141,6 @@ def downside_risk(
 def value_at_risk(
     investment: NUMERIC, mu: FLOAT, sigma: FLOAT, conf_level: FLOAT = 0.95
 ) -> FLOAT:
-    # pylint: disable=C0103 # pylint doesn't understand that "mu" is a perfectly fine var name
     """Computes and returns the expected value at risk of an investment/assets.
 
     :Input:
