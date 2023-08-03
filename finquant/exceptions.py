@@ -49,8 +49,6 @@ class InvalidDateFormatError(Exception):
             raise InvalidDateFormatError("Invalid date format. Use 'YYYY-MM-DD'.") from exc
     """
 
-    pass
-
 
 class QuandlLimitError(Exception):
     """
@@ -66,8 +64,6 @@ class QuandlLimitError(Exception):
         except quandl.errors.QuandlLimit as exc:
             raise QuandlLimitError("Quandl API limit reached. Try again later.") from exc
     """
-
-    pass
 
 
 class QuandlError(Exception):
@@ -85,8 +81,6 @@ class QuandlError(Exception):
             raise QuandlError("An error occurred while retrieving data from Quandl.") from exc
     """
 
-    pass
-
 
 class YFinanceError(Exception):
     """
@@ -102,5 +96,3 @@ class YFinanceError(Exception):
         except Exception as exc:
             raise YFinanceError("An error occurred while retrieving data from YFinance.") from exc
     """
-
-    pass
