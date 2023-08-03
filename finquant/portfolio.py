@@ -68,6 +68,12 @@ from finquant.data_types import (
     STRING_OR_DATETIME,
 )
 from finquant.efficient_frontier import EfficientFrontier
+from finquant.exceptions import (
+    InvalidDateFormatError,
+    QuandlError,
+    QuandlLimitError,
+    YFinanceError,
+)
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
 from finquant.quants import (
@@ -86,22 +92,6 @@ from finquant.returns import (
 )
 from finquant.stock import Stock
 from finquant.type_utilities import type_validation
-
-
-class InvalidDateFormatError(Exception):  # pylint: disable=C0115
-    pass
-
-
-class QuandlLimitError(Exception):  # pylint: disable=C0115
-    pass
-
-
-class QuandlError(Exception):  # pylint: disable=C0115
-    pass
-
-
-class YFinanceError(Exception):  # pylint: disable=C0115
-    pass
 
 
 class Portfolio:
@@ -867,9 +857,10 @@ def _quandl_request(
         raise QuandlLimitError(errormsg) from exc
     except Exception as exc:
         errormsg: str = (
-            "Error during download of stock data from Quandl.\n"
+            "An error occurred while retrieving data from Quandl.\n"
             + "Make sure all the requested stock names/tickers are "
-            + "supported by Quandl.\nQuandl error: "
+            + "supported by Quandl.\n"
+            + "Quandl error: "
             + str(exc)
         )
         raise QuandlError(errormsg) from exc
@@ -926,8 +917,8 @@ def _yfinance_request(
             resp.columns = pd.MultiIndex.from_tuples(stock_tuples)
     except Exception as exc:
         errormsg: str = (
-            "Error during download of stock data from Yahoo Finance with `yfinance`.\n"
-            + "YFinance error: "
+            "An error occurred while retrieving data from Yahoo Finance with `yfinance`.\n"
+            + "yfinance error: "
             + str(exc)
         )
         raise YFinanceError(errormsg) from exc
