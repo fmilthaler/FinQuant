@@ -37,7 +37,7 @@ def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
 
 
 from datetime import datetime
-from typing import Any, List, TypeVar, Union, KeysView
+from typing import Any, KeysView, List, TypeVar, Union
 
 import numpy as np
 import pandas as pd
