@@ -24,8 +24,8 @@ def portfolio_volatility(
     :param cov_matrix: Covariance matrix of returns
     :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
-    :return: Annualised volatility
     :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Annualised volatility
     """
     # Type validations:
     type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)
@@ -52,8 +52,8 @@ def negative_sharpe_ratio(
     :param risk_free_rate: Risk free rate
     :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`
 
-    :return: Negative sharpe ratio
     :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Negative sharpe ratio
     """
     # Type validations:
     type_validation(
@@ -86,8 +86,8 @@ def portfolio_return(
     :param cov_matrix: Covariance matrix of returns
     :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
-    :return: Expected annualised return
     :rtype: :py:data:`~.finquant.data_types.NUMERIC`
+    :return: Expected annualised return
     """
     # Type validations:
     type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)
