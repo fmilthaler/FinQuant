@@ -9,6 +9,9 @@ This module requires the following external libraries:
 - 'numpy' (imported as 'np')
 - 'pandas' (imported as 'pd')
 """
+# allow more than 5 boolean expressions in if statement:
+# pylint: disable=R0916
+
 
 import datetime
 from typing import Any, List, Tuple, Union
@@ -45,11 +48,7 @@ def type_validation(**kwargs: Any) -> None:
 
     dtype_msg: str = " with dtype 'np.float64'"
 
-    dataframe_floats_type: Tuple[Any, str] = (
-        pd.DataFrame,
-        f"a non-empty pandas.DataFrame {dtype_msg}",
-    )
-    dataframe_type: Tuple[Any, str] = (pd.DataFrame, f"a non-empty pandas.DataFrame")
+    dataframe_type: Tuple[Any, str] = (pd.DataFrame, "a non-empty pandas.DataFrame")
     series_dataframe_float_type: Tuple[Any, str] = (
         Union[pd.Series, pd.DataFrame],
         f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
