@@ -20,6 +20,7 @@ from finquant.data_types import FLOAT, INT
 from finquant.returns import daily_returns, historical_mean_return
 from finquant.type_utilities import type_validation
 
+
 class Asset:
     """
     Parent class representing a generic financial asset.

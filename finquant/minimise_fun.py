@@ -7,6 +7,7 @@ from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_SERIES, FLOAT, NUME
 from finquant.quants import annualised_portfolio_quantities
 from finquant.type_utilities import type_validation
 
+
 def portfolio_volatility(
     weights: ARRAY_OR_SERIES[FLOAT],
     mean_returns: ARRAY_OR_SERIES[FLOAT],
@@ -47,7 +48,12 @@ def negative_sharpe_ratio(
      :sharpe: sharpe ratio * (-1)
     """
     # Type validations:
-    type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix, risk_free_rate=risk_free_rate)
+    type_validation(
+        weights=weights,
+        means=mean_returns,
+        cov_matrix=cov_matrix,
+        risk_free_rate=risk_free_rate,
+    )
     sharpe = annualised_portfolio_quantities(
         weights, mean_returns, cov_matrix, risk_free_rate=risk_free_rate
     )[2]
