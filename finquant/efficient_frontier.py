@@ -423,14 +423,11 @@ class EfficientFrontier:
     def _dataframe_weights(
         self, weights: Optional[np.ndarray[np.float64, Any]]
     ) -> pd.DataFrame:
-        """Generates and returns a ``pandas.DataFrame`` from given
-        array weights.
+        """Generates and returns a DataFrame from given array weights.
 
-        :Input:
-         :weights: ``numpy.ndarray``, weights of the stock of the portfolio
+        :param weights: An array of weights of the stock of the portfolio.
 
-        :Output:
-         :weights: ``pandas.DataFrame`` with the weights/allocation of stocks
+        :return: A DataFrame with the weights/allocation of stocks
         """
         # Type validations:
         type_validation(weights_array=weights)
@@ -442,8 +439,7 @@ class EfficientFrontier:
         """Calculates and prints out Expected annualised Return,
         Volatility and Sharpe Ratio of optimised portfolio.
 
-        :Input:
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties or not
+        :param verbose: Whether to print out properties or not, default: ``False``
         """
         # Type validations:
         type_validation(verbose=verbose)

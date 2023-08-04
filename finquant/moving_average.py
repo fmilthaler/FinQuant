@@ -28,7 +28,7 @@ def compute_ma(
     computes and sets markers for buy/sell signals based on crossovers of the Moving
     Averages with the shortest/longest spans.
 
-    :param data: A series/dataframe of daily stock prices (if ``pandas.DataFrame``,
+    :param data: A series/dataframe of daily stock prices (if DataFrame,
         only one column is expected)
     :type data: :py:data:`~.finquant.data_types.SERIES_OR_DATAFRAME`
     :param fun: Function that computes a moving average, e.g. ```sma``` (simple) or

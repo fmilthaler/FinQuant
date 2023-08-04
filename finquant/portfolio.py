@@ -234,7 +234,6 @@ class Portfolio:
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
-
         :param stock: An instance of the class ``Stock``.
         :param defer_update: bool, if True instance variables are not (re-)computed at the end of this method.
         """
@@ -403,7 +402,7 @@ class Portfolio:
         return downs_risk
 
     def comp_cov(self) -> pd.DataFrame:
-        """Compute and return a ``pandas.DataFrame`` of the covariance matrix
+        """Compute and return a DataFrame of the covariance matrix
         of the portfolio.
 
         :return: Covariance matrix of the portfolio.
@@ -502,8 +501,7 @@ class Portfolio:
 
         :param verbose: Whether to print out properties or not, default: False
 
-        :return: A ``pandas.DataFrame`` of weights/allocation of stocks within
-             the optimised portfolio.
+        :return: A DataFrame of weights/allocation of stocks within the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -523,7 +521,7 @@ class Portfolio:
 
         :param verbose: Whether to print out properties or not, default: False
 
-        :return: A ``pandas.DataFrame`` of weights/allocation of stocks within
+        :return: A DataFrame of weights/allocation of stocks within
              the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -548,7 +546,7 @@ class Portfolio:
 
         :param verbose: Whether to print out properties or not, default: False
 
-        :return: A ``pandas.DataFrame`` of weights/allocation of stocks within
+        :return: A DataFrame of weights/allocation of stocks within
              the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -574,7 +572,7 @@ class Portfolio:
 
         :param verbose: Whether to print out properties or not, default: False
 
-        :return: A ``pandas.DataFrame`` of weights/allocation of stocks within
+        :return: A DataFrame of weights/allocation of stocks within
              the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -724,7 +722,6 @@ class Portfolio:
 
     def properties(self) -> None:
         """
-
         Nicely prints out the properties of the portfolio:
 
             - Expected Return,
@@ -801,7 +798,7 @@ def _quandl_request(
     end_date: Optional[STRING_OR_DATETIME] = None,
 ) -> pd.DataFrame:
     """This function performs a simple request from `quandl` and returns
-    a ``pandas.DataFrame`` containing stock data.
+    a DataFrame containing stock data.
 
     :param names: List of strings of stock names to be requested
     :param start_date: String/datetime of the start date of relevant stock data.
@@ -849,8 +846,7 @@ def _yfinance_request(
     end_date: Optional[STRING_OR_DATETIME] = None,
 ) -> pd.DataFrame:
     """This function performs a simple request from Yahoo Finance
-    (using `yfinance`) and returns a ``pandas.DataFrame``
-    containing stock data.
+    (using `yfinance`) and returns a DataFrame containing stock data.
 
     :param names: List of strings of stock names to be requested
     :param start_date: (optional) String/datetime of the start date of relevant stock data.
@@ -1141,7 +1137,7 @@ def _build_portfolio_from_df(
          in the resulting portfolio, default: ``None``.
     :param data_columns: (optional) A list of strings of data column labels
          to be extracted and returned (default: ``["Adj. Close"]``).
-    :param market_data: (optional) A ``pandas.DataFrame`` which contains data of the
+    :param market_data: (optional) A DataFrame which contains data of the
          market index (default: ``None``).
 
     :return: Instance of Portfolio which contains all the information requested by the user.

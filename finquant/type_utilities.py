@@ -221,16 +221,20 @@ def type_validation(**kwargs: Any) -> None:
     values conform to the expected types and conditions, raising a TypeError with a descriptive error message
     if any type validation fails and a ValueError if a numpy.array or pd.Series/DataFrame is empty.
 
-    Parameters:
-        **kwargs (Any): Arbitrary keyword arguments representing the input variables to be checked.
+    :param kwargs: Arbitrary keyword arguments representing the input variables to be checked.
 
     Raises:
-        TypeError: If any of the type validations fail, a TypeError is raised with a descriptive error message
-                   indicating the expected type and conditions for each variable.
-        ValueError: If any of the value validations fail, a ValueError is raised with a descriptive error message
-                    indicating the expected conditions for each variable.
+        ``TypeError``:
+            If any of the type validations fail, a TypeError is raised with a descriptive error message
+            indicating the expected type and conditions for each variable.
+        ``ValueError``:
+            If any of the value validations fail, a ValueError is raised with a descriptive error message
+            indicating the expected conditions for each variable.
 
     Example usage:
+
+    .. code-block:: python
+
         type_validation(
             data=pd.DataFrame([1., 2.]),
             names=["name1", "name2"],
