@@ -1,8 +1,11 @@
 import datetime
-from typing import Any, Callable, List, Tuple, Union, Type
+from typing import Any, Callable, Type
 
 import numpy as np
 import pandas as pd
+from finquant.stock import Stock
+from finquant.market import Market
+from finquant.asset import Asset
 
 
 # Arrays, Series, DataFrames:
@@ -112,6 +115,18 @@ def check_callable_type(arg_name: str, arg_values: Any) -> None:
         raise TypeError(f"Error: {arg_name} is expected to be a Callable function.")
 
 
+# Asset, Market, Stock types:
+def check_asset_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, Asset):
+        raise TypeError(f"Error: {arg_name} is expected to be of type Asset.")
+def check_market_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, Market):
+        raise TypeError(f"Error: {arg_name} is expected to be of type {Market.__name__}.")
+def check_stock_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, Stock):
+        raise TypeError(f"Error: {arg_name} is expected to be of type {Stock.__name__}.")
+
+
 def type_validation(**kwargs: Any) -> None:
     # Definition of potential arguments and corresponding expected types
     type_dict = {
@@ -157,8 +172,13 @@ def type_validation(**kwargs: Any) -> None:
         "plot": check_bool_type,
         "save_weights": check_bool_type,
         "verbose": check_bool_type,
+        "defer_update": check_bool_type,
         # Callables:
         "fun": check_callable_type,
+        # Asset, Stock, Market types:
+        "asset": check_asset_type,
+        "market": check_market_type,
+        "stock": check_stock_type,
     }
 
     for arg_name, arg_values in kwargs.items():
