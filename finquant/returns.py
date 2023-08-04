@@ -23,13 +23,11 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     {\\text{price}_{t_0}}`
 
     :param data: A dataframe of daily stock prices
-    :type data: pandas.DataFrame
 
     :param dividend: Paid dividend
     :type dividend: :py:data:`~.finquant.data_types.NUMERIC`, default: 0
 
     :return: A dataframe of cumulative returns of given stock prices.
-    :rtype: pandas.DataFrame
     """
     # Type validations:
     type_validation(data=data, dividend=dividend)
@@ -43,10 +41,8 @@ def daily_returns(data: pd.DataFrame) -> pd.DataFrame:
     :math:`\\displaystyle R = \\dfrac{\\text{price}_{t_i} - \\text{price}_{t_{i-1}}}{\\text{price}_{t_{i-1}}}`
 
     :param data: A dataframe of daily stock prices
-    :type data: pandas.DataFrame
 
     :return: A dataframe of daily percentage change of returns of given stock prices.
-    :rtype: pandas.DataFrame
     """
     # Type validations:
     type_validation(data=data)
@@ -63,12 +59,12 @@ def weighted_mean_daily_returns(
 ) -> np.ndarray[FLOAT, Any]:
     """Returns DataFrame with the daily weighted mean returns
 
-    :Input:
-      :data: ``pandas.DataFrame`` with daily stock prices
-      :weights: ``numpy.ndarray``/``pd.Series`` of weights
+    :param data: A dataframe of daily stock prices
 
-    :Output:
-      :ret: ``numpy.array`` of weighted mean daily percentage change of Returns
+    :param weights: An array representing weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :return: An array of weighted mean daily percentage change of Returns
     """
     # Type validations:
     type_validation(data=data, weights=weights)
@@ -84,10 +80,8 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     {\\text{price}_{t_{i-1}}}\\right)`
 
     :param data: A dataframe of daily stock prices
-    :type data: pandas.DataFrame
 
     :return: A dataframe of daily log returns
-    :rtype: pandas.DataFrame
     """
     # Type validations:
     type_validation(data=data)
@@ -104,7 +98,6 @@ def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Ser
     :type freq: :py:data:`~.finquant.data_types.INT`, default: 252
 
     :return: A series of historical mean returns
-    :rtype: pandas.Series
     """
     # Type validations:
     type_validation(data=data, freq=freq)
