@@ -12,6 +12,7 @@ import pandas as pd
 
 from finquant.data_types import FLOAT, INT
 from finquant.quants import annualised_portfolio_quantities
+from finquant.type_utilities import type_validation
 
 
 class MonteCarlo:
@@ -39,6 +40,8 @@ class MonteCarlo:
         :Output:
          :result: List of quantities returned from `fun` at each iteration.
         """
+        # Type validations:
+        type_validation(fun=fun)
         result = []
         for _ in range(self.num_trials):
             res = fun(**kwargs)
@@ -88,19 +91,14 @@ class MonteCarloOpt(MonteCarlo):
          :opt: ``pandas.DataFrame`` with optimised investment strategies for maximum
              Sharpe Ratio and minimum volatility.
         """
-        if initial_weights is not None and not isinstance(initial_weights, np.ndarray):
-            raise ValueError(
-                "If given, optional argument 'initial_weights' "
-                + "must be a non-zero 1-dimensional numpy.ndarray"
-            )
-        if not isinstance(returns, pd.DataFrame):
-            raise ValueError("returns is expected to be a pandas.DataFrame")
-        if not isinstance(num_trials, int):
-            raise ValueError("num_trials is expected to be an integer")
-        if not isinstance(risk_free_rate, (np.floating, float)):
-            raise ValueError("risk_free_rate is expected to be a float.")
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
+        # Type validations:
+        type_validation(
+            returns=returns,
+            num_trials=num_trials,
+            risk_free_rate=risk_free_rate,
+            freq=freq,
+            initial_weights=initial_weights,
+        )
         self.returns = returns
         self.num_trials = num_trials
         self.risk_free_rate = risk_free_rate

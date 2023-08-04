@@ -61,12 +61,20 @@ def type_validation(**kwargs: Any) -> None:
 
     # Definition of common types to check against with error message:
     dataframe_any_type: Tuple[Any, str] = (pd.DataFrame, "a non-empty pandas.DataFrame")
+    dataframe_float_type: Tuple[Any, str] = (
+        pd.DataFrame,
+        f"a non-empty pandas.DataFrame {dtype_msg}",
+    )
     series_dataframe_float_type: Tuple[Any, str] = (
         Union[pd.Series, pd.DataFrame],
         f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
     )
     array_series_floats_type: Tuple[Any, str] = (
         Union[np.ndarray, pd.Series],
+        f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
+    )
+    array_floats_type: Tuple[Any, str] = (
+        np.ndarray,
         f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
     )
     array_dataframe_floats_type: Tuple[Any, str] = (
@@ -97,8 +105,10 @@ def type_validation(**kwargs: Any) -> None:
         # DataFrames, Series, Arrays:
         "data": series_dataframe_float_type,
         "pf_allocation": dataframe_any_type,  # allows for any subtype
+        "returns": dataframe_float_type,
         "means": array_series_floats_type,
         "weights": array_series_floats_type,
+        "initial_weights": array_floats_type,
         "cov_matrix": array_dataframe_floats_type,
         # Lists:
         "names": list_array_type,
@@ -121,6 +131,7 @@ def type_validation(**kwargs: Any) -> None:
         # INTs:
         "freq": int_type,
         "span": int_type,
+        "num_trials": int_type,
         # NUMERICs:
         "investment": numeric_type,
         "dividend": numeric_type,
@@ -160,7 +171,14 @@ def type_validation(**kwargs: Any) -> None:
                 continue
 
             # Validating common Array[FLOAT], Series[Float], DataFrame[Any] types
-            if arg_name in ("data", "pf_allocation", "means", "weights", "cov_matrix"):
+            if arg_name in (
+                "data",
+                "pf_allocation",
+                "returns",
+                "means",
+                "weights",
+                "cov_matrix",
+            ):
                 if (
                     not isinstance(arg_values, arg_type)
                     or (
