@@ -82,6 +82,7 @@ Table of Contents
     efficientfrontier
     montecarlo
     datatypes
+    typeutilities
     examples
     license
     about

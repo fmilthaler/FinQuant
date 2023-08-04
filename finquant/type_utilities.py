@@ -1,3 +1,30 @@
+type_utilities.py
+
+This module defines a type validation utility for working with various data types in Python, utilizing the 'numpy'
+and 'pandas' libraries.
+
+Dependencies:
+-------------
+This module requires the following external libraries:
+
+- 'numpy' (imported as 'np')
+- 'pandas' (imported as 'pd')
+
+Example usage:
+--------------
+Example:
+
+.. code-block:: python
+
+    type_validation(
+        data=pd.DataFrame([1., 2.]),
+        names=["name1", "name2"],
+        start_date="2023-08-01",
+        freq=10.0,
+    )
+
+"""
+
 import datetime
 from typing import Any, Callable, List, Type
 

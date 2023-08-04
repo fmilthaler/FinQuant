@@ -35,11 +35,13 @@ This module requires the following external libraries:
 Usage Example:
 --------------
 
->>> from finquant.data_types import ARRAY_OR_DATAFRAME, NUMERIC
-# Use the defined type aliases
-def process_data(data: ARRAY_OR_DATAFRAME) -> FLOAT:
-    # Process the data and return a floating point number
-    return 5.0
+.. code-block:: python
+
+    from finquant.data_types import ARRAY_OR_DATAFRAME, NUMERIC
+    # Use the defined type aliases
+    def process_data(data: ARRAY_OR_DATAFRAME) -> FLOAT:
+        # Process the data and return a floating point number
+        return 5.0
 
 """
 # pylint: disable=C0103
