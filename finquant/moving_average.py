@@ -103,7 +103,7 @@ def sma(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     :param data: A dataframe of daily stock prices
     :param span: Number of days/values over which the average is computed, default: 100
 
-    :return: ``sma``: simple moving average
+    :return: Simple moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -118,7 +118,7 @@ def ema(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     :param data: A dataframe of daily stock prices
     :param span: Number of days/values over which the average is computed, default: 100
 
-    :return: ``ema``: exponential moving average
+    :return: Exponential moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -132,7 +132,7 @@ def sma_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     :param data: A dataframe of daily stock prices
     :param span: Number of days/values over which the average is computed, default: 100
 
-    :return: ``sma_std``: standard deviation of simple moving average
+    :return: Standard deviation of simple moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -146,7 +146,7 @@ def ema_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     :param data: A dataframe of daily stock prices
     :param span: Number of days/values over which the average is computed, default: 100
 
-    :return: ``ema_std``: standard deviation of exponential moving average
+    :return: Standard deviation of exponential moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
