@@ -65,10 +65,10 @@ def sharpe_ratio(
     """Computes the Sharpe Ratio
 
     :param exp_return: Expected Return of a portfolio
-    :type exp_return: :py:data:`~.finquant.data_types.NUMERIC`
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
 
     :param volatility: Volatility of a portfolio
-    :type volatility: :py:data:`~.finquant.data_types.NUMERIC`
+    :type volatility: :py:data:`~.finquant.data_types.FLOAT`
 
     :param risk_free_rate: Risk free rate
     :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
@@ -90,14 +90,18 @@ def sortino_ratio(
 ) -> FLOAT:
     """Computes the Sortino Ratio.
 
-    :Input:
-     :exp_return: ``int``/``float``, Expected Return of a portfolio
-     :downs_risk: ``int``/``float``, Downside Risk of a portfolio
-     :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
+    :param exp_return: Expected Return of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
 
-    :Output:
-     :sortino ratio: ``float``/``NaN`` ``(exp_return - risk_free_rate)/float(downside_risk)``.
-        Can be ``NaN`` if ``downside_risk`` is zero
+    :param downs_risk: Downside Risk of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :return: Sortino Ratio as a floating point number:
+        ``(exp_return - risk_free_rate) / float(downs_risk)``
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(
@@ -116,13 +120,18 @@ def downside_risk(
 ) -> FLOAT:
     """Computes the downside risk (target downside deviation of returns).
 
-    :Input:
-      :data: ``pandas.DataFrame`` with daily stock prices
-      :weights: ``numpy.ndarray``/``pd.Series`` of weights
-      :risk_free_rate: ``int``/``float`` (default=``0.005``), risk free rate
+    :param data: A dataframe of daily stock prices
+    :type data: ``pandas.DataFrame``
 
-    :Output:
-      :downside_risk: ``float``, target downside deviation
+    :param weights: Downside Risk of a portfolio
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :return: Target downside deviation
+        ``np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2))``
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(data=data, weights=weights, risk_free_rate=risk_free_rate)
@@ -139,10 +148,10 @@ def value_at_risk(
     :type investment: :py:data:`~.finquant.data_types.NUMERIC`
 
     :param mu: Average/mean return of the investment
-    :type mu: :py:data:`~.finquant.data_types.NUMERIC`
+    :type mu: :py:data:`~.finquant.data_types.FLOAT`
 
     :param sigma: Standard deviation of the investment
-    :type sigma: :py:data:`~.finquant.data_types.NUMERIC`
+    :type sigma: :py:data:`~.finquant.data_types.FLOAT`
 
     :param conf_level: Confidence level of the VaR
     :type conf_level: :py:data:`~.finquant.data_types.FLOAT`, default: 0.95
@@ -184,7 +193,7 @@ def annualised_portfolio_quantities(
     :type freq: :py:data:`~.finquant.data_types.INT`, default: 252
 
     :return: Tuple of Expected Return, Volatility, Sharpe Ratio
-    :rtype: Tuple[:py:data:`~.finquant.data_types.NUMERIC`,
+    :rtype: Tuple[:py:data:`~.finquant.data_types.FLOAT`,
         :py:data:`~.finquant.data_types.FLOAT`,
         :py:data:`~.finquant.data_types.FLOAT`]
     """
