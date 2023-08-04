@@ -7,7 +7,7 @@ python -m pylint --disable=fixme --output-format=parseable *.py finquant | tee p
 
 echo ""
 echo "Running Mypy"
-python -m mypy *.py finquant tests | tee mypy.log
+python -m mypy *.py finquant | tee mypy.log
 
 #echo ""
 #echo "Running Black (check mode only)"

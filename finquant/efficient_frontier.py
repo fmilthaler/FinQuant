@@ -11,8 +11,8 @@ import pandas as pd
 import scipy.optimize as sco
 
 import finquant.minimise_fun as min_fun
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, INT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
-from finquant.type_definitions import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, NUMERIC
 
 
 class EfficientFrontier:
@@ -32,25 +32,25 @@ class EfficientFrontier:
     # Attributes:
     mean_returns: pd.Series
     cov_matrix: pd.DataFrame
-    risk_free_rate: float
-    freq: int
+    risk_free_rate: FLOAT
+    freq: INT
     method: str
     names: List[str]
     num_stocks: int
     last_optimisation: str
     bounds: Tuple[Tuple[int, int], ...]
-    x_0: np.ndarray[float, Any]
-    constraints: Dict[str, Union[str, Callable[[Any], float]]]
-    weights: np.ndarray[float, Any]
+    x_0: np.ndarray[np.float64, Any]
+    constraints: Dict[str, Union[str, Callable[[Any], FLOAT]]]
+    weights: np.ndarray[np.float64, Any]
     df_weights: pd.DataFrame
-    efrontier: np.ndarray[float, Any]
+    efrontier: np.ndarray[np.float64, Any]
 
     def __init__(
         self,
         mean_returns: pd.Series,
         cov_matrix: pd.DataFrame,
-        risk_free_rate: float = 0.005,
-        freq: int = 252,
+        risk_free_rate: FLOAT = 0.005,
+        freq: INT = 252,
         method: str = "SLSQP",
     ):
         """
@@ -98,8 +98,8 @@ class EfficientFrontier:
             "trust-exact",
             "trust-krylov",
         ]
-        if not isinstance(risk_free_rate, (int, float)):
-            raise ValueError("risk_free_rate is expected to be an integer or float.")
+        if not isinstance(risk_free_rate, (np.floating, float)):
+            raise ValueError("risk_free_rate is expected to be a float.")
         if not isinstance(method, str):
             raise ValueError("method is expected to be a string.")
         if method not in supported_methods:
@@ -117,16 +117,18 @@ class EfficientFrontier:
 
         # set numerical parameters
         bound = (0, 1)
-        self.bounds = tuple(bound for stock in range(self.num_stocks))
-        self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=float)
-        self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
+        self.bounds = tuple(bound for _ in range(self.num_stocks))
+        self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=np.float64)
+        self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1.0}
 
         # placeholder for optimised values/weights
-        self.weights = np.empty(0, dtype=float)
+        self.weights = np.empty(0, dtype=np.float64)
         self.df_weights = pd.DataFrame()
-        self.efrontier = np.empty(0, dtype=float)
+        self.efrontier = np.empty((0, 2), dtype=np.float64)
 
-    def minimum_volatility(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
+    def minimum_volatility(
+        self, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility.
 
         :param save_weights: For internal use only, default: True
@@ -170,7 +172,9 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def maximum_sharpe_ratio(self, save_weights: bool = True) -> ARRAY_OR_DATAFRAME:
+    def maximum_sharpe_ratio(
+        self, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
@@ -213,7 +217,7 @@ class EfficientFrontier:
 
     def efficient_return(
         self, target: NUMERIC, save_weights: bool = True
-    ) -> ARRAY_OR_DATAFRAME:
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility for a given target
         return.
 
@@ -306,8 +310,8 @@ class EfficientFrontier:
         return self.df_weights
 
     def efficient_frontier(
-        self, targets: Optional[ARRAY_OR_LIST] = None
-    ) -> np.ndarray[float, Any]:
+        self, targets: Optional[ARRAY_OR_LIST[FLOAT]] = None
+    ) -> np.ndarray[np.float64, Any]:
         """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
         and maximum returns of the portfolio's individual stocks, and set
@@ -337,29 +341,30 @@ class EfficientFrontier:
                     target,
                 ]
             )
-        self.efrontier = np.array(efrontier, dtype=float)
+        self.efrontier: np.ndarray[np.float64, Any] = np.array(
+            efrontier, dtype=np.float64
+        )
+        if self.efrontier.size == 0 or self.efrontier.ndim != 2:
+            raise ValueError("Error: Efficient frontier could not be computed.")
         return self.efrontier
 
     def plot_efrontier(self) -> None:
         """Plots the Efficient Frontier."""
-        if self.efrontier is None:
+        if self.efrontier.size == 0:
             # compute efficient frontier first
             self.efficient_frontier()
-        if self.efrontier is not None:
-            plt.plot(
-                self.efrontier[:, 0],
-                self.efrontier[:, 1],
-                linestyle="-.",
-                color="black",
-                lw=2,
-                label="Efficient Frontier",
-            )
-            plt.title("Efficient Frontier")
-            plt.xlabel("Volatility")
-            plt.ylabel("Expected Return")
-            plt.legend()
-        else:
-            raise ValueError("Error: Efficient frontier could not be computed.")
+        plt.plot(
+            self.efrontier[:, 0],
+            self.efrontier[:, 1],
+            linestyle="-.",
+            color="black",
+            lw=2,
+            label="Efficient Frontier",
+        )
+        plt.title("Efficient Frontier")
+        plt.xlabel("Volatility")
+        plt.ylabel("Expected Return")
+        plt.legend()
 
     def plot_optimal_portfolios(self) -> None:
         """Plots markers of the optimised portfolios for
@@ -402,7 +407,7 @@ class EfficientFrontier:
         plt.legend()
 
     def _dataframe_weights(
-        self, weights: Optional[np.ndarray[float, Any]]
+        self, weights: Optional[np.ndarray[np.float64, Any]]
     ) -> pd.DataFrame:
         """Generates and returns a ``pandas.DataFrame`` from given
         array weights.
@@ -415,7 +420,9 @@ class EfficientFrontier:
         """
         if not isinstance(weights, np.ndarray):
             raise ValueError("weights is expected to be a numpy.ndarray")
-        return pd.DataFrame(weights, index=self.names, columns=["Allocation"])
+        return pd.DataFrame(weights, index=self.names, columns=["Allocation"]).astype(
+            np.float64
+        )
 
     def properties(self, verbose: bool = False) -> Tuple[NUMERIC, FLOAT, FLOAT]:
         """Calculates and prints out Expected annualised Return,
@@ -427,7 +434,9 @@ class EfficientFrontier:
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
         if self.weights.size == 0:
-            raise ValueError("Perform an optimisation first.")
+            raise ValueError(
+                "Error: weights are empty. Please perform an optimisation first."
+            )
         expected_return, volatility, sharpe = annualised_portfolio_quantities(
             self.weights,
             self.mean_returns,

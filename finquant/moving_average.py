@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-from finquant.type_definitions import SERIES_OR_DATAFRAME
+from finquant.data_types import SERIES_OR_DATAFRAME
 
 
 def compute_ma(

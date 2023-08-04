@@ -19,8 +19,10 @@ and makes the most common quantitative calculations, such as:
 - daily log returns of the portfolio's stocks,
 - Expected (annualised) Return,
 - Volatility,
-- Sharpe Ratio,
+- Downside Risk,
 - Value at Risk,
+- Sharpe Ratio,
+- Sortino Ratio,
 - Beta parameter (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
@@ -38,7 +40,7 @@ or by performing a Monte Carlo simulation of `n` trials.
 The former should be the preferred method for reasons of computational effort
 and accuracy. The latter is only included for the sake of completeness.
 
-Finally, functions are implemented to generated the following plots:
+Finally, functions are implemented to generate the following plots:
 
 - Monte Carlo run to find optimal portfolio(s)
 - Efficient Frontier
@@ -50,18 +52,42 @@ Finally, functions are implemented to generated the following plots:
   based on a numerical optimisation
 - Individual stocks of the portfolio (Expected Return over Volatility)
 """
+# supress some pylint complaints for this module only
+# pylint: disable=C0302,R0904,,R0912,W0212
 
 import datetime
-from typing import List
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 
+from finquant.data_types import (
+    ARRAY_OR_LIST,
+    ELEMENT_TYPE,
+    FLOAT,
+    INT,
+    LIST_DICT_KEYS,
+    NUMERIC,
+    STRING_OR_DATETIME,
+)
 from finquant.efficient_frontier import EfficientFrontier
+from finquant.exceptions import (
+    InvalidDateFormatError,
+    QuandlError,
+    QuandlLimitError,
+    YFinanceError,
+)
 from finquant.market import Market
 from finquant.monte_carlo import MonteCarloOpt
-from finquant.quants import sharpe_ratio, value_at_risk, weighted_mean, weighted_std
+from finquant.quants import (
+    downside_risk,
+    sharpe_ratio,
+    sortino_ratio,
+    value_at_risk,
+    weighted_mean,
+    weighted_std,
+)
 from finquant.returns import (
     cumulative_returns,
     daily_log_returns,
@@ -69,6 +95,7 @@ from finquant.returns import (
     historical_mean_return,
 )
 from finquant.stock import Stock
+from finquant.type_utilities import type_validation
 
 
 class Portfolio:
@@ -79,38 +106,52 @@ class Portfolio:
     an object of ``Stock``.
     """
 
-    def __init__(self):
+    # Attributes:
+    portfolio: pd.DataFrame
+    stocks: Dict[str, Stock]
+    data: pd.DataFrame
+    expected_return: FLOAT
+    volatility: FLOAT
+    downside_risk: FLOAT
+    var: FLOAT
+    sharpe: FLOAT
+    sortino: FLOAT
+    skew: pd.Series
+    kurtosis: pd.Series
+    __totalinvestment: NUMERIC
+    __var_confidence_level: FLOAT
+    __risk_free_rate: FLOAT
+    __freq: INT
+    ef: Optional[EfficientFrontier]
+    mc: Optional[MonteCarloOpt]
+    __market_index: Optional[Market]
+    beta_stocks: pd.DataFrame
+    beta: Optional[FLOAT]
+
+    def __init__(self) -> None:
         """Initiates ``Portfolio``."""
         # initilisating instance variables
         self.portfolio = pd.DataFrame()
         self.stocks = {}
         self.data = pd.DataFrame()
-        self.expected_return = None
-        self.volatility = None
-        self.sharpe = None
-        self.var = None
-        self.skew = None
-        self.kurtosis = None
-        self.totalinvestment = None
-        self.var_confidence_level = 0.95
-        self.risk_free_rate = 0.005
-        self.freq = 252
-        # instance variables for Efficient Frontier and
-        # Monte Carlo optimisations
+        self.__var_confidence_level = 0.95
+        self.__risk_free_rate = 0.005
+        self.__freq = 252
+        # instance variables for Efficient Frontier and Monte Carlo optimisations
         self.ef = None
         self.mc = None
         # instance variable for Market class
-        self.market_index = None
+        self.__market_index = None
         # dataframe containing beta values of stocks
         self.beta_stocks = pd.DataFrame(index=["beta"])
         self.beta = None
 
     @property
-    def totalinvestment(self):
+    def totalinvestment(self) -> NUMERIC:
         return self.__totalinvestment
 
     @totalinvestment.setter
-    def totalinvestment(self, val):
+    def totalinvestment(self, val: NUMERIC) -> None:
         if val is not None:
             # treat "None" as initialisation
             if not isinstance(val, (float, int, np.floating, np.integer)):
@@ -122,12 +163,12 @@ class Portfolio:
             self.__totalinvestment = val
 
     @property
-    def freq(self):
+    def freq(self) -> INT:
         return self.__freq
 
     @freq.setter
-    def freq(self, val):
-        if not isinstance(val, int):
+    def freq(self, val: INT) -> None:
+        if not isinstance(val, (int, np.integer)):
             raise ValueError("Time window/frequency must be an integer.")
         if val <= 0:
             raise ValueError("freq must be > 0.")
@@ -136,19 +177,19 @@ class Portfolio:
         self._update()
 
     @property
-    def risk_free_rate(self):
+    def risk_free_rate(self) -> FLOAT:
         return self.__risk_free_rate
 
     @risk_free_rate.setter
-    def risk_free_rate(self, val):
-        if not isinstance(val, (float, int)):
-            raise ValueError("Risk free rate must be a float or an integer.")
+    def risk_free_rate(self, val: FLOAT) -> None:
+        if not isinstance(val, (float, np.floating)):
+            raise ValueError("Risk free rate must be a float.")
         self.__risk_free_rate = val
         # now that this changed, update other quantities
         self._update()
 
     @property
-    def market_index(self) -> Market:
+    def market_index(self) -> Optional[Market]:
         return self.__market_index
 
     @market_index.setter
@@ -160,12 +201,12 @@ class Portfolio:
         self.__market_index = index
 
     @property
-    def var_confidence_level(self):
+    def var_confidence_level(self) -> FLOAT:
         return self.__var_confidence_level
 
     @var_confidence_level.setter
-    def var_confidence_level(self, val):
-        if not isinstance(val, float):
+    def var_confidence_level(self, val: FLOAT) -> None:
+        if not isinstance(val, (float, np.floating)):
             raise ValueError("confidence level is expected to be a float.")
         if val >= 1 or val <= 0:
             raise ValueError("confidence level is expected to be between 0 and 1.")
@@ -173,7 +214,7 @@ class Portfolio:
         # now that this changed, update VaR
         self._update()
 
-    def add_stock(self, stock: Stock) -> None:
+    def add_stock(self, stock: Stock, defer_update: bool = False) -> None:
         """Adds a stock of type ``Stock`` to the portfolio. Each time ``add_stock``
         is called, the following instance variables are updated:
 
@@ -181,16 +222,21 @@ class Portfolio:
         - ``stocks``: ``dictionary``, adds an entry for ``stock``
         - ``data``: ``pandas.DataFrame``, adds a column of stock prices from ``stock``
 
-        Also, the following instance variables are (re-)computed:
+        Also, if argument ``defer_update`` is ``True``,
+        the following instance variables are (re-)computed:
 
         - ``expected_return``: Expected Return of the portfolio
         - ``volatility``: Volatility of the portfolio
+        - ``downside_risk``: Downside Risk
+        - ``var``: Value at Risk of the portfolio
         - ``sharpe``: Sharpe Ratio of the portfolio
+        - ``sortino``: Sortino Ratio of the portfolio
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
         :Input:
          :stock: an object of ``Stock``
+         :defer_update: bool, if True _update() is not called after the stock is added.
         """
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
@@ -203,8 +249,9 @@ class Portfolio:
         # also add stock data of stock to the dataframe
         self._add_stock_data(stock)
 
-        # update quantities of portfolio
-        # self._update() # the update will be done at the end of building portfolio
+        if not defer_update:
+            # update quantities of portfolio
+            self._update()
 
     def _add_stock_data(self, stock: Stock) -> None:
         # insert given data into portfolio stocks dataframe:
@@ -222,20 +269,22 @@ class Portfolio:
             # add beta of stock to portfolio's betas dataframe
             self.beta_stocks[stock.name] = [beta_stock]
 
-    def _update(self):
+    def _update(self) -> None:
         # sanity check (only update values if none of the below is empty):
         if not (self.portfolio.empty or not self.stocks or self.data.empty):
             self.totalinvestment = self.portfolio.Allocation.sum()
             self.expected_return = self.comp_expected_return(freq=self.freq)
             self.volatility = self.comp_volatility(freq=self.freq)
-            self.sharpe = self.comp_sharpe()
+            self.downside_risk = self.comp_downside_risk(freq=self.freq)
             self.var = self.comp_var()
+            self.sharpe = self.comp_sharpe()
+            self.sortino = self.comp_sortino()
             self.skew = self._comp_skew()
             self.kurtosis = self._comp_kurtosis()
             if self.market_index is not None:
                 self.beta = self.comp_beta()
 
-    def get_stock(self, name):
+    def get_stock(self, name: str) -> Stock:
         """Returns the instance of ``Stock`` with name ``name``.
 
         :Input:
@@ -247,7 +296,7 @@ class Portfolio:
         """
         return self.stocks[name]
 
-    def comp_cumulative_returns(self):
+    def comp_cumulative_returns(self) -> pd.DataFrame:
         """Computes the cumulative returns of all stocks in the
         portfolio.
         See ``finquant.returns.cumulative_returns``.
@@ -257,7 +306,7 @@ class Portfolio:
         """
         return cumulative_returns(self.data)
 
-    def comp_daily_returns(self):
+    def comp_daily_returns(self) -> pd.DataFrame:
         """Computes the daily returns (percentage change) of all
         stocks in the portfolio. See ``finquant.returns.daily_returns``.
 
@@ -267,7 +316,7 @@ class Portfolio:
         """
         return daily_returns(self.data)
 
-    def comp_daily_log_returns(self):
+    def comp_daily_log_returns(self) -> pd.DataFrame:
         """Computes the daily log returns of all stocks in the portfolio.
         See ``finquant.returns.daily_log_returns``.
 
@@ -276,7 +325,7 @@ class Portfolio:
         """
         return daily_log_returns(self.data)
 
-    def comp_mean_returns(self, freq=252):
+    def comp_mean_returns(self, freq: INT = 252) -> pd.Series:
         """Computes the mean returns based on historical stock price data.
         See ``finquant.returns.historical_mean_return``.
 
@@ -287,9 +336,11 @@ class Portfolio:
         :Output:
          :ret: a ``pandas.DataFrame`` of historical mean Returns.
         """
+        # Type validations:
+        type_validation(freq=freq)
         return historical_mean_return(self.data, freq=freq)
 
-    def comp_stock_volatility(self, freq=252):
+    def comp_stock_volatility(self, freq: INT = 252) -> pd.Series:
         """Computes the Volatilities of all the stocks individually
 
         :Input:
@@ -300,11 +351,11 @@ class Portfolio:
          :volatilies: ``pandas.DataFrame`` with the individual Volatilities of all stocks
              of the portfolio.
         """
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
+        # Type validations:
+        type_validation(freq=freq)
         return self.comp_daily_returns().std() * np.sqrt(freq)
 
-    def comp_weights(self):
+    def comp_weights(self) -> pd.Series:
         """Computes and returns a ``pandas.Series`` of the weights/allocation
         of the stocks of the portfolio.
 
@@ -314,9 +365,9 @@ class Portfolio:
         """
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
-        return self.portfolio["Allocation"] / self.totalinvestment
+        return (self.portfolio["Allocation"] / self.totalinvestment).astype(np.float64)
 
-    def comp_expected_return(self, freq=252):
+    def comp_expected_return(self, freq: INT = 252) -> FLOAT:
         """Computes the Expected Return of the portfolio.
 
         :Input:
@@ -326,15 +377,15 @@ class Portfolio:
         :Output:
          :expected_return: ``float`` the Expected Return of the portfolio.
         """
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
-        pf_return_means = historical_mean_return(self.data, freq=freq)
-        weights = self.comp_weights()
-        expected_return = weighted_mean(pf_return_means.values, weights)
+        # Type validations:
+        type_validation(freq=freq)
+        pf_return_means: pd.Series = historical_mean_return(self.data, freq=freq)
+        weights: pd.Series = self.comp_weights()
+        expected_return: FLOAT = weighted_mean(pf_return_means.values, weights)
         self.expected_return = expected_return
         return expected_return
 
-    def comp_volatility(self, freq=252):
+    def comp_volatility(self, freq: INT = 252) -> FLOAT:
         """Computes the Volatility of the given portfolio.
 
         :Input:
@@ -344,14 +395,32 @@ class Portfolio:
         :Output:
          :volatility: ``float`` the Volatility of the portfolio.
         """
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
+        # Type validations:
+        type_validation(freq=freq)
         # computing the volatility of a portfolio
-        volatility = weighted_std(self.comp_cov(), self.comp_weights()) * np.sqrt(freq)
+        volatility: FLOAT = weighted_std(
+            self.comp_cov(), self.comp_weights()
+        ) * np.sqrt(freq)
         self.volatility = volatility
         return volatility
 
-    def comp_cov(self):
+    def comp_downside_risk(self, freq: INT = 252) -> FLOAT:
+        """Computes the downside risk of the portfolio.
+
+        :Input:
+         :freq: ``int`` (default: ``252``), number of trading days, default
+             value corresponds to trading days in a year
+
+        :Output:
+         :downside risk: ``float`` downside risk of the portfolio.
+        """
+        downs_risk: FLOAT = downside_risk(
+            self.data, self.comp_weights(), self.risk_free_rate
+        ) * np.sqrt(freq)
+        self.downside_risk = downs_risk
+        return downs_risk
+
+    def comp_cov(self) -> pd.DataFrame:
         """Compute and return a ``pandas.DataFrame`` of the covariance matrix
         of the portfolio.
 
@@ -362,27 +431,27 @@ class Portfolio:
         returns = daily_returns(self.data)
         return returns.cov()
 
-    def comp_sharpe(self):
+    def comp_sharpe(self) -> FLOAT:
         """Compute and return the Sharpe Ratio of the portfolio.
 
         :Output:
          :sharpe: ``float``, the Sharpe Ratio of the portfolio
         """
         # compute the Sharpe Ratio of the portfolio
-        sharpe = sharpe_ratio(
+        sharpe: FLOAT = sharpe_ratio(
             self.expected_return, self.volatility, self.risk_free_rate
         )
         self.sharpe = sharpe
         return sharpe
 
-    def comp_var(self):
+    def comp_var(self) -> FLOAT:
         """Compute and return the Value at Risk of the portfolio.
 
         :Output:
          :VaR: ``float``, the Value at Risk of the portfolio
         """
         # compute the Value at Risk of the portfolio
-        var = value_at_risk(
+        var: FLOAT = value_at_risk(
             investment=self.totalinvestment,
             mu=self.expected_return,
             sigma=self.volatility,
@@ -391,7 +460,7 @@ class Portfolio:
         self.var = var
         return var
 
-    def comp_beta(self) -> float:
+    def comp_beta(self) -> Optional[FLOAT]:
         """Compute and return the Beta parameter of the portfolio.
 
         :Output:
@@ -399,22 +468,38 @@ class Portfolio:
         """
 
         # compute the Beta parameter of the portfolio
-        weights = self.comp_weights()
-        beta = weighted_mean(self.beta_stocks.transpose()["beta"].values, weights)
+        weights: pd.Series = self.comp_weights()
+        if weights.size == self.beta_stocks.size:
+            beta: FLOAT = weighted_mean(
+                self.beta_stocks.transpose()["beta"].values, weights
+            )
 
-        self.beta = beta
-        return beta
+            self.beta = beta
+            return beta
+        else:
+            return None
 
-    def _comp_skew(self):
+    def comp_sortino(self) -> FLOAT:
+        """Compute and return the Sortino Ratio of the portfolio
+
+        :Output:
+         :sortino: ``float``, the Sortino Ratio of the portfolio
+         May be NaN if the portoflio outperformed the risk free rate at every point
+        """
+        return sortino_ratio(
+            self.expected_return, self.downside_risk, self.risk_free_rate
+        )
+
+    def _comp_skew(self) -> pd.Series:
         """Computes and returns the skewness of the stocks in the portfolio."""
         return self.data.skew()
 
-    def _comp_kurtosis(self):
+    def _comp_kurtosis(self) -> pd.Series:
         """Computes and returns the Kurtosis of the stocks in the portfolio."""
         return self.data.kurt()
 
     # optimising the investments with the efficient frontier class
-    def _get_ef(self):
+    def _get_ef(self) -> EfficientFrontier:
         """If self.ef does not exist, create and return an instance of
         finquant.efficient_frontier.EfficientFrontier, else, return the
         existing instance.
@@ -429,7 +514,7 @@ class Portfolio:
             )
         return self.ef
 
-    def ef_minimum_volatility(self, verbose=False):
+    def ef_minimum_volatility(self, verbose: bool = False) -> pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.minimum_volatility``.
 
@@ -445,14 +530,14 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.minimum_volatility()
+        opt_weights: pd.DataFrame = ef.minimum_volatility()
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_maximum_sharpe_ratio(self, verbose=False):
+    def ef_maximum_sharpe_ratio(self, verbose: bool = False) -> pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.maximum_sharpe_ratio``.
 
@@ -469,14 +554,16 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.maximum_sharpe_ratio()
+        opt_weights: pd.DataFrame = ef.maximum_sharpe_ratio()
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_return(self, target, verbose=False):
+    def ef_efficient_return(
+        self, target: NUMERIC, verbose: bool = False
+    ) -> pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_return``.
 
@@ -493,14 +580,16 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.efficient_return(target)
+        opt_weights: pd.DataFrame = ef.efficient_return(target)
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_volatility(self, target, verbose=False):
+    def ef_efficient_volatility(
+        self, target: NUMERIC, verbose: bool = False
+    ) -> pd.DataFrame:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_volatility``.
 
@@ -518,14 +607,16 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        opt_weights = ef.efficient_volatility(target)
+        opt_weights: pd.DataFrame = ef.efficient_volatility(target)
         # if verbose==True, print out results
         ef.properties(verbose=verbose)
         return opt_weights
 
-    def ef_efficient_frontier(self, targets=None):
+    def ef_efficient_frontier(
+        self, targets: Optional[ARRAY_OR_LIST[FLOAT]] = None
+    ) -> np.ndarray[np.float64, Any]:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.efficient_frontier``.
 
@@ -544,23 +635,23 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # perform optimisation
-        efrontier = ef.efficient_frontier(targets)
+        efrontier: np.ndarray[np.float64, Any] = ef.efficient_frontier(targets)
         return efrontier
 
-    def ef_plot_efrontier(self):
+    def ef_plot_efrontier(self) -> None:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.plot_efrontier``.
 
         Plots the Efficient Frontier."""
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # plot efficient frontier
         ef.plot_efrontier()
 
-    def ef_plot_optimal_portfolios(self):
+    def ef_plot_optimal_portfolios(self) -> None:
         """Interface to
         ``finquant.efficient_frontier.EfficientFrontier.plot_optimal_portfolios``.
 
@@ -571,12 +662,12 @@ class Portfolio:
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
-        ef = self._get_ef()
+        ef: EfficientFrontier = self._get_ef()
         # plot efficient frontier
         ef.plot_optimal_portfolios()
 
     # optimising the investments with the efficient frontier class
-    def _get_mc(self, num_trials=1000):
+    def _get_mc(self, num_trials: int = 1000) -> MonteCarloOpt:
         """If self.mc does not exist, create and return an instance of
         finquant.monte_carlo.MonteCarloOpt, else, return the existing instance.
         """
@@ -593,7 +684,9 @@ class Portfolio:
 
     # optimising the investments by performing a Monte Carlo run
     # based on volatility and sharpe ratio
-    def mc_optimisation(self, num_trials=1000):
+    def mc_optimisation(
+        self, num_trials: int = 1000
+    ) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Interface to
         ``finquant.monte_carlo.MonteCarloOpt.optimisation``.
 
@@ -614,11 +707,13 @@ class Portfolio:
         # dismiss previous instance of mc, as we are performing a new MC optimisation:
         self.mc = None
         # get instance of MonteCarloOpt
-        mc = self._get_mc(num_trials)
+        mc: MonteCarloOpt = self._get_mc(num_trials)
+        opt_weights: pd.DataFrame
+        opt_results: pd.DataFrame
         opt_weights, opt_results = mc.optimisation()
         return opt_weights, opt_results
 
-    def mc_plot_results(self):
+    def mc_plot_results(self) -> None:
         """Plots the results of the Monte Carlo run, with all of the randomly
         generated weights/portfolios, as well as markers for the portfolios with the
 
@@ -626,18 +721,18 @@ class Portfolio:
         - maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
-        mc = self._get_mc()
+        mc: MonteCarloOpt = self._get_mc()
         mc.plot_results()
 
-    def mc_properties(self):
+    def mc_properties(self) -> None:
         """Calculates and prints out Expected annualised Return,
         Volatility and Sharpe Ratio of optimised portfolio.
         """
         # get instance of MonteCarloOpt
-        mc = self._get_mc()
+        mc: MonteCarloOpt = self._get_mc()
         mc.properties()
 
-    def plot_stocks(self, freq=252):
+    def plot_stocks(self, freq: INT = 252) -> None:
         """Plots the Expected annual Returns over annual Volatility of
         the stocks of the portfolio.
 
@@ -645,29 +740,34 @@ class Portfolio:
          :freq: ``int`` (default: ``252``), number of trading days, default
              value corresponds to trading days in a year.
         """
+        # Type validations:
+        type_validation(freq=freq)
         # annual mean returns of all stocks
-        stock_returns = self.comp_mean_returns(freq=freq)
-        stock_volatility = self.comp_stock_volatility(freq=freq)
+        stock_returns: pd.Series = self.comp_mean_returns(freq=freq)
+        stock_volatility: pd.Series = self.comp_stock_volatility(freq=freq)
         # adding stocks of the portfolio to the plot
         # plot stocks individually:
         plt.scatter(stock_volatility, stock_returns, marker="o", s=100, label="Stocks")
         # adding text to stocks in plot:
-        for i, txt in enumerate(stock_returns.index):
+        for idx, txt in enumerate(stock_returns.index):
             plt.annotate(
                 txt,
-                (stock_volatility[i], stock_returns[i]),
+                (stock_volatility[idx], stock_returns[idx]),
                 xytext=(10, 0),
                 textcoords="offset points",
-                label=i,
+                label=idx,
             )
 
-    def properties(self):
+    def properties(self) -> None:
         """Nicely prints out the properties of the portfolio:
 
         - Expected Return,
         - Volatility,
+        - Downside Risk,
+        - Value at Risk (VaR),
+        - Confidence level of VaR,
         - Sharpe Ratio,
-        - Value at Risk,
+        - Sortino Ratio,
         - Beta (optional),
         - skewness,
         - Kurtosis
@@ -675,7 +775,7 @@ class Portfolio:
         as well as the allocation of the stocks across the portfolio.
         """
         # nicely printing out information and quantities of the portfolio
-        string = "-" * 70
+        string: str = "-" * 70
         stocknames = self.portfolio.Name.values.tolist()
         string += f"\nStocks: {', '.join(stocknames)}"
         if self.market_index is not None:
@@ -684,10 +784,12 @@ class Portfolio:
         string += f"\nRisk free rate: {self.risk_free_rate}"
         string += f"\nPortfolio Expected Return: {self.expected_return:0.3f}"
         string += f"\nPortfolio Volatility: {self.volatility:0.3f}"
-        string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
+        string += f"\nPortfolio Downside Risk: {self.downside_risk:0.3f}"
         string += f"\nPortfolio Value at Risk: {self.var:0.3f}"
-        string += f"\nConfidence level of Value at Risk: "
+        string += "\nConfidence level of Value at Risk: "
         string += f"{self.var_confidence_level * 100:0.2f} %"
+        string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
+        string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
         string += "\n\nSkewness:"
@@ -700,24 +802,36 @@ class Portfolio:
         string += "-" * 70
         print(string)
 
-    def __str__(self):
+    def __str__(self) -> str:
         # print short description
-        string = "Contains information about a portfolio."
-        return string
+        return "Contains information about a portfolio."
 
 
-def _correct_quandl_request_stock_name(names):
+def _correct_quandl_request_stock_name(
+    names: Union[str, ARRAY_OR_LIST[str]]
+) -> List[str]:
     """If given input argument is of type string,
     this function converts it to a list, assuming the input argument
     is only one stock name.
     """
+    # Type validations:
+    type_validation(names=names)
     # make sure names is a list of names:
+    names_list: List[str]
     if isinstance(names, str):
-        names = [names]
-    return names
+        names_list = list(names)
+    elif isinstance(names, np.ndarray):
+        names_list = names.tolist()
+    else:
+        names_list = names
+    return names_list
 
 
-def _quandl_request(names, start_date=None, end_date=None):
+def _quandl_request(
+    names: List[str],
+    start_date: Optional[STRING_OR_DATETIME] = None,
+    end_date: Optional[STRING_OR_DATETIME] = None,
+) -> pd.DataFrame:
     """This function performs a simple request from `quandl` and returns
     a ``pandas.DataFrame`` containing stock data.
 
@@ -729,28 +843,46 @@ def _quandl_request(names, start_date=None, end_date=None):
          relevant stock data.
     """
     try:
-        import quandl
+        import quandl  # pylint: disable=C0415
     except ImportError:
         print(
             "The following package is required:\n - `quandl`\n"
             + "Please make sure that it is installed."
         )
+    # Type validations:
+    type_validation(names=names, start_date=start_date, end_date=end_date)
+
     # get correct stock names that quandl.get can request,
     # e.g. "WIKI/GOOG" for Google
-    reqnames = _correct_quandl_request_stock_name(names)
+    reqnames: List[str] = _correct_quandl_request_stock_name(names)
     try:
-        resp = quandl.get(reqnames, start_date=start_date, end_date=end_date)
+        resp: pd.DataFrame = quandl.get(
+            reqnames, start_date=start_date, end_date=end_date
+        )
+    except quandl.LimitExceededError as exc:
+        errormsg = (
+            "You exceeded Quandl's limit. Are you using your API key?\nQuandl Error: "
+            + str(exc)
+        )
+        raise QuandlLimitError(errormsg) from exc
     except Exception as exc:
         errormsg = (
-            "Error during download of stock data from Quandl.\n"
+            "An error occurred while retrieving data from Quandl.\n"
             + "Make sure all the requested stock names/tickers are "
-            + "supported by Quandl."
+            + "supported by Quandl.\n"
+            + "Quandl error: "
+            + str(exc)
         )
-        raise Exception(errormsg) from exc
+        raise QuandlError(errormsg) from exc
+
     return resp
 
 
-def _yfinance_request(names, start_date=None, end_date=None):
+def _yfinance_request(
+    names: List[str],
+    start_date: Optional[STRING_OR_DATETIME] = None,
+    end_date: Optional[STRING_OR_DATETIME] = None,
+) -> pd.DataFrame:
     """This function performs a simple request from Yahoo Finance
     (using `yfinance`) and returns a ``pandas.DataFrame``
     containing stock data.
@@ -763,12 +895,15 @@ def _yfinance_request(names, start_date=None, end_date=None):
          relevant stock data.
     """
     try:
-        import yfinance as yf
+        import yfinance  # pylint: disable=C0415
     except ImportError:
         print(
             "The following package is required:\n - `yfinance`\n"
             + "Please make sure that it is installed."
         )
+    # Type validations:
+    type_validation(names=names, start_date=start_date, end_date=end_date)
+
     # yfinance does not exit safely if start/end date were not given correctly:
     # this step is not required for quandl as it handles this exception properly
     try:
@@ -776,32 +911,31 @@ def _yfinance_request(names, start_date=None, end_date=None):
             start_date = datetime.datetime.strptime(start_date, "%Y-%m-%d")
         if isinstance(end_date, str):
             end_date = datetime.datetime.strptime(end_date, "%Y-%m-%d")
-    except ImportError:
-        print(
-            "The following package is required:\n - `datetime`\n"
-            + "Please make sure that it is installed."
-        )
-    except Exception as exc:
-        raise Exception(
-            "Please provide valid values for <start_date> and <end_date>"
+    except ValueError as exc:
+        raise InvalidDateFormatError(
+            "Please provide valid values for <start_date> and <end_date> "
+            "(either as datetime object or as String in the format '%Y-%m-%d')."
         ) from exc
 
     # unlike quandl, yfinance does not have a prefix in front of the ticker
     # thus we do not need to correct them
     try:
-        resp = yf.download(names, start=start_date, end=end_date)
+        resp: pd.DataFrame = yfinance.download(names, start=start_date, end=end_date)
         if not isinstance(resp.columns, pd.MultiIndex) and len(names) > 0:
             # for single stock must make the dataframe multiindex
             stock_tuples = [(col, names[0]) for col in list(resp.columns)]
             resp.columns = pd.MultiIndex.from_tuples(stock_tuples)
     except Exception as exc:
-        raise Exception(
-            "Error during download of stock data from Yahoo Finance with `yfinance`."
-        ) from exc
+        errormsg: str = (
+            "An error occurred while retrieving data from Yahoo Finance with `yfinance`.\n"
+            + "yfinance error: "
+            + str(exc)
+        )
+        raise YFinanceError(errormsg) from exc
     return resp
 
 
-def _get_quandl_data_column_label(stock_name, data_label):
+def _get_quandl_data_column_label(stock_name: str, data_label: str) -> str:
     """Given stock name and label of a data column, this function returns
     the string "<stock_name> - <data_label>" as it can be found in a
     ``pandas.DataFrame`` returned by `quandl`.
@@ -809,7 +943,9 @@ def _get_quandl_data_column_label(stock_name, data_label):
     return stock_name + " - " + data_label
 
 
-def _get_stocks_data_columns(data, names, cols):
+def _get_stocks_data_columns(
+    data: pd.DataFrame, names: ARRAY_OR_LIST[str], cols: List[str]
+) -> pd.DataFrame:
     """This function returns a subset of the given ``pandas.DataFrame`` data, which
     contains only the data columns as specified in the input cols.
 
@@ -825,44 +961,47 @@ def _get_stocks_data_columns(data, names, cols):
      :data: A ``pandas.DataFrame`` which contains only the data columns of
          data as specified in cols.
     """
+    # Type validations:
+    type_validation(data=data, names=names, cols=cols)
     # get correct stock names that quandl get request
-    reqnames = _correct_quandl_request_stock_name(names)
+    reqnames: List[str] = _correct_quandl_request_stock_name(names)
     # get current column labels and replacement labels
-    reqcolnames = []
+    reqcolnames: List[str] = []
+    colname: str
     # if dataframe is of type multiindex, also get first level colname
-    firstlevel_colnames = []
-    for i in range(len(names)):
+    firstlevel_colnames: List[str] = []
+    for idx, name in enumerate(names):
         for col in cols:
             # differ between dataframe directly from quandl and
             # possibly previously processed dataframe, e.g.
             # read in from disk with slightly modified column labels
             # 1. if <stock_name> in column labels
-            if names[i] in data.columns:
-                colname = names[i]
+            if name in data.columns:
+                colname = name
             # 2. if "WIKI/<stock_name> - <col>" in column labels
-            elif _get_quandl_data_column_label(reqnames[i], col) in data.columns:
-                colname = _get_quandl_data_column_label(reqnames[i], col)
+            elif _get_quandl_data_column_label(reqnames[idx], col) in data.columns:
+                colname = _get_quandl_data_column_label(reqnames[idx], col)
             # 3. if "<stock_name> - <col>" in column labels
-            elif _get_quandl_data_column_label(names[i], col) in data.columns:
-                colname = _get_quandl_data_column_label(names[i], col)
-            # if column labels is of type multiindex, and the "Adj Close" is in
-            # first level labels, we assume the dataframe comes from yfinance:
+            elif _get_quandl_data_column_label(name, col) in data.columns:
+                colname = _get_quandl_data_column_label(name, col)
+            # if column labels are of type multiindex, and the "Adj Close" is in
+            # first-level labels, we assume the dataframe comes from yfinance:
             elif isinstance(data.columns, pd.MultiIndex):
                 # alter col for yfinance, as it returns column labels without '.'
                 col = col.replace(".", "")
                 if col in data.columns:
                     if not col in firstlevel_colnames:
                         firstlevel_colnames.append(col)
-                    if names[i] in data[col].columns:
-                        colname = names[i]
-                    else:  # error, it must find names[i] on second level of column header
+                    if name in data[col].columns:
+                        colname = name
+                    else:  # error, it must find name on the second level of the column header
                         raise ValueError(
-                            "Could not find column labels in second level of MultiIndex pd.DataFrame"
+                            "Could not find column labels in the second level of MultiIndex pd.DataFrame"
                         )
             # else, error
             else:
-                raise ValueError("Could not find column labels in given dataframe.")
-            # append correct name to list of correct names
+                raise ValueError("Could not find column labels in the given dataframe.")
+            # append the correct name to the list of correct names
             reqcolnames.append(colname)
 
     # if data comes from yfinance, it is a multiindex dataframe:
@@ -878,22 +1017,22 @@ def _get_stocks_data_columns(data, names, cols):
 
     # if only one data column per stock exists, rename column labels
     # to the name of the corresponding stock
-    newcolnames = {}
+    newcolnames: Dict[str, str] = {}
     if len(cols) == 1:
-        for i, name in enumerate(names):
+        for idx, name in enumerate(names):
             newcolnames.update({_get_quandl_data_column_label(name, cols[0]): name})
         data.rename(columns=newcolnames, inplace=True)
     return data
 
 
 def _build_portfolio_from_api(
-    names,
-    pf_allocation=None,
-    start_date=None,
-    end_date=None,
-    data_api="quandl",
-    market_index: str = None,
-):
+    names: ARRAY_OR_LIST[str],
+    pf_allocation: Optional[pd.DataFrame] = None,
+    start_date: Optional[STRING_OR_DATETIME] = None,
+    end_date: Optional[STRING_OR_DATETIME] = None,
+    data_api: str = "quandl",
+    market_index: Optional[str] = None,
+) -> Portfolio:
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
 
@@ -917,30 +1056,46 @@ def _build_portfolio_from_api(
      :pf: Instance of Portfolio which contains all the information
          requested by the user.
     """
-    # create an empty portfolio
-    pf = Portfolio()
+    # Type validations:
+    type_validation(
+        names=names,
+        pf_allocation=pf_allocation,
+        start_date=start_date,
+        end_date=end_date,
+        data_api=data_api,
+        market_index=market_index,
+    )
+
+    # setting up variables:
+    stock_data: pd.DataFrame
     # create empty dataframe for market data
-    market_data = pd.DataFrame()
+    market_data: pd.DataFrame = pd.DataFrame()
     # request data from service:
     if data_api == "yfinance":
-        stock_data = _yfinance_request(names, start_date, end_date)
+        stock_data = _yfinance_request(list(names), start_date, end_date)
         if market_index is not None:
             market_data = _yfinance_request([market_index], start_date, end_date)
     elif data_api == "quandl":
-        stock_data = _quandl_request(names, start_date, end_date)
+        stock_data = _quandl_request(list(names), start_date, end_date)
         if market_index is not None:
             # only generated if user explicitly requests market index with quandl
             raise Warning("Market index is not supported for quandl data.")
-
+    else:
+        raise ValueError(
+            f"Error: value of data_api '{data_api}' is not supported. "
+            + "Choose between 'yfinance' and 'quandl'."
+        )
     # check pf_allocation:
     if pf_allocation is None:
-        pf_allocation = _generate_pf_allocation(names=names)
+        pf_allocation = _generate_pf_allocation(names=list(names))
     # build portfolio:
-    pf = _build_portfolio_from_df(stock_data, pf_allocation, market_data=market_data)
+    pf: Portfolio = _build_portfolio_from_df(
+        stock_data, pf_allocation, market_data=market_data
+    )
     return pf
 
 
-def _stocknames_in_data_columns(names, df):
+def _stocknames_in_data_columns(names: ARRAY_OR_LIST[str], df: pd.DataFrame) -> bool:
     """Returns True if at least one element of names was found as a column
     label in the dataframe df.
     """
@@ -958,10 +1113,12 @@ def _get_index_adj_clos_pr(data: pd.DataFrame) -> pd.Series:
      :data: A ``pandas.Series`` which contains only the data column of
          data corresponding to Adjusted Closing Price.
     """
-    return data["Adj Close"].squeeze()
+    return data["Adj Close"].squeeze().astype(np.float64)
 
 
-def _generate_pf_allocation(names=None, data=None):
+def _generate_pf_allocation(
+    names: Optional[List[str]] = None, data: Optional[pd.DataFrame] = None
+) -> pd.DataFrame:
     """Takes column names of provided ``pandas.DataFrame`` ``data``, and generates a
     ``pandas.DataFrame`` with columns ``Name`` and ``Allocation`` which contain the
     names found in input ``data`` and 1.0/len(data.columns) respectively.
@@ -976,17 +1133,19 @@ def _generate_pf_allocation(names=None, data=None):
     # checking input arguments
     if names is not None and data is not None or names is None and data is None:
         raise ValueError("Pass one of the two: 'names' or 'data'.")
-    if names is not None and not isinstance(names, list):
-        raise ValueError("names is expected to be of type 'list'.")
-    if data is not None and not isinstance(data, pd.DataFrame):
-        raise ValueError("data is expected to be of type 'pandas.DataFrame'.")
+    # Type validations:
+    type_validation(names=names, data=data)
+
+    # defining new variable stock_names to circumvent the issue of "names" being Optional
+    stock_names: List[str]
+
     # if data is given:
     if data is not None:
         # this case is more complex, as we need to check for column labels in
         # data
-        names = data.columns
+        stock_names = data.columns.tolist()
         # potential error message
-        errormsg = (
+        errormsg: str = (
             "'data' pandas.DataFrame contains conflicting column labels."
             + "\nMultiple columns with a substring of\n {}\n"
             + "were found. You have two options:"
@@ -999,26 +1158,31 @@ def _generate_pf_allocation(names=None, data=None):
             + "that does not have conflicting column labels, e.g. 'GOOG' and "
             + "'GOOG - Adj. Close' are considered conflicting column headers."
         )
-        # sanity check: split names at '-' and take the leading part of the
-        # split string, and check if this occurs in any of the other names.
+        # sanity check: split stock_names at '-' and take the leading part of the
+        # split string, and check if this occurs in any of the other stock_names.
         # if so, we treat this as a duplication, and ask the user to provide
         # a DataFrame with one data column per stock.
-        splitnames = [name.split("-")[0].strip() for name in names]
-        for i, splitname in enumerate(splitnames):
-            reducedlist = [elt for num, elt in enumerate(splitnames) if num != i]
+        splitnames: List[str] = [name.split("-")[0].strip() for name in stock_names]
+        for idx, splitname in enumerate(splitnames):
+            reducedlist: List[str] = [
+                elt for num, elt in enumerate(splitnames) if num != idx
+            ]
             if splitname in reducedlist:
                 errormsg = errormsg.format(str(splitname))
                 raise ValueError(errormsg)
-    # if names is given, we go directly to the below:
+    elif names is not None:
+        # if names is given, we use names as stock_names:
+        stock_names = names
+    # no else needed, this is already covered at the beginning of the function
     # compute equal weights
-    weights = [1.0 / len(names) for i in range(len(names))]
-    return pd.DataFrame({"Allocation": weights, "Name": names})
+    weights = [1.0 / float(len(stock_names)) for _ in range(len(stock_names))]
+    return pd.DataFrame({"Allocation": weights, "Name": stock_names})
 
 
 def _build_portfolio_from_df(
     data: pd.DataFrame,
     pf_allocation: pd.DataFrame = None,
-    datacolumns: List[str] = None,
+    data_columns: Optional[List[str]] = None,
     market_data: pd.DataFrame = None,
 ) -> Portfolio:
     """Returns a portfolio based on input in form of ``pandas.DataFrame``.
@@ -1030,7 +1194,7 @@ def _build_portfolio_from_df(
          labels ``Name`` and ``Allocation`` of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     :datacolumns: (optional) A list of strings of data column labels
+     :data_columns: (optional) A list of strings of data column labels
          to be extracted and returned (default: ["Adj. Close"]).
      :market_data: (optional) A ``pandas.DataFrame`` which contains data of the
          market index (default: ``None``).
@@ -1042,53 +1206,67 @@ def _build_portfolio_from_df(
     # if pf_allocation is None, automatically generate it
     if pf_allocation is None:
         pf_allocation = _generate_pf_allocation(data=data)
-    if datacolumns is None:
-        datacolumns = ["Adj. Close"]
+    if data_columns is None:
+        data_columns = ["Adj. Close"]
+    # Enforcing types for pf_allocation:
+    pf_allocation = pf_allocation.astype({"Allocation": np.float64, "Name": str})
     # make sure stock names are in data dataframe
     if not _stocknames_in_data_columns(pf_allocation.Name.values, data):
         raise ValueError(
             "Error: None of the provided stock names were"
             + "found in the provided dataframe."
         )
-    # extract only "Adjusted Close" price ("Adj. Close" in quandl, "Adj Close" in yfinance)
-    # column from DataFrame:
-    data = _get_stocks_data_columns(data, pf_allocation.Name.values, datacolumns)
+    # Enforce np.float64 for data columns:
+    data = data.astype(np.float64)
+    # extract only "Adjusted Close" price column from DataFrame:
+    # in quandl: "Adj. Close"; in yfinance: "Adj Close"
+    data = _get_stocks_data_columns(data, pf_allocation.Name.values, data_columns)
 
     # building portfolio:
-    pf = Portfolio()
+    pf: Portfolio = Portfolio()
     if market_data is not None and not market_data.empty:
         # extract only "Adjusted Close" price column from market data
         market_data = _get_index_adj_clos_pr(market_data)
         # set market index of portfolio
         pf.market_index = Market(data=market_data)
-    for i in range(len(pf_allocation)):
+    for idx in range(len(pf_allocation)):
         # get name of stock
-        name = pf_allocation.iloc[i].Name
+        name: str = pf_allocation.iloc[idx].Name
         # extract data column of said stock
-        stock_data = data.loc[:, [name]].copy(deep=True).squeeze()
-        # create Stock instance and add it to portfolio
-        pf.add_stock(Stock(pf_allocation.iloc[i], data=stock_data))
+        stock_data: pd.Series = data.loc[:, [name]].copy(deep=True).squeeze()
+        # create Stock instance and add it to portfolio,
+        # and defer updating portfolio attributes until all stocks are added
+        pf.add_stock(
+            Stock(investmentinfo=pf_allocation.iloc[idx], data=stock_data),
+            defer_update=True,
+        )
     # update the portfolio
     pf._update()
     return pf
 
 
-def _all_list_ele_in_other(l1, l2):
+def _all_list_ele_in_other(
+    l_1: LIST_DICT_KEYS[ELEMENT_TYPE], l_2: LIST_DICT_KEYS[ELEMENT_TYPE]
+) -> bool:
     """Returns True if all elements of list l1 are found in list l2."""
-    return all(ele in l2 for ele in l1)
+    return all(ele in l_2 for ele in l_1)
 
 
-def _any_list_ele_in_other(l1, l2):
+def _any_list_ele_in_other(
+    l_1: LIST_DICT_KEYS[ELEMENT_TYPE], l_2: LIST_DICT_KEYS[ELEMENT_TYPE]
+) -> bool:
     """Returns True if any element of list l1 is found in list l2."""
-    return any(ele in l2 for ele in l1)
+    return any(ele in l_2 for ele in l_1)
 
 
-def _list_complement(A, B):
+def _list_complement(
+    set_a: LIST_DICT_KEYS[ELEMENT_TYPE], set_b: LIST_DICT_KEYS[ELEMENT_TYPE]
+) -> List[ELEMENT_TYPE]:
     """Returns the relative complement of A in B (also denoted as A\\B)"""
-    return list(set(B) - set(A))
+    return list(set(set_b) - set(set_a))
 
 
-def build_portfolio(**kwargs):
+def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
     """This function builds and returns an instance of ``Portfolio``
     given a set of input arguments.
 
@@ -1120,7 +1298,7 @@ def build_portfolio(**kwargs):
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), data_api (optional), ``market_index`` (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), ``data_api`` (optional), ``market_index`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:
@@ -1132,25 +1310,25 @@ def build_portfolio(**kwargs):
      If used in an unsupported way, the function (or subsequently called function)
      raises appropriate Exceptions with useful information what went wrong.
     """
-    docstring_msg = (
+    docstring_msg: str = (
         "Please read through the docstring, "
         "'build_portfolio.__doc__' and/or have a look at the "
         "examples in `examples/`."
     )
-    input_error = (
+    input_error: str = (
         "You passed an unsupported argument to "
         "build_portfolio. The following arguments are not "
         "supported:"
         "\n {}\nOnly the following arguments are allowed:\n "
         "{}\n" + docstring_msg
     )
-    input_comb_error = (
+    input_comb_error: str = (
         "Error: None of the input arguments {} are allowed "
         "in combination with {}.\n" + docstring_msg
     )
 
     # list of all valid optional input arguments
-    all_input_args = [
+    all_input_args: List[str] = [
         "pf_allocation",
         "names",
         "start_date",
@@ -1167,17 +1345,17 @@ def build_portfolio(**kwargs):
         )
     # check for valid input arguments
     if not _all_list_ele_in_other(kwargs.keys(), all_input_args):
-        unsupported_input = _list_complement(all_input_args, kwargs.keys())
+        unsupported_input: List[str] = _list_complement(all_input_args, kwargs.keys())
         raise ValueError(
             "Error:\n" + input_error.format(unsupported_input, all_input_args)
         )
 
     # create an empty portfolio
-    pf = Portfolio()
+    pf: Portfolio = Portfolio()
 
     # 1. pf_allocation, names, start_date, end_date, data_api, market_index
-    allowed_mandatory_args = ["names"]
-    allowed_input_args = [
+    allowed_mandatory_args: List[str] = ["names"]
+    allowed_input_args: List[str] = [
         "names",
         "pf_allocation",
         "start_date",
@@ -1185,15 +1363,34 @@ def build_portfolio(**kwargs):
         "data_api",
         "market_index",
     ]
-    complement_input_args = _list_complement(allowed_input_args, all_input_args)
+    complement_input_args: List[str] = _list_complement(
+        allowed_input_args, all_input_args
+    )
+
     if _all_list_ele_in_other(allowed_mandatory_args, kwargs.keys()):
         # check that no input argument conflict arises:
         if _any_list_ele_in_other(complement_input_args, kwargs.keys()):
             raise ValueError(
                 input_comb_error.format(complement_input_args, allowed_mandatory_args)
             )
+
+        # Extract given/potential arguments from kwargs:
+        names = cast(List[str], list(kwargs.get("names", [])))
+        pf_allocation = kwargs.get("pf_allocation", None)
+        start_date = cast(Optional[STRING_OR_DATETIME], kwargs.get("start_date", None))
+        end_date = cast(Optional[STRING_OR_DATETIME], kwargs.get("end_date", None))
+        data_api = cast(str, kwargs.get("data_api", "quandl"))
+        market_index = cast(Optional[str], kwargs.get("market_index", None))
+
         # get portfolio:
-        pf = _build_portfolio_from_api(**kwargs)
+        pf = _build_portfolio_from_api(
+            names=names,
+            pf_allocation=pf_allocation,
+            start_date=start_date,
+            end_date=end_date,
+            data_api=data_api,
+            market_index=market_index,
+        )
 
     # 2. pf_allocation, data
     allowed_mandatory_args = ["data"]
@@ -1205,8 +1402,13 @@ def build_portfolio(**kwargs):
             raise ValueError(
                 input_comb_error.format(complement_input_args, allowed_mandatory_args)
             )
+
+        # Extract given/potential arguments from kwargs:
+        data = kwargs.get("data", pd.DataFrame())
+        pf_allocation = kwargs.get("pf_allocation", None)
+
         # get portfolio:
-        pf = _build_portfolio_from_df(**kwargs)
+        pf = _build_portfolio_from_df(data=data, pf_allocation=pf_allocation)
 
     # final check
     # pylint: disable=R0916
@@ -1214,15 +1416,18 @@ def build_portfolio(**kwargs):
         pf.portfolio.empty
         or pf.data.empty
         or not pf.stocks
-        or pf.expected_return is None
-        or pf.volatility is None
-        or pf.sharpe is None
-        or pf.skew is None
-        or pf.kurtosis is None
+        or not hasattr(pf, "expected_return")
+        or not hasattr(pf, "volatility")
+        or not hasattr(pf, "downside_risk")
+        or not hasattr(pf, "var")
+        or not hasattr(pf, "sharpe")
+        or not hasattr(pf, "sortino")
+        or pf.skew.empty
+        or pf.kurtosis.empty
     ):
         raise ValueError(
             "Should not get here. Something went wrong while "
-            + "creating an instance of Portfolio."
+            + "creating an instance of Portfolio. "
             + docstring_msg
         )
 

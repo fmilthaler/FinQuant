@@ -16,8 +16,8 @@ and add specific functionality tailored to their respective types.
 import numpy as np
 import pandas as pd
 
+from finquant.data_types import FLOAT, INT
 from finquant.returns import daily_returns, historical_mean_return
-from finquant.type_definitions import FLOAT, INT
 
 
 class Asset:
@@ -45,6 +45,7 @@ class Asset:
 
     """
 
+    # Attributes:
     data: pd.Series
     name: str
     asset_type: str
@@ -61,7 +62,7 @@ class Asset:
         :param name: Name of the asset
         :param asset_type: Type of the asset (e.g., "Stock" or "Market index"), default: "Market index"
         """
-        self.data = data
+        self.data = data.astype(np.float64)
         self.name = name
         # compute expected return and volatility of asset
         self.expected_return = self.comp_expected_return()

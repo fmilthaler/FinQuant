@@ -29,14 +29,13 @@ import numpy as np
 import pandas as pd
 
 from finquant.asset import Asset
+from finquant.data_types import FLOAT
 
 
 class Stock(Asset):
     """Class that contains information about a stock/fund.
 
     :param investmentinfo: Investment information of a stock.
-
-
     :param data: Historical price data of a stock.
 
     The ``Stock`` class extends the ``Asset`` class and represents a specific type of asset,
@@ -49,9 +48,9 @@ class Stock(Asset):
 
     """
 
-    name: str
-    investmentinfo: pd.Series
-    beta: Optional[float]
+    # Attributes:
+    investmentinfo: pd.DataFrame
+    beta: Optional[FLOAT]
 
     def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series) -> None:
         """
@@ -62,9 +61,9 @@ class Stock(Asset):
         self.investmentinfo = investmentinfo
         super().__init__(data, self.name, asset_type="Stock")
         # beta parameter of stock (CAPM)
-        self.beta: Optional[float] = None
+        self.beta = None
 
-    def comp_beta(self, market_daily_returns: pd.Series) -> float:
+    def comp_beta(self, market_daily_returns: pd.Series) -> FLOAT:
         """Computes and returns the Beta parameter of the stock.
 
         :param market_daily_returns: Daily returns of the market index.

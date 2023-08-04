@@ -26,3 +26,6 @@ disable=
 #enable=
 #    C0114,  # Missing module, function, class docstring
 #    R0903,  # Too few public methods
+
+[FORMAT]
+good-names = pf, df, ef, mc, mu
