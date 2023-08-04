@@ -81,8 +81,8 @@ Table of Contents
     movingaverage
     efficientfrontier
     montecarlo
-    examples
     datatypes
+    examples
     license
     about
 
