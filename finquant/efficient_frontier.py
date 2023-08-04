@@ -15,6 +15,7 @@ from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, INT, N
 from finquant.quants import annualised_portfolio_quantities
 from finquant.type_utilities import type_validation
 
+
 class EfficientFrontier:
     """An object designed to perform optimisations based on minimising a cost/objective function.
     It can find parameters for portfolios with
@@ -82,7 +83,13 @@ class EfficientFrontier:
              all of which are officially supported by scipy.optimize.minimize
         """
         # Type validations:
-        type_validation(returns_series=mean_returns, cov_matrix=cov_matrix, risk_free_rate=risk_free_rate, freq=freq, method=method)
+        type_validation(
+            returns_series=mean_returns,
+            cov_matrix=cov_matrix,
+            risk_free_rate=risk_free_rate,
+            freq=freq,
+            method=method,
+        )
         supported_methods = [
             "Nelder-Mead",
             "Powell",
