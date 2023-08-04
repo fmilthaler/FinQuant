@@ -50,9 +50,9 @@ def increment_version_by(version: str, increment: str) -> str:
     increment_parts = increment.split(".")
 
     new_version_parts = []
-    for i, part in enumerate(version_parts):
-        if i < len(increment_parts):
-            new_version_parts.append(str(int(part) + int(increment_parts[i])))
+    for idx, part in enumerate(version_parts):
+        if idx < len(increment_parts):
+            new_version_parts.append(str(int(part) + int(increment_parts[idx])))
         else:
             new_version_parts.append("0")
 
@@ -181,11 +181,11 @@ def main() -> None:
         raise VersionUpdateError(
             "Error: Updated version is lower than version in base branch."
         )
-    elif version_comparison == 0:
+    if version_comparison == 0:
         print("Version does not increase.")
         # Exit with error code 1
         sys.exit(1)
-    elif version_comparison > 0:
+    if version_comparison > 0:
         if updated_version == current_version_source:
             print("Version is already updated.")
             # Exit with error code 1
