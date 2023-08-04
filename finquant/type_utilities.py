@@ -45,23 +45,46 @@ def type_validation(**kwargs: Any) -> None:
 
     dtype_msg: str = " with dtype 'np.float64'"
 
-    dataframe_type: Tuple = (pd.DataFrame, f"a non-empty pandas.DataFrame {dtype_msg}")
-    array_series_type: Tuple = (Union[np.ndarray, pd.Series], f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.")
-    array_dataframe_type: Tuple = (Union[np.ndarray, pd.DataFrame], f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.")
-    list_array_type: Tuple = (Union[List, np.ndarray], "a non-empty List[str] or numpy.ndarray[str]")
-    datetime_type: Tuple = (Union[str, datetime.datetime], "of type str or datetime.datetime")
+    dataframe_floats_type: Tuple = (
+        pd.DataFrame,
+        f"a non-empty pandas.DataFrame {dtype_msg}",
+    )
+    dataframe_type: Tuple = (pd.DataFrame, f"a non-empty pandas.DataFrame")
+    series_dataframe_float_type: Tuple = (
+        Union[pd.Series, pd.DataFrame],
+        f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
+    )
+    array_series_floats_type: Tuple = (
+        Union[np.ndarray, pd.Series],
+        f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
+    )
+    array_dataframe_floats_type: Tuple = (
+        Union[np.ndarray, pd.DataFrame],
+        f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.",
+    )
+    list_array_type: Tuple = (
+        Union[List, np.ndarray],
+        "a non-empty List[str] or numpy.ndarray[str]",
+    )
+    datetime_type: Tuple = (
+        Union[str, datetime.datetime],
+        "of type str or datetime.datetime",
+    )
     string_type: Tuple = (str, "of type str")
     float_type: Tuple = ((float, np.floating), "of type float")
     int_type: Tuple = ((int, np.integer), "of type integer")
-    numeric_type: Tuple = ((int, np.integer, float, np.floating), "of type integer of float")
+    numeric_type: Tuple = (
+        (int, np.integer, float, np.floating),
+        "of type integer of float",
+    )
 
     type_dict = {
         # DataFrames, Series, Arrays:
-        "data": dataframe_type,
-        "pf_allocation": dataframe_type,
-        "means": array_series_type,
-        "weights": array_series_type,
-        "cov_matrix": array_dataframe_type,
+        "data": series_dataframe_float_type,
+        "pf_allocation": dataframe_type,  # allows for any subtype
+        "means": array_series_floats_type,
+        "weights": array_series_floats_type,
+        "cov_matrix": array_dataframe_floats_type,
         # Lists:
         "names": list_array_type,
         "cols": list_array_type,
@@ -89,7 +112,6 @@ def type_validation(**kwargs: Any) -> None:
     for arg_name, (arg_type, expected_type) in type_dict.items():
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
-
             # Validating List[str] types:
             if arg_name in ("names", "cols"):
                 if not isinstance(arg_values, arg_type) or (
@@ -115,6 +137,7 @@ def type_validation(**kwargs: Any) -> None:
                     )
                     or (
                         isinstance(arg_values, pd.DataFrame)
+                        and arg_name != "pf_allocation"  # allows for any subtypes
                         and not all(arg_values.dtypes == np.float64)
                     )
                 ):
@@ -129,14 +152,10 @@ def type_validation(**kwargs: Any) -> None:
 
             # Remaining types:
             if not isinstance(arg_values, arg_type):
-                raise TypeError(
-                    f"Error: {arg_name} is expected to be {expected_type}."
-                )
+                raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
             if (
                 isinstance(arg_values, (pd.Series, pd.DataFrame)) and arg_values.empty
-            ) or (
-                isinstance(arg_values, (List, np.ndarray)) and len(arg_values) == 0
-            ):
+            ) or (isinstance(arg_values, (List, np.ndarray)) and len(arg_values) == 0):
                 raise ValueError(
                     f"Error: {arg_name} is expected to be non-empty {expected_type}."
                 )
