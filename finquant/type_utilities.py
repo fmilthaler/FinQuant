@@ -25,7 +25,7 @@ type_validation(
 
 
 import datetime
-from typing import Any, List, Tuple, Union
+from typing import Any, Callable, List, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -77,6 +77,7 @@ def type_validation(**kwargs: Any) -> None:
         Union[List, np.ndarray],
         "a non-empty List[str] or numpy.ndarray[str]",
     )
+    list_int_type: Tuple[Any, str] = (List, "a non-empty List[int]")
     datetime_type: Tuple[Any, str] = (
         Union[str, datetime.datetime],
         "of type str or datetime.datetime",
@@ -88,6 +89,8 @@ def type_validation(**kwargs: Any) -> None:
         (int, np.integer, float, np.floating),
         "of type integer of float",
     )
+    bool_type: Tuple[Any, str] = (bool, "of type bool")
+    callable_type: Tuple[Any, str] = (Callable, "a Callable function")
 
     # Definition of potential arguments and corresponding expected types
     type_dict = {
@@ -100,6 +103,7 @@ def type_validation(**kwargs: Any) -> None:
         # Lists:
         "names": list_array_type,
         "cols": list_array_type,
+        "spans": list_int_type,
         # Datatime objects:
         "start_date": datetime_type,
         "end_date": datetime_type,
@@ -116,9 +120,14 @@ def type_validation(**kwargs: Any) -> None:
         "conf_level": float_type,
         # INTs:
         "freq": int_type,
+        "span": int_type,
         # NUMERICs:
         "investment": numeric_type,
         "dividend": numeric_type,
+        # Booleans:
+        "plot": bool_type,
+        # Callables:
+        "fun": callable_type,
     }
 
     # Type validation
@@ -126,10 +135,20 @@ def type_validation(**kwargs: Any) -> None:
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
             # Validating List[str] types:
-            if arg_name in ("names", "cols"):
+            if arg_name in ("names", "cols", "spans"):
+                # spans is expected to be List[INT], the rest List[str]
                 if not isinstance(arg_values, arg_type) or (
                     isinstance(arg_values, arg_type)
-                    and not all(isinstance(val, str) for val in arg_values)
+                    and (
+                        arg_name == "spans"
+                        and not all(
+                            isinstance(val, (np.integer, int)) for val in arg_values
+                        )
+                        or (
+                            arg_name != "spans"
+                            and not all(isinstance(val, str) for val in arg_values)
+                        )
+                    )
                 ):
                     raise TypeError(
                         f"Error: {arg_name} is expected to be {expected_type}."
