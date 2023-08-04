@@ -1,4 +1,6 @@
 """
+finquant.data_types Module
+
 This module defines type aliases and utility functions for working with arrays, data frames,
 and various numeric types in Python, utilizing the 'numpy', 'numpy.typing', and 'pandas' libraries.
 
@@ -6,7 +8,7 @@ Type Aliases:
 -------------
 - ``ARRAY_OR_SERIES``: A type alias representing either a NumPy ``ndarray`` or a pandas ``Series``.
 - ``ARRAY_OR_DATAFRAME``: A type alias representing either a NumPy ``ndarray`` or a pandas ``DataFrame``.
-- ``ARRAY_OR_LIST``: A type alias representing either a NumPy ``ndarray`` or a ``List``.
+- ``ARRAY_OR_LIST``: A type alias representing either a NumPy ``ndarray`` or a Python ``List``.
 - ``SERIES_OR_DATAFRAME``: A type alias representing either a pandas ``Series`` or a pandas ``DataFrame``.
 
 Numeric Types:
@@ -15,12 +17,15 @@ Numeric Types:
 - ``INT``: A type alias representing either a NumPy integer or a Python int.
 - ``NUMERIC``: A type alias representing either an ``INT`` or a ``FLOAT``.
 
+String/Datetime Types:
+----------------------
+- ``STRING_OR_DATETIME``: A type alias representing either a Python string or a ``datetime.datetime`` object.
+
 Dependencies:
 -------------
 This module requires the following external libraries:
 
 - ``numpy`` (imported as ``np``)
-- ``numpy.typing`` (imported as ``npt``)
 - ``pandas`` (imported as ``pd``)
 
 Usage Example:
@@ -28,8 +33,8 @@ Usage Example:
 
 >>> from finquant.data_types import ARRAY_OR_DATAFRAME, NUMERIC
 # Use the defined type aliases
-def process_data(data: ARRAY_OR_DATAFRAME) -> NUMERIC:
-    # Process the data and return a numeric result
+def process_data(data: ARRAY_OR_DATAFRAME) -> FLOAT:
+    # Process the data and return a floating point number
     return 5.0
 
 """
