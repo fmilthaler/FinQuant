@@ -30,6 +30,7 @@ import pandas as pd
 
 from finquant.asset import Asset
 from finquant.data_types import FLOAT
+from finquant.type_utilities import type_validation
 
 
 class Stock(Asset):
@@ -73,6 +74,8 @@ class Stock(Asset):
         :Output:
          :beta: ``float``, the Beta parameter of the stock
         """
+        # Type validations:
+        type_validation(market_daily_returns=market_daily_returns)
         cov_mat = np.cov(
             self.comp_daily_returns(),
             market_daily_returns.to_frame()[market_daily_returns.name],
