@@ -75,10 +75,10 @@ def check_list_or_array_str(arg_name: str, arg_values: Any) -> None:
         raise ValueError(f"Error: {arg_name} is expected to be a non-empty List[str] or numpy.ndarray[str].")
 
 def check_list_or_array_int(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, (List, np.ndarray)) or not all(isinstance(val, (int, np.integer)) for val in arg_values):
-        raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[int] or numpy.ndarray[int].")
+    if not isinstance(arg_values, (List, np.ndarray)) or not all(isinstance(val, (int, np.integer, float, np.floating)) for val in arg_values):
+        raise TypeError(f"Error: {arg_name} is expected to be a non-empty List or numpy.ndarray of int or float.")
     if len(arg_values) == 0:
-        raise ValueError(f"Error: {arg_name} is expected to be a non-empty List[int] or numpy.ndarray[int].")
+        raise ValueError(f"Error: {arg_name} is expected to be a non-empty List or numpy.ndarray of int or float.")
 
 def check_list_int(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, List) or not all(isinstance(val, int) for val in arg_values):
