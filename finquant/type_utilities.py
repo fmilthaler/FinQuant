@@ -1,3 +1,4 @@
+"""
 type_utilities.py
 
 This module defines a type validation utility for working with various data types in Python, utilizing the 'numpy'
@@ -33,7 +34,7 @@ import pandas as pd
 
 
 # Arrays, Series, DataFrames:
-def check_series_or_dataframe_float(
+def _check_series_or_dataframe_float(
     arg_name: str, arg_values: Any, element_type: Type = np.float64
 ) -> None:
     expected_type_msg = f"a non-empty pandas.Series or pandas.DataFrame with dtype '{element_type.__name__}'."
@@ -51,7 +52,7 @@ def check_series_or_dataframe_float(
         )
 
 
-def check_dataframe_any_subtype(arg_name: str, arg_values: Any) -> None:
+def _check_dataframe_any_subtype(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, pd.DataFrame):
         raise TypeError(
             f"Error: {arg_name} is expected to be a non-empty pandas.DataFrame."
@@ -62,7 +63,7 @@ def check_dataframe_any_subtype(arg_name: str, arg_values: Any) -> None:
         )
 
 
-def check_dataframe_float(
+def _check_dataframe_float(
     arg_name: str, arg_values: Any, element_type: Type = np.float64
 ) -> None:
     expected_type_msg = (
@@ -78,7 +79,7 @@ def check_dataframe_float(
         )
 
 
-def check_series_float(
+def _check_series_float(
     arg_name: str, arg_values: Any, element_type: Type = np.float64
 ) -> None:
     expected_type_msg = (
@@ -92,7 +93,7 @@ def check_series_float(
         )
 
 
-def check_array_or_series_float(
+def _check_array_or_series_float(
     arg_name: str, arg_values: Any, element_type: Type = np.float64
 ) -> None:
     expected_type_msg = f"a non-empty numpy.ndarray or pandas.Series with dtype '{element_type.__name__}'."
@@ -104,7 +105,7 @@ def check_array_or_series_float(
         raise ValueError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
 
 
-def check_array_float(
+def _check_array_float(
     arg_name: str, arg_values: Any, element_type: Type = np.float64
 ) -> None:
     expected_type_msg = (
@@ -116,7 +117,7 @@ def check_array_float(
         raise ValueError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
 
 
-def check_array_or_dataframe_float(
+def _check_array_or_dataframe_float(
     arg_name: str, arg_values: Any, element_type: Type = np.float64
 ) -> None:
     expected_type_msg = f"a non-empty numpy.ndarray or pandas.DataFrame with dtype '{element_type.__name__}'."
@@ -133,7 +134,7 @@ def check_array_or_dataframe_float(
 
 
 # Lists or Arrays:
-def check_list_or_array_str(arg_name: str, arg_values: Any) -> None:
+def _check_list_or_array_str(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, (List, np.ndarray)) or not all(
         isinstance(val, str) for val in arg_values
     ):
@@ -146,7 +147,7 @@ def check_list_or_array_str(arg_name: str, arg_values: Any) -> None:
         )
 
 
-def check_list_or_array_int(arg_name: str, arg_values: Any) -> None:
+def _check_list_or_array_int(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, (List, np.ndarray)) or not all(
         isinstance(val, (int, np.integer, float, np.floating)) for val in arg_values
     ):
@@ -159,7 +160,7 @@ def check_list_or_array_int(arg_name: str, arg_values: Any) -> None:
         )
 
 
-def check_list_int(arg_name: str, arg_values: Any) -> None:
+def _check_list_int(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, List) or not all(
         isinstance(val, int) for val in arg_values
     ):
@@ -169,7 +170,7 @@ def check_list_int(arg_name: str, arg_values: Any) -> None:
 
 
 # Datetime types:
-def check_datetime_type(arg_name: str, arg_values: Any) -> None:
+def _check_datetime_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, (str, datetime.datetime)):
         raise TypeError(
             f"Error: {arg_name} is expected to be of type str or datetime.datetime."
@@ -177,17 +178,17 @@ def check_datetime_type(arg_name: str, arg_values: Any) -> None:
 
 
 # Numberic types:
-def check_float_type(arg_name: str, arg_values: Any) -> None:
+def _check_float_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, (float, np.floating)):
         raise TypeError(f"Error: {arg_name} is expected to be of type float.")
 
 
-def check_integer_type(arg_name: str, arg_values: Any) -> None:
+def _check_integer_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, (int, np.integer)):
         raise TypeError(f"Error: {arg_name} is expected to be of type integer.")
 
 
-def check_numeric_type(arg_name: str, arg_values: Any) -> None:
+def _check_numeric_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, (int, np.integer, float, np.floating)):
         raise TypeError(
             f"Error: {arg_name} is expected to be of type integer or float."
@@ -195,73 +196,98 @@ def check_numeric_type(arg_name: str, arg_values: Any) -> None:
 
 
 # Boolean types:
-def check_bool_type(arg_name: str, arg_values: Any) -> None:
+def _check_bool_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, bool):
         raise TypeError(f"Error: {arg_name} is expected to be of type bool.")
 
 
 # String types:
-def check_string_type(arg_name: str, arg_values: Any) -> None:
+def _check_string_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, str):
         raise TypeError(f"Error: {arg_name} is expected to be of type str.")
 
 
 # Callable types:
-def check_callable_type(arg_name: str, arg_values: Any) -> None:
+def _check_callable_type(arg_name: str, arg_values: Any) -> None:
     if not isinstance(arg_values, Callable):
         raise TypeError(f"Error: {arg_name} is expected to be a Callable function.")
 
 
 def type_validation(**kwargs: Any) -> None:
+    """
+    Perform generic type validations on input variables.
+
+    This function performs various type validations on a set of input variables. It helps to ensure that the input
+    values conform to the expected types and conditions, raising a TypeError with a descriptive error message
+    if any type validation fails and a ValueError if a numpy.array or pd.Series/DataFrame is empty.
+
+    Parameters:
+        **kwargs (Any): Arbitrary keyword arguments representing the input variables to be checked.
+
+    Raises:
+        TypeError: If any of the type validations fail, a TypeError is raised with a descriptive error message
+                   indicating the expected type and conditions for each variable.
+        ValueError: If any of the value validations fail, a ValueError is raised with a descriptive error message
+                    indicating the expected conditions for each variable.
+
+    Example usage:
+        type_validation(
+            data=pd.DataFrame([1., 2.]),
+            names=["name1", "name2"],
+            start_date="2023-08-01",
+            freq=10.0,
+        )
+    """
+
     # Definition of potential arguments and corresponding expected types
     type_dict = {
         # DataFrames, Series, Arrays:
-        "data": check_series_or_dataframe_float,
-        "pf_allocation": check_dataframe_any_subtype,
-        "returns_df": check_dataframe_float,
-        "returns_series": check_series_float,
-        "market_daily_returns": check_series_float,
-        "means": check_array_or_series_float,
-        "weights": check_array_or_series_float,
-        "initial_weights": check_array_float,
-        "weights_array": check_array_float,
-        "cov_matrix": check_array_or_dataframe_float,
+        "data": _check_series_or_dataframe_float,
+        "pf_allocation": _check_dataframe_any_subtype,
+        "returns_df": _check_dataframe_float,
+        "returns_series": _check_series_float,
+        "market_daily_returns": _check_series_float,
+        "means": _check_array_or_series_float,
+        "weights": _check_array_or_series_float,
+        "initial_weights": _check_array_float,
+        "weights_array": _check_array_float,
+        "cov_matrix": _check_array_or_dataframe_float,
         # Lists:
-        "names": check_list_or_array_str,
-        "cols": check_list_or_array_str,
-        "spans": check_list_int,
-        "targets": check_list_or_array_int,
+        "names": _check_list_or_array_str,
+        "cols": _check_list_or_array_str,
+        "spans": _check_list_int,
+        "targets": _check_list_or_array_int,
         # Datetime objects:
-        "start_date": check_datetime_type,
-        "end_date": check_datetime_type,
+        "start_date": _check_datetime_type,
+        "end_date": _check_datetime_type,
         # Strings:
-        "data_api": check_string_type,
-        "market_index": check_string_type,
-        "method": check_string_type,
-        "name": check_string_type,
+        "data_api": _check_string_type,
+        "market_index": _check_string_type,
+        "method": _check_string_type,
+        "name": _check_string_type,
         # FLOATs
-        "expected_return": check_float_type,
-        "volatility": check_float_type,
-        "risk_free_rate": check_float_type,
-        "downside_risk": check_float_type,
-        "mu": check_float_type,
-        "sigma": check_float_type,
-        "conf_level": check_float_type,
+        "expected_return": _check_float_type,
+        "volatility": _check_float_type,
+        "risk_free_rate": _check_float_type,
+        "downside_risk": _check_float_type,
+        "mu": _check_float_type,
+        "sigma": _check_float_type,
+        "conf_level": _check_float_type,
         # INTs:
-        "freq": check_integer_type,
-        "span": check_integer_type,
-        "num_trials": check_integer_type,
+        "freq": _check_integer_type,
+        "span": _check_integer_type,
+        "num_trials": _check_integer_type,
         # NUMERICs:
-        "investment": check_numeric_type,
-        "dividend": check_numeric_type,
-        "target": check_numeric_type,
+        "investment": _check_numeric_type,
+        "dividend": _check_numeric_type,
+        "target": _check_numeric_type,
         # Booleans:
-        "plot": check_bool_type,
-        "save_weights": check_bool_type,
-        "verbose": check_bool_type,
-        "defer_update": check_bool_type,
+        "plot": _check_bool_type,
+        "save_weights": _check_bool_type,
+        "verbose": _check_bool_type,
+        "defer_update": _check_bool_type,
         # Callables:
-        "fun": check_callable_type,
+        "fun": _check_callable_type,
     }
 
     for arg_name, arg_values in kwargs.items():
