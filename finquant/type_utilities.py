@@ -1,6 +1,8 @@
 """
-This module defines type validation utility for working with various data types in Python,
-utilizing the 'numpy' and 'pandas' libraries.
+type_validation.py
+
+This module defines a type validation utility for working with various data types in Python, utilizing the 'numpy'
+and 'pandas' libraries.
 
 Dependencies:
 -------------
@@ -8,6 +10,15 @@ This module requires the following external libraries:
 
 - 'numpy' (imported as 'np')
 - 'pandas' (imported as 'pd')
+
+Example usage:
+-------------
+type_validation(
+    data=pd.DataFrame([1., 2.]),
+    names=["name1", "name2"],
+    start_date="2023-08-01",
+    freq=10.0,
+)
 """
 # allow more than 5 boolean expressions in if statement:
 # pylint: disable=R0916
@@ -29,7 +40,7 @@ def type_validation(**kwargs: Any) -> None:
     if any type validation fails and a ValueError if a numpy.array or pd.Series/DataFrame is empty.
 
     Parameters:
-        **kwargs: Arbitrary keyword arguments representing the input variables to be checked.
+        **kwargs (Any): Arbitrary keyword arguments representing the input variables to be checked.
 
     Raises:
         TypeError: If any of the type validations fail, a TypeError is raised with a descriptive error message
@@ -39,15 +50,16 @@ def type_validation(**kwargs: Any) -> None:
 
     Example usage:
         type_validation(
-        data=pd.DataFrame([1., 2.]),
-        names=["name1", "name2"],
-        start_date="2023-08-01",
-        freq=10.0,
-    )
+            data=pd.DataFrame([1., 2.]),
+            names=["name1", "name2"],
+            start_date="2023-08-01",
+            freq=10.0,
+        )
     """
 
     dtype_msg: str = " with dtype 'np.float64'"
 
+    # Definition of common types to check against with error message:
     dataframe_type: Tuple[Any, str] = (pd.DataFrame, "a non-empty pandas.DataFrame")
     series_dataframe_float_type: Tuple[Any, str] = (
         Union[pd.Series, pd.DataFrame],
@@ -77,6 +89,7 @@ def type_validation(**kwargs: Any) -> None:
         "of type integer of float",
     )
 
+    # Definition of potential arguments and corresponding expected types
     type_dict = {
         # DataFrames, Series, Arrays:
         "data": series_dataframe_float_type,
@@ -108,6 +121,7 @@ def type_validation(**kwargs: Any) -> None:
         "dividend": numeric_type,
     }
 
+    # Type validation
     for arg_name, (arg_type, expected_type) in type_dict.items():
         arg_values = kwargs.get(arg_name)
         if arg_values is not None:
@@ -126,7 +140,7 @@ def type_validation(**kwargs: Any) -> None:
                     )
                 continue
 
-            # Validating common Array[FLOAT], Series[Float], DataFrame[FLOAT] types
+            # Validating common Array[FLOAT], Series[Float], DataFrame[Any] types
             if arg_name in ("data", "pf_allocation", "means", "weights", "cov_matrix"):
                 if (
                     not isinstance(arg_values, arg_type)
