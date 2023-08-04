@@ -18,6 +18,7 @@ import pandas as pd
 
 from finquant.data_types import FLOAT, INT
 from finquant.returns import daily_returns, historical_mean_return
+from finquant.type_utilities import type_validation
 
 
 class Asset:
@@ -96,6 +97,8 @@ class Asset:
 
         :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
         """
+        # Type validations:
+        type_validation(freq=freq)
         volatility: FLOAT = self.comp_daily_returns().std() * np.sqrt(freq)
         return volatility
 

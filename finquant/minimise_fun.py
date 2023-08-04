@@ -5,11 +5,12 @@ scipy.optimize.minimize in order to find the minimal/optimal value.
 
 from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_SERIES, FLOAT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
+from finquant.type_utilities import type_validation
 
 
 def portfolio_volatility(
     weights: ARRAY_OR_SERIES[FLOAT],
-    mean_returns: ARRAY_OR_DATAFRAME[FLOAT],
+    mean_returns: ARRAY_OR_SERIES[FLOAT],
     cov_matrix: ARRAY_OR_DATAFRAME[FLOAT],
 ) -> FLOAT:
     """Calculates the volatility of a portfolio
@@ -26,6 +27,8 @@ def portfolio_volatility(
     :return: Annualised volatility
     :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
     """
+    # Type validations:
+    type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)
     return annualised_portfolio_quantities(weights, mean_returns, cov_matrix)[1]
 
 
@@ -52,6 +55,13 @@ def negative_sharpe_ratio(
     :return: Negative sharpe ratio
     :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
     """
+    # Type validations:
+    type_validation(
+        weights=weights,
+        means=mean_returns,
+        cov_matrix=cov_matrix,
+        risk_free_rate=risk_free_rate,
+    )
     sharpe = annualised_portfolio_quantities(
         weights, mean_returns, cov_matrix, risk_free_rate=risk_free_rate
     )[2]
@@ -79,4 +89,6 @@ def portfolio_return(
     :return: Expected annualised return
     :rtype: :py:data:`~.finquant.type_definitions.NUMERIC`
     """
+    # Type validations:
+    type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)
     return annualised_portfolio_quantities(weights, mean_returns, cov_matrix)[0]

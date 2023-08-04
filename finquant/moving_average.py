@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 
 from finquant.data_types import SERIES_OR_DATAFRAME
+from finquant.type_utilities import type_validation
 
 
 def compute_ma(
@@ -39,10 +40,8 @@ def compute_ma(
 
     :return: Moving averages of given data.
     """
-    if not isinstance(data, (pd.Series, pd.DataFrame)):
-        raise ValueError(
-            "data is expected to be of type pandas.Series or pandas.DataFrame"
-        )
+    # Type validations:
+    type_validation(data=data, fun=fun, spans=spans, plot=plot)
     m_a = data.copy(deep=True)
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(m_a, pd.Series):
@@ -106,6 +105,8 @@ def sma(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
 
     :return: ``sma``: simple moving average
     """
+    # Type validations:
+    type_validation(data=data, span=span)
     return data.rolling(window=span, center=False).mean()
 
 
@@ -119,6 +120,8 @@ def ema(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
 
     :return: ``ema``: exponential moving average
     """
+    # Type validations:
+    type_validation(data=data, span=span)
     return data.ewm(span=span, adjust=False, min_periods=span).mean()
 
 
@@ -131,6 +134,8 @@ def sma_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
 
     :return: ``sma_std``: standard deviation of simple moving average
     """
+    # Type validations:
+    type_validation(data=data, span=span)
     return data.rolling(window=span, center=False).std()
 
 
@@ -143,6 +148,8 @@ def ema_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
 
     :return: ``ema_std``: standard deviation of exponential moving average
     """
+    # Type validations:
+    type_validation(data=data, span=span)
     return data.ewm(span=span, adjust=False, min_periods=span).std()
 
 
@@ -158,14 +165,11 @@ def plot_bollinger_band(
          ``ema`` (exponential).
     :param span: Number of days/values over which the average is computed, default: 100
     """
-    if not isinstance(data, (pd.Series, pd.DataFrame)):
-        raise ValueError(
-            "data is expected to be of type pandas.Series or pandas.DataFrame"
-        )
+    # Type validations:
+    type_validation(data=data, fun=fun, span=span)
+    # special requirement for dataframe "data":
     if isinstance(data, pd.DataFrame) and not len(data.columns.values) == 1:
         raise ValueError("data is expected to have only one column.")
-    if not isinstance(span, int):
-        raise ValueError("span must be an integer.")
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
         data = data.to_frame()

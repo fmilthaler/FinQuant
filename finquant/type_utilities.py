@@ -1,174 +1,254 @@
-"""
-type_validation.py
-
-This module defines a type validation utility for working with various data types in Python, utilizing the 'numpy'
-and 'pandas' libraries.
-
-Dependencies:
--------------
-This module requires the following external libraries:
-
-- 'numpy' (imported as 'np')
-- 'pandas' (imported as 'pd')
-
-Example usage:
--------------
-type_validation(
-    data=pd.DataFrame([1., 2.]),
-    names=["name1", "name2"],
-    start_date="2023-08-01",
-    freq=10.0,
-)
-"""
-# allow more than 5 boolean expressions in if statement:
-# pylint: disable=R0916
-
-
 import datetime
-from typing import Any, List, Tuple, Union
+from typing import Any, Callable, List, Type
 
 import numpy as np
 import pandas as pd
 
 
-def type_validation(**kwargs: Any) -> None:
-    """
-    Perform generic type validations on input variables.
-
-    This function performs various type validations on a set of input variables. It helps to ensure that the input
-    values conform to the expected types and conditions, raising a TypeError with a descriptive error message
-    if any type validation fails and a ValueError if a numpy.array or pd.Series/DataFrame is empty.
-
-    Parameters:
-        **kwargs (Any): Arbitrary keyword arguments representing the input variables to be checked.
-
-    Raises:
-        TypeError: If any of the type validations fail, a TypeError is raised with a descriptive error message
-                   indicating the expected type and conditions for each variable.
-        ValueError: If any of the value validations fail, a ValueError is raised with a descriptive error message
-                    indicating the expected conditions for each variable.
-
-    Example usage:
-        type_validation(
-            data=pd.DataFrame([1., 2.]),
-            names=["name1", "name2"],
-            start_date="2023-08-01",
-            freq=10.0,
+# Arrays, Series, DataFrames:
+def check_series_or_dataframe_float(
+    arg_name: str, arg_values: Any, element_type: Type = np.float64
+) -> None:
+    expected_type_msg = f"a non-empty pandas.Series or pandas.DataFrame with dtype '{element_type.__name__}'."
+    if not isinstance(arg_values, (pd.Series, pd.DataFrame)):
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if isinstance(arg_values, pd.Series) and not arg_values.dtype == element_type:
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if isinstance(arg_values, pd.DataFrame) and not all(
+        arg_values.dtypes == element_type
+    ):
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if arg_values.empty:
+        raise ValueError(
+            f"Error: {arg_name} is expected to be non-empty {expected_type_msg}."
         )
-    """
 
-    dtype_msg: str = " with dtype 'np.float64'"
 
-    # Definition of common types to check against with error message:
-    dataframe_type: Tuple[Any, str] = (pd.DataFrame, "a non-empty pandas.DataFrame")
-    series_dataframe_float_type: Tuple[Any, str] = (
-        Union[pd.Series, pd.DataFrame],
-        f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
-    )
-    array_series_floats_type: Tuple[Any, str] = (
-        Union[np.ndarray, pd.Series],
-        f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
-    )
-    array_dataframe_floats_type: Tuple[Any, str] = (
-        Union[np.ndarray, pd.DataFrame],
-        f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.",
-    )
-    list_array_type: Tuple[Any, str] = (
-        Union[List, np.ndarray],
-        "a non-empty List[str] or numpy.ndarray[str]",
-    )
-    datetime_type: Tuple[Any, str] = (
-        Union[str, datetime.datetime],
-        "of type str or datetime.datetime",
-    )
-    string_type: Tuple[Any, str] = (str, "of type str")
-    float_type: Tuple[Any, str] = ((float, np.floating), "of type float")
-    int_type: Tuple[Any, str] = ((int, np.integer), "of type integer")
-    numeric_type: Tuple[Any, str] = (
-        (int, np.integer, float, np.floating),
-        "of type integer of float",
-    )
+def check_dataframe_any_subtype(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, pd.DataFrame):
+        raise TypeError(
+            f"Error: {arg_name} is expected to be a non-empty pandas.DataFrame."
+        )
+    if arg_values.empty:
+        raise ValueError(
+            f"Error: {arg_name} is expected to be a non-empty pandas.DataFrame."
+        )
 
+
+def check_dataframe_float(
+    arg_name: str, arg_values: Any, element_type: Type = np.float64
+) -> None:
+    expected_type_msg = (
+        f"a non-empty pandas.DataFrame with dtype '{element_type.__name__}'."
+    )
+    if not isinstance(arg_values, pd.DataFrame) or not all(
+        arg_values.dtypes == element_type
+    ):
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if arg_values.empty:
+        raise ValueError(
+            f"Error: {arg_name} is expected to be non-empty {expected_type_msg}."
+        )
+
+
+def check_series_float(
+    arg_name: str, arg_values: Any, element_type: Type = np.float64
+) -> None:
+    expected_type_msg = (
+        f"a non-empty pandas.Series with dtype '{element_type.__name__}'."
+    )
+    if not isinstance(arg_values, pd.Series) or not arg_values.dtype == element_type:
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if arg_values.empty:
+        raise ValueError(
+            f"Error: {arg_name} is expected to be non-empty {expected_type_msg}."
+        )
+
+
+def check_array_or_series_float(
+    arg_name: str, arg_values: Any, element_type: Type = np.float64
+) -> None:
+    expected_type_msg = f"a non-empty numpy.ndarray or pandas.Series with dtype '{element_type.__name__}'."
+    if not isinstance(arg_values, (np.ndarray, pd.Series)):
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if isinstance(arg_values, pd.Series) and not arg_values.dtype == element_type:
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if len(arg_values) == 0:
+        raise ValueError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+
+
+def check_array_float(
+    arg_name: str, arg_values: Any, element_type: Type = np.float64
+) -> None:
+    expected_type_msg = (
+        f"a non-empty numpy.ndarray with dtype '{element_type.__name__}'."
+    )
+    if not isinstance(arg_values, np.ndarray) or not arg_values.dtype == element_type:
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if len(arg_values) == 0:
+        raise ValueError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+
+
+def check_array_or_dataframe_float(
+    arg_name: str, arg_values: Any, element_type: Type = np.float64
+) -> None:
+    expected_type_msg = f"a non-empty numpy.ndarray or pandas.DataFrame with dtype '{element_type.__name__}'."
+    if not isinstance(arg_values, (np.ndarray, pd.DataFrame)):
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if isinstance(arg_values, np.ndarray) and not arg_values.dtype == element_type:
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if isinstance(arg_values, pd.DataFrame) and not all(
+        arg_values.dtypes == element_type
+    ):
+        raise TypeError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+    if len(arg_values) == 0:
+        raise ValueError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
+
+
+# Lists or Arrays:
+def check_list_or_array_str(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (List, np.ndarray)) or not all(
+        isinstance(val, str) for val in arg_values
+    ):
+        raise TypeError(
+            f"Error: {arg_name} is expected to be a non-empty List[str] or numpy.ndarray[str]."
+        )
+    if len(arg_values) == 0:
+        raise ValueError(
+            f"Error: {arg_name} is expected to be a non-empty List[str] or numpy.ndarray[str]."
+        )
+
+
+def check_list_or_array_int(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (List, np.ndarray)) or not all(
+        isinstance(val, (int, np.integer, float, np.floating)) for val in arg_values
+    ):
+        raise TypeError(
+            f"Error: {arg_name} is expected to be a non-empty List or numpy.ndarray of int or float."
+        )
+    if len(arg_values) == 0:
+        raise ValueError(
+            f"Error: {arg_name} is expected to be a non-empty List or numpy.ndarray of int or float."
+        )
+
+
+def check_list_int(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, List) or not all(
+        isinstance(val, int) for val in arg_values
+    ):
+        raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[int].")
+    if len(arg_values) == 0:
+        raise ValueError(f"Error: {arg_name} is expected to be a non-empty List[int].")
+
+
+# Datetime types:
+def check_datetime_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (str, datetime.datetime)):
+        raise TypeError(
+            f"Error: {arg_name} is expected to be of type str or datetime.datetime."
+        )
+
+
+# Numberic types:
+def check_float_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (float, np.floating)):
+        raise TypeError(f"Error: {arg_name} is expected to be of type float.")
+
+
+def check_integer_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (int, np.integer)):
+        raise TypeError(f"Error: {arg_name} is expected to be of type integer.")
+
+
+def check_numeric_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (int, np.integer, float, np.floating)):
+        raise TypeError(
+            f"Error: {arg_name} is expected to be of type integer or float."
+        )
+
+
+# Boolean types:
+def check_bool_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, bool):
+        raise TypeError(f"Error: {arg_name} is expected to be of type bool.")
+
+
+# String types:
+def check_string_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, str):
+        raise TypeError(f"Error: {arg_name} is expected to be of type str.")
+
+
+# Callable types:
+def check_callable_type(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, Callable):
+        raise TypeError(f"Error: {arg_name} is expected to be a Callable function.")
+
+
+def type_validation(**kwargs: Any) -> None:
     # Definition of potential arguments and corresponding expected types
     type_dict = {
         # DataFrames, Series, Arrays:
-        "data": series_dataframe_float_type,
-        "pf_allocation": dataframe_type,  # allows for any subtype
-        "means": array_series_floats_type,
-        "weights": array_series_floats_type,
-        "cov_matrix": array_dataframe_floats_type,
+        "data": check_series_or_dataframe_float,
+        "pf_allocation": check_dataframe_any_subtype,
+        "returns_df": check_dataframe_float,
+        "returns_series": check_series_float,
+        "market_daily_returns": check_series_float,
+        "means": check_array_or_series_float,
+        "weights": check_array_or_series_float,
+        "initial_weights": check_array_float,
+        "weights_array": check_array_float,
+        "cov_matrix": check_array_or_dataframe_float,
         # Lists:
-        "names": list_array_type,
-        "cols": list_array_type,
-        # Datatime objects:
-        "start_date": datetime_type,
-        "end_date": datetime_type,
+        "names": check_list_or_array_str,
+        "cols": check_list_or_array_str,
+        "spans": check_list_int,
+        "targets": check_list_or_array_int,
+        # Datetime objects:
+        "start_date": check_datetime_type,
+        "end_date": check_datetime_type,
         # Strings:
-        "data_api": string_type,
-        "market_index": string_type,
+        "data_api": check_string_type,
+        "market_index": check_string_type,
+        "method": check_string_type,
+        "name": check_string_type,
         # FLOATs
-        "expected_return": float_type,
-        "volatility": float_type,
-        "risk_free_rate": float_type,
-        "downside_risk": float_type,
-        "mu": float_type,
-        "sigma": float_type,
-        "conf_level": float_type,
+        "expected_return": check_float_type,
+        "volatility": check_float_type,
+        "risk_free_rate": check_float_type,
+        "downside_risk": check_float_type,
+        "mu": check_float_type,
+        "sigma": check_float_type,
+        "conf_level": check_float_type,
         # INTs:
-        "freq": int_type,
+        "freq": check_integer_type,
+        "span": check_integer_type,
+        "num_trials": check_integer_type,
         # NUMERICs:
-        "investment": numeric_type,
-        "dividend": numeric_type,
+        "investment": check_numeric_type,
+        "dividend": check_numeric_type,
+        "target": check_numeric_type,
+        # Booleans:
+        "plot": check_bool_type,
+        "save_weights": check_bool_type,
+        "verbose": check_bool_type,
+        "defer_update": check_bool_type,
+        # Callables:
+        "fun": check_callable_type,
     }
 
-    # Type validation
-    for arg_name, (arg_type, expected_type) in type_dict.items():
-        arg_values = kwargs.get(arg_name)
-        if arg_values is not None:
-            # Validating List[str] types:
-            if arg_name in ("names", "cols"):
-                if not isinstance(arg_values, arg_type) or (
-                    isinstance(arg_values, arg_type)
-                    and not all(isinstance(val, str) for val in arg_values)
-                ):
-                    raise TypeError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                if len(arg_values) == 0:
-                    raise ValueError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                continue
+    for arg_name, arg_values in kwargs.items():
+        if arg_name not in type_dict:
+            raise ValueError(
+                f"Error: '{arg_name}' is not a valid argument. Please only use argument names defined in `type_dict`."
+            )
 
-            # Validating common Array[FLOAT], Series[Float], DataFrame[Any] types
-            if arg_name in ("data", "pf_allocation", "means", "weights", "cov_matrix"):
-                if (
-                    not isinstance(arg_values, arg_type)
-                    or (
-                        isinstance(arg_values, (np.ndarray, pd.Series))
-                        and not arg_values.dtype == np.float64
-                    )
-                    or (
-                        isinstance(arg_values, pd.DataFrame)
-                        and arg_name != "pf_allocation"  # allows for any subtypes
-                        and not all(arg_values.dtypes == np.float64)
-                    )
-                ):
-                    raise TypeError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                if len(arg_values) == 0:
-                    raise ValueError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                continue
+        # Some arguments are allowed to be None, so skip them
+        if arg_values is None:
+            continue
 
-            # Remaining types:
-            if not isinstance(arg_values, arg_type):
-                raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
-            if (
-                isinstance(arg_values, (pd.Series, pd.DataFrame)) and arg_values.empty
-            ) or (isinstance(arg_values, (List, np.ndarray)) and len(arg_values) == 0):
-                raise ValueError(
-                    f"Error: {arg_name} is expected to be non-empty {expected_type}."
-                )
+        # Extract the appropriate validation function from the type_dict
+        validation_func = type_dict[arg_name]
+
+        # Perform the type validation using the appropriate function
+        validation_func(arg_name, arg_values)

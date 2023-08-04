@@ -33,10 +33,6 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     """
     # Type validations:
     type_validation(data=data, dividend=dividend)
-    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
-        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
-    if not isinstance(dividend, (float, int, np.floating, np.integer)):
-        raise ValueError("dividend is expected to be an integer or float.")
     data = data.dropna(axis=0, how="any")
     return ((data - data.iloc[0] + dividend) / data.iloc[0]).astype(np.float64)
 
@@ -95,8 +91,6 @@ def daily_log_returns(data: pd.DataFrame) -> pd.DataFrame:
     """
     # Type validations:
     type_validation(data=data)
-    if not isinstance(data, (pd.DataFrame, pd.Series)) or data.empty:
-        raise ValueError("data must be a non-empty pandas.DataFrame or pandas.Series")
     return np.log(1 + daily_returns(data)).dropna(how="all").astype(np.float64)
 
 
