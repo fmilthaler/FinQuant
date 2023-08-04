@@ -50,6 +50,8 @@ Finally, functions are implemented to generate the following plots:
   based on a numerical optimisation
 - Individual stocks of the portfolio (Expected Return over Volatility)
 """
+# supress some pylint complaints for this module only
+# pylint: disable=C0302,R0904,,R0912,W0212
 
 import datetime
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
