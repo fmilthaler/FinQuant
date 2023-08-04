@@ -109,11 +109,13 @@ def type_validation(**kwargs: Any) -> None:
         # DataFrames, Series, Arrays:
         "data": series_dataframe_float_type,
         "pf_allocation": dataframe_any_type,  # allows for any subtype
-        "returns": dataframe_float_type,
+        "returns_df": dataframe_float_type,
+        "returns_series": series_float_type,
         "market_daily_returns": series_float_type,
         "means": array_series_floats_type,
         "weights": array_series_floats_type,
         "initial_weights": array_floats_type,
+        "weights_array": array_floats_type,
         "cov_matrix": array_dataframe_floats_type,
         # Lists:
         "names": list_array_type,
@@ -125,6 +127,7 @@ def type_validation(**kwargs: Any) -> None:
         # Strings:
         "data_api": string_type,
         "market_index": string_type,
+        "method": string_type,
         # FLOATs
         "expected_return": float_type,
         "volatility": float_type,
@@ -140,8 +143,11 @@ def type_validation(**kwargs: Any) -> None:
         # NUMERICs:
         "investment": numeric_type,
         "dividend": numeric_type,
+        "target": numeric_type,
         # Booleans:
         "plot": bool_type,
+        "save_weights": bool_type,
+        "verbose": bool_type,
         # Callables:
         "fun": callable_type,
     }
@@ -191,12 +197,14 @@ def type_validation(**kwargs: Any) -> None:
         if arg_name in (
             "data",
             "pf_allocation",
-            "returns",
+            "returns_df",
+            "returns_series",
+            "market_daily_returns",
             "means",
             "weights",
             "initial_weights",
             "cov_matrix",
-            "market_daily_returns",
+            "weights_array",
         ):
             if (
                 not isinstance(arg_values, arg_type)

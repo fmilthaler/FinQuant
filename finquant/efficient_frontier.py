@@ -13,7 +13,7 @@ import scipy.optimize as sco
 import finquant.minimise_fun as min_fun
 from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, INT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
-
+from finquant.type_utilities import type_validation
 
 class EfficientFrontier:
     """An object designed to perform optimisations based on minimising a cost/objective function.
@@ -81,10 +81,8 @@ class EfficientFrontier:
 
              all of which are officially supported by scipy.optimize.minimize
         """
-        if not isinstance(mean_returns, pd.Series):
-            raise ValueError("mean_returns is expected to be a pandas.Series.")
-        if not isinstance(cov_matrix, pd.DataFrame):
-            raise ValueError("cov_matrix is expected to be a pandas.DataFrame")
+        # Type validations:
+        type_validation(returns_series=mean_returns, cov_matrix=cov_matrix, risk_free_rate=risk_free_rate, freq=freq, method=method)
         supported_methods = [
             "Nelder-Mead",
             "Powell",
@@ -101,10 +99,6 @@ class EfficientFrontier:
             "trust-exact",
             "trust-krylov",
         ]
-        if not isinstance(risk_free_rate, (np.floating, float)):
-            raise ValueError("risk_free_rate is expected to be a float.")
-        if not isinstance(method, str):
-            raise ValueError("method is expected to be a string.")
         if method not in supported_methods:
             raise ValueError("method is not supported by scipy.optimize.minimize.")
 
@@ -150,8 +144,8 @@ class EfficientFrontier:
            - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
              of stocks within the optimised portfolio.
         """
-        if not isinstance(save_weights, bool):
-            raise ValueError("save_weights is expected to be a boolean.")
+        # Type validations:
+        type_validation(save_weights=save_weights)
 
         args = (self.mean_returns.values, self.cov_matrix.values)
 
@@ -200,8 +194,8 @@ class EfficientFrontier:
            - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
              of stocks within the optimised portfolio.
         """
-        if not isinstance(save_weights, bool):
-            raise ValueError("save_weights is expected to be a boolean.")
+        # Type validations:
+        type_validation(save_weights=save_weights)
         args = (self.mean_returns.values, self.cov_matrix.values, self.risk_free_rate)
         # optimisation
         result = sco.minimize(
@@ -247,10 +241,8 @@ class EfficientFrontier:
            - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
              of stocks within the optimised portfolio.
         """
-        if not isinstance(target, (int, float)):
-            raise ValueError("target is expected to be an integer or float.")
-        if not isinstance(save_weights, bool):
-            raise ValueError("save_weights is expected to be a boolean.")
+        # Type validations:
+        type_validation(target=target, save_weights=save_weights)
         args = (self.mean_returns.values, self.cov_matrix.values)
         # here we have an additional constraint:
         constraints = (
@@ -295,8 +287,8 @@ class EfficientFrontier:
          :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
              the optimised portfolio.
         """
-        if not isinstance(target, (int, float)):
-            raise ValueError("target is expected to be an integer or float.")
+        # Type validations:
+        type_validation(target=target)
         args = (self.mean_returns.values, self.cov_matrix.values, self.risk_free_rate)
         # here we have an additional constraint:
         constraints = (
@@ -341,8 +333,12 @@ class EfficientFrontier:
         :Output:
          :efrontier: ``numpy.ndarray`` of (volatility, return) values
         """
+        # Type validations:
         if targets is not None and not isinstance(targets, (list, np.ndarray)):
             raise ValueError("targets is expected to be a list or numpy.ndarray")
+        elif targets is not None:
+            for target in targets:
+                type_validation(target=target)
         if targets is None:
             # set range of target returns from the individual expected
             # returns of the stocks in the portfolio.
@@ -438,8 +434,8 @@ class EfficientFrontier:
         :Output:
          :weights: ``pandas.DataFrame`` with the weights/allocation of stocks
         """
-        if not isinstance(weights, np.ndarray):
-            raise ValueError("weights is expected to be a numpy.ndarray")
+        # Type validations:
+        type_validation(weights_array=weights)
         return pd.DataFrame(weights, index=self.names, columns=["Allocation"]).astype(
             np.float64
         )
@@ -451,6 +447,8 @@ class EfficientFrontier:
         :Input:
          :verbose: ``boolean`` (default= ``False``), whether to print out properties or not
         """
+        # Type validations:
+        type_validation(verbose=verbose)
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
         if self.weights.size == 0:

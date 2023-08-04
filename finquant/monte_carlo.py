@@ -93,7 +93,7 @@ class MonteCarloOpt(MonteCarlo):
         """
         # Type validations:
         type_validation(
-            returns=returns,
+            returns_df=returns,
             num_trials=num_trials,
             risk_free_rate=risk_free_rate,
             freq=freq,
