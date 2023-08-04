@@ -25,12 +25,12 @@ def test_weighted_mean():
 
 
 def test_weighted_std():
-    x = np.array([1., 2., 3., 4., 5., 6., 7., 8., 9.])
-    y = np.array([9., 8., 7., 6., 5., 4., 3., 2., 1.])
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
+    y = np.array([9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0])
     Sigma = np.cov(x, y)
-    weights = np.array([1., 1.])
+    weights = np.array([1.0, 1.0])
     assert weighted_std(Sigma, weights) == 0.0
-    weights = np.array([-3., 5.])
+    weights = np.array([-3.0, 5.0])
     assert weighted_std(Sigma, weights) ** 2 == 480.0
 
 
@@ -51,9 +51,9 @@ def test_value_at_risk():
     assert abs(value_at_risk(1e4, 0.1, -0.25, 0.9) - (-2203.88)) <= 1e-1
     assert abs(value_at_risk(1e4, -0.1, -0.25, 0.9) - (-4203.88)) <= 1e-1
     assert value_at_risk(0, 0.1, 0.5, 0.9) == 0
-    assert abs(value_at_risk(1e4, 0., 0.5, 0.9) - 6407.76) <= 1e-1
-    assert abs(value_at_risk(1e4, 0.1, 0., 0.9) - 1000) <= 1e-1
-    assert value_at_risk(1e4, 0., 0., 0.9) == 0
+    assert abs(value_at_risk(1e4, 0.0, 0.5, 0.9) - 6407.76) <= 1e-1
+    assert abs(value_at_risk(1e4, 0.1, 0.0, 0.9) - 1000) <= 1e-1
+    assert value_at_risk(1e4, 0.0, 0.0, 0.9) == 0
 
 
 def test_value_at_risk_invalid_types():
@@ -77,8 +77,8 @@ def test_value_at_risk_invalid_types():
 
 
 def test_annualised_portfolio_quantities():
-    x = np.array([1., 2., 3., 4., 5., 6., 7., 8., 9.])
-    y = np.array([9., 8., 7., 6., 5., 4., 3., 2., 1.])
+    x = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0])
+    y = np.array([9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0])
     Sigma = np.cov(x, y)
     mean = np.array([1.0, 2.0])
     weights = np.array([-3.0, 5.0])

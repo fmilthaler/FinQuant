@@ -69,7 +69,9 @@ def sharpe_ratio(
      :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
     """
     # Type validations:
-    type_validation(expected_return=exp_return, volatility=volatility, risk_free_rate=risk_free_rate)
+    type_validation(
+        expected_return=exp_return, volatility=volatility, risk_free_rate=risk_free_rate
+    )
     res_sharpe_ratio: FLOAT = (exp_return - risk_free_rate) / float(volatility)
     return res_sharpe_ratio
 
@@ -89,7 +91,11 @@ def sortino_ratio(
      Can be ``NaN`` if ``downside_risk`` is zero
     """
     # Type validations:
-    type_validation(expected_return=exp_return, downside_risk=downs_risk, risk_free_rate=risk_free_rate)
+    type_validation(
+        expected_return=exp_return,
+        downside_risk=downs_risk,
+        risk_free_rate=risk_free_rate,
+    )
     if float(downs_risk) == 0:
         return np.nan
     else:
@@ -160,7 +166,13 @@ def annualised_portfolio_quantities(
          three quantities
     """
     # Type validations:
-    type_validation(weights=weights, means=means, cov_matrix=cov_matrix, risk_free_rate=risk_free_rate, freq=freq)
+    type_validation(
+        weights=weights,
+        means=means,
+        cov_matrix=cov_matrix,
+        risk_free_rate=risk_free_rate,
+        freq=freq,
+    )
     expected_return = weighted_mean(means, weights) * freq
     volatility = weighted_std(cov_matrix, weights) * np.sqrt(freq)
     sharpe = sharpe_ratio(expected_return, volatility, risk_free_rate)

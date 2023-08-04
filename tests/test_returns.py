@@ -13,7 +13,7 @@ from finquant.returns import (
 def test_cumulative_returns():
     orig = [
         list(range(10)),
-        [0., -0.025, -0.05, -0.075, -0.1, -0.125, -0.15, -0.175, -0.2, -0.225],
+        [0.0, -0.025, -0.05, -0.075, -0.1, -0.125, -0.15, -0.175, -0.2, -0.225],
     ]
     l1 = np.array(range(1, 11)).astype(np.float64)
     l2 = [float(40 - i) for i in range(10)]
@@ -58,7 +58,7 @@ def test_weighted_daily_mean_returns():
     d = {"1": l1}
     expected = [0.5 for i in range(len(l1) - 1)]
     df = pd.DataFrame(d)
-    ret = weighted_mean_daily_returns(df, np.array([1.]))
+    ret = weighted_mean_daily_returns(df, np.array([1.0]))
     assert all(abs(ret - expected) <= 1e-15)
 
 
