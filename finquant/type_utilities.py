@@ -69,6 +69,10 @@ def type_validation(**kwargs: Any) -> None:
         Union[pd.Series, pd.DataFrame],
         f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
     )
+    series_float_type: Tuple[Any, str] = (
+        pd.Series,
+        f"a non-empty pandas.Series {dtype_msg}",
+    )
     array_series_floats_type: Tuple[Any, str] = (
         Union[np.ndarray, pd.Series],
         f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
@@ -106,6 +110,7 @@ def type_validation(**kwargs: Any) -> None:
         "data": series_dataframe_float_type,
         "pf_allocation": dataframe_any_type,  # allows for any subtype
         "returns": dataframe_float_type,
+        "market_daily_returns": series_float_type,
         "means": array_series_floats_type,
         "weights": array_series_floats_type,
         "initial_weights": array_floats_type,
@@ -142,70 +147,82 @@ def type_validation(**kwargs: Any) -> None:
     }
 
     # Type validation
-    for arg_name, (arg_type, expected_type) in type_dict.items():
-        arg_values = kwargs.get(arg_name)
-        if arg_values is not None:
-            # Validating List[str] types:
-            if arg_name in ("names", "cols", "spans"):
-                # spans is expected to be List[INT], the rest List[str]
-                if not isinstance(arg_values, arg_type) or (
-                    isinstance(arg_values, arg_type)
-                    and (
-                        arg_name == "spans"
-                        and not all(
-                            isinstance(val, (np.integer, int)) for val in arg_values
-                        )
-                        or (
-                            arg_name != "spans"
-                            and not all(isinstance(val, str) for val in arg_values)
-                        )
-                    )
-                ):
-                    raise TypeError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                if len(arg_values) == 0:
-                    raise ValueError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                continue
+    # for arg_name, (arg_type, expected_type) in type_dict.items():
+    #     arg_values = kwargs.get(arg_name)
+    #     if arg_values is not None:
+    for arg_name, arg_values in kwargs.items():
+        # raise an Exception if an argument was given that is not defined in type_dict
+        if arg_name not in type_dict:
+            raise ValueError(
+                f"Error: {arg_name} is not a valid argument. Please only use argument names defined in `type_dict`."
+            )
 
-            # Validating common Array[FLOAT], Series[Float], DataFrame[Any] types
-            if arg_name in (
-                "data",
-                "pf_allocation",
-                "returns",
-                "means",
-                "weights",
-                "cov_matrix",
-            ):
-                if (
-                    not isinstance(arg_values, arg_type)
-                    or (
-                        isinstance(arg_values, (np.ndarray, pd.Series))
-                        and not arg_values.dtype == np.float64
+        # some arguments are allowed to be None, so skip them
+        if arg_values is None:
+            continue
+
+        # Extract expected type from dictionary and start validating types
+        arg_type, expected_type = type_dict[arg_name]
+
+        # Validating List[str] types:
+        if arg_name in ("names", "cols", "spans"):
+            # spans is expected to be List[INT], the rest List[str]
+            if not isinstance(arg_values, arg_type) or (
+                isinstance(arg_values, arg_type)
+                and (
+                    arg_name == "spans"
+                    and not all(
+                        isinstance(val, (np.integer, int)) for val in arg_values
                     )
                     or (
-                        isinstance(arg_values, pd.DataFrame)
-                        and arg_name != "pf_allocation"  # allows for any subtypes
-                        and not all(arg_values.dtypes == np.float64)
+                        arg_name != "spans"
+                        and not all(isinstance(val, str) for val in arg_values)
                     )
-                ):
-                    raise TypeError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                if len(arg_values) == 0:
-                    raise ValueError(
-                        f"Error: {arg_name} is expected to be {expected_type}."
-                    )
-                continue
-
-            # Remaining types:
-            if not isinstance(arg_values, arg_type):
-                raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
-            if (
-                isinstance(arg_values, (pd.Series, pd.DataFrame)) and arg_values.empty
-            ) or (isinstance(arg_values, (List, np.ndarray)) and len(arg_values) == 0):
-                raise ValueError(
-                    f"Error: {arg_name} is expected to be non-empty {expected_type}."
                 )
+            ):
+                raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
+            if len(arg_values) == 0:
+                raise ValueError(
+                    f"Error: {arg_name} is expected to be {expected_type}."
+                )
+            continue
+
+        # Validating common Array[FLOAT], Series[Float], DataFrame[Any] types
+        if arg_name in (
+            "data",
+            "pf_allocation",
+            "returns",
+            "means",
+            "weights",
+            "initial_weights",
+            "cov_matrix",
+            "market_daily_returns",
+        ):
+            if (
+                not isinstance(arg_values, arg_type)
+                or (
+                    isinstance(arg_values, (np.ndarray, pd.Series))
+                    and not arg_values.dtype == np.float64
+                )
+                or (
+                    isinstance(arg_values, pd.DataFrame)
+                    and arg_name != "pf_allocation"  # allows for any subtypes
+                    and not all(arg_values.dtypes == np.float64)
+                )
+            ):
+                raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
+            if len(arg_values) == 0:
+                raise ValueError(
+                    f"Error: {arg_name} is expected to be {expected_type}."
+                )
+            continue
+
+        # Remaining types:
+        if not isinstance(arg_values, arg_type):
+            raise TypeError(f"Error: {arg_name} is expected to be {expected_type}.")
+        if (isinstance(arg_values, (pd.Series, pd.DataFrame)) and arg_values.empty) or (
+            isinstance(arg_values, (List, np.ndarray)) and len(arg_values) == 0
+        ):
+            raise ValueError(
+                f"Error: {arg_name} is expected to be non-empty {expected_type}."
+            )
