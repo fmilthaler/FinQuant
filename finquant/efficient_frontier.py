@@ -55,11 +55,16 @@ class EfficientFrontier:
         method: str = "SLSQP",
     ):
         """
-        :param mean_returns: An array of individual expected returns for all stocks
+        :param mean_returns: A Series of individual expected returns for all stocks
+
         :param cov_matrix: Covariance matrix of returns
-        :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+
         :param risk_free_rate: Risk free rate, default: 0.005
+        :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`
+
         :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
+
         :param method: Type of solver method to use (default: SLSQP), must be one of:
 
              - 'Nelder-Mead'
@@ -139,6 +144,8 @@ class EfficientFrontier:
              weights are be overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
+
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
         :return:
             - if ``save_weights`` is True:
                 a DataFrame of weights/allocation of stocks within the optimised portfolio.
@@ -186,6 +193,7 @@ class EfficientFrontier:
              weights are be overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
         :return:
             - if ``save_weights`` is True:
                 a DataFrame of weights/allocation of stocks within the optimised portfolio.
@@ -230,6 +238,7 @@ class EfficientFrontier:
              weights are be overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
         :return:
             - if ``save_weights`` is True:
                 a DataFrame of weights/allocation of stocks within the optimised portfolio.
@@ -276,6 +285,7 @@ class EfficientFrontier:
         target volatility.
 
         :param target: The target return of the optimised portfolio.
+
         :return: DataFrame of weights/allocation of stocks within the optimised portfolio.
         """
         # Type validations:
@@ -318,6 +328,7 @@ class EfficientFrontier:
         Results in the Efficient Frontier.
 
         :param targets: A list/array: range of target returns, default: ``None``
+
         :return: Array of (volatility, return) values
         """
         # Type validations:
