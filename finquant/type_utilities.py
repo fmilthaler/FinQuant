@@ -45,35 +45,35 @@ def type_validation(**kwargs: Any) -> None:
 
     dtype_msg: str = " with dtype 'np.float64'"
 
-    dataframe_floats_type: Tuple = (
+    dataframe_floats_type: Tuple[Any, str] = (
         pd.DataFrame,
         f"a non-empty pandas.DataFrame {dtype_msg}",
     )
-    dataframe_type: Tuple = (pd.DataFrame, f"a non-empty pandas.DataFrame")
-    series_dataframe_float_type: Tuple = (
+    dataframe_type: Tuple[Any, str] = (pd.DataFrame, f"a non-empty pandas.DataFrame")
+    series_dataframe_float_type: Tuple[Any, str] = (
         Union[pd.Series, pd.DataFrame],
         f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
     )
-    array_series_floats_type: Tuple = (
+    array_series_floats_type: Tuple[Any, str] = (
         Union[np.ndarray, pd.Series],
         f"a non-empty numpy.ndarray or pandas.Series {dtype_msg}.",
     )
-    array_dataframe_floats_type: Tuple = (
+    array_dataframe_floats_type: Tuple[Any, str] = (
         Union[np.ndarray, pd.DataFrame],
         f"a non-empty numpy.ndarray or pandas.DataFrame {dtype_msg}.",
     )
-    list_array_type: Tuple = (
+    list_array_type: Tuple[Any, str] = (
         Union[List, np.ndarray],
         "a non-empty List[str] or numpy.ndarray[str]",
     )
-    datetime_type: Tuple = (
+    datetime_type: Tuple[Any, str] = (
         Union[str, datetime.datetime],
         "of type str or datetime.datetime",
     )
-    string_type: Tuple = (str, "of type str")
-    float_type: Tuple = ((float, np.floating), "of type float")
-    int_type: Tuple = ((int, np.integer), "of type integer")
-    numeric_type: Tuple = (
+    string_type: Tuple[Any, str] = (str, "of type str")
+    float_type: Tuple[Any, str] = ((float, np.floating), "of type float")
+    int_type: Tuple[Any, str] = ((int, np.integer), "of type integer")
+    numeric_type: Tuple[Any, str] = (
         (int, np.integer, float, np.floating),
         "of type integer of float",
     )
