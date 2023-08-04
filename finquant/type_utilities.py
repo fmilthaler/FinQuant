@@ -60,7 +60,7 @@ def type_validation(**kwargs: Any) -> None:
     dtype_msg: str = " with dtype 'np.float64'"
 
     # Definition of common types to check against with error message:
-    dataframe_type: Tuple[Any, str] = (pd.DataFrame, "a non-empty pandas.DataFrame")
+    dataframe_any_type: Tuple[Any, str] = (pd.DataFrame, "a non-empty pandas.DataFrame")
     series_dataframe_float_type: Tuple[Any, str] = (
         Union[pd.Series, pd.DataFrame],
         f"a non-empty pandas.Series or pandas.DataFrame {dtype_msg}",
@@ -93,7 +93,7 @@ def type_validation(**kwargs: Any) -> None:
     type_dict = {
         # DataFrames, Series, Arrays:
         "data": series_dataframe_float_type,
-        "pf_allocation": dataframe_type,  # allows for any subtype
+        "pf_allocation": dataframe_any_type,  # allows for any subtype
         "means": array_series_floats_type,
         "weights": array_series_floats_type,
         "cov_matrix": array_dataframe_floats_type,
