@@ -1212,6 +1212,8 @@ def _build_portfolio_from_df(
             "Error: None of the provided stock names were"
             + "found in the provided dataframe."
         )
+    # Enforce np.float64 for data columns:
+    data = data.astype(np.float64)
     # extract only "Adjusted Close" price column from DataFrame:
     # in quandl: "Adj. Close"; in yfinance: "Adj Close"
     data = _get_stocks_data_columns(data, pf_allocation.Name.values, data_columns)
