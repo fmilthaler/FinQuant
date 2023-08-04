@@ -68,6 +68,8 @@ class Stock(Asset):
         """Computes and returns the Beta parameter of the stock.
 
         :param market_daily_returns: Daily returns of the market index.
+
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
         :return: Beta parameter of the stock
         """
         # Type validations:
