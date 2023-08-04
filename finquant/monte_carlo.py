@@ -69,9 +69,8 @@ class MonteCarloOpt(MonteCarlo):
     ) -> None:
         """
         :param returns: DataFrame of returns of stocks
-             Note: If applicable, the given returns should be computed with the
-             same risk free rate and time window/frequency (arguments
-             ``risk_free_rate`` and ``freq`` as passed in here.
+             Note: If applicable, the given returns should be computed with the same risk free rate
+             and time window/frequency (arguments ``risk_free_rate`` and ``freq`` as passed in here.
         :param num_trials: Number of portfolios to be computed,
             each with a random distribution of weights/allocation in each stock, default: 1000
         :param risk_free_rate: Risk free rate as required for the Sharpe Ratio, default: 0.005
