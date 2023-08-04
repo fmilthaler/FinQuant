@@ -1,11 +1,11 @@
 import datetime
-from typing import Any, Callable, Type
+from typing import Any, Callable, Type, List
 
 import numpy as np
 import pandas as pd
-from finquant.stock import Stock
-from finquant.market import Market
-from finquant.asset import Asset
+
+
+
 
 
 # Arrays, Series, DataFrames:
@@ -67,15 +67,21 @@ def check_array_or_dataframe_float(arg_name: str, arg_values: Any, element_type:
     if len(arg_values) == 0:
         raise ValueError(f"Error: {arg_name} is expected to be {expected_type_msg}.")
 
-# Lists
+# Lists or Arrays:
 def check_list_or_array_str(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, (list, np.ndarray)) or not all(isinstance(val, str) for val in arg_values):
+    if not isinstance(arg_values, (List, np.ndarray)) or not all(isinstance(val, str) for val in arg_values):
         raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[str] or numpy.ndarray[str].")
     if len(arg_values) == 0:
         raise ValueError(f"Error: {arg_name} is expected to be a non-empty List[str] or numpy.ndarray[str].")
 
+def check_list_or_array_int(arg_name: str, arg_values: Any) -> None:
+    if not isinstance(arg_values, (List, np.ndarray)) or not all(isinstance(val, (int, np.integer)) for val in arg_values):
+        raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[int] or numpy.ndarray[int].")
+    if len(arg_values) == 0:
+        raise ValueError(f"Error: {arg_name} is expected to be a non-empty List[int] or numpy.ndarray[int].")
+
 def check_list_int(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, list) or not all(isinstance(val, int) for val in arg_values):
+    if not isinstance(arg_values, List) or not all(isinstance(val, int) for val in arg_values):
         raise TypeError(f"Error: {arg_name} is expected to be a non-empty List[int].")
     if len(arg_values) == 0:
         raise ValueError(f"Error: {arg_name} is expected to be a non-empty List[int].")
@@ -115,17 +121,6 @@ def check_callable_type(arg_name: str, arg_values: Any) -> None:
         raise TypeError(f"Error: {arg_name} is expected to be a Callable function.")
 
 
-# Asset, Market, Stock types:
-def check_asset_type(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, Asset):
-        raise TypeError(f"Error: {arg_name} is expected to be of type Asset.")
-def check_market_type(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, Market):
-        raise TypeError(f"Error: {arg_name} is expected to be of type {Market.__name__}.")
-def check_stock_type(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, Stock):
-        raise TypeError(f"Error: {arg_name} is expected to be of type {Stock.__name__}.")
-
 
 def type_validation(**kwargs: Any) -> None:
     # Definition of potential arguments and corresponding expected types
@@ -145,6 +140,7 @@ def type_validation(**kwargs: Any) -> None:
         "names": check_list_or_array_str,
         "cols": check_list_or_array_str,
         "spans": check_list_int,
+        "targets": check_list_or_array_int,
         # Datetime objects:
         "start_date": check_datetime_type,
         "end_date": check_datetime_type,
@@ -152,6 +148,7 @@ def type_validation(**kwargs: Any) -> None:
         "data_api": check_string_type,
         "market_index": check_string_type,
         "method": check_string_type,
+        "name": check_string_type,
         # FLOATs
         "expected_return": check_float_type,
         "volatility": check_float_type,
@@ -175,15 +172,11 @@ def type_validation(**kwargs: Any) -> None:
         "defer_update": check_bool_type,
         # Callables:
         "fun": check_callable_type,
-        # Asset, Stock, Market types:
-        "asset": check_asset_type,
-        "market": check_market_type,
-        "stock": check_stock_type,
     }
 
     for arg_name, arg_values in kwargs.items():
         if arg_name not in type_dict:
-            raise ValueError(f"Error: {arg_name} is not a valid argument. Please only use argument names defined in `type_dict`.")
+            raise ValueError(f"Error: '{arg_name}' is not a valid argument. Please only use argument names defined in `type_dict`.")
 
         # Some arguments are allowed to be None, so skip them
         if arg_values is None:
