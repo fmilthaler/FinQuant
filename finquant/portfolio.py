@@ -484,7 +484,7 @@ class Portfolio:
 
         :Output:
          :sortino: ``float``, the Sortino Ratio of the portfolio
-         May be NaN if the portoflio outperformed the risk free rate at every point
+            May be NaN if the portoflio outperformed the risk free rate at every point
         """
         return sortino_ratio(
             self.expected_return, self.downside_risk, self.risk_free_rate

@@ -88,7 +88,7 @@ def sharpe_ratio(
 def sortino_ratio(
     exp_return: FLOAT, downs_risk: FLOAT, risk_free_rate: FLOAT = 0.005
 ) -> FLOAT:
-    """Computes the Sortino Ratio
+    """Computes the Sortino Ratio.
 
     :Input:
      :exp_return: ``int``/``float``, Expected Return of a portfolio
@@ -97,7 +97,7 @@ def sortino_ratio(
 
     :Output:
      :sortino ratio: ``float``/``NaN`` ``(exp_return - risk_free_rate)/float(downside_risk)``.
-     Can be ``NaN`` if ``downside_risk`` is zero
+        Can be ``NaN`` if ``downside_risk`` is zero
     """
     # Type validations:
     type_validation(
