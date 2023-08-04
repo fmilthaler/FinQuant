@@ -57,7 +57,7 @@ class EfficientFrontier:
         """
         :param mean_returns: An array of individual expected returns for all stocks
         :param cov_matrix: Covariance matrix of returns
-        :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+        :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
         :param risk_free_rate: Risk free rate, default: 0.005
         :param freq: Number of trading days in a year, default: 252
         :param method: Type of solver method to use (default: SLSQP), must be one of:

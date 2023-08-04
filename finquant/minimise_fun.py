@@ -16,16 +16,16 @@ def portfolio_volatility(
     """Calculates the volatility of a portfolio
 
     :param weights: An array of weights
-    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param mean_returns: An array of individual expected returns for all stocks
-    :type mean_returns: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type mean_returns: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param cov_matrix: Covariance matrix of returns
-    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
     :return: Annualised volatility
-    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)
@@ -41,19 +41,19 @@ def negative_sharpe_ratio(
     """Calculates the negative Sharpe ratio of a portfolio
 
     :param weights: An array of weights
-    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param mean_returns: An array of individual expected returns for all stocks
-    :type mean_returns: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type mean_returns: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param cov_matrix: Covariance matrix of returns
-    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
     :param risk_free_rate: Risk free rate
-    :type risk_free_rate: :py:data:`~.finquant.type_definitions.FLOAT`
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`
 
     :return: Negative sharpe ratio
-    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(
@@ -78,16 +78,16 @@ def portfolio_return(
     """Calculates the expected annualised return of a portfolio
 
     :param weights: An array of weights
-    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param mean_returns: An array of individual expected returns for all stocks
-    :type mean_returns: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type mean_returns: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param cov_matrix: Covariance matrix of returns
-    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
     :return: Expected annualised return
-    :rtype: :py:data:`~.finquant.type_definitions.NUMERIC`
+    :rtype: :py:data:`~.finquant.data_types.NUMERIC`
     """
     # Type validations:
     type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)

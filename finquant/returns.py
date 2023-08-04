@@ -26,7 +26,7 @@ def cumulative_returns(data: pd.DataFrame, dividend: NUMERIC = 0) -> pd.DataFram
     :type data: pandas.DataFrame
 
     :param dividend: Paid dividend
-    :type dividend: :py:data:`~.finquant.type_definitions.NUMERIC`, default: 0
+    :type dividend: :py:data:`~.finquant.data_types.NUMERIC`, default: 0
 
     :return: A dataframe of cumulative returns of given stock prices.
     :rtype: pandas.DataFrame
@@ -98,10 +98,10 @@ def historical_mean_return(data: SERIES_OR_DATAFRAME, freq: INT = 252) -> pd.Ser
     """Returns the *mean return* based on historical stock price data.
 
     :param data: A dataframe of daily stock prices
-    :type data: :py:data:`~.finquant.type_definitions.SERIES_OR_DATAFRAME`
+    :type data: :py:data:`~.finquant.data_types.SERIES_OR_DATAFRAME`
 
     :param freq: Number of trading days in a year
-    :type freq: :py:data:`~.finquant.type_definitions.INT`, default: 252
+    :type freq: :py:data:`~.finquant.data_types.INT`, default: 252
 
     :return: A series of historical mean returns
     :rtype: pandas.Series

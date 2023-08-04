@@ -23,13 +23,13 @@ def weighted_mean(
     of said portfolio.
 
     :param means: An array representing mean/average values
-    :type means: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type means: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param weights: An array representing weights
-    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :return: The weighted mean as a floating point number: ``np.sum(means*weights)``
-    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(means=means, weights=weights)
@@ -44,14 +44,14 @@ def weighted_std(
     a portfolio, which contains several stocks.
 
     :param cov_matrix: Covariance matrix
-    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
     :param weights: An array representing weights
-    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :return: Weighted sigma (standard deviation) as a floating point number:
         ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
-    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(cov_matrix=cov_matrix, weights=weights)
@@ -65,17 +65,17 @@ def sharpe_ratio(
     """Computes the Sharpe Ratio
 
     :param exp_return: Expected Return of a portfolio
-    :type exp_return: :py:data:`~.finquant.type_definitions.NUMERIC`
+    :type exp_return: :py:data:`~.finquant.data_types.NUMERIC`
 
     :param volatility: Volatility of a portfolio
-    :type volatility: :py:data:`~.finquant.type_definitions.NUMERIC`
+    :type volatility: :py:data:`~.finquant.data_types.NUMERIC`
 
     :param risk_free_rate: Risk free rate
-    :type risk_free_rate: :py:data:`~.finquant.type_definitions.FLOAT`, default: 0.005
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
 
     :return: Sharpe Ratio as a floating point number:
         ``(exp_return-risk_free_rate)/float(volatility)``
-    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(
@@ -136,19 +136,19 @@ def value_at_risk(
     """Computes and returns the expected value at risk of an investment/assets.
 
     :param investment: Total value of the investment
-    :type investment: :py:data:`~.finquant.type_definitions.NUMERIC`
+    :type investment: :py:data:`~.finquant.data_types.NUMERIC`
 
     :param mu: Average/mean return of the investment
-    :type mu: :py:data:`~.finquant.type_definitions.NUMERIC`
+    :type mu: :py:data:`~.finquant.data_types.NUMERIC`
 
     :param sigma: Standard deviation of the investment
-    :type sigma: :py:data:`~.finquant.type_definitions.NUMERIC`
+    :type sigma: :py:data:`~.finquant.data_types.NUMERIC`
 
     :param conf_level: Confidence level of the VaR
-    :type conf_level: :py:data:`~.finquant.type_definitions.FLOAT`, default: 0.95
+    :type conf_level: :py:data:`~.finquant.data_types.FLOAT`, default: 0.95
 
     :return: Value at Risk (VaR) of the investment: ``investment*(mu-sigma*norm.ppf(1-conf_level))``
-    :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
     """
     # Type validations:
     type_validation(investment=investment, mu=mu, sigma=sigma, conf_level=conf_level)
@@ -169,24 +169,24 @@ def annualised_portfolio_quantities(
     and Sharpe Ratio of a portfolio.
 
     :param weights: An array of weights
-    :type weights: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param means: An array of mean/average values
-    :type means: :py:data:`~.finquant.type_definitions.ARRAY_OR_SERIES`
+    :type means: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
     :param cov_matrix: Covariance matrix
-    :type cov_matrix: :py:data:`~.finquant.type_definitions.ARRAY_OR_DATAFRAME`
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
     :param risk_free_rate: Risk free rate
-    :type risk_free_rate: :py:data:`~.finquant.type_definitions.FLOAT`, default: 0.005
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
 
     :param freq: Number of trading days in a year
-    :type freq: :py:data:`~.finquant.type_definitions.INT`, default: 252
+    :type freq: :py:data:`~.finquant.data_types.INT`, default: 252
 
     :return: Tuple of Expected Return, Volatility, Sharpe Ratio
-    :rtype: Tuple[:py:data:`~.finquant.type_definitions.NUMERIC`,
-        :py:data:`~.finquant.type_definitions.FLOAT`,
-        :py:data:`~.finquant.type_definitions.FLOAT`]
+    :rtype: Tuple[:py:data:`~.finquant.data_types.NUMERIC`,
+        :py:data:`~.finquant.data_types.FLOAT`,
+        :py:data:`~.finquant.data_types.FLOAT`]
     """
     # Type validations:
     type_validation(

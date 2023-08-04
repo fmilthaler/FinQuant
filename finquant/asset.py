@@ -85,7 +85,7 @@ class Asset:
         See ``finquant.returns.historical_mean_return``.
 
         :param freq: Number of trading days in a year, default: 252
-        :type freq: :py:data:`~.finquant.type_definitions.INT`
+        :type freq: :py:data:`~.finquant.data_types.INT`
         """
         return historical_mean_return(self.data, freq=freq)
 
@@ -93,9 +93,9 @@ class Asset:
         """Computes the Volatility of the asset.
 
         :param freq: Number of trading days in a year, default: 252
-        :type freq: :py:data:`~.finquant.type_definitions.INT`
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :rtype: :py:data:`~.finquant.type_definitions.FLOAT`
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
         """
         # Type validations:
         type_validation(freq=freq)

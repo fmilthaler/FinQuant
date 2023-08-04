@@ -30,7 +30,7 @@ def compute_ma(
 
     :param data: A series/dataframe of daily stock prices (if ``pandas.DataFrame``,
         only one column is expected)
-    :type data: :py:data:`~.finquant.type_definitions.SERIES_OR_DATAFRAME`
+    :type data: :py:data:`~.finquant.data_types.SERIES_OR_DATAFRAME`
     :param fun: Function that computes a moving average, e.g. ```sma``` (simple) or
          ```ema``` (exponential).
     :param spans: List of integers, time windows to compute the Moving Average on.

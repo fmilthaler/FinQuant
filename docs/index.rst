@@ -82,7 +82,7 @@ Table of Contents
     efficientfrontier
     montecarlo
     examples
-    typedefinitions
+    datatypes
     license
     about
 
