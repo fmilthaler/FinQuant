@@ -35,6 +35,24 @@ your branch name should be something like bugfix/print-statement-portfolio-prope
 For the automated versioning to work, the branch name is required to start with `bugfix/` or one of the other
 above mentioned patterns.
 
+### Custom data types
+[FinQuant defines a number of custom data types](https://finquant.readthedocs.io/en/latest/developers.html#data-types)
+in the module `finquant.data_types`.
+
+These data types are useful as lots of functions/methods in FinQuant allow arguments to be of different data types.
+For example:
+- `data` is often accepted as either a `pandas.Series` or `pandas.DataFrame`, or
+- `risk_free_rate` could be a Python `float` or a `numpy.float64` among others.
+
+To accommodate and simplify this, custom data types are defined in the module `finquant.data_types`.
+Please familiarize yourself with those and add more if your code requires them.
+
+### Data type validation
+[FinQuant provides a module/function for type validation](https://finquant.readthedocs.io/en/latest/developers.html#type-validation),
+which is used throughout the code base for type validation purposes. Said function simplifies checking an argument
+against its expected type and reduces the amount of copy-pasted `if` and `raise` statements.
+You can check out the source code in `finquant.type_utilities`.
+
 ### Commit your changes
 Make your changes to the code, and write sensible commit messages.
 
