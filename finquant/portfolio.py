@@ -1221,7 +1221,8 @@ def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
          requested through `quandl`/`yfinance` (default: ``None``).
     :param data: (optional) A DataFrame which contains quantities of
          the stocks listed in ``pf_allocation``.
-    :param data_api: (optional) A string (default: ``quandl``) which determines how to obtain stock prices, if data is not provided by the user. Valid values:
+    :param data_api: (optional) A string (default: ``quandl``) which determines how to obtain
+        stock prices, if data is not provided by the user. Valid values:
 
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)

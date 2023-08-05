@@ -1,5 +1,5 @@
 """
-finquant.data_types Module
+``finquant.data_types`` Module
 
 This module defines type aliases and utility functions for working with arrays, data frames,
 and various numeric types in Python, utilizing the 'numpy', 'numpy.typing', and 'pandas' libraries.
@@ -8,32 +8,32 @@ Generic List Element Type
 -------------------------
 - ``ELEMENT_TYPE``: A type alias representing a generic element type
 
-Array/List-Like Types:
-----------------------
+Array/List-Like Types
+---------------------
 - ``ARRAY_OR_LIST``: A type alias representing either a NumPy ``ndarray`` or a Python ``List``.
 - ``ARRAY_OR_DATAFRAME``: A type alias representing either a NumPy ``ndarray`` or a pandas ``DataFrame``.
 - ``ARRAY_OR_SERIES``: A type alias representing either a NumPy ``ndarray`` or a pandas ``Series``.
 - ``SERIES_OR_DATAFRAME``: A type alias representing either a pandas ``Series`` or a pandas ``DataFrame``.
 
-Numeric Types:
---------------
+Numeric Types
+-------------
 - ``FLOAT``: A type alias representing either a NumPy floating-point number or a Python float.
 - ``INT``: A type alias representing either a NumPy integer or a Python int.
 - ``NUMERIC``: A type alias representing either an ``INT`` or a ``FLOAT``.
 
-String/Datetime Types:
-----------------------
+String/Datetime Types
+---------------------
 - ``STRING_OR_DATETIME``: A type alias representing either a Python string or a ``datetime.datetime`` object.
 
-Dependencies:
--------------
+Dependencies
+------------
 This module requires the following external libraries:
 
 - ``numpy`` (imported as ``np``)
 - ``pandas`` (imported as ``pd``)
 
-Usage Example:
---------------
+Usage Example
+-------------
 
 .. code-block:: python
 

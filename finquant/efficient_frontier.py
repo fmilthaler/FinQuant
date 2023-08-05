@@ -141,7 +141,7 @@ class EfficientFrontier:
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights are be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
 
@@ -190,7 +190,7 @@ class EfficientFrontier:
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights are be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
         :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
@@ -235,7 +235,7 @@ class EfficientFrontier:
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights are be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
         :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`

@@ -1,5 +1,6 @@
 """
-type_utilities.py
+
+``finquant.type_utilities`` Module
 
 This module defines a type validation utility for working with various data types in Python, utilizing the 'numpy'
 and 'pandas' libraries.
