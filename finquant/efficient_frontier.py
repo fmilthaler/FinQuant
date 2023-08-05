@@ -343,7 +343,7 @@ class EfficientFrontier:
         # Type validations:
         if targets is not None and not isinstance(targets, (list, np.ndarray)):
             raise ValueError("targets is expected to be a list or numpy.ndarray")
-        elif targets is not None:
+        if targets is not None:
             for target in targets:
                 type_validation(target=target)
         if targets is None:
