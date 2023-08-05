@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Callable, List, Type
+from typing import Any, Callable, Dict, List, Type
 
 import numpy as np
 import pandas as pd
@@ -7,7 +7,7 @@ import pandas as pd
 
 # Arrays, Series, DataFrames:
 def check_series_or_dataframe_float(
-    arg_name: str, arg_values: Any, element_type: Type = np.float64
+    arg_name: str, arg_values: Any, element_type: Type[Any] = np.float64
 ) -> None:
     expected_type_msg = f"a non-empty pandas.Series or pandas.DataFrame with dtype '{element_type.__name__}'."
     if not isinstance(arg_values, (pd.Series, pd.DataFrame)):
@@ -36,7 +36,7 @@ def check_dataframe_any_subtype(arg_name: str, arg_values: Any) -> None:
 
 
 def check_dataframe_float(
-    arg_name: str, arg_values: Any, element_type: Type = np.float64
+    arg_name: str, arg_values: Any, element_type: Type[Any] = np.float64
 ) -> None:
     expected_type_msg = (
         f"a non-empty pandas.DataFrame with dtype '{element_type.__name__}'."
@@ -52,7 +52,7 @@ def check_dataframe_float(
 
 
 def check_series_float(
-    arg_name: str, arg_values: Any, element_type: Type = np.float64
+    arg_name: str, arg_values: Any, element_type: Type[Any] = np.float64
 ) -> None:
     expected_type_msg = (
         f"a non-empty pandas.Series with dtype '{element_type.__name__}'."
@@ -66,7 +66,7 @@ def check_series_float(
 
 
 def check_array_or_series_float(
-    arg_name: str, arg_values: Any, element_type: Type = np.float64
+    arg_name: str, arg_values: Any, element_type: Type[Any] = np.float64
 ) -> None:
     expected_type_msg = f"a non-empty numpy.ndarray or pandas.Series with dtype '{element_type.__name__}'."
     if not isinstance(arg_values, (np.ndarray, pd.Series)):
@@ -78,7 +78,7 @@ def check_array_or_series_float(
 
 
 def check_array_float(
-    arg_name: str, arg_values: Any, element_type: Type = np.float64
+    arg_name: str, arg_values: Any, element_type: Type[Any] = np.float64
 ) -> None:
     expected_type_msg = (
         f"a non-empty numpy.ndarray with dtype '{element_type.__name__}'."
@@ -90,7 +90,7 @@ def check_array_float(
 
 
 def check_array_or_dataframe_float(
-    arg_name: str, arg_values: Any, element_type: Type = np.float64
+    arg_name: str, arg_values: Any, element_type: Type[Any] = np.float64
 ) -> None:
     expected_type_msg = f"a non-empty numpy.ndarray or pandas.DataFrame with dtype '{element_type.__name__}'."
     if not isinstance(arg_values, (np.ndarray, pd.DataFrame)):
@@ -181,13 +181,15 @@ def check_string_type(arg_name: str, arg_values: Any) -> None:
 
 # Callable types:
 def check_callable_type(arg_name: str, arg_values: Any) -> None:
-    if not isinstance(arg_values, Callable):
+    if not callable(arg_values):
         raise TypeError(f"Error: {arg_name} is expected to be a Callable function.")
 
 
+ValidationFunc = Callable[..., None]
+
 def type_validation(**kwargs: Any) -> None:
     # Definition of potential arguments and corresponding expected types
-    type_dict = {
+    type_dict: Dict[str, ValidationFunc] = {
         # DataFrames, Series, Arrays:
         "data": check_series_or_dataframe_float,
         "pf_allocation": check_dataframe_any_subtype,
