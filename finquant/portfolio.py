@@ -1235,7 +1235,8 @@ def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), ``data_api`` (optional), ``market_index`` (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional),\
+        ``data_api`` (optional), ``market_index`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:
