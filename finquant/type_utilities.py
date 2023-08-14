@@ -1,11 +1,16 @@
 import datetime
-from typing import Any, Callable, Dict, List, Type, Tuple
+from typing import Any, Callable, Dict, List, Tuple, Type
 
 import numpy as np
 import pandas as pd
 
 
-def _check_type(arg_name: str, arg_values: Any, expected_type: Type[Any], element_type: Type[Any] = None) -> None:
+def _check_type(
+    arg_name: str,
+    arg_values: Any,
+    expected_type: Type[Any],
+    element_type: Type[Any] = None,
+) -> None:
     if isinstance(expected_type, Tuple):
         class_names = [cls.__name__ for cls in expected_type]
         expected_type_string = ", ".join(class_names)
@@ -26,16 +31,22 @@ def _check_type(arg_name: str, arg_values: Any, expected_type: Type[Any], elemen
         validation_failed = True
 
     if element_type is not None:
-        if isinstance(arg_values, pd.DataFrame) and not all(arg_values.dtypes == element_type):
+        if isinstance(arg_values, pd.DataFrame) and not all(
+            arg_values.dtypes == element_type
+        ):
             validation_failed = True
 
         if isinstance(arg_values, np.ndarray):
             if arg_values.ndim == 2 and not arg_values.dtype == element_type:
                 validation_failed = True
-            elif arg_values.ndim == 1 and not all(isinstance(val, element_type) for val in arg_values):
+            elif arg_values.ndim == 1 and not all(
+                isinstance(val, element_type) for val in arg_values
+            ):
                 validation_failed = True
 
-        elif isinstance(arg_values, List) and not all(isinstance(val, element_type) for val in arg_values):
+        elif isinstance(arg_values, List) and not all(
+            isinstance(val, element_type) for val in arg_values
+        ):
             validation_failed = True
 
     if validation_failed:
