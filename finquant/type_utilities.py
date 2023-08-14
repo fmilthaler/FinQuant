@@ -8,13 +8,10 @@ import pandas as pd
 # pylint: disable=C0302,R0904,,R0912,W0212
 
 
-CallableType = Callable[..., Any]
-
-
 def _check_type(
     arg_name: str,
     arg_values: Any,
-    expected_type: Union[Type[Any], Tuple[Type[Any], ...], CallableType],
+    expected_type: Union[Type[Any], Tuple[Type[Any], ...]],
     element_type: Optional[Union[Type[Any], Tuple[Type[Any], ...]]] = None,
 ) -> None:
     if isinstance(expected_type, tuple):
@@ -33,31 +30,27 @@ def _check_type(
 
     validation_failed = False
 
-    if callable(expected_type):
-        if not callable(arg_values):
-            validation_failed = True
-    else:
-        if not isinstance(arg_values, expected_type):
+    if not isinstance(arg_values, expected_type):
+        validation_failed = True
+
+    if element_type is not None:
+        if isinstance(arg_values, pd.DataFrame) and not all(
+            arg_values.dtypes == element_type
+        ):
             validation_failed = True
 
-        if element_type is not None:
-            if isinstance(arg_values, pd.DataFrame) and not all(
-                arg_values.dtypes == element_type
-            ):
+        if isinstance(arg_values, np.ndarray):
+            if arg_values.ndim == 2 and not arg_values.dtype == element_type:
                 validation_failed = True
-
-            if isinstance(arg_values, np.ndarray):
-                if arg_values.ndim == 2 and not arg_values.dtype == element_type:
-                    validation_failed = True
-                elif arg_values.ndim == 1 and not all(
-                    isinstance(val, element_type) for val in arg_values
-                ):
-                    validation_failed = True
-
-            elif isinstance(arg_values, List) and not all(
+            elif arg_values.ndim == 1 and not all(
                 isinstance(val, element_type) for val in arg_values
             ):
                 validation_failed = True
+
+        elif isinstance(arg_values, List) and not all(
+            isinstance(val, element_type) for val in arg_values
+        ):
+            validation_failed = True
 
     if validation_failed:
         error_msg = f"Error: {arg_name} is expected to be {expected_type_string}"
@@ -66,11 +59,20 @@ def _check_type(
         raise TypeError(error_msg)
 
 
+def _check_callable_type(
+    arg_name: str,
+    arg_values: Any,
+) -> None:
+    if not callable(arg_values):
+        error_msg = f"Error: {arg_name} is expected to be Callable"
+        raise TypeError(error_msg)
+
+
 # Define a dictionary mapping each argument name to its expected type and, if applicable, element type
 type_dict: Dict[
     str,
     Tuple[
-        Union[Type[Any], Tuple[Type[Any], ...], CallableType],
+        Union[Type[Any], Tuple[Type[Any], ...]],
         Optional[Union[Type[Any], Tuple[Type[Any], ...], None]],
     ],
 ] = {
@@ -119,6 +121,15 @@ type_dict: Dict[
     "save_weights": (bool, None),
     "verbose": (bool, None),
     "defer_update": (bool, None),
+}
+
+type_callable_dict: Dict[
+    str,
+    Tuple[
+        Callable[..., Any],
+        Optional[Type[Any]],
+    ],
+] = {
     # Callables:
     "fun": (callable, None),
 }
@@ -131,17 +142,19 @@ def type_validation(**kwargs: Any) -> None:
     """
 
     for arg_name, arg_values in kwargs.items():
-        if arg_name not in type_dict:
+        if arg_name not in type_dict and arg_name not in type_callable_dict:
             raise ValueError(
-                f"Error: '{arg_name}' is not a valid argument. Please only use argument names defined in `type_dict`."
+                f"Error: '{arg_name}' is not a valid argument. "
+                f"Please only use argument names defined in `type_dict` or `type_callable_dict`."
             )
 
         # Some arguments are allowed to be None, so skip them
         if arg_values is None:
             continue
 
-        # Extract the expected type for the given argument name from type_dict
-        expected_type, element_type = type_dict[arg_name]
-
-        # Perform the type validation using the single _check_type function
-        _check_type(arg_name, arg_values, expected_type, element_type)
+        # Perform the type validation
+        if arg_name == "fun":
+            _check_callable_type(arg_name, arg_values)
+        else:
+            expected_type, element_type = type_dict[arg_name]
+            _check_type(arg_name, arg_values, expected_type, element_type)
