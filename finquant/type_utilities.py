@@ -1,11 +1,8 @@
 import datetime
-from typing import Any, Callable, Dict, List, Optional, Tuple, Type,  Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
 import numpy as np
 import pandas as pd
-
-
-
 
 # supress some pylint complaints for this module only
 # pylint: disable=C0302,R0904,,R0912,W0212
@@ -67,7 +64,6 @@ def _check_type(
         if element_type_string:
             error_msg += f" with dtype '{element_type_string}'"
         raise TypeError(error_msg)
-
 
 
 # Define a dictionary mapping each argument name to its expected type and, if applicable, element type
