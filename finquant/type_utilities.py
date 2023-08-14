@@ -1,17 +1,26 @@
 import datetime
-from typing import Any, Callable, Dict, List, Tuple, Type
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type,  Union
 
 import numpy as np
 import pandas as pd
 
 
+
+
+# supress some pylint complaints for this module only
+# pylint: disable=C0302,R0904,,R0912,W0212
+
+
+CallableType = Callable[..., Any]
+
+
 def _check_type(
     arg_name: str,
     arg_values: Any,
-    expected_type: Type[Any],
-    element_type: Type[Any] = None,
+    expected_type: Union[Type[Any], Tuple[Type[Any], ...], CallableType],
+    element_type: Optional[Union[Type[Any], Tuple[Type[Any], ...]]] = None,
 ) -> None:
-    if isinstance(expected_type, Tuple):
+    if isinstance(expected_type, tuple):
         class_names = [cls.__name__ for cls in expected_type]
         expected_type_string = ", ".join(class_names)
     else:
@@ -19,7 +28,7 @@ def _check_type(
 
     element_type_string = None
     if element_type is not None:
-        if isinstance(element_type, Tuple):
+        if isinstance(element_type, tuple):
             class_names = [cls.__name__ for cls in element_type]
             element_type_string = ", ".join(class_names)
         else:
@@ -27,27 +36,31 @@ def _check_type(
 
     validation_failed = False
 
-    if not isinstance(arg_values, expected_type):
-        validation_failed = True
-
-    if element_type is not None:
-        if isinstance(arg_values, pd.DataFrame) and not all(
-            arg_values.dtypes == element_type
-        ):
+    if callable(expected_type):
+        if not callable(arg_values):
+            validation_failed = True
+    else:
+        if not isinstance(arg_values, expected_type):
             validation_failed = True
 
-        if isinstance(arg_values, np.ndarray):
-            if arg_values.ndim == 2 and not arg_values.dtype == element_type:
-                validation_failed = True
-            elif arg_values.ndim == 1 and not all(
-                isinstance(val, element_type) for val in arg_values
+        if element_type is not None:
+            if isinstance(arg_values, pd.DataFrame) and not all(
+                arg_values.dtypes == element_type
             ):
                 validation_failed = True
 
-        elif isinstance(arg_values, List) and not all(
-            isinstance(val, element_type) for val in arg_values
-        ):
-            validation_failed = True
+            if isinstance(arg_values, np.ndarray):
+                if arg_values.ndim == 2 and not arg_values.dtype == element_type:
+                    validation_failed = True
+                elif arg_values.ndim == 1 and not all(
+                    isinstance(val, element_type) for val in arg_values
+                ):
+                    validation_failed = True
+
+            elif isinstance(arg_values, List) and not all(
+                isinstance(val, element_type) for val in arg_values
+            ):
+                validation_failed = True
 
     if validation_failed:
         error_msg = f"Error: {arg_name} is expected to be {expected_type_string}"
@@ -56,8 +69,15 @@ def _check_type(
         raise TypeError(error_msg)
 
 
+
 # Define a dictionary mapping each argument name to its expected type and, if applicable, element type
-type_dict: Dict[str, Tuple[Type[Any], Type[Any]]] = {
+type_dict: Dict[
+    str,
+    Tuple[
+        Union[Type[Any], Tuple[Type[Any], ...], CallableType],
+        Optional[Union[Type[Any], Tuple[Type[Any], ...], None]],
+    ],
+] = {
     # DataFrames, Series, Array:
     "data": ((pd.Series, pd.DataFrame), np.floating),
     "pf_allocation": (pd.DataFrame, None),
@@ -104,7 +124,7 @@ type_dict: Dict[str, Tuple[Type[Any], Type[Any]]] = {
     "verbose": (bool, None),
     "defer_update": (bool, None),
     # Callables:
-    "fun": (Callable, None),
+    "fun": (callable, None),
 }
 
 
