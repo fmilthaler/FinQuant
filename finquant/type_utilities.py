@@ -115,14 +115,6 @@ def type_validation(**kwargs: Any) -> None:
 
         # Extract the expected type for the given argument name from type_dict
         expected_type, element_type = type_dict[arg_name]
-        #expected_type = type_dict[arg_name]
-
-        # # Check if element_type is specified in the type_dict
-        # if isinstance(expected_type, Tuple) and isinstance(expected_type[0], Tuple):
-        #     element_type = expected_type[1] if len(expected_type) > 1 else None
-        #     expected_type = expected_type[0]
-        # else:
-        #     element_type = None
 
         # Perform the type validation using the single _check_type function
         _check_type(arg_name, arg_values, expected_type, element_type)
