@@ -22,7 +22,7 @@ Example:
         data=pd.DataFrame([1., 2.]),
         names=["name1", "name2"],
         start_date="2023-08-01",
-        freq=10.0,
+        freq=10,
     )
 
 """
@@ -198,7 +198,7 @@ def type_validation(**kwargs: Any) -> None:
             data=pd.DataFrame([1., 2.]),
             names=["name1", "name2"],
             start_date="2023-08-01",
-            freq=10.0,
+            freq=10,
         )
     """
 
