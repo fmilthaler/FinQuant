@@ -14,9 +14,9 @@
 
 .. _PyPI: https://pypi.org/project/FinQuant/
 
-#####################################
+###################################
 Welcome to FinQuant's documentation
-#####################################
+###################################
 
 *FinQuant* is a program for financial portfolio management, analysis and optimisation. It is designed to generate an object that holds your data, e.g. stock prices of different stocks, which automatically computes the most common quantities, such as *Expected annual Return*, *Volatility* and *Sharpe Ratio*. Moreover, it provides a library for computing different kinds of *Returns* and visualising *Moving Averages* and *Bollinger Bands*. Finally, given a set of stocks, it also allows for finding optimised portfolios.
 
@@ -74,13 +74,15 @@ Table of Contents
     :maxdepth: 2
 
     quickstart
+    examples
     portfolio
+    assets
     quants
     returns
     movingaverage
     efficientfrontier
     montecarlo
-    examples
+    developers
     license
     about
 

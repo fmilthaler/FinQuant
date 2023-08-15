@@ -3,3 +3,4 @@ black
 mypy
 isort
 pylint
+pydantic

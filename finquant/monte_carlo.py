@@ -1,41 +1,49 @@
 """The module provides a class ``MonteCarlo`` which is an implementation of the
 Monte Carlo method and a class ``MonteCarloOpt`` which allows the user to perform a
-Monte Carlo run to find optimised financial portfolios, given an intial portfolio.
+Monte Carlo run to find optimised financial portfolios, given an initial portfolio.
 """
 
+
+from typing import Any, Callable, Dict, Optional, Tuple
 
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 
+from finquant.data_types import FLOAT, INT
 from finquant.quants import annualised_portfolio_quantities
+from finquant.type_utilities import type_validation
 
 
 class MonteCarlo:
     """An object to perform a Monte Carlo run/simulation."""
 
-    def __init__(self, num_trials=1000):
+    # Attributes:
+    num_trials: int
+
+    def __init__(self, num_trials: int = 1000):
         """
-        :Input:
-         :num_trials: ``int`` (default: ``1000``), number of iterations of the
-                 Monte Carlo run/simulation.
+        :param num_trials: Number of iterations of the Monte Carlo run/simulation, default: 1000
         """
         self.num_trials = num_trials
 
-    def run(self, fun, **kwargs):
+    def run(
+        self, fun: Callable[..., Any], **kwargs: Dict[str, Any]
+    ) -> np.ndarray[np.float64, Any]:
         """
-        :Input:
-         :fun: Function to call at each iteration of the Monte Carlo run.
-         :kwargs: (optional) Additional arguments that are passed to `fun`.
+        :param fun: Function to call at each iteration of the Monte Carlo run.
 
-        :Output:
-         :result: List of quantities returned from `fun` at each iteration.
+        :param kwargs: (optional) Additional arguments that are passed to ``fun``.
+
+        :result: Array of quantities returned from ``fun`` at each iteration.
         """
+        # Type validations:
+        type_validation(fun=fun)
         result = []
         for _ in range(self.num_trials):
             res = fun(**kwargs)
             result.append(res)
-        return np.asarray(result, dtype=object)
+        return np.asarray(result, dtype=np.ndarray)
 
 
 class MonteCarloOpt(MonteCarlo):
@@ -45,53 +53,44 @@ class MonteCarloOpt(MonteCarlo):
     Inherits from `MonteCarlo`.
     """
 
+    # Attributes:
+    returns: pd.DataFrame
+    risk_free_rate: FLOAT
+    freq: INT
+    initial_weights: Optional[np.ndarray[np.float64, Any]]
+
     def __init__(
         self,
-        returns,
-        num_trials=1000,
-        risk_free_rate=0.005,
-        freq=252,
-        initial_weights=None,
-    ):
+        returns: pd.DataFrame,
+        num_trials: int = 1000,
+        risk_free_rate: FLOAT = 0.005,
+        freq: INT = 252,
+        initial_weights: Optional[np.ndarray[np.float64, Any]] = None,
+    ) -> None:
         """
-        :Input:
-         :returns: A ``pandas.DataFrame`` which contains the returns of stocks.
-             Note: If applicable, the given returns should be computed with the
-             same risk free rate and time window/frequency (arguments
-             ``risk_free_rate`` and ``freq`` as passed down here.
-         :num_trials: ``int`` (default: ``1000``), number of portfolios to be
-             computed, each with a random distribution of weights/allocation
-             in each stock
-         :risk_free_rate: ``float`` (default: ``0.005``), the risk free rate as
-             required for the Sharpe Ratio
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
-         :initial_weights: ``list``/``numpy.ndarray`` (default: ``None``), weights of
-             initial/given portfolio, only used to plot a marker for the
-             initial portfolio in the optimisation plot.
-
-        :Output:
-         :opt: ``pandas.DataFrame`` with optimised investment strategies for maximum
-             Sharpe Ratio and minimum volatility.
+        :param returns: DataFrame of returns of stocks
+             Note: If applicable, the given returns should be computed with the same risk free rate
+             and time window/frequency (arguments ``risk_free_rate`` and ``freq`` as passed in here.
+        :param num_trials: Number of portfolios to be computed,
+            each with a random distribution of weights/allocation in each stock, default: 1000
+        :param risk_free_rate: Risk free rate as required for the Sharpe Ratio, default: 0.005
+        :param freq: Number of trading days in a year, default: 252
+        :param initial_weights: Weights of initial/given portfolio, only used to plot a marker for the
+             initial portfolio in the optimisation plot, default: ``None``
         """
-        if initial_weights is not None and not isinstance(initial_weights, np.ndarray):
-            raise ValueError(
-                "If given, optional argument 'initial_weights' "
-                + "must be of type numpy.ndarray"
-            )
-        if not isinstance(returns, pd.DataFrame):
-            raise ValueError("returns is expected to be a pandas.DataFrame")
-        if not isinstance(num_trials, int):
-            raise ValueError("num_trials is expected to be an integer")
-        if not isinstance(risk_free_rate, (int, float)):
-            raise ValueError("risk_free_rate is expected to be an integer or float.")
-        if not isinstance(freq, int):
-            raise ValueError("freq is expected to be an integer.")
+        # Type validations:
+        type_validation(
+            returns_df=returns,
+            num_trials=num_trials,
+            risk_free_rate=risk_free_rate,
+            freq=freq,
+            initial_weights=initial_weights,
+        )
         self.returns = returns
         self.num_trials = num_trials
         self.risk_free_rate = risk_free_rate
         self.freq = freq
-        self.initial_weights = initial_weights
+        self.initial_weights: np.ndarray[float, Any] = initial_weights
         # initiate super class
         super().__init__(num_trials=self.num_trials)
         # setting additional variables
@@ -104,53 +103,65 @@ class MonteCarloOpt(MonteCarlo):
         self.opt_weights = None
         self.opt_results = None
 
-    def _random_weights(self):
+    def _random_weights(
+        self,
+    ) -> Tuple[np.ndarray[np.float64, Any], np.ndarray[np.float64, Any]]:
         """Computes random weights for the stocks of a portfolio and the
         corresponding Expected Return, Volatility and Sharpe Ratio.
 
-        :Output:
-         :(weights, quantities): Tuple of weights (np.ndarray) and a
-             list of [expected return, volatility, sharpe ratio].
+        :result: Tuple of (weights (array), and array of expected return, volatility, sharpe ratio)
         """
         # select random weights for portfolio
-        weights = np.array(np.random.random(self.num_stocks))
+        weights: np.ndarray[np.float64, Any] = np.array(
+            np.random.random(self.num_stocks), dtype=np.float64
+        )
         # rebalance weights
         weights = weights / np.sum(weights)
         # compute portfolio return and volatility
-        portfolio_values = annualised_portfolio_quantities(
-            weights, self.return_means, self.cov_matrix, self.risk_free_rate, self.freq
+        portfolio_values: np.ndarray[np.float64, Any] = np.array(
+            annualised_portfolio_quantities(
+                weights,
+                self.return_means,
+                self.cov_matrix,
+                self.risk_free_rate,
+                self.freq,
+            ),
+            dtype=np.float64,
         )
-        return (weights, np.array(portfolio_values))
+        return (weights, portfolio_values)
 
-    def _random_portfolios(self):
+    def _random_portfolios(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Performs a Monte Carlo run and gets a list of random portfolios
         and their corresponding quantities (Expected Return, Volatility,
-        Sharpe Ratio). Returns ``pandas.DataFrame`` of weights and results.
+        Sharpe Ratio).
 
-        :Output:
-         :df_weights: ``pandas.DataFrame``, holds the weights for each randomly
-             generated portfolio
-         :df_results: ``pandas.DataFrame``, holds Expected Annualised Return,
-             Volatility and Sharpe Ratio of each randomly generated portfolio
+        :return:
+            :df_weights: DataFrame, holds the weights for each randomly generated portfolio
+            :df_results: DataFrame, holds Expected Annualised Return, Volatility and
+                Sharpe Ratio of each randomly generated portfolio
         """
         # run Monte Carlo to get random weights and corresponding quantities
         res = self.run(self._random_weights)
         # convert to pandas.DataFrame:
         weights_columns = list(self.returns.columns)
         result_columns = ["Expected Return", "Volatility", "Sharpe Ratio"]
-        df_weights = pd.DataFrame(data=res[:, 0].tolist(), columns=weights_columns)
-        df_results = pd.DataFrame(data=res[:, 1].tolist(), columns=result_columns)
+        df_weights = pd.DataFrame(
+            data=res[:, 0].tolist(), columns=weights_columns
+        ).astype(np.float64)
+        df_results = pd.DataFrame(
+            data=res[:, 1].tolist(), columns=result_columns
+        ).astype(np.float64)
         return (df_weights, df_results)
 
-    def optimisation(self):
+    def optimisation(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """Optimisation of the portfolio by performing a Monte Carlo
         simulation.
 
-        :Output:
-         :opt_w: ``pandas.DataFrame`` with optimised investment strategies for maximum
-             Sharpe Ratio and minimum volatility.
-         :opt_res: ``pandas.DataFrame`` with Expected Return, Volatility and Sharpe Ratio
-             for portfolios with minimum Volatility and maximum Sharpe Ratio.
+        :return:
+            :opt_w: DataFrame with optimised investment strategies for maximum
+                Sharpe Ratio and minimum volatility.
+            :opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+                for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # perform Monte Carlo run and get weights and results
         df_weights, df_results = self._random_portfolios()
@@ -159,22 +170,22 @@ class MonteCarloOpt(MonteCarlo):
         index_min_volatility = df_results["Volatility"].idxmin()
         index_max_sharpe = df_results["Sharpe Ratio"].idxmax()
         # storing optimal results to DataFrames
-        opt_w = pd.DataFrame(
+        opt_w: pd.DataFrame = pd.DataFrame(
             [df_weights.iloc[index_min_volatility], df_weights.iloc[index_max_sharpe]],
             index=["Min Volatility", "Max Sharpe Ratio"],
         )
-        opt_res = pd.DataFrame(
+        opt_res: pd.DataFrame = pd.DataFrame(
             [df_results.iloc[index_min_volatility], df_results.iloc[index_max_sharpe]],
             index=["Min Volatility", "Max Sharpe Ratio"],
         )
         # setting instance variables:
-        self.df_weights = df_weights
-        self.df_results = df_results
-        self.opt_weights = opt_w
-        self.opt_results = opt_res
+        self.df_weights = df_weights.astype(np.float64)
+        self.df_results = df_results.astype(np.float64)
+        self.opt_weights = opt_w.astype(np.float64)
+        self.opt_results = opt_res.astype(np.float64)
         return opt_w, opt_res
 
-    def plot_results(self):
+    def plot_results(self) -> None:
         """Plots the results of the Monte Carlo run, with all of the
         randomly generated weights/portfolios, as well as markers
         for the portfolios with the minimum Volatility and maximum
@@ -246,27 +257,34 @@ class MonteCarloOpt(MonteCarlo):
         cbar.ax.set_ylabel("Sharpe Ratio [period=" + str(self.freq) + "]", rotation=90)
         plt.legend()
 
-    def properties(self):
+    def properties(self) -> None:
         """Prints out the properties of the Monte Carlo optimisation."""
-        # print out results
-        opt_vals = ["Min Volatility", "Max Sharpe Ratio"]
-        string = ""
-        for val in opt_vals:
+        if self.opt_weights is None or self.opt_results is None:
+            print(
+                "Error: Optimal weights and/or results are not computed. Please perform a Monte Carlo run first."
+            )
+        else:
+            # print out results
+            opt_vals = ["Min Volatility", "Max Sharpe Ratio"]
+            string = ""
+            for val in opt_vals:
+                string += "-" * 70
+                string += f"\nOptimised portfolio for {val.replace('Min', 'Minimum').replace('Max', 'Maximum')}"
+                string += f"\n\nTime period: {self.freq} days"
+                string += f"\nExpected return: {self.opt_results.loc[val]['Expected Return']:0.3f}"
+                string += (
+                    f"\nVolatility: {self.opt_results.loc[val]['Volatility']:0.3f}"
+                )
+                string += (
+                    f"\nSharpe Ratio: {self.opt_results.loc[val]['Sharpe Ratio']:0.3f}"
+                )
+                string += "\n\nOptimal weights:"
+                string += "\n" + str(
+                    self.opt_weights.loc[val]
+                    .to_frame()
+                    .transpose()
+                    .rename(index={val: "Allocation"})
+                )
+                string += "\n"
             string += "-" * 70
-            string += f"\nOptimised portfolio for {val.replace('Min', 'Minimum').replace('Max', 'Maximum')}"
-            string += f"\n\nTime period: {self.freq} days"
-            string += f"\nExpected return: {self.opt_results.loc[val]['Expected Return']:0.3f}"
-            string += f"\nVolatility: {self.opt_results.loc[val]['Volatility']:0.3f}"
-            string += (
-                f"\nSharpe Ratio: {self.opt_results.loc[val]['Sharpe Ratio']:0.3f}"
-            )
-            string += "\n\nOptimal weights:"
-            string += "\n" + str(
-                self.opt_weights.loc[val]
-                .to_frame()
-                .transpose()
-                .rename(index={val: "Allocation"})
-            )
-            string += "\n"
-        string += "-" * 70
-        print(string)
+            print(string)

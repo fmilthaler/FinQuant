@@ -35,9 +35,28 @@ jobs:
           python -m pip install .[test]
 
       - name: Run tests
+        id: tests
         run: make test
+        continue-on-error: true
 
-      - name: Analysing the code with pylint
-        if: ${{ matrix.python-version }} == '3.10'
+      - name: Pylint analysis
+        id: pylint_analysis
         run: |
-          pylint --fail-under=9 $(git ls-files '*.py')
+          python -m pylint --fail-under=10 $(git ls-files '*.py')
+        continue-on-error: true
+
+      - name: mypy analysis
+        id: mypy_analysis
+        run: |
+          python -m mypy *.py finquant
+        continue-on-error: true
+
+      - name: Check for Failures
+        run: |
+          if [[ "${{ steps.tests.outcome }}" != "success" || "${{ steps.pylint_analysis.outcome }}" != "success" || "${{ steps.mypy_analysis.outcome }}" != "success" ]]; then
+            echo "Pipeline failed due to errors in the following steps:"
+            echo "Tests: ${{ steps.tests.outcome }}"
+            echo "Pylint: ${{ steps.pylint_analysis.outcome }}"
+            echo "mypy: ${{ steps.mypy_analysis.outcome }}"
+            exit 1
+          fi
