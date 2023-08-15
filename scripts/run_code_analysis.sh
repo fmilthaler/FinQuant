@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Running Pylint - finquant (ignoring TODOs)"
-python -m pylint --disable=fixme --output-format=parseable *.py finquant | tee pylint.log
+python -m pylint --fail-under=10 --disable=fixme --output-format=parseable *.py finquant | tee pylint.log
 #echo "Running Pylint - tests (ignoring TODOs and access to protected attributes)"
 #python -m pylint --disable=fixme,protected-access --output-format=parseable tests | tee -a pylint.log
 
