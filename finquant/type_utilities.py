@@ -97,6 +97,14 @@ def _check_callable_type(
         raise TypeError(error_msg)
 
 
+def _check_empty_data(arg_name: str, arg_values: Any) -> None:
+    if isinstance(arg_values, (List, np.ndarray, pd.Series, pd.DataFrame)):
+        if len(arg_values) == 0:
+            raise ValueError(
+                f"Error: {arg_name} is an empty list, numpy array, pandas series, or dataframe"
+            )
+
+
 # Define a dictionary mapping each argument name to its expected type and, if applicable, element type
 type_dict: Dict[
     str,
@@ -210,4 +218,7 @@ def type_validation(**kwargs: Any) -> None:
             _check_callable_type(arg_name, arg_values)
         else:
             expected_type, element_type = type_dict[arg_name]
+            # Validation of type
             _check_type(arg_name, arg_values, expected_type, element_type)
+            # Check for empty list/array/series/dataframe
+            _check_empty_data(arg_name, arg_values)
