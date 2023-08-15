@@ -1,18 +1,13 @@
 """ This module provides function(s) to compute momentum indicators
-used in technical analysis such as RSI """
+used in technical analysis such as RSI, MACD etc. """
 
 import matplotlib.pyplot as plt
 import pandas as pd
 
+def relative_strength_index(data, window_length: int = 14, oversold: int = 30,
+                            overbought: int = 70, standalone: bool = False) -> None:
 
-def relative_strength_index(
-    data,
-    window_length: int = 14,
-    oversold: int = 30,
-    overbought: int = 70,
-    standalone: bool = False,
-) -> None:
-    """Computes and visualizes a RSI graph,
+    """ Computes and visualizes a RSI graph,
         plotted along with the prices in another sub-graph
         for comparison.
 
@@ -73,33 +68,24 @@ def relative_strength_index(
         # Single plot
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.axhline(y=oversold, color="g", linestyle="--")
-        ax.axhline(y=overbought, color="r", linestyle="--")
-        data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=ax, grid=True)
+        ax.axhline(y = oversold, color = 'g', linestyle = '--')
+        ax.axhline(y = overbought, color = 'r', linestyle ='--')
+        data['rsi'].plot(ylabel = 'RSI', xlabel = 'Date', ax = ax, grid = True)
         plt.title("RSI Plot")
         plt.legend()
     else:
         # RSI against price in 2 plots
         fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
-        ax[0].axhline(y=oversold, color="g", linestyle="--")
-        ax[0].axhline(y=overbought, color="r", linestyle="--")
-        ax[0].set_title("RSI + Price Plot")
+        ax[0].axhline(y = oversold, color = 'g', linestyle = '--')
+        ax[0].axhline(y = overbought, color = 'r', linestyle ='--')
+        ax[0].set_title('RSI + Price Plot')
         # plot 2 graphs in 2 colors
         colors = plt.rcParams["axes.prop_cycle"]()
-        data["rsi"].plot(
-            ylabel="RSI", ax=ax[0], grid=True, color=next(colors)["color"], legend=True
-        )
-        data[stock].plot(
-            xlabel="Date",
-            ylabel="Price",
-            ax=ax[1],
-            grid=True,
-            color=next(colors)["color"],
-            legend=True,
-        )
+        data['rsi'].plot(ylabel = 'RSI', ax = ax[0], grid = True, color = next(colors)["color"], legend=True)
+        data[stock].plot(xlabel = 'Date', ylabel = 'Price', ax = ax[1], grid = True,
+                         color = next(colors)["color"], legend = True)
         plt.legend()
-
-
+        
 def macd(
     data,
     longer_ema_window: int = 26,
@@ -135,8 +121,8 @@ def macd(
     if longer_ema_window < shorter_ema_window:
         raise ValueError("longer ema window should be > shorter ema window")
     if longer_ema_window < signal_ema_window:
-        raise ValueError("longer ema window should be > signal ema window")
-
+        raise ValueError("longer ema window should be > signal ema window")    
+        
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
         data = data.to_frame()
@@ -183,11 +169,11 @@ def macd(
             ax=ax, grid=True, label="SIGNAL", color="red", linewidth=1.5, legend=True
         )
 
-        for i in range(len(hist)):
-            if hist[i] < 0:
-                ax.bar(data.index[i], hist[i], color="orange")
+        for i, key in enumerate(hist.index):
+            if hist[key] < 0:
+                ax.bar(data.index[i], hist[key], color = 'orange')
             else:
-                ax.bar(data.index[i], hist[i], color="black")
+                ax.bar(data.index[i], hist[key], color = 'black')
     else:
         # RSI against price in 2 plots
         fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
@@ -209,11 +195,11 @@ def macd(
             ax=ax[0], grid=True, label="SIGNAL", color="red", linewidth=1.5, legend=True
         )
 
-        for i in range(len(hist)):
-            if hist[i] < 0:
-                ax[0].bar(data.index[i], hist[i], color="orange")
+        for i, key in enumerate(hist.index):
+            if hist[key] < 0:
+                ax.bar(data.index[i], hist[key], color = 'orange')
             else:
-                ax[0].bar(data.index[i], hist[i], color="black")
+                ax.bar(data.index[i], hist[key], color = 'black')
 
         data[stock].plot(
             xlabel="Date",

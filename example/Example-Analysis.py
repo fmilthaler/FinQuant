@@ -309,3 +309,46 @@ print(pf.data.loc[pf.data.index > datetime.datetime(2016, 1, 2)].head(3))
 # <codecell>
 
 print(pf.data.loc[pf.data.index.year == 2017].head(3))
+
+# <markdowncell>
+
+# ## Momentum Indicators
+# `FinQuant` provides a module `finquant.momentum_indicators` to compute and
+# visualize a number of momentum indicators. Currently RSI (Relative Strength Index)
+# and MACD (Moving Average Convergence Divergence) indicators are available.
+# See below.
+
+# <codecell>
+# plot the RSI (Relative Strength Index) for disney stock proces
+from finquant.momentum_indicators import relative_strength_index as rsi
+
+# get stock data for disney
+dis = pf.get_stock("WIKI/DIS").data.copy(deep=True)
+
+# plot RSI - by default this plots RSI against the price in two graphs
+rsi(dis)
+plt.show()
+
+# plot RSI with custom arguments
+rsi(dis, oversold = 20, overbought = 80)
+plt.show()
+
+# plot RSI standalone graph
+rsi(dis, oversold = 20, overbought = 80, standalone=True)
+plt.show()
+
+# <codecell>
+# plot MACD for disney stock proces
+from finquant.momentum_indicators import macd
+
+# plot MACD - by default this plots RSI against the price in two graphs
+macd(dis)
+plt.show()
+
+# plot MACD using custom arguments
+macd(dis, longer_ema_window = 30, shorter_ema_window = 15, signal_ema_window = 10)
+plt.show()
+
+# plot MACD standalone graph
+macd(standlone = True)
+plt.show()
