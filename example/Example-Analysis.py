@@ -50,10 +50,12 @@ pf = build_portfolio(data=df_data)
 
 # <markdowncell>
 
-# ## Expected Return, Volatility, Sharpe Ratio and Value at Risk of Portfolio
-# The annualised expected return and volatility, as well as the Sharpe Ratio and Value at Risk are automatically computed. They are obtained as shown below.
+# ## Expected Return, Volatility, Sharpe Ratio, Sortino Ratio, and Value at Risk of Portfolio
+# The annualised expected return and volatility, as well as the Sharpe Ratio, the Sortino Ratio, and Value at Risk are automatically computed.
+# They are obtained as shown below.
 # The expected return and volatility are based on 252 trading days by default.
-# The Sharpe Ratio is computed with a risk free rate of 0.005 by default. The Value at Risk is computed with a confidence level of 0.95 by default.
+# The Sharpe Ratio and the Sortino ratio are computed with a risk free rate of 0.005 by default.
+# The Value at Risk is computed with a confidence level of 0.95 by default.
 
 # <codecell>
 
@@ -67,8 +69,13 @@ print(pf.volatility)
 
 # <codecell>
 
-# Sharpe ratio (computed with a risk free rate of 0.005 by default)
+# Sharpe Ratio (computed with a risk free rate of 0.005 by default)
 print(pf.sharpe)
+
+# <codecell>
+
+# Sortino Ratio (computed with a risk free rate of 0.005 by default)
+print(pf.sortino)
 
 # <codecell>
 
@@ -90,7 +97,7 @@ print(pf.kurtosis)
 # <markdowncell>
 
 # ## Nicely printing out portfolio quantities
-# To print the expected annualised return, volatility, Sharpe ratio, skewness and Kurtosis of the portfolio and its stocks, one can simply do `pf.properties()`.
+# To print the expected annualised return, volatility, Sharpe Ratio, Sortino Ratio, skewness and Kurtosis of the portfolio and its stocks, one can simply do `pf.properties()`.
 
 # <codecell>
 

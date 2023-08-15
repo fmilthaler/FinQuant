@@ -18,7 +18,8 @@ def cumulative_returns(data, dividend=0):
     :Output:
      :ret: a ``pandas.DataFrame`` of cumulative Returns of given stock prices.
     """
-    return data.dropna(axis=0, how="any").apply(lambda x: (x - x[0] + dividend) / x[0])
+    data = data.dropna(axis=0, how="any")
+    return ((data - data.iloc[0] + dividend) / data.iloc[0]).astype(np.float64)
 
 
 def daily_returns(data):
@@ -34,6 +35,19 @@ def daily_returns(data):
          of given stock prices.
     """
     return data.pct_change().dropna(how="all").replace([np.inf, -np.inf], np.nan)
+
+
+def weighted_mean_daily_returns(data, weights):
+    """Returns DataFrame with the daily weighted mean returns
+
+    :Input:
+      :data: ``pandas.DataFrame`` with daily stock prices
+      :weights: ``numpy.ndarray``/``pd.Series`` of weights
+
+    :Output:
+      :ret: ``numpy.array`` of weighted mean daily percentage change of Returns
+    """
+    return np.dot(daily_returns(data), weights)
 
 
 def daily_log_returns(data):

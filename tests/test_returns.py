@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from finquant.returns import (
@@ -5,6 +6,7 @@ from finquant.returns import (
     daily_log_returns,
     daily_returns,
     historical_mean_return,
+    weighted_mean_daily_returns,
 )
 
 
@@ -18,6 +20,7 @@ def test_cumulative_returns():
     d = {"1": l1, "2": l2}
     df = pd.DataFrame(d)
     ret = cumulative_returns(df)
+    assert isinstance(ret, pd.DataFrame) and not ret.empty
     assert all(abs(ret["1"].values - orig[0]) <= 1e-15)
     assert all(abs(ret["2"].values - orig[1]) <= 1e-15)
     # with dividend of 0.2
@@ -26,6 +29,7 @@ def test_cumulative_returns():
         [0.005, -0.02, -0.045, -0.07, -0.095, -0.12, -0.145, -0.17, -0.195, -0.22],
     ]
     ret = cumulative_returns(df, 0.2)
+    assert isinstance(ret, pd.DataFrame) and not ret.empty
     assert all(abs(ret["1"].values - orig[0]) <= 1e-15)
     assert all(abs(ret["2"].values - orig[1]) <= 1e-15)
 
@@ -39,6 +43,23 @@ def test_daily_returns():
     ret = daily_returns(df)
     assert all(abs(ret["1"].values - orig[0]) <= 1e-15)
     assert all(abs(ret["2"].values - orig[1]) <= 1e-15)
+
+
+def test_weighted_daily_mean_returns():
+    l1 = [1.0, 1.5, 2.25, 3.375]
+    l2 = [1.0, 2.0, 4.0, 8.0]
+    expected = [0.5 * 0.25 + 1 * 0.75 for i in range(len(l1) - 1)]
+    weights = np.array([0.25, 0.75])
+    d = {"1": l1, "2": l2}
+    df = pd.DataFrame(d)
+    ret = weighted_mean_daily_returns(df, weights)
+    assert all(abs(ret - expected) <= 1e-15)
+
+    d = {"1": l1}
+    expected = [0.5 for i in range(len(l1) - 1)]
+    df = pd.DataFrame(d)
+    ret = weighted_mean_daily_returns(df, np.array([1]))
+    assert all(abs(ret - expected) <= 1e-15)
 
 
 def test_daily_log_returns():
