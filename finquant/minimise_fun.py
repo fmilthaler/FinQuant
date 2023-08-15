@@ -15,14 +15,17 @@ def portfolio_volatility(
 ) -> FLOAT:
     """Calculates the volatility of a portfolio
 
-    :Input:
-     :weights: numpy.ndarray, weights of the stocks in the portfolio
-     :mean_returns: pandas.Series, individual expected returns for all stocks
-         in the portfolio
-     :cov_matrix: pandas.DataFrame, covariance matrix of returns
+    :param weights: An array of weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
-    Output:
-     :volatility: annualised volatility
+    :param mean_returns: An array of individual expected returns for all stocks
+    :type mean_returns: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :param cov_matrix: Covariance matrix of returns
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Annualised volatility
     """
     # Type validations:
     type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)
@@ -37,15 +40,20 @@ def negative_sharpe_ratio(
 ) -> FLOAT:
     """Calculates the negative Sharpe ratio of a portfolio
 
-    :Input:
-     :weights: numpy.ndarray, weights of the stocks in the portfolio
-     :mean_returns: pandas.Series, individual expected returns for all stocks
-         in the portfolio
-     :cov_matrix: pandas.DataFrame, covariance matrix of returns
-     :risk_free_rate: Float (default=0.005), risk free rate
+    :param weights: An array of weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
-    Output:
-     :sharpe: sharpe ratio * (-1)
+    :param mean_returns: An array of individual expected returns for all stocks
+    :type mean_returns: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :param cov_matrix: Covariance matrix of returns
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Negative sharpe ratio
     """
     # Type validations:
     type_validation(
@@ -69,14 +77,17 @@ def portfolio_return(
 ) -> NUMERIC:
     """Calculates the expected annualised return of a portfolio
 
-    :Input:
-     :weights: numpy.ndarray, weights of the stocks in the portfolio
-     :mean_returns: pandas.Series, individual expected returns for all stocks
-         in the portfolio
-     :cov_matrix: pandas.DataFrame, covariance matrix of returns
+    :param weights: An array of weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
-    Output:
-     :return: expected annualised return
+    :param mean_returns: An array of individual expected returns for all stocks
+    :type mean_returns: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :param cov_matrix: Covariance matrix of returns
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+
+    :rtype: :py:data:`~.finquant.data_types.NUMERIC`
+    :return: Expected annualised return
     """
     # Type validations:
     type_validation(weights=weights, means=mean_returns, cov_matrix=cov_matrix)

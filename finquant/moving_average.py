@@ -28,18 +28,17 @@ def compute_ma(
     computes and sets markers for buy/sell signals based on crossovers of the Moving
     Averages with the shortest/longest spans.
 
-    :Input:
-     :data: pandas.DataFrame, or pandas.Series, with stock prices
-         (if pandas.DataFrame: only one column is expected)
-     :fun: function that computes a moving average, e.g. sma (simple) or
-         ema (exponential).
-     :spans: list of integers, time windows to compute the Moving Average on.
-     :plot: boolean (default: True), whether to plot the moving averages
+    :param data: A series/dataframe of daily stock prices (if DataFrame,
+        only one column is expected)
+    :type data: :py:data:`~.finquant.data_types.SERIES_OR_DATAFRAME`
+    :param fun: Function that computes a moving average, e.g. ```sma``` (simple) or
+         ```ema``` (exponential).
+    :param spans: List of integers, time windows to compute the Moving Average on.
+    :param plot: boolean, whether to plot the moving averages
          and buy/sell signals based on crossovers of shortest and longest
-         moving average.
+         moving average, or not, default: True
 
-    :Output:
-     :m_a: pandas.DataFrame with moving averages of given data.
+    :return: Moving averages of given data.
     """
     # Type validations:
     type_validation(data=data, fun=fun, spans=spans, plot=plot)
@@ -101,13 +100,10 @@ def sma(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
 
     Note: the moving average is computed on all columns.
 
-    :Input:
-     :data: pandas.DataFrame with stock prices in columns
-     :span: int (default: 100), number of days/values over which
-         the average is computed
+    :param data: A dataframe of daily stock prices
+    :param span: Number of days/values over which the average is computed, default: 100
 
-    :Output:
-     :sma: pandas.DataFrame of simple moving average
+    :return: Simple moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -119,13 +115,10 @@ def ema(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
 
     Note: the moving average is computed on all columns.
 
-    :Input:
-     :data: pandas.DataFrame with stock prices in columns
-     :span: int (default: 100), number of days/values over which
-         the average is computed
+    :param data: A dataframe of daily stock prices
+    :param span: Number of days/values over which the average is computed, default: 100
 
-    :Output:
-     :ema: pandas.DataFrame of exponential moving average
+    :return: Exponential moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -136,14 +129,10 @@ def sma_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     """Computes and returns the standard deviation of the simple moving
     average.
 
-    :Input:
-     :data: pandas.DataFrame with stock prices in columns
-     :span: int (default: 100), number of days/values over which
-         the average is computed
+    :param data: A dataframe of daily stock prices
+    :param span: Number of days/values over which the average is computed, default: 100
 
-    :Output:
-     :sma_std: pandas.DataFrame of standard deviation of
-         simple moving average
+    :return: Standard deviation of simple moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -154,14 +143,10 @@ def ema_std(data: pd.DataFrame, span: int = 100) -> pd.DataFrame:
     """Computes and returns the standard deviation of the exponential
     moving average.
 
-    :Input:
-     :data: pandas.DataFrame with stock prices in columns
-     :span: int (default: 100), number of days/values over which
-         the average is computed
+    :param data: A dataframe of daily stock prices
+    :param span: Number of days/values over which the average is computed, default: 100
 
-    :Output:
-     :ema_std: pandas.DataFrame of standard deviation of
-         exponential moving average
+    :return: Standard deviation of exponential moving average
     """
     # Type validations:
     type_validation(data=data, span=span)
@@ -175,12 +160,10 @@ def plot_bollinger_band(
 ) -> None:
     """Computes and visualises a Bolling Band.
 
-    :Input:
-     :data: pandas.Series or pandas.DataFrame with stock prices in columns
-     :fun: function that computes a moving average, e.g. sma (simple) or
-         ema (exponential).
-     :span: int (default: 100), number of days/values over which
-         the average is computed
+    :param data: A dataframe of daily stock prices
+    :param fun: function that computes a moving average, e.g. ``sma`` (simple) or
+         ``ema`` (exponential).
+    :param span: Number of days/values over which the average is computed, default: 100
     """
     # Type validations:
     type_validation(data=data, fun=fun, span=span)

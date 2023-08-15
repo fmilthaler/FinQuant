@@ -1,3 +1,32 @@
+"""
+
+``finquant.type_utilities`` Module
+
+This module defines a type validation utility for working with various data types in Python, utilizing the 'numpy'
+and 'pandas' libraries.
+
+Dependencies:
+-------------
+This module requires the following external libraries:
+
+- 'numpy' (imported as 'np')
+- 'pandas' (imported as 'pd')
+
+Example usage:
+--------------
+Example:
+
+.. code-block:: python
+
+    type_validation(
+        data=pd.DataFrame([1., 2.]),
+        names=["name1", "name2"],
+        start_date="2023-08-01",
+        freq=10,
+    )
+
+"""
+
 import datetime
 from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union
 
@@ -146,7 +175,31 @@ type_callable_dict: Dict[
 def type_validation(**kwargs: Any) -> None:
     """
     Perform generic type validations on input variables.
-    (same as before)
+
+    This function performs various type validations on a set of input variables. It helps to ensure that the input
+    values conform to the expected types and conditions, raising a TypeError with a descriptive error message
+    if any type validation fails and a ValueError if a numpy.array or pd.Series/DataFrame is empty.
+
+    :param kwargs: Arbitrary keyword arguments representing the input variables to be checked.
+
+    Raises:
+        ``TypeError``:
+            If any of the type validations fail, a TypeError is raised with a descriptive error message
+            indicating the expected type and conditions for each variable.
+        ``ValueError``:
+            If any of the value validations fail, a ValueError is raised with a descriptive error message
+            indicating the expected conditions for each variable.
+
+    Example usage:
+
+    .. code-block:: python
+
+        type_validation(
+            data=pd.DataFrame([1., 2.]),
+            names=["name1", "name2"],
+            start_date="2023-08-01",
+            freq=10,
+        )
     """
 
     for arg_name, arg_values in kwargs.items():

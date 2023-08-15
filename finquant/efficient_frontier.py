@@ -55,15 +55,17 @@ class EfficientFrontier:
         method: str = "SLSQP",
     ):
         """
-        :Input:
-         :mean_returns: ``pandas.Series``, individual expected returns for all
-             stocks in the portfolio
-         :cov_matrix: ``pandas.DataFrame``, covariance matrix of returns
-         :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
-         :freq: ``int`` (default= ``252``), number of trading days, default
-             value corresponds to trading days in a year
-         :method: ``string`` (default= ``"SLSQP"``), type of solver method to use,
-             must be one of:
+        :param mean_returns: A Series of individual expected returns for all stocks
+
+        :param cov_matrix: Covariance matrix of returns
+
+        :param risk_free_rate: Risk free rate, default: 0.005
+        :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`
+
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
+
+        :param method: Type of solver method to use (default: SLSQP), must be one of:
 
              - 'Nelder-Mead'
              - 'Powell'
@@ -135,21 +137,20 @@ class EfficientFrontier:
     ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility.
 
-        :Input:
-         :save_weights: ``boolean`` (default= ``True``), for internal use only.
+        :param save_weights: For internal use only, default: True
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights would be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
-        :Output:
-         :df_weights:
-           - if "save_weights" is True: a ``pandas.DataFrame`` of weights/allocation
-             of stocks within the optimised portfolio.
-         :weights:
-           - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
-             of stocks within the optimised portfolio.
+
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+        :return:
+            - if ``save_weights`` is True:
+                a DataFrame of weights/allocation of stocks within the optimised portfolio.
+            - if ``save_weights`` is False:
+                a ``numpy.ndarray`` of weights/allocation of stocks within the optimised portfolio.
         """
         # Type validations:
         type_validation(save_weights=save_weights)
@@ -185,21 +186,19 @@ class EfficientFrontier:
         """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
-        :Input:
-         :save_weights: ``boolean`` (default= ``True``), for internal use only.
+        :param save_weights: For internal use only, default: True
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights would be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
-        :Output:
-         :df_weights:
-           - if "save_weights" is True: a ``pandas.DataFrame`` of weights/allocation
-             of stocks within the optimised portfolio.
-         :weights:
-           - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
-             of stocks within the optimised portfolio.
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+        :return:
+            - if ``save_weights`` is True:
+                a DataFrame of weights/allocation of stocks within the optimised portfolio.
+            - if ``save_weights`` is False:
+                a ``numpy.ndarray`` of weights/allocation of stocks within the optimised portfolio.
         """
         # Type validations:
         type_validation(save_weights=save_weights)
@@ -231,22 +230,20 @@ class EfficientFrontier:
         """Finds the portfolio with the minimum volatility for a given target
         return.
 
-        :Input:
-         :target: ``float``, the target return of the optimised portfolio.
-         :save_weights: ``boolean`` (default= ``True``), for internal use only.
+        :param target: The target return of the optimised portfolio.
+        :param save_weights: For internal use only, default: True
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights would be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
-        :Output:
-         :df_weights:
-           - if "save_weights" is True: a ``pandas.DataFrame`` of weights/allocation
-             of stocks within the optimised portfolio.
-         :weights:
-           - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
-             of stocks within the optimised portfolio.
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+        :return:
+            - if ``save_weights`` is True:
+                a DataFrame of weights/allocation of stocks within the optimised portfolio.
+            - if ``save_weights`` is False:
+                a ``numpy.ndarray`` of weights/allocation of stocks within the optimised portfolio.
         """
         # Type validations:
         type_validation(target=target, save_weights=save_weights)
@@ -287,12 +284,9 @@ class EfficientFrontier:
         """Finds the portfolio with the maximum Sharpe ratio for a given
         target volatility.
 
-        :Input:
-         :target: ``float``, the target volatility of the optimised portfolio.
+        :param target: The target return of the optimised portfolio.
 
-        :Output:
-         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
-             the optimised portfolio.
+        :return: DataFrame of weights/allocation of stocks within the optimised portfolio.
         """
         # Type validations:
         type_validation(target=target)
@@ -333,12 +327,9 @@ class EfficientFrontier:
         the target range according to those values.
         Results in the Efficient Frontier.
 
-        :Input:
-         :targets: ``list``/``numpy.ndarray`` (default= ``None``) of ``floats``,
-             range of target returns.
+        :param targets: A list/array: range of target returns, default: ``None``
 
-        :Output:
-         :efrontier: ``numpy.ndarray`` of (volatility, return) values
+        :return: Array of (volatility, return) values
         """
         # Type validations:
         if targets is not None and not isinstance(targets, (list, np.ndarray)):
@@ -432,14 +423,11 @@ class EfficientFrontier:
     def _dataframe_weights(
         self, weights: Optional[np.ndarray[np.float64, Any]]
     ) -> pd.DataFrame:
-        """Generates and returns a ``pandas.DataFrame`` from given
-        array weights.
+        """Generates and returns a DataFrame from given array weights.
 
-        :Input:
-         :weights: ``numpy.ndarray``, weights of the stock of the portfolio
+        :param weights: An array of weights of the stock of the portfolio.
 
-        :Output:
-         :weights: ``pandas.DataFrame`` with the weights/allocation of stocks
+        :return: A DataFrame with the weights/allocation of stocks
         """
         # Type validations:
         type_validation(weights_array=weights)
@@ -451,8 +439,7 @@ class EfficientFrontier:
         """Calculates and prints out Expected annualised Return,
         Volatility and Sharpe Ratio of optimised portfolio.
 
-        :Input:
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties or not
+        :param verbose: Whether to print out properties or not, default: ``False``
         """
         # Type validations:
         type_validation(verbose=verbose)

@@ -25,9 +25,9 @@ class Asset:
     """
     Parent class representing a generic financial asset.
 
-    :param ``data``: Historical price data of the asset as a ``pandas.Series``.
-    :param ``name``: Name of the asset.
-    :param ``asset_type``: Type of the asset (e.g., "Stock" or "Market index").
+    :param data: Historical price data of the asset.
+    :param name: Name of the asset.
+    :param asset_type: Type of the asset (e.g., "Stock" or "Market index").
 
     The ``Asset`` class provides common functionality and attributes for financial assets.
     It represents a generic asset and serves as the parent class for specialized asset classes.
@@ -59,10 +59,9 @@ class Asset:
         self, data: pd.Series, name: str, asset_type: str = "Market index"
     ) -> None:
         """
-        :Input:
-         :data: ``pandas.Series``, of asset prices
-         :name: ``str``, Name of the asset
-         :asset_type: ``str`` (default: ``'Market index'``), Type of the asset (e.g., "Stock" or "Market index")
+        :param data: Historical price data of the asset.
+        :param name: Name of the asset
+        :param asset_type: Type of the asset (e.g., "Stock" or "Market index"), default: "Market index"
         """
         self.data = data.astype(np.float64)
         self.name = name
@@ -85,24 +84,18 @@ class Asset:
         """Computes the Expected Return of the asset.
         See ``finquant.returns.historical_mean_return``.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
-
-        :Output:
-         :expected_return: ``float``, Expected Return of asset.
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
         """
         return historical_mean_return(self.data, freq=freq)
 
     def comp_volatility(self, freq: INT = 252) -> FLOAT:
         """Computes the Volatility of the asset.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :Output:
-         :volatility: ``float``, Volatility of asset.
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
         """
         # Type validations:
         type_validation(freq=freq)

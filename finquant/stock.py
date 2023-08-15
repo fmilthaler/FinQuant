@@ -10,9 +10,9 @@ To initialize an instance of ``Stock``, it requires the following information:
         respectively. However, the DataFrame can contain more information beyond these columns,
         such as year, strategy, currency (CCY), etc.
 
-    - ``data``: Historical price data for the stock or fund provided as a ``pandas.DataFrame``.
-        The data must contain `<stock_name> - Adj. Close`, which represents the closing price used to
-        compute the return on investment. The DataFrame can contain additional columns as well.
+    - ``data``: Historical price data for the stock or fund provided as a ``pandas.Series``.
+        The data must contain ``<stock_name> - Adj. Close``, which represents the closing price used to
+        compute the return on investment.
 
 The ``Stock`` class computes various quantities related to the stock or fund, such as expected return,
 volatility, skewness, and kurtosis. It also provides functionality to calculate the beta parameter
@@ -36,8 +36,8 @@ from finquant.type_utilities import type_validation
 class Stock(Asset):
     """Class that contains information about a stock/fund.
 
-    :param investmentinfo: Investment information for the stock as a ``pandas.DataFrame``.
-    :param data: Historical price data for the stock as a ``pandas.DataFrame``.
+    :param investmentinfo: Investment information of a stock.
+    :param data: Historical price data of a stock.
 
     The ``Stock`` class extends the ``Asset`` class and represents a specific type of asset,
     namely a stock within a portfolio.
@@ -55,9 +55,8 @@ class Stock(Asset):
 
     def __init__(self, investmentinfo: pd.DataFrame, data: pd.Series) -> None:
         """
-        :Input:
-         :investmentinfo: ``pandas.DataFrame`` of investment information
-         :data: ``pandas.Series`` of stock price
+        :param investmentinfo: Investment information of a stock.
+        :param data: Historical price data of a stock.
         """
         self.name = investmentinfo.Name
         self.investmentinfo = investmentinfo
@@ -66,13 +65,12 @@ class Stock(Asset):
         self.beta = None
 
     def comp_beta(self, market_daily_returns: pd.Series) -> FLOAT:
-        """Compute and return the Beta parameter of the stock.
+        """Computes and returns the Beta parameter of the stock.
 
-        :Input:
-         :market_daily_returns: ``pd.Series``, daily returns of the market
+        :param market_daily_returns: Daily returns of the market index.
 
-        :Output:
-         :beta: ``float``, the Beta parameter of the stock
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
+        :return: Beta parameter of the stock
         """
         # Type validations:
         type_validation(market_daily_returns=market_daily_returns)

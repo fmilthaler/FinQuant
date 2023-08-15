@@ -1,7 +1,9 @@
 """This module is the **core** of `FinQuant`. It provides
 
 - a public class ``Portfolio`` that holds and calculates quantities of a financial
-  portfolio, which is a collection of ``Stock`` instances (the ``Stock`` class is provided in ``finquant.stock``).
+  portfolio, which is a collection of ``Stock`` instances (the ``Stock`` class is
+  provided in ``finquant.stock`` and is a child class of ``Asset`` defined in
+  ``finquant.asset``).
 - a public function ``build_portfolio()`` that automatically constructs and returns
   an instance of ``Portfolio`` and instances of ``Stock``. 
   The relevant stock data is either retrieved through `quandl`/`yfinance` or provided by the user as a
@@ -232,9 +234,8 @@ class Portfolio:
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
-        :Input:
-         :stock: an object of ``Stock``
-         :defer_update: bool, if True _update() is not called after the stock is added.
+        :param stock: An instance of the class ``Stock``.
+        :param defer_update: bool, if True instance variables are not (re-)computed at the end of this method.
         """
         # adding stock to dictionary containing all stocks provided
         self.stocks.update({stock.name: stock})
@@ -285,22 +286,18 @@ class Portfolio:
     def get_stock(self, name: str) -> Stock:
         """Returns the instance of ``Stock`` with name ``name``.
 
-        :Input:
-         :name: ``string`` of the name of the stock that is returned. Must match
-             one of the labels in the dictionary ``self.stocks``.
+        :param name: String of the name of the stock that is returned. Must match
+             one of the labels in the dictionary ``pf.stocks``.
 
-        :Output:
-         :stock: instance of ``Stock``.
+        :return: Instance of ``Stock`` taken from the portfolio.
         """
         return self.stocks[name]
 
     def comp_cumulative_returns(self) -> pd.DataFrame:
-        """Computes the cumulative returns of all stocks in the
-        portfolio.
+        """Computes the cumulative returns of all stocks in the portfolio.
         See ``finquant.returns.cumulative_returns``.
 
-        :Output:
-         :ret: a ``pandas.DataFrame`` of cumulative returns of given stock prices.
+        :return: Cumulative returns of given stock prices.
         """
         return cumulative_returns(self.data)
 
@@ -308,9 +305,7 @@ class Portfolio:
         """Computes the daily returns (percentage change) of all
         stocks in the portfolio. See ``finquant.returns.daily_returns``.
 
-        :Output:
-         :ret: a ``pandas.DataFrame`` of daily percentage change of Returns
-             of given stock prices.
+        :return: Daily percentage change of Returns of given stock prices.
         """
         return daily_returns(self.data)
 
@@ -318,8 +313,7 @@ class Portfolio:
         """Computes the daily log returns of all stocks in the portfolio.
         See ``finquant.returns.daily_log_returns``.
 
-        :Output:
-         :ret: a ``pandas.DataFrame`` of log Returns
+        :return: Daily log Returns of given stock prices.
         """
         return daily_log_returns(self.data)
 
@@ -327,12 +321,10 @@ class Portfolio:
         """Computes the mean returns based on historical stock price data.
         See ``finquant.returns.historical_mean_return``.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year.
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :Output:
-         :ret: a ``pandas.DataFrame`` of historical mean Returns.
+        :return: Historical mean Returns.
         """
         # Type validations:
         type_validation(freq=freq)
@@ -341,13 +333,10 @@ class Portfolio:
     def comp_stock_volatility(self, freq: INT = 252) -> pd.Series:
         """Computes the Volatilities of all the stocks individually
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year.
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :Output:
-         :volatilies: ``pandas.DataFrame`` with the individual Volatilities of all stocks
-             of the portfolio.
+        :return: Individual volatilities of all stocks in the portfolio.
         """
         # Type validations:
         type_validation(freq=freq)
@@ -357,9 +346,7 @@ class Portfolio:
         """Computes and returns a ``pandas.Series`` of the weights/allocation
         of the stocks of the portfolio.
 
-        :Output:
-         :weights: a ``pandas.Series`` with weights/allocation of all stocks
-             within the portfolio.
+        :return: A Series with weights/allocation of all stocks within the portfolio.
         """
         # computes the weights of the stocks in the given portfolio
         # in respect of the total investment
@@ -368,12 +355,11 @@ class Portfolio:
     def comp_expected_return(self, freq: INT = 252) -> FLOAT:
         """Computes the Expected Return of the portfolio.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year.
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :Output:
-         :expected_return: ``float`` the Expected Return of the portfolio.
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
+        :return: Expected Return of the portfolio.
         """
         # Type validations:
         type_validation(freq=freq)
@@ -386,12 +372,11 @@ class Portfolio:
     def comp_volatility(self, freq: INT = 252) -> FLOAT:
         """Computes the Volatility of the given portfolio.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year.
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :Output:
-         :volatility: ``float`` the Volatility of the portfolio.
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
+        :return: The volatility of the portfolio.
         """
         # Type validations:
         type_validation(freq=freq)
@@ -405,12 +390,10 @@ class Portfolio:
     def comp_downside_risk(self, freq: INT = 252) -> FLOAT:
         """Computes the downside risk of the portfolio.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
 
-        :Output:
-         :downside risk: ``float`` downside risk of the portfolio.
+        :return: Downside risk of the portfolio.
         """
         downs_risk: FLOAT = downside_risk(
             self.data, self.comp_weights(), self.risk_free_rate
@@ -419,11 +402,10 @@ class Portfolio:
         return downs_risk
 
     def comp_cov(self) -> pd.DataFrame:
-        """Compute and return a ``pandas.DataFrame`` of the covariance matrix
+        """Compute and return a DataFrame of the covariance matrix
         of the portfolio.
 
-        :Output:
-         :cov: a ``pandas.DataFrame`` of the covariance matrix of the portfolio.
+        :return: Covariance matrix of the portfolio.
         """
         # get the covariance matrix of the mean returns of the portfolio
         returns = daily_returns(self.data)
@@ -432,8 +414,8 @@ class Portfolio:
     def comp_sharpe(self) -> FLOAT:
         """Compute and return the Sharpe Ratio of the portfolio.
 
-        :Output:
-         :sharpe: ``float``, the Sharpe Ratio of the portfolio
+        :type freq: :py:data:`~.finquant.data_types.FLOAT`
+        :return: The Sharpe Ratio of the portfolio.
         """
         # compute the Sharpe Ratio of the portfolio
         sharpe: FLOAT = sharpe_ratio(
@@ -445,8 +427,8 @@ class Portfolio:
     def comp_var(self) -> FLOAT:
         """Compute and return the Value at Risk of the portfolio.
 
-        :Output:
-         :VaR: ``float``, the Value at Risk of the portfolio
+        :type freq: :py:data:`~.finquant.data_types.FLOAT`
+        :return: The Value at Risk (VaR) of the portfolio.
         """
         # compute the Value at Risk of the portfolio
         var: FLOAT = value_at_risk(
@@ -461,8 +443,7 @@ class Portfolio:
     def comp_beta(self) -> Optional[FLOAT]:
         """Compute and return the Beta parameter of the portfolio.
 
-        :Output:
-         :sharpe: ``float``, the Beta parameter of the portfolio
+        :return: Beta parameter of the portfolio
         """
 
         # compute the Beta parameter of the portfolio
@@ -480,9 +461,9 @@ class Portfolio:
     def comp_sortino(self) -> FLOAT:
         """Compute and return the Sortino Ratio of the portfolio
 
-        :Output:
-         :sortino: ``float``, the Sortino Ratio of the portfolio
-         May be NaN if the portoflio outperformed the risk free rate at every point
+        :type freq: :py:data:`~.finquant.data_types.FLOAT`
+        :return: The Sortino Ratio of the portfolio.
+            May be ``NaN`` if the portoflio outperformed the risk free rate at every point
         """
         return sortino_ratio(
             self.expected_return, self.downside_risk, self.risk_free_rate
@@ -518,13 +499,9 @@ class Portfolio:
 
         Finds the portfolio with the minimum Volatility.
 
-        :Input:
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties
-             or not.
+        :param verbose: Whether to print out properties or not, default: False
 
-        :Output:
-         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
-             the optimised portfolio.
+        :return: A DataFrame of weights/allocation of stocks within the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -542,12 +519,9 @@ class Portfolio:
         Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
-        :Input:
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties
-             or not.
+        :param verbose: Whether to print out properties or not, default: False
 
-        :Output:
-         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+        :return: A DataFrame of weights/allocation of stocks within
              the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -567,13 +541,12 @@ class Portfolio:
 
         Finds the portfolio with the minimum Volatility for a given target return.
 
-        :Input:
-         :target: ``float``, the target return of the optimised portfolio.
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties
-             or not.
+        :param target: The target return of the optimised portfolio.
+        :type target: :py:data:`~.finquant.data_types.NUMERIC`
 
-        :Output:
-         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+        :param verbose: Whether to print out properties or not, default: False
+
+        :return: A DataFrame of weights/allocation of stocks within
              the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -594,13 +567,12 @@ class Portfolio:
         Finds the portfolio with the maximum Sharpe Ratio for a given
         target Volatility.
 
-        :Input:
-         :target: ``float``, the target Volatility of the optimised portfolio.
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties
-             or not.
+        :param target: The target return of the optimised portfolio.
+        :type target: :py:data:`~.finquant.data_types.NUMERIC`
 
-        :Output:
-         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
+        :param verbose: Whether to print out properties or not, default: False
+
+        :return: A DataFrame of weights/allocation of stocks within
              the optimised portfolio.
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
@@ -624,12 +596,9 @@ class Portfolio:
         the target range according to those values.
         Results in the Efficient Frontier.
 
-        :Input:
-         :targets: ``list``/``numpy.ndarray`` (default: ``None``) of ``floats``,
-             range of target Returns.
+        :param targets: A list/array: range of target returns, default: ``None``
 
-        :Output:
-         :efrontier: ``numpy.ndarray`` of (Volatility, Return) values.
+        :return: Efficient Frontier as an array of (volatility, Return) values
         """
         # let EfficientFrontier.efficient_frontier handle input arguments
         # get/create instance of EfficientFrontier
@@ -691,16 +660,14 @@ class Portfolio:
         Optimisation of the portfolio by performing a Monte Carlo
         simulation.
 
-        :Input:
-         :num_trials: ``int`` (default: ``1000``), number of portfolios to be
-             computed, each with a random distribution of weights/allocation
-             in each stock.
+        :param num_trials: Number of portfolios to be computed, each with a random distribution
+            of weights/allocation in each stock, default: 1000
 
-        :Output:
-         :opt_w: ``pandas.DataFrame`` with optimised investment strategies for maximum
-             Sharpe Ratio and minimum Volatility.
-         :opt_res: ``pandas.DataFrame`` with Expected Return, Volatility and Sharpe Ratio
-             for portfolios with minimum Volatility and maximum Sharpe Ratio.
+        :return:
+            :opt_w: DataFrame with optimised investment strategies for maximum
+                Sharpe Ratio and minimum volatility.
+            :opt_res: DataFrame with Expected Return, Volatility and Sharpe Ratio
+                for portfolios with minimum Volatility and maximum Sharpe Ratio.
         """
         # dismiss previous instance of mc, as we are performing a new MC optimisation:
         self.mc = None
@@ -714,9 +681,7 @@ class Portfolio:
     def mc_plot_results(self) -> None:
         """Plots the results of the Monte Carlo run, with all of the randomly
         generated weights/portfolios, as well as markers for the portfolios with the
-
-        - minimum Volatility, and
-        - maximum Sharpe Ratio.
+        minimum Volatility, and maximum Sharpe Ratio.
         """
         # get instance of MonteCarloOpt
         mc: MonteCarloOpt = self._get_mc()
@@ -734,9 +699,8 @@ class Portfolio:
         """Plots the Expected annual Returns over annual Volatility of
         the stocks of the portfolio.
 
-        :Input:
-         :freq: ``int`` (default: ``252``), number of trading days, default
-             value corresponds to trading days in a year.
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
         """
         # Type validations:
         type_validation(freq=freq)
@@ -757,20 +721,23 @@ class Portfolio:
             )
 
     def properties(self) -> None:
-        """Nicely prints out the properties of the portfolio:
+        """
+        Nicely prints out the properties of the portfolio:
 
-        - Expected Return,
-        - Volatility,
-        - Downside Risk,
-        - Value at Risk (VaR),
-        - Confidence level of VaR,
-        - Sharpe Ratio,
-        - Sortino Ratio,
-        - Beta (optional),
-        - skewness,
-        - Kurtosis
+            - Expected Return,
+            - Volatility,
+            - Downside Risk,
+            - Value at Risk (VaR),
+            - Confidence level of VaR,
+            - Sharpe Ratio,
+            - Sortino Ratio,
+            - Beta (optional),
+            - skewness,
+            - Kurtosis
 
         as well as the allocation of the stocks across the portfolio.
+
+        :rtype: None
         """
         # nicely printing out information and quantities of the portfolio
         string: str = "-" * 70
@@ -831,14 +798,11 @@ def _quandl_request(
     end_date: Optional[STRING_OR_DATETIME] = None,
 ) -> pd.DataFrame:
     """This function performs a simple request from `quandl` and returns
-    a ``pandas.DataFrame`` containing stock data.
+    a DataFrame containing stock data.
 
-    :Input:
-     :names: List of strings of stock names to be requested
-     :start_date (optional): String/datetime of the start date of
-         relevant stock data.
-     :end_date (optional): String/datetime of the end date of
-         relevant stock data.
+    :param names: List of strings of stock names to be requested
+    :param start_date: String/datetime of the start date of relevant stock data.
+    :param end_date: String/datetime of the end date of relevant stock data.
     """
     try:
         import quandl  # pylint: disable=C0415
@@ -882,15 +846,11 @@ def _yfinance_request(
     end_date: Optional[STRING_OR_DATETIME] = None,
 ) -> pd.DataFrame:
     """This function performs a simple request from Yahoo Finance
-    (using `yfinance`) and returns a ``pandas.DataFrame``
-    containing stock data.
+    (using `yfinance`) and returns a DataFrame containing stock data.
 
-    :Input:
-     :names: List of strings of stock names to be requested
-     :start_date (optional): String/datetime of the start date of
-         relevant stock data.
-     :end_date (optional): String/datetime of the end date of
-         relevant stock data.
+    :param names: List of strings of stock names to be requested
+    :param start_date: (optional) String/datetime of the start date of relevant stock data.
+    :param end_date: (optional) String/datetime of the end date of relevant stock data.
     """
     try:
         import yfinance  # pylint: disable=C0415
@@ -947,17 +907,12 @@ def _get_stocks_data_columns(
     """This function returns a subset of the given ``pandas.DataFrame`` data, which
     contains only the data columns as specified in the input cols.
 
-    :Input:
-     :data: A ``pandas.DataFrame`` which contains quantities of the stocks
-         listed in pf_allocation.
-     :names: A string or list of strings, containing the names of the
-         stocks, e.g. 'WIKI/GOOG' for Google.
-     :cols: A list of strings of column labels of data to be extracted.
-         Currently only one column per stock is supported.
+    :param data: A DataFrame which contains quantities of the stocks listed in pf_allocation.
+    :param names: A list of strings, containing the names of the stocks, e.g. 'Google'.
+    :param cols: A list of strings of column labels of data to be extracted.
+        Currently only one column per stock is supported.
 
-    :Output:
-     :data: A ``pandas.DataFrame`` which contains only the data columns of
-         data as specified in cols.
+    :return: A DataFrame which contains only the data columns of data as specified in cols.
     """
     # Type validations:
     type_validation(data=data, names=names, cols=cols)
@@ -1034,25 +989,20 @@ def _build_portfolio_from_api(
     """Returns a portfolio based on input in form of a list of strings/names
     of stocks.
 
-    :Input:
-     :names: A string or list of strings, containing the names of the
-         stocks, e.g. 'GOOG' for Google.
-     :pf_allocation (optional): ``pandas.DataFrame`` with the required data column
-         labels ``Name`` and ``Allocation`` of the stocks.
-     :start_date (optional): String/datetime start date of stock data to
-         be requested through `quandl`/`yfinance` (default: None)
-     :end_date (optional): String/datetime end date of stock data to be
-         requested through `quandl`/`yfinance` (default: None)
-     :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
-         obtain stock prices, if data is not provided by the user. Valid values:
+    :param names: A list of strings, containing the names of the stocks, e.g. 'GOOG' for Google.
+    :param pf_allocation: (optional) A DataFrame with the required data column labels ``Name`` and
+        ``Allocation`` of the stocks.
+
+    :param start_date: (optional) String/datetime of the start date of relevant stock data.
+    :param end_date: (optional) String/datetime of the end date of relevant stock data.
+    :param data_api: (optional, default: 'quandl') A string which determines what API to use to obtain stock prices,
+        if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
-     :market_index: (optional) ``string`` (default: ``None``) which determines the
-         market index to be used for the computation of the beta parameter of the stocks.
+     :param market_index: (optional) A string which determines the market index to be used for the
+        computation of the beta parameter of the stocks, default: ``None``
 
-    :Output:
-     :pf: Instance of Portfolio which contains all the information
-         requested by the user.
+    :return: Instance of Portfolio which contains all the information requested by the user.
     """
     # Type validations:
     type_validation(
@@ -1104,12 +1054,9 @@ def _get_index_adj_clos_pr(data: pd.DataFrame) -> pd.Series:
     """This function returns a subset of the given ``pandas.DataFrame`` data, which
     contains only the data columns corresponding to Adjusted Closing Price.
 
-    :Input:
-     :data: A ``pandas.DataFrame`` which contains financial data.
+    :param data: A DataFrame which contains financial data.
 
-    :Output:
-     :data: A ``pandas.Series`` which contains only the data column of
-         data corresponding to Adjusted Closing Price.
+    :return: A Series which contains only the data column of data corresponding to Adjusted Closing Price.
     """
     return data["Adj Close"].squeeze().astype(np.float64)
 
@@ -1121,12 +1068,10 @@ def _generate_pf_allocation(
     ``pandas.DataFrame`` with columns ``Name`` and ``Allocation`` which contain the
     names found in input ``data`` and 1.0/len(data.columns) respectively.
 
-    :Input:
-     :data: A ``pandas.DataFrame`` which contains prices of the stocks
+    :param data: A DataFrame which contains prices of the stocks.
 
-    :Output:
-     :pf_allocation: ``pandas.DataFrame`` with columns ``Name`` and ``Allocation``, which
-         contain the names and weights of the stocks
+    :return: A DataFrame with columns ``Name`` and ``Allocation``, which contain the names
+        and weights of the stocks.
     """
     # checking input arguments
     if names is not None and data is not None or names is None and data is None:
@@ -1185,21 +1130,17 @@ def _build_portfolio_from_df(
 ) -> Portfolio:
     """Returns a portfolio based on input in form of ``pandas.DataFrame``.
 
-    :Input:
-     :data: A ``pandas.DataFrame`` which contains prices of the stocks listed in
-         pf_allocation
-     :pf_allocation: (optional) ``pandas.DataFrame`` with the required data column
+    :param data: A DataFrame which contains prices of the stocks listed in pf_allocation.
+    :param pf_allocation: (optional) A DataFrame with the required data column
          labels ``Name`` and ``Allocation`` of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
-         in the resulting portfolio.
-     :data_columns: (optional) A list of strings of data column labels
-         to be extracted and returned (default: ["Adj. Close"]).
-     :market_data: (optional) A ``pandas.DataFrame`` which contains data of the
+         in the resulting portfolio, default: ``None``.
+    :param data_columns: (optional) A list of strings of data column labels
+         to be extracted and returned (default: ``["Adj. Close"]``).
+    :param market_data: (optional) A DataFrame which contains data of the
          market index (default: ``None``).
 
-    :Output:
-     :pf: Instance of Portfolio which contains all the information
-         requested by the user.
+    :return: Instance of Portfolio which contains all the information requested by the user.
     """
     # if pf_allocation is None, automatically generate it
     if pf_allocation is None:
@@ -1268,35 +1209,34 @@ def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
     """This function builds and returns an instance of ``Portfolio``
     given a set of input arguments.
 
-    :Input:
-     :pf_allocation: (optional) ``pandas.DataFrame`` with the required data column
+    :param pf_allocation: (optional) A DataFrame with the required data column
          labels ``Name`` and ``Allocation`` of the stocks. If not given, it is
          automatically generated with an equal weights for all stocks
          in the resulting portfolio.
-     :names: (optional) A ``string`` or ``list`` of ``strings``, containing the names
+    :param names: (optional) A List of strings, containing the names
          of the stocks, e.g. "GOOG" for Google.
-     :start_date: (optional) ``string``/``datetime`` start date of stock data to be
+    :param start_date: (optional) string/datetime start date of stock data to be
          requested through `quandl`/`yfinance` (default: ``None``).
-     :end_date: (optional) ``string``/``datetime`` end date of stock data to be
+    :param end_date: (optional) string/datetime end date of stock data to be
          requested through `quandl`/`yfinance` (default: ``None``).
-     :data: (optional) A ``pandas.DataFrame`` which contains quantities of
+    :param data: (optional) A DataFrame which contains quantities of
          the stocks listed in ``pf_allocation``.
-     :data_api: (optional) A ``string`` (default: ``quandl``) which determines how to
-         obtain stock prices, if data is not provided by the user. Valid values:
+    :param data_api: (optional) A string (default: ``quandl``) which determines how to obtain
+        stock prices, if data is not provided by the user. Valid values:
 
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
-     :market_index: (optional) ``string`` (default: ``None``) which determines the
-         market index to be used for the computation of the beta parameter of the stocks.
+    :param market_index: (optional) string which determines the
+         market index to be used for the computation of the beta parameter of the stocks,
+         default: ``None``.
 
-    :Output:
-     :pf: Instance of ``Portfolio`` which contains all the information
-         requested by the user.
+    :return: Instance of ``Portfolio`` which contains all the information requested by the user.
 
     .. note:: Only the following combinations of inputs are allowed:
 
-     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional), ``data_api`` (optional), ``market_index`` (optional)
+     - ``names``, ``pf_allocation`` (optional), ``start_date`` (optional), ``end_date`` (optional),\
+        ``data_api`` (optional), ``market_index`` (optional)
      - ``data``, ``pf_allocation`` (optional)
 
      The two different ways this function can be used are useful for:

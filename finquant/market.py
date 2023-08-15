@@ -23,7 +23,7 @@ class Market(Asset):
     """
     Class representing a market index.
 
-    :param data: Historical price data of the market index as a ``pandas.Series``.
+    :param data: Historical price data of the market index.
 
     The ``Market`` class extends the ``Asset`` class and represents a specific type of asset,
     specifically a market index.
@@ -36,8 +36,7 @@ class Market(Asset):
 
     def __init__(self, data: pd.Series) -> None:
         """
-        :Input:
-         :data: ``pandas.Series`` of market index prices
+        :param data: Historical price data of the market index.
         """
         super().__init__(data, name=data.name, asset_type="Market index")
         self.daily_returns = self.comp_daily_returns()
