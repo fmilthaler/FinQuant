@@ -337,11 +337,11 @@ rsi(dis)
 plt.show()
 
 # plot RSI with custom arguments
-rsi(dis, oversold = 20, overbought = 80)
+rsi(dis, oversold=20, overbought=80)
 plt.show()
 
 # plot RSI standalone graph
-rsi(dis, oversold = 20, overbought = 80, standalone=True)
+rsi(dis, oversold=20, overbought=80, standalone=True)
 plt.show()
 
 # <codecell>
@@ -353,9 +353,9 @@ macd(dis)
 plt.show()
 
 # plot MACD using custom arguments
-macd(dis, longer_ema_window = 30, shorter_ema_window = 15, signal_ema_window = 10)
+macd(dis, longer_ema_window=30, shorter_ema_window=15, signal_ema_window=10)
 plt.show()
 
 # plot MACD standalone graph
-macd(standlone = True)
+macd(standlone=True)
 plt.show()
