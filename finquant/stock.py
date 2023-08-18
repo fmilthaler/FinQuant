@@ -27,12 +27,11 @@ from typing import Optional
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics import r2_score
 
 from finquant.asset import Asset
 from finquant.data_types import FLOAT
 from finquant.type_utilities import type_validation
-
-from sklearn.metrics import r2_score
 
 
 class Stock(Asset):

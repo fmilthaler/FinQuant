@@ -1031,7 +1031,7 @@ def _build_portfolio_from_api(
         if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
-    :param market_index: (optional, default: ``None``) A string which determines the market index 
+    :param market_index: (optional, default: ``None``) A string which determines the market index
         to be used for the computation of the beta parameter and the R squared of the stocks
 
     :return: Instance of Portfolio which contains all the information requested by the user.
