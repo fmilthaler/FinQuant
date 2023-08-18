@@ -24,6 +24,7 @@ and makes the most common quantitative calculations, such as:
 - Sharpe Ratio,
 - Sortino Ratio,
 - Beta parameter (optional),
+- R squared coefficient (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
 - the portfolio's covariance matrix.
@@ -127,6 +128,8 @@ class Portfolio:
     __market_index: Optional[Market]
     beta_stocks: pd.DataFrame
     beta: Optional[FLOAT]
+    rsquared_stocks: pd.DataFrame
+    rsquared: Optional[FLOAT]
 
     def __init__(self) -> None:
         """Initiates ``Portfolio``."""
@@ -142,9 +145,12 @@ class Portfolio:
         self.mc = None
         # instance variable for Market class
         self.__market_index = None
-        # dataframe containing beta values of stocks
+        # dataframe containing beta parameters of stocks
         self.beta_stocks = pd.DataFrame(index=["beta"])
         self.beta = None
+        # dataframe containing rsquared coefficients of stocks
+        self.rsquared_stocks = pd.DataFrame(index=["rsquared"])
+        self.rsquared = None
 
     @property
     def totalinvestment(self) -> NUMERIC:
@@ -267,6 +273,10 @@ class Portfolio:
             beta_stock = stock.comp_beta(self.market_index.daily_returns)
             # add beta of stock to portfolio's betas dataframe
             self.beta_stocks[stock.name] = [beta_stock]
+            # compute R squared coefficient of stock
+            rsquared_stock = stock.comp_rsquared(self.market_index.daily_returns)
+            # add rsquared of stock to portfolio's R squared dataframe
+            self.rsquared_stocks[stock.name] = [rsquared_stock]
 
     def _update(self) -> None:
         # sanity check (only update values if none of the below is empty):
@@ -282,6 +292,7 @@ class Portfolio:
             self.kurtosis = self._comp_kurtosis()
             if self.market_index is not None:
                 self.beta = self.comp_beta()
+                self.rsquared = self.comp_rsquared()
 
     def get_stock(self, name: str) -> Stock:
         """Returns the instance of ``Stock`` with name ``name``.
@@ -455,6 +466,24 @@ class Portfolio:
 
             self.beta = beta
             return beta
+        else:
+            return None
+
+    def comp_rsquared(self) -> Optional[FLOAT]:
+        """Compute and return the R squared coefficient of the portfolio.
+
+        :return: R squared coefficient of the portfolio
+        """
+
+        # compute the R squared coefficient of the portfolio
+        weights: pd.Series = self.comp_weights()
+        if weights.size == self.beta_stocks.size:
+            rsquared: FLOAT = weighted_mean(
+                self.rsquared_stocks.transpose()["rsquared"].values, weights
+            )
+
+            self.rsquared = rsquared
+            return rsquared
         else:
             return None
 
@@ -732,6 +761,7 @@ class Portfolio:
             - Sharpe Ratio,
             - Sortino Ratio,
             - Beta (optional),
+            - R squared (optional),
             - skewness,
             - Kurtosis
 
@@ -757,6 +787,8 @@ class Portfolio:
         string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
+        if self.rsquared is not None:
+            string += f"\nPortfolio R squared: {self.rsquared:0.3f}"
         string += "\n\nSkewness:"
         string += "\n" + str(self.skew.to_frame().transpose())
         string += "\n\nKurtosis:"
@@ -999,8 +1031,8 @@ def _build_portfolio_from_api(
         if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
-     :param market_index: (optional) A string which determines the market index to be used for the
-        computation of the beta parameter of the stocks, default: ``None``
+    :param market_index: (optional, default: ``None``) A string which determines the market index 
+        to be used for the computation of the beta parameter and the R squared of the stocks
 
     :return: Instance of Portfolio which contains all the information requested by the user.
     """
@@ -1228,8 +1260,8 @@ def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
     :param market_index: (optional) string which determines the
-         market index to be used for the computation of the beta parameter of the stocks,
-         default: ``None``.
+         market index to be used for the computation of the beta parameter 
+         and the R squared coefficient of the stocks, default: ``None``.
 
     :return: Instance of ``Portfolio`` which contains all the information requested by the user.
 
