@@ -40,3 +40,4 @@ def test_Market():
     assert isinstance(pf.market_index, Market)
     assert pf.market_index.name == "^GSPC"
     assert pf.beta is not None
+    assert pf.rsquared is not None
