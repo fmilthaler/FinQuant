@@ -98,9 +98,11 @@ class Stock(Asset):
         # Type validations:
         type_validation(market_daily_returns=market_daily_returns)
 
-        rsquared = r2_score(
-            market_daily_returns.to_frame()[market_daily_returns.name],
-            self.comp_daily_returns(),
+        rsquared = float(
+            r2_score(
+                market_daily_returns.to_frame()[market_daily_returns.name],
+                self.comp_daily_returns(),
+            )
         )
         self.rsquared = rsquared
         return rsquared
