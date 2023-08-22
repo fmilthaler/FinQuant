@@ -10,13 +10,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-from finquant.data_types import (
-    ARRAY_OR_DATAFRAME,
-    ARRAY_OR_SERIES,
-    FLOAT,
-    INT,
-    NUMERIC,
-)
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_SERIES, FLOAT, INT, NUMERIC
 from finquant.returns import weighted_mean_daily_returns
 from finquant.type_utilities import type_validation
 
