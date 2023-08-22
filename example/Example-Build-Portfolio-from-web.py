@@ -67,7 +67,7 @@ pf_allocation = pd.DataFrame.from_dict(d, orient="index")
 #
 # In the below example we are using `yfinance` to download stock data. We specify the start and end date of the stock prices to be downloaded.
 # We also provide the optional parameter `market_index` to download the historical data of a market index.
-# `FinQuant` can use them to calculate the beta parameter and R squared coefficient, measuring the portfolio's daily volatility and relationship compared to the market.
+# `FinQuant` can use them to calculate the Treynor Ratio, beta parameter, and R squared coefficient, measuring the portfolio's daily volatility compared to the market.
 
 # <codecell>
 

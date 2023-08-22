@@ -41,3 +41,4 @@ def test_Market():
     assert pf.market_index.name == "^GSPC"
     assert pf.beta is not None
     assert pf.rsquared is not None
+    assert pf.treynor is not None

@@ -124,7 +124,7 @@ def sortino_ratio(
 
 def treynor_ratio(
     exp_return: FLOAT, beta: FLOAT_OPTIONAL, risk_free_rate: FLOAT = 0.005
-) -> FLOAT:
+) -> FLOAT_OPTIONAL:
     """Computes the Treynor Ratio.
 
     :param exp_return: Expected Return of a portfolio
@@ -138,7 +138,7 @@ def treynor_ratio(
 
     :rtype: :py:data:`~.finquant.data_types.FLOAT`
     :return: Treynor Ratio as a floating point number:
-        ``(exp_return - risk_free_rate) / float(beta)``
+        ``(exp_return - risk_free_rate) / beta``
     """
     # Type validations:
     type_validation(
@@ -147,7 +147,7 @@ def treynor_ratio(
         risk_free_rate=risk_free_rate,
     )
     if beta is None:
-        return np.nan
+        return None
     else:
         res_treynor_ratio: FLOAT = (exp_return - risk_free_rate) / beta
         return res_treynor_ratio
