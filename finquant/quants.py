@@ -4,7 +4,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 """
 
 
-from typing import Tuple, Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
