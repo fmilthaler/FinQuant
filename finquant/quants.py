@@ -146,8 +146,7 @@ def treynor_ratio(
         beta_parameter=beta,
         risk_free_rate=risk_free_rate,
     )
-    res_treynor_ratio: FLOAT = (exp_return - risk_free_rate) / float(beta)
-    return res_treynor_ratio
+    return (exp_return - risk_free_rate) / float(beta)
 
 
 def downside_risk(
