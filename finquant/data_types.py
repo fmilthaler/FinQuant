@@ -67,7 +67,6 @@ LIST_DICT_KEYS = Union[ARRAY_OR_LIST[ELEMENT_TYPE], KeysView[ELEMENT_TYPE]]
 
 # Numeric types
 FLOAT = Union[np.floating, float]
-FLOAT_OPTIONAL = Union[FLOAT, None]
 INT = Union[np.integer, int]
 NUMERIC = Union[INT, FLOAT]
 

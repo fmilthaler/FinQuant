@@ -511,14 +511,14 @@ class Portfolio:
             self.expected_return, self.downside_risk, self.risk_free_rate
         )
 
-    def comp_treynor(self) -> FLOAT:
+    def comp_treynor(self) -> Optional[FLOAT]:
         """Compute and return the Treynor Ratio of the portfolio.
 
         :type freq: :py:data:`~.finquant.data_types.FLOAT`
         :return: The Treynor Ratio of the portfolio.
         """
         # compute the Treynor Ratio of the portfolio
-        treynor: FLOAT = treynor_ratio(
+        treynor: Optional[FLOAT] = treynor_ratio(
             self.expected_return, self.beta, self.risk_free_rate
         )
         self.treynor = treynor

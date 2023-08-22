@@ -4,7 +4,7 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 """
 
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 import numpy as np
 import pandas as pd
@@ -123,8 +123,8 @@ def sortino_ratio(
 
 
 def treynor_ratio(
-    exp_return: FLOAT, beta: FLOAT_OPTIONAL, risk_free_rate: FLOAT = 0.005
-) -> FLOAT_OPTIONAL:
+    exp_return: FLOAT, beta: Optional[FLOAT], risk_free_rate: FLOAT = 0.005
+) -> Optional[FLOAT]:
     """Computes the Treynor Ratio.
 
     :param exp_return: Expected Return of a portfolio
