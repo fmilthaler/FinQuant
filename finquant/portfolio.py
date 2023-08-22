@@ -23,6 +23,7 @@ and makes the most common quantitative calculations, such as:
 - Value at Risk,
 - Sharpe Ratio,
 - Sortino Ratio,
+- Treynor Ratio (optional),
 - Beta parameter (optional),
 - R squared coefficient (optional),
 - skewness of the portfolio's stocks,
@@ -85,6 +86,7 @@ from finquant.quants import (
     downside_risk,
     sharpe_ratio,
     sortino_ratio,
+    treynor_ratio,
     value_at_risk,
     weighted_mean,
     weighted_std,
@@ -117,6 +119,7 @@ class Portfolio:
     var: FLOAT
     sharpe: FLOAT
     sortino: FLOAT
+    treynor: Optional[FLOAT]
     skew: pd.Series
     kurtosis: pd.Series
     __totalinvestment: NUMERIC
@@ -145,6 +148,8 @@ class Portfolio:
         self.mc = None
         # instance variable for Market class
         self.__market_index = None
+        # Treynor Ratio of the portfolio
+        self.treynor = None
         # dataframe containing beta parameters of stocks
         self.beta_stocks = pd.DataFrame(index=["beta"])
         self.beta = None
@@ -240,6 +245,13 @@ class Portfolio:
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
+        If argument ``defer_update`` is ``True`` and ``__market_index`` is not ``None``,
+        the following instance variables are (re-)computed as well:
+
+        - ``beta``: Beta parameter of the portfolio
+        - ``rsquared``: R squared coefficient of the portfolio
+        - ``treynor``: Treynor Ratio of the portfolio
+
         :param stock: An instance of the class ``Stock``.
         :param defer_update: bool, if True instance variables are not (re-)computed at the end of this method.
         """
@@ -293,6 +305,7 @@ class Portfolio:
             if self.market_index is not None:
                 self.beta = self.comp_beta()
                 self.rsquared = self.comp_rsquared()
+                self.treynor = self.comp_treynor()
 
     def get_stock(self, name: str) -> Stock:
         """Returns the instance of ``Stock`` with name ``name``.
@@ -497,6 +510,19 @@ class Portfolio:
         return sortino_ratio(
             self.expected_return, self.downside_risk, self.risk_free_rate
         )
+
+    def comp_treynor(self) -> FLOAT:
+        """Compute and return the Treynor Ratio of the portfolio.
+
+        :type freq: :py:data:`~.finquant.data_types.FLOAT`
+        :return: The Treynor Ratio of the portfolio.
+        """
+        # compute the Treynor Ratio of the portfolio
+        treynor: FLOAT = treynor_ratio(
+            self.expected_return, self.beta, self.risk_free_rate
+        )
+        self.treynor = treynor
+        return treynor
 
     def _comp_skew(self) -> pd.Series:
         """Computes and returns the skewness of the stocks in the portfolio."""
@@ -760,6 +786,7 @@ class Portfolio:
             - Confidence level of VaR,
             - Sharpe Ratio,
             - Sortino Ratio,
+            - Treynor Ratio (optional),            
             - Beta (optional),
             - R squared (optional),
             - skewness,
@@ -785,6 +812,8 @@ class Portfolio:
         string += f"{self.var_confidence_level * 100:0.2f} %"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
         string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
+        if self.treynor is not None:
+            string += f"\nPortfolio Treynor Ratio: {self.treynor:0.3f}"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
         if self.rsquared is not None:
@@ -1032,7 +1061,7 @@ def _build_portfolio_from_api(
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
     :param market_index: (optional, default: ``None``) A string which determines the market index
-        to be used for the computation of the beta parameter and the R squared of the stocks
+        to be used for the computation of the Trenor Ratio, beta parameter and the R squared of the portfolio.
 
     :return: Instance of Portfolio which contains all the information requested by the user.
     """
@@ -1259,9 +1288,9 @@ def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
-    :param market_index: (optional) string which determines the
-         market index to be used for the computation of the beta parameter 
-         and the R squared coefficient of the stocks, default: ``None``.
+    :param market_index: (optional) A string (default: ``None``) which determines the
+         market index to be used for the computation of the Treynor ratio, beta parameter 
+         and the R squared coefficient of the portflio.
 
     :return: Instance of ``Portfolio`` which contains all the information requested by the user.
 

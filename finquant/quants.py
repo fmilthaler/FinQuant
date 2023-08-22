@@ -115,6 +115,34 @@ def sortino_ratio(
         return (exp_return - risk_free_rate) / float(downs_risk)
 
 
+def treynor_ratio(
+    exp_return: FLOAT, beta: FLOAT, risk_free_rate: FLOAT = 0.005
+) -> FLOAT:
+    """Computes the Treynor Ratio.
+
+    :param exp_return: Expected Return of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param beta: Beta parameter of a portfolio
+    :type beta: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Treynor Ratio as a floating point number:
+        ``(exp_return - risk_free_rate) / float(beta)``
+    """
+    # Type validations:
+    type_validation(
+        expected_return=exp_return,
+        beta_parameter=beta,
+        risk_free_rate=risk_free_rate,
+    )
+    res_treynor_ratio: FLOAT = (exp_return - risk_free_rate) / float(beta)
+    return res_treynor_ratio
+
+
 def downside_risk(
     data: pd.DataFrame, weights: ARRAY_OR_SERIES[FLOAT], risk_free_rate: FLOAT = 0.005
 ) -> FLOAT:
