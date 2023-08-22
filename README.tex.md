@@ -254,6 +254,7 @@ look at the examples provided in `./example`.
  - Value at Risk, 
  - Sharpe Ratio,
  - Sortino Ratio,
+ - Treynor Ratio,
  - Beta parameter,
  - R squared coefficient.
 
