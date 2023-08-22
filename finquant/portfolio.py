@@ -786,7 +786,7 @@ class Portfolio:
             - Confidence level of VaR,
             - Sharpe Ratio,
             - Sortino Ratio,
-            - Treynor Ratio (optional),            
+            - Treynor Ratio (optional),
             - Beta (optional),
             - R squared (optional),
             - skewness,
