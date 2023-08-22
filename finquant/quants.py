@@ -146,8 +146,11 @@ def treynor_ratio(
         beta_parameter=beta,
         risk_free_rate=risk_free_rate,
     )
-    res_treynor_ratio: FLOAT = (exp_return - risk_free_rate) / beta
-    return res_treynor_ratio
+    if beta is None:
+        return np.nan
+    else:
+        res_treynor_ratio: FLOAT = (exp_return - risk_free_rate) / beta
+        return res_treynor_ratio
 
 
 def downside_risk(
