@@ -14,7 +14,6 @@ from finquant.data_types import (
     ARRAY_OR_DATAFRAME,
     ARRAY_OR_SERIES,
     FLOAT,
-    FLOAT_OPTIONAL,
     INT,
     NUMERIC,
 )
