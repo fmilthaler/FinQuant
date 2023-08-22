@@ -10,7 +10,14 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
-from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_SERIES, FLOAT, INT, NUMERIC
+from finquant.data_types import (
+    ARRAY_OR_DATAFRAME,
+    ARRAY_OR_SERIES,
+    FLOAT,
+    FLOAT_OPTIONAL,
+    INT,
+    NUMERIC,
+)
 from finquant.returns import weighted_mean_daily_returns
 from finquant.type_utilities import type_validation
 
@@ -116,7 +123,7 @@ def sortino_ratio(
 
 
 def treynor_ratio(
-    exp_return: FLOAT, beta: FLOAT, risk_free_rate: FLOAT = 0.005
+    exp_return: FLOAT, beta: FLOAT_OPTIONAL, risk_free_rate: FLOAT = 0.005
 ) -> FLOAT:
     """Computes the Treynor Ratio.
 
