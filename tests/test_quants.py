@@ -9,6 +9,7 @@ from finquant.quants import (
     downside_risk,
     sharpe_ratio,
     sortino_ratio,
+    treynor_ratio,
     value_at_risk,
     weighted_mean,
     weighted_std,
@@ -42,6 +43,11 @@ def test_sharpe_ratio():
 def test_sortino_ratio():
     assert sortino_ratio(0.5, 0.0, 0.02) is np.NaN
     assert sortino_ratio(0.005, 8.5, 0.005) == 0.0
+
+
+def test_treynor_ratio():
+    assert treynor_ratio(0.2, 0.9, 0.002) == 0.22
+    assert treynor_ratio(0.005, 0.92, 0.005) == 0.0
 
 
 def test_value_at_risk():

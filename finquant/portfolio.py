@@ -23,7 +23,9 @@ and makes the most common quantitative calculations, such as:
 - Value at Risk,
 - Sharpe Ratio,
 - Sortino Ratio,
+- Treynor Ratio (optional),
 - Beta parameter (optional),
+- R squared coefficient (optional),
 - skewness of the portfolio's stocks,
 - Kurtosis of the portfolio's stocks,
 - the portfolio's covariance matrix.
@@ -84,6 +86,7 @@ from finquant.quants import (
     downside_risk,
     sharpe_ratio,
     sortino_ratio,
+    treynor_ratio,
     value_at_risk,
     weighted_mean,
     weighted_std,
@@ -116,6 +119,7 @@ class Portfolio:
     var: FLOAT
     sharpe: FLOAT
     sortino: FLOAT
+    treynor: Optional[FLOAT]
     skew: pd.Series
     kurtosis: pd.Series
     __totalinvestment: NUMERIC
@@ -127,6 +131,8 @@ class Portfolio:
     __market_index: Optional[Market]
     beta_stocks: pd.DataFrame
     beta: Optional[FLOAT]
+    rsquared_stocks: pd.DataFrame
+    rsquared: Optional[FLOAT]
 
     def __init__(self) -> None:
         """Initiates ``Portfolio``."""
@@ -142,9 +148,14 @@ class Portfolio:
         self.mc = None
         # instance variable for Market class
         self.__market_index = None
-        # dataframe containing beta values of stocks
+        # Treynor Ratio of the portfolio
+        self.treynor = None
+        # dataframe containing beta parameters of stocks
         self.beta_stocks = pd.DataFrame(index=["beta"])
         self.beta = None
+        # dataframe containing rsquared coefficients of stocks
+        self.rsquared_stocks = pd.DataFrame(index=["rsquared"])
+        self.rsquared = None
 
     @property
     def totalinvestment(self) -> NUMERIC:
@@ -234,6 +245,13 @@ class Portfolio:
         - ``skew``: Skewness of the portfolio's stocks
         - ``kurtosis``: Kurtosis of the portfolio's stocks
 
+        If argument ``defer_update`` is ``True`` and ``__market_index`` is not ``None``,
+        the following instance variables are (re-)computed as well:
+
+        - ``beta``: Beta parameter of the portfolio
+        - ``rsquared``: R squared coefficient of the portfolio
+        - ``treynor``: Treynor Ratio of the portfolio
+
         :param stock: An instance of the class ``Stock``.
         :param defer_update: bool, if True instance variables are not (re-)computed at the end of this method.
         """
@@ -267,6 +285,10 @@ class Portfolio:
             beta_stock = stock.comp_beta(self.market_index.daily_returns)
             # add beta of stock to portfolio's betas dataframe
             self.beta_stocks[stock.name] = [beta_stock]
+            # compute R squared coefficient of stock
+            rsquared_stock = stock.comp_rsquared(self.market_index.daily_returns)
+            # add rsquared of stock to portfolio's R squared dataframe
+            self.rsquared_stocks[stock.name] = [rsquared_stock]
 
     def _update(self) -> None:
         # sanity check (only update values if none of the below is empty):
@@ -282,6 +304,8 @@ class Portfolio:
             self.kurtosis = self._comp_kurtosis()
             if self.market_index is not None:
                 self.beta = self.comp_beta()
+                self.rsquared = self.comp_rsquared()
+                self.treynor = self.comp_treynor()
 
     def get_stock(self, name: str) -> Stock:
         """Returns the instance of ``Stock`` with name ``name``.
@@ -458,6 +482,25 @@ class Portfolio:
         else:
             return None
 
+    def comp_rsquared(self) -> Optional[FLOAT]:
+        """Compute and return the R squared coefficient of the portfolio.
+
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
+        :return: R squared coefficient of the portfolio
+        """
+
+        # compute the R squared coefficient of the portfolio
+        weights: pd.Series = self.comp_weights()
+        if weights.size == self.beta_stocks.size:
+            rsquared: FLOAT = weighted_mean(
+                self.rsquared_stocks.transpose()["rsquared"].values, weights
+            )
+
+            self.rsquared = rsquared
+            return rsquared
+        else:
+            return None
+
     def comp_sortino(self) -> FLOAT:
         """Compute and return the Sortino Ratio of the portfolio
 
@@ -468,6 +511,19 @@ class Portfolio:
         return sortino_ratio(
             self.expected_return, self.downside_risk, self.risk_free_rate
         )
+
+    def comp_treynor(self) -> Optional[FLOAT]:
+        """Compute and return the Treynor Ratio of the portfolio.
+
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
+        :return: The Treynor Ratio of the portfolio.
+        """
+        # compute the Treynor Ratio of the portfolio
+        treynor: Optional[FLOAT] = treynor_ratio(
+            self.expected_return, self.beta, self.risk_free_rate
+        )
+        self.treynor = treynor
+        return treynor
 
     def _comp_skew(self) -> pd.Series:
         """Computes and returns the skewness of the stocks in the portfolio."""
@@ -731,7 +787,9 @@ class Portfolio:
             - Confidence level of VaR,
             - Sharpe Ratio,
             - Sortino Ratio,
+            - Treynor Ratio (optional),
             - Beta (optional),
+            - R squared (optional),
             - skewness,
             - Kurtosis
 
@@ -755,8 +813,12 @@ class Portfolio:
         string += f"{self.var_confidence_level * 100:0.2f} %"
         string += f"\nPortfolio Sharpe Ratio: {self.sharpe:0.3f}"
         string += f"\nPortfolio Sortino Ratio: {self.sortino:0.3f}"
+        if self.treynor is not None:
+            string += f"\nPortfolio Treynor Ratio: {self.treynor:0.3f}"
         if self.beta is not None:
             string += f"\nPortfolio Beta: {self.beta:0.3f}"
+        if self.rsquared is not None:
+            string += f"\nPortfolio R squared: {self.rsquared:0.3f}"
         string += "\n\nSkewness:"
         string += "\n" + str(self.skew.to_frame().transpose())
         string += "\n\nKurtosis:"
@@ -999,8 +1061,8 @@ def _build_portfolio_from_api(
         if data is not provided by the user. Valid values:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
-     :param market_index: (optional) A string which determines the market index to be used for the
-        computation of the beta parameter of the stocks, default: ``None``
+    :param market_index: (optional, default: ``None``) A string which determines the market index
+        to be used for the computation of the Trenor Ratio, beta parameter and the R squared of the portfolio.
 
     :return: Instance of Portfolio which contains all the information requested by the user.
     """
@@ -1227,9 +1289,9 @@ def build_portfolio(**kwargs: Dict[str, Any]) -> Portfolio:
          - ``quandl`` (Python package/API to `Quandl`)
          - ``yfinance`` (Python package formerly known as ``fix-yahoo-finance``)
 
-    :param market_index: (optional) string which determines the
-         market index to be used for the computation of the beta parameter of the stocks,
-         default: ``None``.
+    :param market_index: (optional) A string (default: ``None``) which determines the
+         market index to be used for the computation of the Treynor ratio, beta parameter 
+         and the R squared coefficient of the portflio.
 
     :return: Instance of ``Portfolio`` which contains all the information requested by the user.
 

@@ -145,6 +145,7 @@ type_dict: Dict[
     "mu": ((float, np.floating), None),
     "sigma": ((float, np.floating), None),
     "conf_level": ((float, np.floating), None),
+    "beta_parameter": ((float, np.floating), None),
     # INTs:
     "freq": ((int, np.integer), None),
     "span": ((int, np.integer), None),

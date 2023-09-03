@@ -7,7 +7,7 @@
     <img src="https://img.shields.io/github/stars/fmilthaler/FinQuant.svg?style=social&label=Star" alt='pypi'>
   </a>
   <a href="https://pypi.org/project/FinQuant">
-    <img src="https://img.shields.io/badge/pypi-v0.6.2-brightgreen.svg?style=popout" alt='pypi'>
+    <img src="https://img.shields.io/badge/pypi-v0.7.0-brightgreen.svg?style=popout" alt='pypi'>
   </a>
   <a href="https://github.com/fmilthaler/FinQuant">
     <img src="https://github.com/fmilthaler/finquant/actions/workflows/pytest.yml/badge.svg?branch=master" alt='GitHub Actions'>
@@ -169,6 +169,7 @@ As it is common for open-source projects, there are several ways to get hold of 
  - quandl>=3.4.5
  - yfinance>=0.1.43
  - scipy>=1.2.0
+ - scikit-learn>=1.3.0
 
 ### From PyPI
 *FinQuant* can be obtained from PyPI
@@ -253,7 +254,9 @@ look at the examples provided in `./example`.
  - Value at Risk, 
  - Sharpe Ratio,
  - Sortino Ratio,
- - Beta parameter.
+ - Treynor Ratio,
+ - Beta parameter,
+ - R squared coefficient.
 
 It also shows how to extract individual stocks from the given portfolio. Moreover it shows how to compute and visualise:
  - the different Returns provided by the module `finquant.returns`,
