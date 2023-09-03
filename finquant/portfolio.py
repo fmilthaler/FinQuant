@@ -485,6 +485,7 @@ class Portfolio:
     def comp_rsquared(self) -> Optional[FLOAT]:
         """Compute and return the R squared coefficient of the portfolio.
 
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
         :return: R squared coefficient of the portfolio
         """
 
