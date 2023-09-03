@@ -514,7 +514,7 @@ class Portfolio:
     def comp_treynor(self) -> Optional[FLOAT]:
         """Compute and return the Treynor Ratio of the portfolio.
 
-        :type freq: :py:data:`~.finquant.data_types.FLOAT`
+        :rtype: :py:data:`~.finquant.data_types.FLOAT`
         :return: The Treynor Ratio of the portfolio.
         """
         # compute the Treynor Ratio of the portfolio
