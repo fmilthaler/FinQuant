@@ -15,7 +15,7 @@ Building a Portfolio
 
 Getting an object of ``Portfolio`` that holds stock prices of four different stocks, as well as its properties and interfaces to optimisation methods is as simple as:
 
-.. code:: python
+.. code-block:: python
 
     from finquant.portfolio import build_portfolio
     names = ['GOOG', 'AMZN', 'MCD', 'DIS']
@@ -25,7 +25,7 @@ The above uses *Quandl* in the background to download the requested data. For mo
 
 If preferred, *FinQuant* also allows to fetch stock price data from |yahoofinance|_. The code snippet below is the equivalent to the above, but using yfinance_ instead (default value for ``data_api`` is ``"quandl"``):
 
-.. code:: python
+.. code-block:: python
 
     from finquant.portfolio import build_portfolio
     names = ['GOOG', 'AMZN', 'MCD', 'DIS']
@@ -33,7 +33,7 @@ If preferred, *FinQuant* also allows to fetch stock price data from |yahoofinanc
 
 Alternatively, if you already are in possession of stock prices you want to analyse/optimise, you can do the following.
 
-.. code:: python
+.. code-block:: python
 
     import pathlib
     from finquant.portfolio import build_portfolio
@@ -50,13 +50,13 @@ Properties of the Portfolio
 
 The portfolio's properties are automatically computed as it is being built. One can have a look at them with
 
-.. code:: python
+.. code-block:: python
 
     pf.properties()
 
 which shows
 
-.. code::
+.. code-block:: python
 
     ----------------------------------------------------------------------
     Stocks: GOOG, AMZN, MCD, DIS
@@ -89,7 +89,7 @@ Moving Averages
 
 .. note:: When computing/visualising a *band* of Moving Averages, ``compute_ma`` automatically finds the buy/sell signals based on the minimum/maximum *Moving Average* that were computed and highlights those with arrow up/down markers.
 
-.. code:: python
+.. code-block:: python
 
     from finquant.moving_average import compute_ma, ema
     # get stock data for Disney
@@ -120,7 +120,7 @@ Portfolio Optimisation
 ======================
 *FinQuant* allows the optimisation of financial portfolios along the *Efficient Frontier* by minimising a cost/objective function. *FinQuant* uses the Python package ``scipy`` for the minimisation. Alternatively, a *Monte Carlo* approach is implemented as well. The below demonstrates how *FinQuant* performs such an optimisation and visualisation of the results.
 
-.. code::
+.. code-block:: python
 
     # Monte Carlo optimisation
     opt_w, opt_res = pf.mc_optimisation(num_trials=5000)

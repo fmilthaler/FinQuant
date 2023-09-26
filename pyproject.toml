@@ -4,13 +4,16 @@ line-length = 88
 [tool.isort]
 profile = "black"
 
-[mypy]
+[tool.mypy]
 python_version = "3.10"
-strict = false
-strict_optional = false
-ignore_missing_imports = false
-disallow_untyped_defs = false
-warn_unused_configs = false
-show_error_context = false
-warn_return_any = false
-warn_unused_ignores = false
+exclude = ["tests", "example"]
+strict = true
+strict_optional = true
+warn_return_any = true
+warn_no_return = true
+disallow_untyped_defs = true
+show_error_context = true
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_unused_ignores = true
+plugins=["pydantic.mypy","numpy.typing.mypy_plugin"]

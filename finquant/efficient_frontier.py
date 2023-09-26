@@ -3,13 +3,17 @@ optimise a portfolio by minimising a cost/objective function.
 """
 
 
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+
 import matplotlib.pylab as plt
 import numpy as np
 import pandas as pd
 import scipy.optimize as sco
 
 import finquant.minimise_fun as min_fun
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_LIST, FLOAT, INT, NUMERIC
 from finquant.quants import annualised_portfolio_quantities
+from finquant.type_utilities import type_validation
 
 
 class EfficientFrontier:
@@ -26,19 +30,42 @@ class EfficientFrontier:
     (minimum Volatility and maximum Sharpe Ratio).
     """
 
+    # Attributes:
+    mean_returns: pd.Series
+    cov_matrix: pd.DataFrame
+    risk_free_rate: FLOAT
+    freq: INT
+    method: str
+    names: List[str]
+    num_stocks: int
+    last_optimisation: str
+    bounds: Tuple[Tuple[int, int], ...]
+    x_0: np.ndarray[np.float64, Any]
+    constraints: Dict[str, Union[str, Callable[[Any], FLOAT]]]
+    weights: np.ndarray[np.float64, Any]
+    df_weights: pd.DataFrame
+    efrontier: np.ndarray[np.float64, Any]
+
     def __init__(
-        self, mean_returns, cov_matrix, risk_free_rate=0.005, freq=252, method="SLSQP"
+        self,
+        mean_returns: pd.Series,
+        cov_matrix: pd.DataFrame,
+        risk_free_rate: FLOAT = 0.005,
+        freq: INT = 252,
+        method: str = "SLSQP",
     ):
         """
-        :Input:
-         :mean_returns: ``pandas.Series``, individual expected returns for all
-             stocks in the portfolio
-         :cov_matrix: ``pandas.DataFrame``, covariance matrix of returns
-         :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
-         :freq: ``int`` (default= ``252``), number of trading days, default
-             value corresponds to trading days in a year
-         :method: ``string`` (default= ``"SLSQP"``), type of solver method to use,
-             must be one of:
+        :param mean_returns: A Series of individual expected returns for all stocks
+
+        :param cov_matrix: Covariance matrix of returns
+
+        :param risk_free_rate: Risk free rate, default: 0.005
+        :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`
+
+        :param freq: Number of trading days in a year, default: 252
+        :type freq: :py:data:`~.finquant.data_types.INT`
+
+        :param method: Type of solver method to use (default: SLSQP), must be one of:
 
              - 'Nelder-Mead'
              - 'Powell'
@@ -57,10 +84,14 @@ class EfficientFrontier:
 
              all of which are officially supported by scipy.optimize.minimize
         """
-        if not isinstance(mean_returns, pd.Series):
-            raise ValueError("mean_returns is expected to be a pandas.Series.")
-        if not isinstance(cov_matrix, pd.DataFrame):
-            raise ValueError("cov_matrix is expected to be a pandas.DataFrame")
+        # Type validations:
+        type_validation(
+            returns_series=mean_returns,
+            cov_matrix=cov_matrix,
+            risk_free_rate=risk_free_rate,
+            freq=freq,
+            method=method,
+        )
         supported_methods = [
             "Nelder-Mead",
             "Powell",
@@ -77,10 +108,6 @@ class EfficientFrontier:
             "trust-exact",
             "trust-krylov",
         ]
-        if not isinstance(risk_free_rate, (int, float)):
-            raise ValueError("risk_free_rate is expected to be an integer or float.")
-        if not isinstance(method, str):
-            raise ValueError("method is expected to be a string.")
         if method not in supported_methods:
             raise ValueError("method is not supported by scipy.optimize.minimize.")
 
@@ -96,36 +123,37 @@ class EfficientFrontier:
 
         # set numerical parameters
         bound = (0, 1)
-        self.bounds = tuple(bound for stock in range(self.num_stocks))
-        self.x0 = np.array(self.num_stocks * [1.0 / self.num_stocks])
-        self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1}
+        self.bounds = tuple(bound for _ in range(self.num_stocks))
+        self.x_0 = np.array(self.num_stocks * [1.0 / self.num_stocks], dtype=np.float64)
+        self.constraints = {"type": "eq", "fun": lambda x: np.sum(x) - 1.0}
 
         # placeholder for optimised values/weights
-        self.weights = None
-        self.df_weights = None
-        self.efrontier = None
+        self.weights = np.empty(0, dtype=np.float64)
+        self.df_weights = pd.DataFrame()
+        self.efrontier = np.empty((0, 2), dtype=np.float64)
 
-    def minimum_volatility(self, save_weights=True):
+    def minimum_volatility(
+        self, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility.
 
-        :Input:
-         :save_weights: ``boolean`` (default= ``True``), for internal use only.
+        :param save_weights: For internal use only, default: True
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights would be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
-        :Output:
-         :df_weights:
-           - if "save_weights" is True: a ``pandas.DataFrame`` of weights/allocation
-             of stocks within the optimised portfolio.
-         :weights:
-           - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
-             of stocks within the optimised portfolio.
+
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+        :return:
+            - if ``save_weights`` is True:
+                a DataFrame of weights/allocation of stocks within the optimised portfolio.
+            - if ``save_weights`` is False:
+                a ``numpy.ndarray`` of weights/allocation of stocks within the optimised portfolio.
         """
-        if not isinstance(save_weights, bool):
-            raise ValueError("save_weights is expected to be a boolean.")
+        # Type validations:
+        type_validation(save_weights=save_weights)
 
         args = (self.mean_returns.values, self.cov_matrix.values)
 
@@ -133,7 +161,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.portfolio_volatility,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=self.constraints,
@@ -152,34 +180,34 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def maximum_sharpe_ratio(self, save_weights=True):
+    def maximum_sharpe_ratio(
+        self, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the maximum Sharpe Ratio, also called the
         tangency portfolio.
 
-        :Input:
-         :save_weights: ``boolean`` (default= ``True``), for internal use only.
+        :param save_weights: For internal use only, default: True
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights would be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
-        :Output:
-         :df_weights:
-           - if "save_weights" is True: a ``pandas.DataFrame`` of weights/allocation
-             of stocks within the optimised portfolio.
-         :weights:
-           - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
-             of stocks within the optimised portfolio.
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+        :return:
+            - if ``save_weights`` is True:
+                a DataFrame of weights/allocation of stocks within the optimised portfolio.
+            - if ``save_weights`` is False:
+                a ``numpy.ndarray`` of weights/allocation of stocks within the optimised portfolio.
         """
-        if not isinstance(save_weights, bool):
-            raise ValueError("save_weights is expected to be a boolean.")
+        # Type validations:
+        type_validation(save_weights=save_weights)
         args = (self.mean_returns.values, self.cov_matrix.values, self.risk_free_rate)
         # optimisation
         result = sco.minimize(
             min_fun.negative_sharpe_ratio,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=self.constraints,
@@ -196,31 +224,29 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def efficient_return(self, target, save_weights=True):
+    def efficient_return(
+        self, target: NUMERIC, save_weights: bool = True
+    ) -> ARRAY_OR_DATAFRAME[FLOAT]:
         """Finds the portfolio with the minimum volatility for a given target
         return.
 
-        :Input:
-         :target: ``float``, the target return of the optimised portfolio.
-         :save_weights: ``boolean`` (default= ``True``), for internal use only.
+        :param target: The target return of the optimised portfolio.
+        :param save_weights: For internal use only, default: True
              Whether to save the optimised weights in the instance variable
              ``weights`` (and ``df_weights``). Useful for the case of computing
              the efficient frontier after doing an optimisation, else the optimal
-             weights would be overwritten by the efficient frontier computations.
+             weights are overwritten by the efficient frontier computations.
              Best to ignore this argument.
 
-        :Output:
-         :df_weights:
-           - if "save_weights" is True: a ``pandas.DataFrame`` of weights/allocation
-             of stocks within the optimised portfolio.
-         :weights:
-           - if "save_weights" is False: a ``numpy.ndarray`` of weights/allocation
-             of stocks within the optimised portfolio.
+        :rtype: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+        :return:
+            - if ``save_weights`` is True:
+                a DataFrame of weights/allocation of stocks within the optimised portfolio.
+            - if ``save_weights`` is False:
+                a ``numpy.ndarray`` of weights/allocation of stocks within the optimised portfolio.
         """
-        if not isinstance(target, (int, float)):
-            raise ValueError("target is expected to be an integer or float.")
-        if not isinstance(save_weights, bool):
-            raise ValueError("save_weights is expected to be a boolean.")
+        # Type validations:
+        type_validation(target=target, save_weights=save_weights)
         args = (self.mean_returns.values, self.cov_matrix.values)
         # here we have an additional constraint:
         constraints = (
@@ -237,7 +263,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.portfolio_volatility,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=constraints,
@@ -254,19 +280,16 @@ class EfficientFrontier:
             # of pandas.DataFrame
             return result["x"]
 
-    def efficient_volatility(self, target):
+    def efficient_volatility(self, target: NUMERIC) -> pd.DataFrame:
         """Finds the portfolio with the maximum Sharpe ratio for a given
         target volatility.
 
-        :Input:
-         :target: ``float``, the target volatility of the optimised portfolio.
+        :param target: The target return of the optimised portfolio.
 
-        :Output:
-         :df_weights: a ``pandas.DataFrame`` of weights/allocation of stocks within
-             the optimised portfolio.
+        :return: DataFrame of weights/allocation of stocks within the optimised portfolio.
         """
-        if not isinstance(target, (int, float)):
-            raise ValueError("target is expected to be an integer or float.")
+        # Type validations:
+        type_validation(target=target)
         args = (self.mean_returns.values, self.cov_matrix.values, self.risk_free_rate)
         # here we have an additional constraint:
         constraints = (
@@ -283,7 +306,7 @@ class EfficientFrontier:
         result = sco.minimize(
             min_fun.negative_sharpe_ratio,
             args=args,
-            x0=self.x0,
+            x0=self.x_0,
             method=self.method,
             bounds=self.bounds,
             constraints=constraints,
@@ -295,22 +318,25 @@ class EfficientFrontier:
         self.df_weights = self._dataframe_weights(self.weights)
         return self.df_weights
 
-    def efficient_frontier(self, targets=None):
+    def efficient_frontier(
+        self, targets: Optional[ARRAY_OR_LIST[FLOAT]] = None
+    ) -> np.ndarray[np.float64, Any]:
         """Gets portfolios for a range of given target returns.
         If no targets were provided, the algorithm will find the minimum
         and maximum returns of the portfolio's individual stocks, and set
         the target range according to those values.
         Results in the Efficient Frontier.
 
-        :Input:
-         :targets: ``list``/``numpy.ndarray`` (default= ``None``) of ``floats``,
-             range of target returns.
+        :param targets: A list/array: range of target returns, default: ``None``
 
-        :Output:
-         :efrontier: ``numpy.ndarray`` of (volatility, return) values
+        :return: Array of (volatility, return) values
         """
+        # Type validations:
         if targets is not None and not isinstance(targets, (list, np.ndarray)):
             raise ValueError("targets is expected to be a list or numpy.ndarray")
+        if targets is not None:
+            for target in targets:
+                type_validation(target=target)
         if targets is None:
             # set range of target returns from the individual expected
             # returns of the stocks in the portfolio.
@@ -329,12 +355,16 @@ class EfficientFrontier:
                     target,
                 ]
             )
-        self.efrontier = np.array(efrontier)
+        self.efrontier: np.ndarray[np.float64, Any] = np.array(
+            efrontier, dtype=np.float64
+        )
+        if self.efrontier.size == 0 or self.efrontier.ndim != 2:
+            raise ValueError("Error: Efficient frontier could not be computed.")
         return self.efrontier
 
-    def plot_efrontier(self):
+    def plot_efrontier(self) -> None:
         """Plots the Efficient Frontier."""
-        if self.efrontier is None:
+        if self.efrontier.size == 0:
             # compute efficient frontier first
             self.efficient_frontier()
         plt.plot(
@@ -350,7 +380,7 @@ class EfficientFrontier:
         plt.ylabel("Expected Return")
         plt.legend()
 
-    def plot_optimal_portfolios(self):
+    def plot_optimal_portfolios(self) -> None:
         """Plots markers of the optimised portfolios for
 
         - minimum Volatility, and
@@ -390,31 +420,35 @@ class EfficientFrontier:
         )
         plt.legend()
 
-    def _dataframe_weights(self, weights):
-        """Generates and returns a ``pandas.DataFrame`` from given
-        array weights.
+    def _dataframe_weights(
+        self, weights: Optional[np.ndarray[np.float64, Any]]
+    ) -> pd.DataFrame:
+        """Generates and returns a DataFrame from given array weights.
 
-        :Input:
-         :weights: ``numpy.ndarray``, weights of the stock of the portfolio
+        :param weights: An array of weights of the stock of the portfolio.
 
-        :Output:
-         :weights: ``pandas.DataFrame`` with the weights/allocation of stocks
+        :return: A DataFrame with the weights/allocation of stocks
         """
-        if not isinstance(weights, np.ndarray):
-            raise ValueError("weights is expected to be a numpy.ndarray")
-        return pd.DataFrame(weights, index=self.names, columns=["Allocation"])
+        # Type validations:
+        type_validation(weights_array=weights)
+        return pd.DataFrame(weights, index=self.names, columns=["Allocation"]).astype(
+            np.float64
+        )
 
-    def properties(self, verbose=False):
+    def properties(self, verbose: bool = False) -> Tuple[NUMERIC, FLOAT, FLOAT]:
         """Calculates and prints out Expected annualised Return,
         Volatility and Sharpe Ratio of optimised portfolio.
 
-        :Input:
-         :verbose: ``boolean`` (default= ``False``), whether to print out properties or not
+        :param verbose: Whether to print out properties or not, default: ``False``
         """
+        # Type validations:
+        type_validation(verbose=verbose)
         if not isinstance(verbose, bool):
             raise ValueError("verbose is expected to be a boolean.")
-        if self.weights is None:
-            raise ValueError("Perform an optimisation first.")
+        if self.weights.size == 0:
+            raise ValueError(
+                "Error: weights are empty. Please perform an optimisation first."
+            )
         expected_return, volatility, sharpe = annualised_portfolio_quantities(
             self.weights,
             self.mean_returns,

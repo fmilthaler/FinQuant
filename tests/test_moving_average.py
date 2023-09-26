@@ -24,7 +24,7 @@ def test_sma():
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
-    df = pd.DataFrame({"0": l1, "1": l2})
+    df = pd.DataFrame({"0": l1, "1": l2}).astype(np.float64)
     res = sma(df, span=2).dropna()
     assert all((dforig == res).all())
 
@@ -61,7 +61,7 @@ def test_ema():
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
-    df = pd.DataFrame({"0": l1, "1": l2})
+    df = pd.DataFrame({"0": l1, "1": l2}).astype(np.float64)
     res = ema(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
 
@@ -98,7 +98,7 @@ def test_sma_std():
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
-    df = pd.DataFrame({"0": l1, "1": l2})
+    df = pd.DataFrame({"0": l1, "1": l2}).astype(np.float64)
     res = sma_std(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
 
@@ -135,7 +135,7 @@ def test_ema_std():
     dforig = pd.DataFrame({"0": orig[0], "1": orig[1]}).dropna()
     l1 = range(10)
     l2 = [i**2 for i in range(10)]
-    df = pd.DataFrame({"0": l1, "1": l2})
+    df = pd.DataFrame({"0": l1, "1": l2}).astype(np.float64)
     res = ema_std(df, span=2).dropna()
     assert all((abs(dforig - res) <= 1e-15).all())
 
@@ -176,7 +176,7 @@ def test_compute_ma():
         {"Stock": stock_orig, "10d": ma10d_orig, "30d": ma30d_orig}, index=index
     )
     x = np.sin(np.linspace(1, 10, 100))
-    df = pd.DataFrame({"Stock": x})
+    df = pd.DataFrame({"Stock": x}).astype(np.float64)
     ma = compute_ma(df, ema, spans=[10, 30], plot=False)
     assert all(abs((dforig - ma.describe()) <= 1e-15).all())
 
@@ -189,7 +189,7 @@ def test_plot_bollinger_band():
         "Bollinger Band of +/- 2$\\sigma$, Moving Average " "of sma over 15 days"
     )
     x = np.sin(np.linspace(1, 10, 100))
-    df = pd.DataFrame({"Stock": x}, index=np.linspace(1, 10, 100))
+    df = pd.DataFrame({"Stock": x}, index=np.linspace(1, 10, 100)).astype(np.float64)
     df.index.name = "Days"
     plt.figure()
     plot_bollinger_band(df, sma, span=15)

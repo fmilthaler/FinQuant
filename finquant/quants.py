@@ -4,181 +4,237 @@ weighted standard deviation (volatility), and the Sharpe ratio.
 """
 
 
+from typing import Optional, Tuple
+
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
+from finquant.data_types import ARRAY_OR_DATAFRAME, ARRAY_OR_SERIES, FLOAT, INT, NUMERIC
 from finquant.returns import weighted_mean_daily_returns
+from finquant.type_utilities import type_validation
 
 
-def weighted_mean(means, weights):
+def weighted_mean(
+    means: ARRAY_OR_SERIES[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]
+) -> FLOAT:
     """Computes the weighted mean/average, or in the case of a
     financial portfolio, it can be used for the Expected Return
     of said portfolio.
 
-    :Input:
-     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
+    :param means: An array representing mean/average values
+    :type means: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
-    :Output:
-     :weighted mu: ``numpy.ndarray``: ``(np.sum(means*weights))``
+    :param weights: An array representing weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: The weighted mean as a floating point number: ``np.sum(means*weights)``
     """
-    if not isinstance(weights, (pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a pandas.Series/np.ndarray")
-    if not isinstance(means, (pd.Series, np.ndarray)):
-        raise ValueError("means is expected to be a pandas.Series/np.ndarray")
-    return np.sum(means * weights)
+    # Type validations:
+    type_validation(means=means, weights=weights)
+    weighted_mu: FLOAT = float(np.sum(means * weights))
+    return weighted_mu
 
 
-def weighted_std(cov_matrix, weights):
+def weighted_std(
+    cov_matrix: ARRAY_OR_DATAFRAME[FLOAT], weights: ARRAY_OR_SERIES[FLOAT]
+) -> FLOAT:
     """Computes the weighted standard deviation, or Volatility of
     a portfolio, which contains several stocks.
 
-    :Input:
-     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
+    :param cov_matrix: Covariance matrix
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
 
-    :Output:
-     :weighted sigma: ``numpy.ndarray``:
-         ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
+    :param weights: An array representing weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Weighted sigma (standard deviation) as a floating point number:
+        ``np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))``
     """
-    if not isinstance(weights, (pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a pandas.Series, np.array")
-    if not isinstance(cov_matrix, (np.ndarray, (np.ndarray, pd.DataFrame))):
-        raise ValueError(
-            "cov_matrix is expected to be a numpy.ndarray/pandas.DataFrame"
-        )
-    return np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+    # Type validations:
+    type_validation(cov_matrix=cov_matrix, weights=weights)
+    weighted_sigma: FLOAT = np.sqrt(np.dot(weights.T, np.dot(cov_matrix, weights)))
+    return weighted_sigma
 
 
-def sharpe_ratio(exp_return, volatility, risk_free_rate=0.005):
+def sharpe_ratio(
+    exp_return: FLOAT, volatility: FLOAT, risk_free_rate: FLOAT = 0.005
+) -> FLOAT:
     """Computes the Sharpe Ratio
 
-    :Input:
-     :exp_return: ``int``/``float``, Expected Return of a portfolio
-     :volatility: ``int``/``float``, Volatility of a portfolio
-     :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
+    :param exp_return: Expected Return of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
 
-    :Output:
-     :sharpe ratio: ``float`` ``(exp_return - risk_free_rate)/float(volatility)``
+    :param volatility: Volatility of a portfolio
+    :type volatility: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Sharpe Ratio as a floating point number:
+        ``(exp_return-risk_free_rate)/float(volatility)``
     """
-    if not isinstance(
-        exp_return, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("exp_return is expected to be an integer or float.")
-    if not isinstance(
-        volatility, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("volatility is expected to be an integer or float.")
-    if not isinstance(
-        risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("risk_free_rate is expected to be an integer or float.")
-    return (exp_return - risk_free_rate) / float(volatility)
+    # Type validations:
+    type_validation(
+        expected_return=exp_return, volatility=volatility, risk_free_rate=risk_free_rate
+    )
+    res_sharpe_ratio: FLOAT = (exp_return - risk_free_rate) / float(volatility)
+    return res_sharpe_ratio
 
 
-def sortino_ratio(exp_return, downside_risk, risk_free_rate=0.005):
-    """Computes the Sortino Ratio
+def sortino_ratio(
+    exp_return: FLOAT, downs_risk: FLOAT, risk_free_rate: FLOAT = 0.005
+) -> FLOAT:
+    """Computes the Sortino Ratio.
 
-    :Input:
-     :exp_return: ``int``/``float``, Expected Return of a portfolio
-     :downside_risk: ``int``/``float``, Downside Risk of a portfolio
-     :risk_free_rate: ``int``/``float`` (default= ``0.005``), risk free rate
+    :param exp_return: Expected Return of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
 
-    :Output:
-     :sortino ratio: ``float``/``NaN`` ``(exp_return - risk_free_rate)/float(downside_risk)``.
-     Can be ``NaN`` if ``downside_risk`` is zero
+    :param downs_risk: Downside Risk of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Sortino Ratio as a floating point number:
+        ``(exp_return - risk_free_rate) / float(downs_risk)``
     """
-    if not isinstance(
-        exp_return, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("exp_return is expected to be an integer or float.")
-    if not isinstance(
-        downside_risk, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("volatility is expected to be an integer or float.")
-    if not isinstance(
-        risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("risk_free_rate is expected to be an integer or float.")
-    if float(downside_risk) == 0:
+    # Type validations:
+    type_validation(
+        expected_return=exp_return,
+        downside_risk=downs_risk,
+        risk_free_rate=risk_free_rate,
+    )
+    if float(downs_risk) == 0:
         return np.nan
     else:
-        return (exp_return - risk_free_rate) / float(downside_risk)
+        return (exp_return - risk_free_rate) / float(downs_risk)
 
 
-def downside_risk(data: pd.DataFrame, weights, risk_free_rate=0.005) -> float:
+def treynor_ratio(
+    exp_return: FLOAT, beta: Optional[FLOAT], risk_free_rate: FLOAT = 0.005
+) -> Optional[FLOAT]:
+    """Computes the Treynor Ratio.
+
+    :param exp_return: Expected Return of a portfolio
+    :type exp_return: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param beta: Beta parameter of a portfolio
+    :type beta: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Treynor Ratio as a floating point number:
+        ``(exp_return - risk_free_rate) / beta``
+    """
+    # Type validations:
+    type_validation(
+        expected_return=exp_return,
+        beta_parameter=beta,
+        risk_free_rate=risk_free_rate,
+    )
+    if beta is None:
+        return None
+    else:
+        res_treynor_ratio: FLOAT = (exp_return - risk_free_rate) / beta
+        return res_treynor_ratio
+
+
+def downside_risk(
+    data: pd.DataFrame, weights: ARRAY_OR_SERIES[FLOAT], risk_free_rate: FLOAT = 0.005
+) -> FLOAT:
     """Computes the downside risk (target downside deviation of returns).
 
-    :Input:
-      :data: ``pandas.DataFrame`` with daily stock prices
-      :weights: ``numpy.ndarray``/``pd.Series`` of weights
-      :risk_free_rate: ``int``/``float`` (default=``0.005``), risk free rate
+    :param data: A dataframe of daily stock prices
 
-    :Output:
-      :downside_risk: ``float``, target downside deviation
+    :param weights: Downside Risk of a portfolio
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Target downside deviation
+        ``np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2))``
     """
-    if not isinstance(data, pd.DataFrame):
-        raise ValueError("data is expected to be a Pandas.DataFrame.")
-    if not isinstance(weights, (pd.Series, np.ndarray)):
-        raise ValueError("weights is expected to be a pandas.Series/np.ndarray.")
-    if not isinstance(
-        risk_free_rate, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("risk_free_rate is expected to be an integer or float.")
-
+    # Type validations:
+    type_validation(data=data, weights=weights, risk_free_rate=risk_free_rate)
     wtd_daily_mean = weighted_mean_daily_returns(data, weights)
-    return np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2))
+    return float(np.sqrt(np.mean(np.minimum(0, wtd_daily_mean - risk_free_rate) ** 2)))
 
 
-def value_at_risk(investment, mu, sigma, conf_level=0.95) -> float:
+def value_at_risk(
+    investment: NUMERIC, mu: FLOAT, sigma: FLOAT, conf_level: FLOAT = 0.95
+) -> FLOAT:
     """Computes and returns the expected value at risk of an investment/assets.
 
-    :Input:
-     :investment: ``float``/``int``, total value of the investment
-     :mu: ``float``/``int`` average/mean return of the investment
-     :sigma: ``float``/``int`` standard deviation of the investment
-     :conf_level: ``float`` (default= ``0.95``), confidence level of the VaR
+    :param investment: Total value of the investment
+    :type investment: :py:data:`~.finquant.data_types.NUMERIC`
 
-    :Output:
-     :Value at Risk: ``float``, VaR of the investment
+    :param mu: Average/mean return of the investment
+    :type mu: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param sigma: Standard deviation of the investment
+    :type sigma: :py:data:`~.finquant.data_types.FLOAT`
+
+    :param conf_level: Confidence level of the VaR
+    :type conf_level: :py:data:`~.finquant.data_types.FLOAT`, default: 0.95
+
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+    :return: Value at Risk (VaR) of the investment: ``investment*(mu-sigma*norm.ppf(1-conf_level))``
     """
-    if not isinstance(
-        investment, (int, float, np.int32, np.int64, np.float32, np.float64)
-    ):
-        raise ValueError("investment is expected to be an integer or float.")
-    if not isinstance(mu, (int, float, np.int32, np.int64, np.float32, np.float64)):
-        raise ValueError("mu is expected to be an integer or float")
-    if not isinstance(sigma, (int, float, np.int32, np.int64, np.float32, np.float64)):
-        raise ValueError("sigma is expected to be an integer or float")
-    if not isinstance(conf_level, float):
-        raise ValueError("confidence level is expected to be a float.")
+    # Type validations:
+    type_validation(investment=investment, mu=mu, sigma=sigma, conf_level=conf_level)
     if conf_level >= 1 or conf_level <= 0:
         raise ValueError("confidence level is expected to be between 0 and 1.")
-
-    return investment * (mu - sigma * norm.ppf(1 - conf_level))
+    res_value_at_risk: FLOAT = investment * (mu - sigma * norm.ppf(1 - conf_level))
+    return res_value_at_risk
 
 
 def annualised_portfolio_quantities(
-    weights, means, cov_matrix, risk_free_rate=0.005, freq=252
-):
+    weights: ARRAY_OR_SERIES[FLOAT],
+    means: ARRAY_OR_SERIES[FLOAT],
+    cov_matrix: ARRAY_OR_DATAFRAME[FLOAT],
+    risk_free_rate: FLOAT = 0.005,
+    freq: INT = 252,
+) -> Tuple[FLOAT, FLOAT, FLOAT]:
     """Computes and returns the expected annualised return, volatility
     and Sharpe Ratio of a portfolio.
 
-    :Input:
-     :weights: ``numpy.ndarray``/``pd.Series`` of weights
-     :means: ``numpy.ndarray``/``pd.Series`` of mean/average values
-     :cov_matrix: ``numpy.ndarray``/``pandas.DataFrame``, covariance matrix
-     :risk_free_rate: ``float`` (default= ``0.005``), risk free rate
-     :freq: ``int`` (default= ``252``), number of trading days, default
-         value corresponds to trading days in a year
+    :param weights: An array of weights
+    :type weights: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
 
-    :Output:
-     :(Expected Return, Volatility, Sharpe Ratio): tuple of those
-         three quantities
+    :param means: An array of mean/average values
+    :type means: :py:data:`~.finquant.data_types.ARRAY_OR_SERIES`
+
+    :param cov_matrix: Covariance matrix
+    :type cov_matrix: :py:data:`~.finquant.data_types.ARRAY_OR_DATAFRAME`
+
+    :param risk_free_rate: Risk free rate
+    :type risk_free_rate: :py:data:`~.finquant.data_types.FLOAT`, default: 0.005
+
+    :param freq: Number of trading days in a year
+    :type freq: :py:data:`~.finquant.data_types.INT`, default: 252
+
+    :rtype: Tuple[:py:data:`~.finquant.data_types.FLOAT`,
+        :py:data:`~.finquant.data_types.FLOAT`,
+        :py:data:`~.finquant.data_types.FLOAT`]
+    :return: Tuple of Expected Return, Volatility, Sharpe Ratio
     """
-    if not isinstance(freq, int):
-        raise ValueError("freq is expected to be an integer.")
+    # Type validations:
+    type_validation(
+        weights=weights,
+        means=means,
+        cov_matrix=cov_matrix,
+        risk_free_rate=risk_free_rate,
+        freq=freq,
+    )
     expected_return = weighted_mean(means, weights) * freq
     volatility = weighted_std(cov_matrix, weights) * np.sqrt(freq)
     sharpe = sharpe_ratio(expected_return, volatility, risk_free_rate)
