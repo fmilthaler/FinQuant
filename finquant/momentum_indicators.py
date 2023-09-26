@@ -139,8 +139,7 @@ def macd(
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
         data = data.to_frame()
-    # get the stock key
-    stock = data.keys()[0]
+
     # calculate EMA short period
     ema_short = data.ewm(
         span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window
@@ -162,6 +161,7 @@ def macd(
     hist = data["diff"]
 
     # Plot it
+    stock_name = data.keys()[0]
     if standalone:
         fig = plt.figure()
         ax = fig.add_subplot(111)
@@ -214,7 +214,7 @@ def macd(
             else:
                 ax.bar(data.index[i], hist[key], color="black")
 
-        data[stock].plot(
+        data[stock_name].plot(
             xlabel="Date",
             ylabel="Price",
             ax=ax[1],
