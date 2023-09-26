@@ -43,8 +43,6 @@ def relative_strength_index(
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
         data = data.to_frame()
-    # get the stock key
-    stock = data.keys()[0]
     # calculate price differences
     data["diff"] = data.diff(periods=1)
     # calculate gains and losses
@@ -67,35 +65,37 @@ def relative_strength_index(
     # calculate RSI
     data["rsi"] = 100 - (100 / (1.0 + data["rs"]))
     # Plot it
+    stock_name = data.keys()[0]
     if standalone:
         # Single plot
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.axhline(y=oversold, color="g", linestyle="--")
-        ax.axhline(y=overbought, color="r", linestyle="--")
+        ax.axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
+        ax.axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
+        ax.set_ylim(0, 100)
         data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=ax, grid=True)
         plt.title("RSI Plot")
-        plt.legend()
+        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
     else:
         # RSI against price in 2 plots
         fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
-        ax[0].axhline(y=oversold, color="g", linestyle="--")
-        ax[0].axhline(y=overbought, color="r", linestyle="--")
+        ax[0].axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
+        ax[0].axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
         ax[0].set_title("RSI + Price Plot")
+        ax[0].set_ylim(0, 100)
         # plot 2 graphs in 2 colors
         colors = plt.rcParams["axes.prop_cycle"]()
         data["rsi"].plot(
             ylabel="RSI", ax=ax[0], grid=True, color=next(colors)["color"], legend=True
-        )
-        data[stock].plot(
+        ).legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        data[stock_name].plot(
             xlabel="Date",
             ylabel="Price",
             ax=ax[1],
             grid=True,
             color=next(colors)["color"],
             legend=True,
-        )
-        plt.legend()
+        ).legend(loc='center left', bbox_to_anchor=(1, 0.5))
     return data["rsi"]
 
 
