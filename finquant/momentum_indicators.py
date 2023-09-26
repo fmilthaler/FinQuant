@@ -16,7 +16,7 @@ def relative_strength_index(
         plotted along with the prices in another sub-graph
         for comparison.
 
-     Ref: https://www.investopedia.com/terms/r/rsi.asp
+    Ref: https://www.investopedia.com/terms/r/rsi.asp
 
     :Input
      :data: pandas.Series or pandas.DataFrame with stock prices in columns
@@ -46,24 +46,22 @@ def relative_strength_index(
     # get the stock key
     stock = data.keys()[0]
     # calculate price differences
-    data["diff"] = data.diff(1)
+    data["diff"] = data.diff(periods=1)
     # calculate gains and losses
-    data["gain"] = data["diff"].clip(lower=0).round(2)
-    data["loss"] = data["diff"].clip(upper=0).abs().round(2)
+    data["gain"] = data["diff"].clip(lower=0)
+    data["loss"] = data["diff"].clip(upper=0).abs()
     # placeholder
     wl = window_length
     # calculate rolling window mean gains and losses
     data["avg_gain"] = data["gain"].rolling(window=wl, min_periods=wl).mean()
     data["avg_loss"] = data["loss"].rolling(window=wl, min_periods=wl).mean()
     # calculate WMS (wilder smoothing method) averages
-    for i, row in enumerate(data["avg_gain"].iloc[wl + 1 :]):
-        data["avg_gain"].iloc[i + wl + 1] = (
-            data["avg_gain"].iloc[i + wl] * (wl - 1) + data["gain"].iloc[i + wl + 1]
-        ) / wl
-    for i, row in enumerate(data["avg_loss"].iloc[wl + 1 :]):
-        data["avg_loss"].iloc[i + wl + 1] = (
-            data["avg_loss"].iloc[i + wl] * (wl - 1) + data["loss"].iloc[i + wl + 1]
-        ) / wl
+    lambda_wsm = lambda avg_gain_loss, gain_loss, window_length: (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
+    # ignore SettingWithCopyWarning for the below operation
+    with pd.option_context('mode.chained_assignment', None):
+        for gain_or_loss in ["gain", "loss"]:
+            for i, row in enumerate(data[f"avg_{gain_or_loss}"].iloc[wl + 1:]):
+                data[f"avg_{gain_or_loss}"].iloc[i + wl + 1] = lambda_wsm(data[f"avg_{gain_or_loss}"].iloc[i + wl], data[gain_or_loss].iloc[i + wl + 1], wl)
     # calculate RS values
     data["rs"] = data["avg_gain"] / data["avg_loss"]
     # calculate RSI
@@ -98,6 +96,7 @@ def relative_strength_index(
             legend=True,
         )
         plt.legend()
+    return data["rsi"]
 
 
 def macd(
