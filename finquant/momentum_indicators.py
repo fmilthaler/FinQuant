@@ -38,8 +38,8 @@ def relative_strength_index(
     # validating levels
     if oversold >= overbought:
         raise ValueError("oversold level should be < overbought level")
-    if oversold >= 100 or overbought >= 100:
-        raise ValueError("levels should be < 100")
+    if not (0 < oversold < 100) or not(0 < overbought < 100):
+        raise ValueError("levels should be > 0 and < 100")
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
         data = data.to_frame()
