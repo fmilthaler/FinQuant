@@ -64,7 +64,7 @@ def _check_type(
 
     if element_type is not None:
         if isinstance(arg_values, pd.DataFrame) and not all(
-            arg_values.dtypes == element_type
+            [np.issubdtype(value_type, element_type) for value_type in arg_values.dtypes]
         ):
             validation_failed = True
 
@@ -114,7 +114,7 @@ type_dict: Dict[
     ],
 ] = {
     # DataFrames, Series, Array:
-    "data": ((pd.Series, pd.DataFrame), np.floating),
+    "data": ((pd.Series, pd.DataFrame), np.number),
     "pf_allocation": (pd.DataFrame, None),
     "returns_df": (pd.DataFrame, np.floating),
     "returns_series": (pd.Series, np.floating),
@@ -124,6 +124,7 @@ type_dict: Dict[
     "initial_weights": (np.ndarray, np.floating),
     "weights_array": (np.ndarray, np.floating),
     "cov_matrix": ((np.ndarray, pd.DataFrame), np.floating),
+    "df": (pd.DataFrame, None),
     # Lists:
     "names": ((List, np.ndarray), str),
     "cols": ((List, np.ndarray), str),
@@ -150,6 +151,9 @@ type_dict: Dict[
     "freq": ((int, np.integer), None),
     "span": ((int, np.integer), None),
     "num_trials": ((int, np.integer), None),
+    "longer_ema_window": ((int, np.integer), None),
+    "shorter_ema_window": ((int, np.integer), None),
+    "signal_ema_window": ((int, np.integer), None),
     # NUMERICs:
     "investment": ((int, np.integer, float, np.floating), None),
     "dividend": ((int, np.integer, float, np.floating), None),
