@@ -1,7 +1,7 @@
 """ This module provides function(s) to compute momentum indicators
 used in technical analysis such as RSI, MACD etc. """
 import datetime
-from typing import List
+from typing import List, Optional
 
 import matplotlib.pyplot as plt
 import mplfinance as mpf
@@ -121,8 +121,8 @@ def relative_strength_index(
         # Single plot
         fig = plt.figure()
         axis = fig.add_subplot(111)
-        axis.axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
-        axis.axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
+        axis.axhline(y=float(overbought), color="r", linestyle="dashed", label="overbought")
+        axis.axhline(y=float(oversold), color="g", linestyle="dashed", label="oversold")
         axis.set_ylim(0, 100)
         data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=axis, grid=True)
         plt.title("RSI Plot")
@@ -130,8 +130,8 @@ def relative_strength_index(
     else:
         # RSI against price in 2 plots
         fig, axis = plt.subplots(2, 1, sharex=True, sharey=False)
-        axis[0].axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
-        axis[0].axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
+        axis[0].axhline(y=float(overbought), color="r", linestyle="dashed", label="overbought")
+        axis[0].axhline(y=float(oversold), color="g", linestyle="dashed", label="oversold")
         axis[0].set_title("RSI + Price Plot")
         axis[0].set_ylim(0, 100)
         # plot 2 graphs in 2 colors
@@ -217,10 +217,10 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
 
 def mpl_macd(
     data: SERIES_OR_DATAFRAME,
-    longer_ema_window: INT = 26,
-    shorter_ema_window: INT = 12,
-    signal_ema_window: INT = 9,
-    stock_name: str = None,
+    longer_ema_window: Optional[INT] = 26,
+    shorter_ema_window: Optional[INT] = 12,
+    signal_ema_window: Optional[INT] = 9,
+    stock_name: Optional[str] = None,
 ):
     """
     Generate a Matplotlib candlestick chart with MACD (Moving Average Convergence Divergence) indicators.
@@ -230,7 +230,6 @@ def mpl_macd(
     This function creates a candlestick chart using the given stock price data and overlays
     MACD, MACD Signal Line, and MACD Histogram indicators. The MACD is calculated by taking
     the difference between two Exponential Moving Averages (EMAs) of the closing price.
-
 
     :param data: Time series data containing stock price information. If a
       DataFrame is provided, it should have columns 'Open', 'Close', 'High', 'Low', and 'Volume'.
