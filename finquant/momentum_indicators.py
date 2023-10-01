@@ -171,7 +171,7 @@ def mpl_macd(
     shorter_ema_window: INT = 12,
     signal_ema_window: INT = 9,
     stock_name: str = None,
-) -> None:
+):
     """
     Generate a Matplotlib candlestick chart with MACD (Moving Average Convergence Divergence) indicators.
 
@@ -306,3 +306,5 @@ def mpl_macd(
     )
     axes[2].legend(["MACD"], loc="upper left")
     axes[3].legend(["Signal"], loc="lower left")
+
+    return fig, axes
