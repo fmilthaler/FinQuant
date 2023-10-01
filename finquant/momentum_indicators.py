@@ -10,6 +10,10 @@ import pandas as pd
 from finquant.data_types import INT, SERIES_OR_DATAFRAME
 from finquant.type_utilities import type_validation
 from finquant.utils import all_list_ele_in_other
+from finquant.portfolio import _yfinance_request
+
+def calculate_wilder_smoothing_averages(avg_gain_loss, gain_loss, window_length):
+    return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
 
 
 def relative_strength_index(
@@ -48,7 +52,7 @@ def relative_strength_index(
     # validating levels
     if oversold >= overbought:
         raise ValueError("oversold level should be < overbought level")
-    if not (0 < oversold < 100) or not (0 < overbought < 100):
+    if not 0 < oversold < 100 or not 0 < overbought < 100:
         raise ValueError("levels should be > 0 and < 100")
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
@@ -58,26 +62,25 @@ def relative_strength_index(
     # calculate gains and losses
     data["gain"] = data["diff"].clip(lower=0)
     data["loss"] = data["diff"].clip(upper=0).abs()
-    # placeholder
-    wl = window_length
     # calculate rolling window mean gains and losses
-    data["avg_gain"] = data["gain"].rolling(window=wl, min_periods=wl).mean()
-    data["avg_loss"] = data["loss"].rolling(window=wl, min_periods=wl).mean()
-    # calculate WMS (wilder smoothing method) averages
-    lambda_wsm = (
-        lambda avg_gain_loss, gain_loss, window_length: (
-            avg_gain_loss * (window_length - 1) + gain_loss
-        )
-        / window_length
+    data["avg_gain"] = (
+        data["gain"].rolling(window=window_length, min_periods=window_length).mean()
+    )
+    data["avg_loss"] = (
+        data["loss"].rolling(window=window_length, min_periods=window_length).mean()
     )
     # ignore SettingWithCopyWarning for the below operation
     with pd.option_context("mode.chained_assignment", None):
         for gain_or_loss in ["gain", "loss"]:
-            for i, row in enumerate(data[f"avg_{gain_or_loss}"].iloc[wl + 1 :]):
-                data[f"avg_{gain_or_loss}"].iloc[i + wl + 1] = lambda_wsm(
-                    data[f"avg_{gain_or_loss}"].iloc[i + wl],
-                    data[gain_or_loss].iloc[i + wl + 1],
-                    wl,
+            for idx, _ in enumerate(
+                data[f"avg_{gain_or_loss}"].iloc[window_length + 1 :]
+            ):
+                data[f"avg_{gain_or_loss}"].iloc[
+                    idx + window_length + 1
+                ] = calculate_wilder_smoothing_averages(
+                    data[f"avg_{gain_or_loss}"].iloc[idx + window_length],
+                    data[gain_or_loss].iloc[idx + window_length + 1],
+                    window_length,
                 )
     # calculate RS values
     data["rs"] = data["avg_gain"] / data["avg_loss"]
@@ -88,29 +91,29 @@ def relative_strength_index(
     if standalone:
         # Single plot
         fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
-        ax.axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
-        ax.set_ylim(0, 100)
-        data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=ax, grid=True)
+        axis = fig.add_subplot(111)
+        axis.axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
+        axis.axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
+        axis.set_ylim(0, 100)
+        data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=axis, grid=True)
         plt.title("RSI Plot")
         plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
     else:
         # RSI against price in 2 plots
-        fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
-        ax[0].axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
-        ax[0].axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
-        ax[0].set_title("RSI + Price Plot")
-        ax[0].set_ylim(0, 100)
+        fig, axis = plt.subplots(2, 1, sharex=True, sharey=False)
+        axis[0].axhline(y=overbought, color="r", linestyle="dashed", label="overbought")
+        axis[0].axhline(y=oversold, color="g", linestyle="dashed", label="oversold")
+        axis[0].set_title("RSI + Price Plot")
+        axis[0].set_ylim(0, 100)
         # plot 2 graphs in 2 colors
         colors = plt.rcParams["axes.prop_cycle"]()
         data["rsi"].plot(
-            ylabel="RSI", ax=ax[0], grid=True, color=next(colors)["color"], legend=True
+            ylabel="RSI", ax=axis[0], grid=True, color=next(colors)["color"], legend=True
         ).legend(loc="center left", bbox_to_anchor=(1, 0.5))
         data[stock_name].plot(
             xlabel="Date",
             ylabel="Price",
-            ax=ax[1],
+            ax=axis[1],
             grid=True,
             color=next(colors)["color"],
             legend=True,
@@ -151,14 +154,14 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
     type_validation(df=df)
     macd_color = []
     macd_color.clear()
-    for i in range(0, len(df["MACDh"])):
-        if df["MACDh"].iloc[i] >= 0 and df["MACDh"].iloc[i - 1] < df["MACDh"].iloc[i]:
+    for idx in range(0, len(df["MACDh"])):
+        if df["MACDh"].iloc[idx] >= 0 and df["MACDh"].iloc[idx - 1] < df["MACDh"].iloc[idx]:
             macd_color.append("#26A69A")  # green
-        elif df["MACDh"].iloc[i] >= 0 and df["MACDh"].iloc[i - 1] > df["MACDh"].iloc[i]:
+        elif df["MACDh"].iloc[idx] >= 0 and df["MACDh"].iloc[idx - 1] > df["MACDh"].iloc[idx]:
             macd_color.append("#B2DFDB")  # faint green
-        elif df["MACDh"].iloc[i] < 0 and df["MACDh"].iloc[i - 1] > df["MACDh"].iloc[i]:
+        elif df["MACDh"].iloc[idx] < 0 and df["MACDh"].iloc[idx - 1] > df["MACDh"].iloc[idx]:
             macd_color.append("#FF5252")  # red
-        elif df["MACDh"].iloc[i] < 0 and df["MACDh"].iloc[i - 1] < df["MACDh"].iloc[i]:
+        elif df["MACDh"].iloc[idx] < 0 and df["MACDh"].iloc[idx - 1] < df["MACDh"].iloc[idx]:
             macd_color.append("#FFCDD2")  # faint red
         else:
             macd_color.append("#000000")
@@ -242,8 +245,6 @@ def mpl_macd(
         re_download_stock_data = False
     if re_download_stock_data:
         # download additional price data 'Open' for given stock and timeframe:
-        from finquant.portfolio import _yfinance_request
-
         start_date = data.index.min() - datetime.timedelta(days=31)
         end_date = data.index.max() + datetime.timedelta(days=1)
         df = _yfinance_request([stock_name], start_date=start_date, end_date=end_date)
@@ -253,20 +254,20 @@ def mpl_macd(
         df = data
 
     # Get the shorter_ema_window-day EMA of the closing price
-    k = (
+    macd_k = (
         df["Close"]
         .ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window)
         .mean()
     )
     # Get the longer_ema_window-day EMA of the closing price
-    d = (
+    macd_d = (
         df["Close"]
         .ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window)
         .mean()
     )
 
     # Subtract the longer_ema_window-day EMA from the shorter_ema_window-Day EMA to get the MACD
-    macd = k - d
+    macd = macd_k - macd_d
     # Get the signal_ema_window-Day EMA of the MACD for the Trigger line
     macd_s = macd.ewm(
         span=signal_ema_window, adjust=False, min_periods=signal_ema_window
