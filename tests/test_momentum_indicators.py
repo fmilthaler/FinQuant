@@ -65,7 +65,9 @@ def test_mpl_macd():
     axes4_ylabel_orig = "Volume  $10^{6}$"
     # Create sample data for testing
     x = np.sin(np.linspace(1, 10, 100))
-    df = pd.DataFrame({"Close": x}, index=pd.date_range("2015-01-01", periods=100, freq="D"))
+    df = pd.DataFrame(
+        {"Close": x}, index=pd.date_range("2015-01-01", periods=100, freq="D")
+    )
     df.name = "DIS"
 
     # Call mpl_macd function
@@ -81,10 +83,13 @@ def test_mpl_macd():
     assert axes0_ylabel_orig == axes0_ylabel_plot
     assert axes4_ylabel_orig == axes4_ylabel_plot
 
+
 def test_mpl_macd_invalid_window_parameters():
     # Create sample data with invalid window parameters
     x = np.sin(np.linspace(1, 10, 100))
-    df = pd.DataFrame({"Close": x}, index=pd.date_range("2015-01-01", periods=100, freq="D"))
+    df = pd.DataFrame(
+        {"Close": x}, index=pd.date_range("2015-01-01", periods=100, freq="D")
+    )
     df.name = "DIS"
 
     # Call mpl_macd function with invalid window parameters and check for ValueError
