@@ -6,6 +6,7 @@ import pytest
 from finquant.momentum_indicators import mpl_macd
 from finquant.momentum_indicators import relative_strength_index as rsi
 
+plt.close("all")
 plt.switch_backend("Agg")
 
 
