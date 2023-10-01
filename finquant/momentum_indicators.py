@@ -7,12 +7,41 @@ import matplotlib.pyplot as plt
 import mplfinance as mpf
 import pandas as pd
 
-from finquant.data_types import INT, SERIES_OR_DATAFRAME
+from finquant.data_types import FLOAT, INT, SERIES_OR_DATAFRAME
+from finquant.portfolio import _yfinance_request
 from finquant.type_utilities import type_validation
 from finquant.utils import all_list_ele_in_other
-from finquant.portfolio import _yfinance_request
 
-def calculate_wilder_smoothing_averages(avg_gain_loss, gain_loss, window_length):
+
+def calculate_wilder_smoothing_averages(
+    avg_gain_loss: FLOAT, gain_loss: FLOAT, window_length: INT
+) -> FLOAT:
+    """
+    Calculate Wilder's Smoothing Averages.
+
+    Wilder's Smoothing Averages are used in technical analysis, particularly for
+    calculating indicators like the Relative Strength Index (RSI). This function
+    takes the average gain/loss, the current gain/loss, and the window length as
+    input and returns the smoothed average.
+
+    :param avg_gain_loss: The previous average gain/loss.
+    :type avg_gain_loss: :py:data:`~.finquant.data_types.FLOAT`
+    :param gain_loss: The current gain or loss.
+    :type gain_loss: :py:data:`~.finquant.data_types.FLOAT`
+    :param window_length: The length of the smoothing window.
+    :type window_length: :py:data:`~.finquant.data_types.FLOAT`
+
+    :return: The Wilder's smoothed average value.
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+
+    Example:
+
+    .. code-block:: python
+
+        calculate_wilder_smoothing_averages(10.0, 5.0, 14)
+
+    """
+
     return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
 
 
@@ -108,7 +137,11 @@ def relative_strength_index(
         # plot 2 graphs in 2 colors
         colors = plt.rcParams["axes.prop_cycle"]()
         data["rsi"].plot(
-            ylabel="RSI", ax=axis[0], grid=True, color=next(colors)["color"], legend=True
+            ylabel="RSI",
+            ax=axis[0],
+            grid=True,
+            color=next(colors)["color"],
+            legend=True,
         ).legend(loc="center left", bbox_to_anchor=(1, 0.5))
         data[stock_name].plot(
             xlabel="Date",
@@ -138,30 +171,44 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
     - The color assignments are based on the comparison of each data point with its
       previous data point in the 'MACDh' column.
 
-    Example usage:
-    ```
-    import pandas as pd
-    from typing import List
+    Example:
 
-    # Create a DataFrame with MACD histogram values
-    df = pd.DataFrame({'MACDh': [0.5, -0.2, 0.8, -0.6, 0.2]})
+    .. code-block:: python
 
-    # Generate MACD color codes
-    colors = gen_macd_color(df)
-    print(colors)  # Output: ['#26A69A', '#FFCDD2', '#26A69A', '#FFCDD2', '#26A69A']
-    ```
+        import pandas as pd
+        from typing import List
+
+        # Create a DataFrame with MACD histogram values
+        df = pd.DataFrame({'MACDh': [0.5, -0.2, 0.8, -0.6, 0.2]})
+
+        # Generate MACD color codes
+        colors = gen_macd_color(df)
+        print(colors)  # Output: ['#26A69A', '#FFCDD2', '#26A69A', '#FFCDD2', '#26A69A']
+
     """
     type_validation(df=df)
     macd_color = []
     macd_color.clear()
     for idx in range(0, len(df["MACDh"])):
-        if df["MACDh"].iloc[idx] >= 0 and df["MACDh"].iloc[idx - 1] < df["MACDh"].iloc[idx]:
+        if (
+            df["MACDh"].iloc[idx] >= 0
+            and df["MACDh"].iloc[idx - 1] < df["MACDh"].iloc[idx]
+        ):
             macd_color.append("#26A69A")  # green
-        elif df["MACDh"].iloc[idx] >= 0 and df["MACDh"].iloc[idx - 1] > df["MACDh"].iloc[idx]:
+        elif (
+            df["MACDh"].iloc[idx] >= 0
+            and df["MACDh"].iloc[idx - 1] > df["MACDh"].iloc[idx]
+        ):
             macd_color.append("#B2DFDB")  # faint green
-        elif df["MACDh"].iloc[idx] < 0 and df["MACDh"].iloc[idx - 1] > df["MACDh"].iloc[idx]:
+        elif (
+            df["MACDh"].iloc[idx] < 0
+            and df["MACDh"].iloc[idx - 1] > df["MACDh"].iloc[idx]
+        ):
             macd_color.append("#FF5252")  # red
-        elif df["MACDh"].iloc[idx] < 0 and df["MACDh"].iloc[idx - 1] < df["MACDh"].iloc[idx]:
+        elif (
+            df["MACDh"].iloc[idx] < 0
+            and df["MACDh"].iloc[idx - 1] < df["MACDh"].iloc[idx]
+        ):
             macd_color.append("#FFCDD2")  # faint red
         else:
             macd_color.append("#000000")
@@ -202,15 +249,17 @@ def mpl_macd(
     - If the input data is a Series, it should have a valid name.
     - The longer EMA window should be greater than or equal to the shorter EMA window and signal EMA window.
 
-    Example usage:
-    ```
-    import pandas as pd
-    from mplfinance.original_flavor import plot as mpf
+    Example:
 
-    # Create a DataFrame or Series with stock price data
-    data = pd.read_csv('stock_data.csv', index_col='Date', parse_dates=True)
-    mpl_macd(data, longer_ema_window=26, shorter_ema_window=12, signal_ema_window=9, stock_name='AAPL')
-    ```
+    .. code-block:: python
+
+        import pandas as pd
+        from mplfinance.original_flavor import plot as mpf
+
+        # Create a DataFrame or Series with stock price data
+        data = pd.read_csv('stock_data.csv', index_col='Date', parse_dates=True)
+        mpl_macd(data, longer_ema_window=26, shorter_ema_window=12, signal_ema_window=9, stock_name='DIS')
+
     """
     # Type validations:
     type_validation(
