@@ -349,7 +349,7 @@ plt.show()
 from finquant.momentum_indicators import mpl_macd
 
 # using short time frame of data due to plot warnings from matplotlib/mplfinance
-dis = dis[0: 300]
+dis = dis[0:300]
 
 # plot MACD - by default this plots RSI against the price in two graphs
 mpl_macd(dis)

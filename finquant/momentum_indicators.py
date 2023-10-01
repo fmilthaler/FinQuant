@@ -1,15 +1,16 @@
 """ This module provides function(s) to compute momentum indicators
 used in technical analysis such as RSI, MACD etc. """
 import datetime
+from typing import List
 
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 import pandas as pd
 
-from finquant.utils import all_list_ele_in_other
 from finquant.data_types import INT, SERIES_OR_DATAFRAME
 from finquant.type_utilities import type_validation
-from typing import List
+from finquant.utils import all_list_ele_in_other
+
 
 def relative_strength_index(
     data: SERIES_OR_DATAFRAME,
@@ -47,7 +48,7 @@ def relative_strength_index(
     # validating levels
     if oversold >= overbought:
         raise ValueError("oversold level should be < overbought level")
-    if not (0 < oversold < 100) or not(0 < overbought < 100):
+    if not (0 < oversold < 100) or not (0 < overbought < 100):
         raise ValueError("levels should be > 0 and < 100")
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
@@ -63,12 +64,21 @@ def relative_strength_index(
     data["avg_gain"] = data["gain"].rolling(window=wl, min_periods=wl).mean()
     data["avg_loss"] = data["loss"].rolling(window=wl, min_periods=wl).mean()
     # calculate WMS (wilder smoothing method) averages
-    lambda_wsm = lambda avg_gain_loss, gain_loss, window_length: (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
+    lambda_wsm = (
+        lambda avg_gain_loss, gain_loss, window_length: (
+            avg_gain_loss * (window_length - 1) + gain_loss
+        )
+        / window_length
+    )
     # ignore SettingWithCopyWarning for the below operation
-    with pd.option_context('mode.chained_assignment', None):
+    with pd.option_context("mode.chained_assignment", None):
         for gain_or_loss in ["gain", "loss"]:
-            for i, row in enumerate(data[f"avg_{gain_or_loss}"].iloc[wl + 1:]):
-                data[f"avg_{gain_or_loss}"].iloc[i + wl + 1] = lambda_wsm(data[f"avg_{gain_or_loss}"].iloc[i + wl], data[gain_or_loss].iloc[i + wl + 1], wl)
+            for i, row in enumerate(data[f"avg_{gain_or_loss}"].iloc[wl + 1 :]):
+                data[f"avg_{gain_or_loss}"].iloc[i + wl + 1] = lambda_wsm(
+                    data[f"avg_{gain_or_loss}"].iloc[i + wl],
+                    data[gain_or_loss].iloc[i + wl + 1],
+                    wl,
+                )
     # calculate RS values
     data["rs"] = data["avg_gain"] / data["avg_loss"]
     # calculate RSI
@@ -84,7 +94,7 @@ def relative_strength_index(
         ax.set_ylim(0, 100)
         data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=ax, grid=True)
         plt.title("RSI Plot")
-        plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
     else:
         # RSI against price in 2 plots
         fig, ax = plt.subplots(2, 1, sharex=True, sharey=False)
@@ -96,7 +106,7 @@ def relative_strength_index(
         colors = plt.rcParams["axes.prop_cycle"]()
         data["rsi"].plot(
             ylabel="RSI", ax=ax[0], grid=True, color=next(colors)["color"], legend=True
-        ).legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        ).legend(loc="center left", bbox_to_anchor=(1, 0.5))
         data[stock_name].plot(
             xlabel="Date",
             ylabel="Price",
@@ -104,11 +114,11 @@ def relative_strength_index(
             grid=True,
             color=next(colors)["color"],
             legend=True,
-        ).legend(loc='center left', bbox_to_anchor=(1, 0.5))
+        ).legend(loc="center left", bbox_to_anchor=(1, 0.5))
     return data["rsi"]
 
 
-#Generating colors for MACD histogram
+# Generating colors for MACD histogram
 def gen_macd_color(df: pd.DataFrame) -> List[str]:
     """
     Generate a list of color codes based on MACD histogram values in a DataFrame.
@@ -141,17 +151,17 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
     type_validation(df=df)
     macd_color = []
     macd_color.clear()
-    for i in range (0, len(df["MACDh"])):
-        if df["MACDh"].iloc[i] >= 0 and df["MACDh"].iloc[i-1] < df["MACDh"].iloc[i]:
-            macd_color.append('#26A69A') # green
-        elif df["MACDh"].iloc[i] >= 0 and df["MACDh"].iloc[i-1] > df["MACDh"].iloc[i]:
-            macd_color.append('#B2DFDB') # faint green
-        elif df["MACDh"].iloc[i] < 0 and df["MACDh"].iloc[i-1] > df["MACDh"].iloc[i] :
-            macd_color.append('#FF5252') # red
-        elif df["MACDh"].iloc[i] < 0 and df["MACDh"].iloc[i-1] < df["MACDh"].iloc[i] :
-            macd_color.append('#FFCDD2') # faint red
+    for i in range(0, len(df["MACDh"])):
+        if df["MACDh"].iloc[i] >= 0 and df["MACDh"].iloc[i - 1] < df["MACDh"].iloc[i]:
+            macd_color.append("#26A69A")  # green
+        elif df["MACDh"].iloc[i] >= 0 and df["MACDh"].iloc[i - 1] > df["MACDh"].iloc[i]:
+            macd_color.append("#B2DFDB")  # faint green
+        elif df["MACDh"].iloc[i] < 0 and df["MACDh"].iloc[i - 1] > df["MACDh"].iloc[i]:
+            macd_color.append("#FF5252")  # red
+        elif df["MACDh"].iloc[i] < 0 and df["MACDh"].iloc[i - 1] < df["MACDh"].iloc[i]:
+            macd_color.append("#FFCDD2")  # faint red
         else:
-            macd_color.append('#000000')
+            macd_color.append("#000000")
     return macd_color
 
 
@@ -160,7 +170,7 @@ def mpl_macd(
     longer_ema_window: INT = 26,
     shorter_ema_window: INT = 12,
     signal_ema_window: INT = 9,
-    stock_name: str = None
+    stock_name: str = None,
 ) -> None:
     """
     Generate a Matplotlib candlestick chart with MACD (Moving Average Convergence Divergence) indicators.
@@ -200,7 +210,13 @@ def mpl_macd(
     ```
     """
     # Type validations:
-    type_validation(data=data, longer_ema_window=longer_ema_window, shorter_ema_window=shorter_ema_window, signal_ema_window=signal_ema_window, name=stock_name)
+    type_validation(
+        data=data,
+        longer_ema_window=longer_ema_window,
+        shorter_ema_window=shorter_ema_window,
+        signal_ema_window=signal_ema_window,
+        name=stock_name,
+    )
 
     # validating windows
     if longer_ema_window < shorter_ema_window:
@@ -220,11 +236,14 @@ def mpl_macd(
 
     # Check if required columns are present, if data is a pd.DataFrame, else re-download stock price data:
     re_download_stock_data = True
-    if isinstance(data, pd.DataFrame) and all_list_ele_in_other(["Open", "Close", "High", "Low", "Volume"], data.columns):
+    if isinstance(data, pd.DataFrame) and all_list_ele_in_other(
+        ["Open", "Close", "High", "Low", "Volume"], data.columns
+    ):
         re_download_stock_data = False
     if re_download_stock_data:
         # download additional price data 'Open' for given stock and timeframe:
         from finquant.portfolio import _yfinance_request
+
         start_date = data.index.min() - datetime.timedelta(days=31)
         end_date = data.index.max() + datetime.timedelta(days=1)
         df = _yfinance_request([stock_name], start_date=start_date, end_date=end_date)
@@ -234,28 +253,46 @@ def mpl_macd(
         df = data
 
     # Get the shorter_ema_window-day EMA of the closing price
-    k = df['Close'].ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window).mean()
+    k = (
+        df["Close"]
+        .ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window)
+        .mean()
+    )
     # Get the longer_ema_window-day EMA of the closing price
-    d = df['Close'].ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window).mean()
+    d = (
+        df["Close"]
+        .ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window)
+        .mean()
+    )
 
     # Subtract the longer_ema_window-day EMA from the shorter_ema_window-Day EMA to get the MACD
     macd = k - d
     # Get the signal_ema_window-Day EMA of the MACD for the Trigger line
-    macd_s = macd.ewm(span=signal_ema_window, adjust=False, min_periods=signal_ema_window).mean()
+    macd_s = macd.ewm(
+        span=signal_ema_window, adjust=False, min_periods=signal_ema_window
+    ).mean()
     # Calculate the difference between the MACD - Trigger for the Convergence/Divergence value
     macd_h = macd - macd_s
 
     # Add all of our new values for the MACD to the dataframe
-    df['MACD'] = df.index.map(macd)
-    df['MACDh'] = df.index.map(macd_h)
-    df['MACDs'] = df.index.map(macd_s)
+    df["MACD"] = df.index.map(macd)
+    df["MACDh"] = df.index.map(macd_h)
+    df["MACDs"] = df.index.map(macd_s)
 
     # plot macd
     macd_color = gen_macd_color(df)
     apds = [
-        mpf.make_addplot(macd, color='#2962FF', panel=1),
-        mpf.make_addplot(macd_s, color='#FF6D00', panel=1),
-        mpf.make_addplot(macd_h, type='bar', width=0.7, panel=1, color=macd_color, alpha=1, secondary_y=True),
+        mpf.make_addplot(macd, color="#2962FF", panel=1),
+        mpf.make_addplot(macd_s, color="#FF6D00", panel=1),
+        mpf.make_addplot(
+            macd_h,
+            type="bar",
+            width=0.7,
+            panel=1,
+            color=macd_color,
+            alpha=1,
+            secondary_y=True,
+        ),
     ]
     fig, axes = mpf.plot(
         df,
@@ -265,7 +302,7 @@ def mpl_macd(
         addplot=apds,
         volume_panel=2,
         figsize=(20, 10),
-        returnfig=True
+        returnfig=True,
     )
-    axes[2].legend(["MACD"], loc='upper left')
-    axes[3].legend(["Signal"], loc='lower left')
+    axes[2].legend(["MACD"], loc="upper left")
+    axes[3].legend(["Signal"], loc="lower left")

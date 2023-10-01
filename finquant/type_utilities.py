@@ -64,7 +64,10 @@ def _check_type(
 
     if element_type is not None:
         if isinstance(arg_values, pd.DataFrame) and not all(
-            [np.issubdtype(value_type, element_type) for value_type in arg_values.dtypes]
+            [
+                np.issubdtype(value_type, element_type)
+                for value_type in arg_values.dtypes
+            ]
         ):
             validation_failed = True
 
