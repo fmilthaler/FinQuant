@@ -121,7 +121,9 @@ def relative_strength_index(
         # Single plot
         fig = plt.figure()
         axis = fig.add_subplot(111)
-        axis.axhline(y=float(overbought), color="r", linestyle="dashed", label="overbought")
+        axis.axhline(
+            y=float(overbought), color="r", linestyle="dashed", label="overbought"
+        )
         axis.axhline(y=float(oversold), color="g", linestyle="dashed", label="oversold")
         axis.set_ylim(0, 100)
         data["rsi"].plot(ylabel="RSI", xlabel="Date", ax=axis, grid=True)
@@ -130,8 +132,12 @@ def relative_strength_index(
     else:
         # RSI against price in 2 plots
         fig, axis = plt.subplots(2, 1, sharex=True, sharey=False)
-        axis[0].axhline(y=float(overbought), color="r", linestyle="dashed", label="overbought")
-        axis[0].axhline(y=float(oversold), color="g", linestyle="dashed", label="oversold")
+        axis[0].axhline(
+            y=float(overbought), color="r", linestyle="dashed", label="overbought"
+        )
+        axis[0].axhline(
+            y=float(oversold), color="g", linestyle="dashed", label="oversold"
+        )
         axis[0].set_title("RSI + Price Plot")
         axis[0].set_ylim(0, 100)
         # plot 2 graphs in 2 colors
