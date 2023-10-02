@@ -1,6 +1,5 @@
 """ This module provides function(s) to compute momentum indicators
 used in technical analysis such as RSI, MACD etc. """
-import datetime
 from typing import List, Optional
 
 import matplotlib.pyplot as plt
@@ -8,7 +7,6 @@ import mplfinance as mpf
 import pandas as pd
 
 from finquant.data_types import FLOAT, INT, SERIES_OR_DATAFRAME
-from finquant.portfolio import _yfinance_request
 from finquant.type_utilities import type_validation
 from finquant.utils import all_list_ele_in_other, re_download_stock_data
 
@@ -390,7 +388,13 @@ def plot_macd(
 
     """
     # calculate MACD:
-    df = calculate_macd(data, longer_ema_window, shorter_ema_window, signal_ema_window)
+    df = calculate_macd(
+        data,
+        longer_ema_window,
+        shorter_ema_window,
+        signal_ema_window,
+        stock_name=stock_name,
+    )
 
     # plot macd
     macd_color = gen_macd_color(df)
