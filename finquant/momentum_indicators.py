@@ -281,7 +281,7 @@ def calculate_macd(
         shorter_ema_window=shorter_ema_window,
         signal_ema_window=signal_ema_window,
         name=stock_name,
-        num_days_predate_stock_price=num_days_predate_stock_price
+        num_days_predate_stock_price=num_days_predate_stock_price,
     )
 
     # validating windows
@@ -307,7 +307,11 @@ def calculate_macd(
     ):
         download_stock_data_again = False
     if download_stock_data_again:
-        df = re_download_stock_data(data, stock_name=stock_name, num_days_predate_stock_price=num_days_predate_stock_price)
+        df = re_download_stock_data(
+            data,
+            stock_name=stock_name,
+            num_days_predate_stock_price=num_days_predate_stock_price,
+        )
     else:
         df = data
 

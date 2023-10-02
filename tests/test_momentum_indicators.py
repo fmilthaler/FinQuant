@@ -4,27 +4,30 @@ import pandas as pd
 import pytest
 
 from finquant.momentum_indicators import (
+    calculate_macd,
     calculate_relative_strength_index,
     calculate_wilder_smoothing_averages,
-    plot_macd, gen_macd_color, calculate_macd
+    gen_macd_color,
+    plot_macd,
+    plot_relative_strength_index,
 )
-from finquant.momentum_indicators import plot_relative_strength_index
 from finquant.utils import re_download_stock_data
-
 
 plt.close("all")
 plt.switch_backend("Agg")
 
 
 # Define a sample dataframe for testing
-price_data = np.array([100, 102, 105, 103, 108, 110, 107, 109, 112, 115, 120, 118, 121, 124, 125, 126]).astype(np.float64)
-data = pd.DataFrame(
-    {"Close": price_data}
-)
-macd_data = pd.DataFrame({
-    'Date': pd.date_range(start='2022-01-01', periods=16, freq='D'),
-    'DIS': price_data,
-}).set_index('Date', inplace=False)
+price_data = np.array(
+    [100, 102, 105, 103, 108, 110, 107, 109, 112, 115, 120, 118, 121, 124, 125, 126]
+).astype(np.float64)
+data = pd.DataFrame({"Close": price_data})
+macd_data = pd.DataFrame(
+    {
+        "Date": pd.date_range(start="2022-01-01", periods=16, freq="D"),
+        "DIS": price_data,
+    }
+).set_index("Date", inplace=False)
 macd_data.name = "DIS"
 
 
@@ -126,7 +129,7 @@ def test_plot_relative_strength_index_standalone():
     ylabel_orig = "RSI"
     labels_orig = ["overbought", "oversold", "rsi"]
     title_orig = "RSI Plot"
-    plot_relative_strength_index(data['Close'], standalone=True)
+    plot_relative_strength_index(data["Close"], standalone=True)
     # get data from axis object
     ax = plt.gca()
     # ax.lines[2] is the RSI data
@@ -145,7 +148,7 @@ def test_plot_relative_strength_index_not_standalone():
     # Test non-standalone mode
     xlabel_orig = "Date"
     ylabel_orig = "Price"
-    plot_relative_strength_index(data['Close'], standalone=False)
+    plot_relative_strength_index(data["Close"], standalone=False)
     # get data from axis object
     ax = plt.gca()
     line1 = ax.lines[0]
@@ -161,7 +164,7 @@ def test_plot_relative_strength_index_not_standalone():
 
 def test_gen_macd_color_valid_input():
     # Test with valid input
-    macd_df = pd.DataFrame({'MACDh': [0.5, -0.2, 0.8, -0.6, 0.2]})
+    macd_df = pd.DataFrame({"MACDh": [0.5, -0.2, 0.8, -0.6, 0.2]})
     colors = gen_macd_color(macd_df)
 
     # Check that the result is a list
@@ -171,13 +174,13 @@ def test_gen_macd_color_valid_input():
     assert len(colors) == len(macd_df)
 
     # Check color assignments based on MACD values
-    assert colors == ['#26A69A', '#FF5252', '#26A69A', '#FF5252', '#26A69A']
+    assert colors == ["#26A69A", "#FF5252", "#26A69A", "#FF5252", "#26A69A"]
 
 
 def test_gen_macd_color_green():
     # Test with a DataFrame where MACD values are consistently positive, should return
     # all green colors
-    positive_df = pd.DataFrame({'MACDh': [0.5, 0.6, 0.7, 0.8, 0.9]})
+    positive_df = pd.DataFrame({"MACDh": [0.5, 0.6, 0.7, 0.8, 0.9]})
     colors = gen_macd_color(positive_df)
 
     # Check that the result is a list of all green colors
@@ -187,7 +190,7 @@ def test_gen_macd_color_green():
 def test_gen_macd_color_faint_green():
     # Test with a DataFrame where MACD values are consistently positive but decreasing,
     # should return all faint green colors
-    faint_green_df = pd.DataFrame({'MACDh': [0.5, 0.4, 0.3, 0.2, 0.1]})
+    faint_green_df = pd.DataFrame({"MACDh": [0.5, 0.4, 0.3, 0.2, 0.1]})
     colors = gen_macd_color(faint_green_df)
 
     # Check that the result is a list of all faint green colors
@@ -197,7 +200,7 @@ def test_gen_macd_color_faint_green():
 def test_gen_macd_color_red():
     # Test with a DataFrame where MACD values are consistently negative,
     # should return all red colors
-    negative_df = pd.DataFrame({'MACDh': [-0.5, -0.6, -0.7, -0.8, -0.9]})
+    negative_df = pd.DataFrame({"MACDh": [-0.5, -0.6, -0.7, -0.8, -0.9]})
     colors = gen_macd_color(negative_df)
 
     # Check that the result is a list of all red colors
@@ -207,17 +210,16 @@ def test_gen_macd_color_red():
 def test_gen_macd_color_faint_red():
     # Test with a DataFrame where MACD values are consistently negative but decreasing,
     # should return all faint red colors
-    faint_red_df = pd.DataFrame({'MACDh': [-0.5, -0.4, -0.3, -0.2, -0.1]})
+    faint_red_df = pd.DataFrame({"MACDh": [-0.5, -0.4, -0.3, -0.2, -0.1]})
     colors = gen_macd_color(faint_red_df)
 
     # Check that the result is a list of all faint red colors
     assert colors == ["#FF5252", "#FFCDD2", "#FFCDD2", "#FFCDD2", "#FFCDD2"]
 
 
-
 def test_gen_macd_color_single_element():
     # Test with a DataFrame containing a single element, should return a list with one color
-    single_element_df = pd.DataFrame({'MACDh': [0.5]})
+    single_element_df = pd.DataFrame({"MACDh": [0.5]})
     colors = gen_macd_color(single_element_df)
 
     # Check that the result is a list with one color
@@ -226,14 +228,14 @@ def test_gen_macd_color_single_element():
 
 def test_gen_macd_color_empty_input():
     # Test with an empty DataFrame, should return an empty list
-    empty_df = pd.DataFrame(columns=['MACDh'])
+    empty_df = pd.DataFrame(columns=["MACDh"])
     with pytest.raises(ValueError):
         colors = gen_macd_color(empty_df)
 
 
 def test_gen_macd_color_missing_column():
     # Test with a DataFrame missing 'MACDh' column, should raise a KeyError
-    df_missing_column = pd.DataFrame({'NotMACDh': [0.5, -0.2, 0.8, -0.6, 0.2]})
+    df_missing_column = pd.DataFrame({"NotMACDh": [0.5, -0.2, 0.8, -0.6, 0.2]})
 
     with pytest.raises(KeyError):
         gen_macd_color(df_missing_column)
@@ -241,14 +243,11 @@ def test_gen_macd_color_missing_column():
 
 def test_gen_macd_color_no_color_change():
     # Test with a DataFrame where MACD values don't change, should return all black colors
-    no_change_df = pd.DataFrame({'MACDh': [0.5, 0.5, 0.5, 0.5, 0.5]})
+    no_change_df = pd.DataFrame({"MACDh": [0.5, 0.5, 0.5, 0.5, 0.5]})
     colors = gen_macd_color(no_change_df)
 
     # Check that the result is a list of all black colors
     assert colors == ["#000000", "#000000", "#000000", "#000000", "#000000"]
-
-
-
 
 
 def test_calculate_macd_valid_input():
@@ -263,7 +262,7 @@ def test_calculate_macd_valid_input():
     # not == len(macd_data) here, as we currently re-download data, weekends are not considered
 
     # Check that the required columns ('MACD', 'MACDh', 'MACDs') are present in the result
-    assert all(col in result.columns for col in ['MACD', 'MACDh', 'MACDs'])
+    assert all(col in result.columns for col in ["MACD", "MACDh", "MACDs"])
 
 
 def test_calculate_macd_correct_values():
@@ -271,53 +270,64 @@ def test_calculate_macd_correct_values():
     longer_ema_window = 10
     shorter_ema_window = 7
     signal_ema_window = 4
-    df = re_download_stock_data(macd_data, stock_name="DIS", num_days_predate_stock_price=0)
+    df = re_download_stock_data(
+        macd_data, stock_name="DIS", num_days_predate_stock_price=0
+    )
     result = calculate_macd(
         macd_data,
         longer_ema_window=longer_ema_window,
         shorter_ema_window=shorter_ema_window,
         signal_ema_window=signal_ema_window,
-        num_days_predate_stock_price = 0
+        num_days_predate_stock_price=0,
     )
 
     # Calculate expected values manually (using the provided df)
-    ema_short = df['Close'].ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window).mean()
-    ema_long = df['Close'].ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window).mean()
+    ema_short = (
+        df["Close"]
+        .ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window)
+        .mean()
+    )
+    ema_long = (
+        df["Close"]
+        .ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window)
+        .mean()
+    )
     macd = ema_short - ema_long
     macd.name = "MACD"
-    signal = macd.ewm(span=signal_ema_window, adjust=False, min_periods=signal_ema_window).mean()
+    signal = macd.ewm(
+        span=signal_ema_window, adjust=False, min_periods=signal_ema_window
+    ).mean()
     macd_h = macd - signal
 
     # Check that the calculated values match the values in the DataFrame
-    assert all(result['MACD'].dropna() == macd.dropna())
-    assert all(result['MACDh'].dropna() == macd_h.dropna())
-    assert all(result['MACDs'].dropna() == signal.dropna())
+    assert all(result["MACD"].dropna() == macd.dropna())
+    assert all(result["MACDh"].dropna() == macd_h.dropna())
+    assert all(result["MACDs"].dropna() == signal.dropna())
 
 
 def test_calculate_macd_custom_windows():
     # Test with custom EMA window values
-    result = calculate_macd(macd_data, longer_ema_window=30, shorter_ema_window=15, signal_ema_window=10)
+    result = calculate_macd(
+        macd_data, longer_ema_window=30, shorter_ema_window=15, signal_ema_window=10
+    )
 
     # Check that the result is a DataFrame
     assert isinstance(result, pd.DataFrame)
 
     # Check that the required columns ('MACD', 'MACDh', 'MACDs') are present in the result
-    assert all(col in result.columns for col in ['MACD', 'MACDh', 'MACDs'])
+    assert all(col in result.columns for col in ["MACD", "MACDh", "MACDs"])
 
 
 def test_calculate_macd_invalid_windows():
     # Test with invalid window values, should raise ValueError
     with pytest.raises(ValueError):
-        calculate_macd(macd_data, longer_ema_window=10, shorter_ema_window=20, signal_ema_window=15)
+        calculate_macd(
+            macd_data, longer_ema_window=10, shorter_ema_window=20, signal_ema_window=15
+        )
     with pytest.raises(ValueError):
-        plot_macd(macd_data, longer_ema_window=10, shorter_ema_window=5, signal_ema_window=30)
-
-
-
-
-
-
-
+        plot_macd(
+            macd_data, longer_ema_window=10, shorter_ema_window=5, signal_ema_window=30
+        )
 
 
 def test_plot_macd():
@@ -342,4 +352,3 @@ def test_plot_macd():
     assert len(axes) == 6  # Assuming there are six subplots in the returned figure
     assert axes0_ylabel_orig == axes0_ylabel_plot
     assert axes4_ylabel_orig == axes4_ylabel_plot
-
