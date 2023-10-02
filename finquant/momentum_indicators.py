@@ -41,7 +41,16 @@ def calculate_wilder_smoothing_averages(
         calculate_wilder_smoothing_averages(10.0, 5.0, 14)
 
     """
-    return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
+    # Type validations:
+    type_validation(
+        avg_gain_loss=avg_gain_loss,
+        gain_loss=gain_loss,
+        window_length=window_length,
+    )
+    # validating window_length value range
+    if window_length <= 0:
+        raise ValueError("Error: window_length must be > 0.")
+    return (avg_gain_loss * (window_length - 1) + gain_loss) / float(window_length)
 
 
 def calculate_relative_strength_index(
@@ -77,6 +86,9 @@ def calculate_relative_strength_index(
         raise ValueError("oversold level should be < overbought level")
     if not 0 < oversold < 100 or not 0 < overbought < 100:
         raise ValueError("levels should be > 0 and < 100")
+
+    if window_length > len(data):
+        raise ValueError("Error: window_length must be <= len(data).")
 
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
@@ -260,6 +272,7 @@ def calculate_macd(
     shorter_ema_window: Optional[INT] = 12,
     signal_ema_window: Optional[INT] = 9,
     stock_name: Optional[str] = None,
+    num_days_predate_stock_price: Optional[INT] = 31,
 ) -> pd.DataFrame:
     # Type validations:
     type_validation(
@@ -268,6 +281,7 @@ def calculate_macd(
         shorter_ema_window=shorter_ema_window,
         signal_ema_window=signal_ema_window,
         name=stock_name,
+        num_days_predate_stock_price=num_days_predate_stock_price
     )
 
     # validating windows
@@ -293,25 +307,25 @@ def calculate_macd(
     ):
         download_stock_data_again = False
     if download_stock_data_again:
-        df = re_download_stock_data(data, stock_name=stock_name)
+        df = re_download_stock_data(data, stock_name=stock_name, num_days_predate_stock_price=num_days_predate_stock_price)
     else:
         df = data
 
     # Get the shorter_ema_window-day EMA of the closing price
-    macd_k = (
+    ema_short = (
         df["Close"]
         .ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window)
         .mean()
     )
     # Get the longer_ema_window-day EMA of the closing price
-    macd_d = (
+    ema_long = (
         df["Close"]
         .ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window)
         .mean()
     )
 
     # Subtract the longer_ema_window-day EMA from the shorter_ema_window-Day EMA to get the MACD
-    macd = macd_k - macd_d
+    macd = ema_short - ema_long
     # Get the signal_ema_window-Day EMA of the MACD for the Trigger line
     macd_s = macd.ewm(
         span=signal_ema_window, adjust=False, min_periods=signal_ema_window

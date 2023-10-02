@@ -157,10 +157,13 @@ type_dict: Dict[
     "window_length": ((int, np.integer), None),
     "oversold": ((int, np.integer), None),
     "overbought": ((int, np.integer), None),
+    "num_days_predate_stock_price": ((int, np.integer), None),
     # NUMERICs:
     "investment": ((int, np.integer, float, np.floating), None),
     "dividend": ((int, np.integer, float, np.floating), None),
     "target": ((int, np.integer, float, np.floating), None),
+    "avg_gain_loss": ((int, np.integer, float, np.floating), None),
+    "gain_loss": ((int, np.integer, float, np.floating), None),
     # Booleans:
     "plot": (bool, None),
     "save_weights": (bool, None),
