@@ -154,6 +154,9 @@ type_dict: Dict[
     "longer_ema_window": ((int, np.integer), None),
     "shorter_ema_window": ((int, np.integer), None),
     "signal_ema_window": ((int, np.integer), None),
+    "window_length": ((int, np.integer), None),
+    "oversold": ((int, np.integer), None),
+    "overbought": ((int, np.integer), None),
     # NUMERICs:
     "investment": ((int, np.integer, float, np.floating), None),
     "dividend": ((int, np.integer, float, np.floating), None),
@@ -163,6 +166,7 @@ type_dict: Dict[
     "save_weights": (bool, None),
     "verbose": (bool, None),
     "defer_update": (bool, None),
+    "standalone": (bool, None),
 }
 
 type_callable_dict: Dict[

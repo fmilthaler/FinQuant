@@ -13,17 +13,44 @@ from finquant.type_utilities import type_validation
 from finquant.utils import all_list_ele_in_other
 
 
+def calculate_wilder_smoothing_averages(
+    avg_gain_loss: FLOAT, gain_loss: FLOAT, window_length: INT
+) -> FLOAT:
+    """
+    Calculate Wilder's Smoothing Averages.
+
+    Wilder's Smoothing Averages are used in technical analysis, particularly for
+    calculating indicators like the Relative Strength Index (RSI). This function
+    takes the average gain/loss, the current gain/loss, and the window length as
+    input and returns the smoothed average.
+
+    :param avg_gain_loss: The previous average gain/loss.
+    :type avg_gain_loss: :py:data:`~.finquant.data_types.FLOAT`
+    :param gain_loss: The current gain or loss.
+    :type gain_loss: :py:data:`~.finquant.data_types.FLOAT`
+    :param window_length: The length of the smoothing window.
+    :type window_length: :py:data:`~.finquant.data_types.FLOAT`
+
+    :return: The Wilder's smoothed average value.
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+
+    Example:
+
+    .. code-block:: python
+
+        calculate_wilder_smoothing_averages(10.0, 5.0, 14)
+
+    """
+    return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
 
 
+def calculate_relative_strength_index(
     data: SERIES_OR_DATAFRAME,
     window_length: INT = 14,
     oversold: INT = 30,
     overbought: INT = 70,
-    standalone: bool = False,
-) -> None:
-    """Computes and visualizes a RSI graph,
-        plotted along with the prices in another sub-graph
-        for comparison.
+) -> pd.Series:
+    """Computes the relative strength index of given stock price data.
 
     Ref: https://www.investopedia.com/terms/r/rsi.asp
 
@@ -35,26 +62,26 @@ from finquant.utils import all_list_ele_in_other
     :type oversold: :py:data:`~.finquant.data_types.INT`
     :param overbought: Standard level for overbought RSI, default being 70
     :type overbought: :py:data:`~.finquant.data_types.INT`
-    :param standalone: Plot only the RSI graph
+
+    :return: A Series of RSI values.
     """
-    if not isinstance(data, (pd.Series, pd.DataFrame)):
-        raise ValueError(
-            "data is expected to be of type pandas.Series or pandas.DataFrame"
-        )
-    if isinstance(data, pd.DataFrame) and not len(data.columns.values) == 1:
-        raise ValueError("data is expected to have only one column.")
-    # checking integer fields
-    for field in (window_length, oversold, overbought):
-        if not isinstance(field, int):
-            raise ValueError(f"{field} must be an integer.")
+    # Type validations:
+    type_validation(
+        data=data,
+        window_length=window_length,
+        oversold=oversold,
+        overbought=overbought,
+    )
     # validating levels
     if oversold >= overbought:
         raise ValueError("oversold level should be < overbought level")
     if not 0 < oversold < 100 or not 0 < overbought < 100:
         raise ValueError("levels should be > 0 and < 100")
+
     # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
     if isinstance(data, pd.Series):
         data = data.to_frame()
+
     # calculate price differences
     data["diff"] = data.diff(periods=1)
     # calculate gains and losses
@@ -84,9 +111,47 @@ from finquant.utils import all_list_ele_in_other
     data["rs"] = data["avg_gain"] / data["avg_loss"]
     # calculate RSI
     data["rsi"] = 100 - (100 / (1.0 + data["rs"]))
+    return data["rsi"]
+
 def plot_relative_strength_index(
-    # Plot it
+    data: SERIES_OR_DATAFRAME,
+    window_length: INT = 14,
+    oversold: INT = 30,
+    overbought: INT = 70,
+    standalone: bool = False,
+) -> None:
+    """Computes and visualizes a RSI graph,
+        plotted along with the prices in another sub-graph
+        for comparison.
+
+    Ref: https://www.investopedia.com/terms/r/rsi.asp
+
+    :param data: A series/dataframe of daily stock prices
+    :type data: :py:data:`~.finquant.data_types.SERIES_OR_DATAFRAME`
+    :param window_length: Window length to compute RSI, default being 14 days
+    :type window_length: :py:data:`~.finquant.data_types.INT`
+    :param oversold: Standard level for oversold RSI, default being 30
+    :type oversold: :py:data:`~.finquant.data_types.INT`
+    :param overbought: Standard level for overbought RSI, default being 70
+    :type overbought: :py:data:`~.finquant.data_types.INT`
+    :param standalone: Plot only the RSI graph
+    """
+
+    # converting data to pd.DataFrame if it is a pd.Series (for subsequent function calls):
+    if isinstance(data, pd.Series):
+        data = data.to_frame()
+    # Get stock name:
     stock_name = data.keys()[0]
+
+    # compute RSI:
+    data["rsi"] = calculate_relative_strength_index(
+        data,
+        window_length=window_length,
+        oversold=oversold,
+        overbought=overbought
+    )
+
+    # Plot it
     if standalone:
         # Single plot
         fig = plt.figure()
@@ -127,38 +192,8 @@ def plot_relative_strength_index(
             color=next(colors)["color"],
             legend=True,
         ).legend(loc="center left", bbox_to_anchor=(1, 0.5))
-    return data["rsi"]
 
 
-def calculate_wilder_smoothing_averages(
-    avg_gain_loss: FLOAT, gain_loss: FLOAT, window_length: INT
-) -> FLOAT:
-    """
-    Calculate Wilder's Smoothing Averages.
-
-    Wilder's Smoothing Averages are used in technical analysis, particularly for
-    calculating indicators like the Relative Strength Index (RSI). This function
-    takes the average gain/loss, the current gain/loss, and the window length as
-    input and returns the smoothed average.
-
-    :param avg_gain_loss: The previous average gain/loss.
-    :type avg_gain_loss: :py:data:`~.finquant.data_types.FLOAT`
-    :param gain_loss: The current gain or loss.
-    :type gain_loss: :py:data:`~.finquant.data_types.FLOAT`
-    :param window_length: The length of the smoothing window.
-    :type window_length: :py:data:`~.finquant.data_types.FLOAT`
-
-    :return: The Wilder's smoothed average value.
-    :rtype: :py:data:`~.finquant.data_types.FLOAT`
-
-    Example:
-
-    .. code-block:: python
-
-        calculate_wilder_smoothing_averages(10.0, 5.0, 14)
-
-    """
-    return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
 # Generating colors for MACD histogram
 def gen_macd_color(df: pd.DataFrame) -> List[str]:
     """
@@ -191,6 +226,7 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
         print(colors)  # Output: ['#26A69A', '#FFCDD2', '#26A69A', '#FFCDD2', '#26A69A']
 
     """
+    # Type validations:
     type_validation(df=df)
     macd_color = []
     macd_color.clear()
@@ -219,6 +255,95 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
             macd_color.append("#000000")
     return macd_color
 
+
+def re_download_stock_data(
+    data: SERIES_OR_DATAFRAME,
+    stock_name: str
+) -> pd.DataFrame:
+    # Type validations:
+    type_validation(
+        data=data,
+        name=stock_name,
+    )
+    # download additional price data 'Open' for given stock and timeframe:
+    start_date = data.index.min() - datetime.timedelta(days=31)
+    end_date = data.index.max() + datetime.timedelta(days=1)
+    df = _yfinance_request([stock_name], start_date=start_date, end_date=end_date)
+    # dropping second level of column header that yfinance returns
+    df.columns = df.columns.droplevel(1)
+    return df
+
+
+def calculate_macd(
+    data: SERIES_OR_DATAFRAME,
+    longer_ema_window: Optional[INT] = 26,
+    shorter_ema_window: Optional[INT] = 12,
+    signal_ema_window: Optional[INT] = 9,
+    stock_name: Optional[str] = None,
+) -> pd.DataFrame:
+    # Type validations:
+    type_validation(
+        data=data,
+        longer_ema_window=longer_ema_window,
+        shorter_ema_window=shorter_ema_window,
+        signal_ema_window=signal_ema_window,
+        name=stock_name,
+    )
+
+    # validating windows
+    if longer_ema_window < shorter_ema_window:
+        raise ValueError("longer ema window should be > shorter ema window")
+    if longer_ema_window < signal_ema_window:
+        raise ValueError("longer ema window should be > signal ema window")
+
+    # Taking care of potential column header clash, removing "WIKI/" (which comes from legacy quandl)
+    if stock_name is None:
+        stock_name = data.name
+    if "WIKI/" in stock_name:
+        stock_name = stock_name.replace("WIKI/", "")
+    if isinstance(data, pd.Series):
+        data = data.to_frame()
+    # Remove prefix substring from column headers
+    data.columns = data.columns.str.replace("WIKI/", "")
+
+    # Check if required columns are present, if data is a pd.DataFrame, else re-download stock price data:
+    download_stock_data_again = True
+    if isinstance(data, pd.DataFrame) and all_list_ele_in_other(
+        ["Open", "Close", "High", "Low", "Volume"], data.columns
+    ):
+        download_stock_data_again = False
+    if download_stock_data_again:
+        df = re_download_stock_data(data, stock_name=stock_name)
+    else:
+        df = data
+
+    # Get the shorter_ema_window-day EMA of the closing price
+    macd_k = (
+        df["Close"]
+        .ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window)
+        .mean()
+    )
+    # Get the longer_ema_window-day EMA of the closing price
+    macd_d = (
+        df["Close"]
+        .ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window)
+        .mean()
+    )
+
+    # Subtract the longer_ema_window-day EMA from the shorter_ema_window-Day EMA to get the MACD
+    macd = macd_k - macd_d
+    # Get the signal_ema_window-Day EMA of the MACD for the Trigger line
+    macd_s = macd.ewm(
+        span=signal_ema_window, adjust=False, min_periods=signal_ema_window
+    ).mean()
+    # Calculate the difference between the MACD - Trigger for the Convergence/Divergence value
+    macd_h = macd - macd_s
+
+    # Add all of our new values for the MACD to the dataframe
+    df["MACD"] = df.index.map(macd)
+    df["MACDh"] = df.index.map(macd_h)
+    df["MACDs"] = df.index.map(macd_s)
+    return df
 
 def plot_macd(
     data: SERIES_OR_DATAFRAME,
@@ -262,84 +387,24 @@ def plot_macd(
 
         # Create a DataFrame or Series with stock price data
         data = pd.read_csv('stock_data.csv', index_col='Date', parse_dates=True)
-        mpl_macd(data, longer_ema_window=26, shorter_ema_window=12, signal_ema_window=9, stock_name='DIS')
+        plot_macd(data, longer_ema_window=26, shorter_ema_window=12, signal_ema_window=9, stock_name='DIS')
 
     """
-    # Type validations:
-    type_validation(
-        data=data,
-        longer_ema_window=longer_ema_window,
-        shorter_ema_window=shorter_ema_window,
-        signal_ema_window=signal_ema_window,
-        name=stock_name,
+    # calculate MACD:
+    df = calculate_macd(
+        data,
+        longer_ema_window,
+        shorter_ema_window,
+        signal_ema_window
     )
-
-    # validating windows
-    if longer_ema_window < shorter_ema_window:
-        raise ValueError("longer ema window should be > shorter ema window")
-    if longer_ema_window < signal_ema_window:
-        raise ValueError("longer ema window should be > signal ema window")
-
-    # Taking care of potential column header clash, removing "WIKI/" (which comes from legacy quandl)
-    if stock_name is None:
-        stock_name = data.name
-    if "WIKI/" in stock_name:
-        stock_name = stock_name.replace("WIKI/", "")
-    if isinstance(data, pd.Series):
-        data = data.to_frame()
-    # Remove prefix substring from column headers
-    data.columns = data.columns.str.replace("WIKI/", "")
-
-    # Check if required columns are present, if data is a pd.DataFrame, else re-download stock price data:
-    re_download_stock_data = True
-    if isinstance(data, pd.DataFrame) and all_list_ele_in_other(
-        ["Open", "Close", "High", "Low", "Volume"], data.columns
-    ):
-        re_download_stock_data = False
-    if re_download_stock_data:
-        # download additional price data 'Open' for given stock and timeframe:
-        start_date = data.index.min() - datetime.timedelta(days=31)
-        end_date = data.index.max() + datetime.timedelta(days=1)
-        df = _yfinance_request([stock_name], start_date=start_date, end_date=end_date)
-        # dropping second level of column header that yfinance returns
-        df.columns = df.columns.droplevel(1)
-    else:
-        df = data
-
-    # Get the shorter_ema_window-day EMA of the closing price
-    macd_k = (
-        df["Close"]
-        .ewm(span=shorter_ema_window, adjust=False, min_periods=shorter_ema_window)
-        .mean()
-    )
-    # Get the longer_ema_window-day EMA of the closing price
-    macd_d = (
-        df["Close"]
-        .ewm(span=longer_ema_window, adjust=False, min_periods=longer_ema_window)
-        .mean()
-    )
-
-    # Subtract the longer_ema_window-day EMA from the shorter_ema_window-Day EMA to get the MACD
-    macd = macd_k - macd_d
-    # Get the signal_ema_window-Day EMA of the MACD for the Trigger line
-    macd_s = macd.ewm(
-        span=signal_ema_window, adjust=False, min_periods=signal_ema_window
-    ).mean()
-    # Calculate the difference between the MACD - Trigger for the Convergence/Divergence value
-    macd_h = macd - macd_s
-
-    # Add all of our new values for the MACD to the dataframe
-    df["MACD"] = df.index.map(macd)
-    df["MACDh"] = df.index.map(macd_h)
-    df["MACDs"] = df.index.map(macd_s)
 
     # plot macd
     macd_color = gen_macd_color(df)
     apds = [
-        mpf.make_addplot(macd, color="#2962FF", panel=1),
-        mpf.make_addplot(macd_s, color="#FF6D00", panel=1),
+        mpf.make_addplot(df["MACD"], color="#2962FF", panel=1),
+        mpf.make_addplot(df["MACDs"], color="#FF6D00", panel=1),
         mpf.make_addplot(
-            macd_h,
+            df["MACDh"],
             type="bar",
             width=0.7,
             panel=1,
