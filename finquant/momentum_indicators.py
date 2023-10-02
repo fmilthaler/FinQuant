@@ -13,36 +13,6 @@ from finquant.type_utilities import type_validation
 from finquant.utils import all_list_ele_in_other
 
 
-def calculate_wilder_smoothing_averages(
-    avg_gain_loss: FLOAT, gain_loss: FLOAT, window_length: INT
-) -> FLOAT:
-    """
-    Calculate Wilder's Smoothing Averages.
-
-    Wilder's Smoothing Averages are used in technical analysis, particularly for
-    calculating indicators like the Relative Strength Index (RSI). This function
-    takes the average gain/loss, the current gain/loss, and the window length as
-    input and returns the smoothed average.
-
-    :param avg_gain_loss: The previous average gain/loss.
-    :type avg_gain_loss: :py:data:`~.finquant.data_types.FLOAT`
-    :param gain_loss: The current gain or loss.
-    :type gain_loss: :py:data:`~.finquant.data_types.FLOAT`
-    :param window_length: The length of the smoothing window.
-    :type window_length: :py:data:`~.finquant.data_types.FLOAT`
-
-    :return: The Wilder's smoothed average value.
-    :rtype: :py:data:`~.finquant.data_types.FLOAT`
-
-    Example:
-
-    .. code-block:: python
-
-        calculate_wilder_smoothing_averages(10.0, 5.0, 14)
-
-    """
-
-    return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
 
 
 def relative_strength_index(
@@ -160,6 +130,35 @@ def relative_strength_index(
     return data["rsi"]
 
 
+def calculate_wilder_smoothing_averages(
+    avg_gain_loss: FLOAT, gain_loss: FLOAT, window_length: INT
+) -> FLOAT:
+    """
+    Calculate Wilder's Smoothing Averages.
+
+    Wilder's Smoothing Averages are used in technical analysis, particularly for
+    calculating indicators like the Relative Strength Index (RSI). This function
+    takes the average gain/loss, the current gain/loss, and the window length as
+    input and returns the smoothed average.
+
+    :param avg_gain_loss: The previous average gain/loss.
+    :type avg_gain_loss: :py:data:`~.finquant.data_types.FLOAT`
+    :param gain_loss: The current gain or loss.
+    :type gain_loss: :py:data:`~.finquant.data_types.FLOAT`
+    :param window_length: The length of the smoothing window.
+    :type window_length: :py:data:`~.finquant.data_types.FLOAT`
+
+    :return: The Wilder's smoothed average value.
+    :rtype: :py:data:`~.finquant.data_types.FLOAT`
+
+    Example:
+
+    .. code-block:: python
+
+        calculate_wilder_smoothing_averages(10.0, 5.0, 14)
+
+    """
+    return (avg_gain_loss * (window_length - 1) + gain_loss) / window_length
 # Generating colors for MACD histogram
 def gen_macd_color(df: pd.DataFrame) -> List[str]:
     """
@@ -221,7 +220,7 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
     return macd_color
 
 
-def mpl_macd(
+def plot_macd(
     data: SERIES_OR_DATAFRAME,
     longer_ema_window: Optional[INT] = 26,
     shorter_ema_window: Optional[INT] = 12,

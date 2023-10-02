@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from finquant.momentum_indicators import mpl_macd
+from finquant.momentum_indicators import plot_macd
 from finquant.momentum_indicators import relative_strength_index as rsi
 
 plt.close("all")
@@ -72,7 +72,7 @@ def test_mpl_macd():
     df.name = "DIS"
 
     # Call mpl_macd function
-    fig, axes = mpl_macd(df)
+    fig, axes = plot_macd(df)
 
     axes0_ylabel_plot = axes[0].get_ylabel()
     axes4_ylabel_plot = axes[4].get_ylabel()
@@ -95,6 +95,6 @@ def test_mpl_macd_invalid_window_parameters():
 
     # Call mpl_macd function with invalid window parameters and check for ValueError
     with pytest.raises(ValueError):
-        mpl_macd(df, longer_ema_window=10, shorter_ema_window=20, signal_ema_window=30)
+        plot_macd(df, longer_ema_window=10, shorter_ema_window=20, signal_ema_window=30)
     with pytest.raises(ValueError):
-        mpl_macd(df, longer_ema_window=10, shorter_ema_window=5, signal_ema_window=30)
+        plot_macd(df, longer_ema_window=10, shorter_ema_window=5, signal_ema_window=30)

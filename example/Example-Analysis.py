@@ -346,15 +346,15 @@ plt.show()
 
 # <codecell>
 # plot MACD for disney stock proces
-from finquant.momentum_indicators import mpl_macd
+from finquant.momentum_indicators import plot_macd
 
 # using short time frame of data due to plot warnings from matplotlib/mplfinance
 dis = dis[0:300]
 
 # plot MACD - by default this plots RSI against the price in two graphs
-mpl_macd(dis)
+plot_macd(dis)
 plt.show()
 
 # plot MACD using custom arguments
-mpl_macd(dis, longer_ema_window=30, shorter_ema_window=15, signal_ema_window=10)
+plot_macd(dis, longer_ema_window=30, shorter_ema_window=15, signal_ema_window=10)
 plt.show()
