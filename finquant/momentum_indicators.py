@@ -113,6 +113,7 @@ def calculate_relative_strength_index(
     data["rsi"] = 100 - (100 / (1.0 + data["rs"]))
     return data["rsi"]
 
+
 def plot_relative_strength_index(
     data: SERIES_OR_DATAFRAME,
     window_length: INT = 14,
@@ -145,10 +146,7 @@ def plot_relative_strength_index(
 
     # compute RSI:
     data["rsi"] = calculate_relative_strength_index(
-        data,
-        window_length=window_length,
-        oversold=oversold,
-        overbought=overbought
+        data, window_length=window_length, oversold=oversold, overbought=overbought
     )
 
     # Plot it
@@ -327,6 +325,7 @@ def calculate_macd(
     df["MACDs"] = df.index.map(macd_s)
     return df
 
+
 def plot_macd(
     data: SERIES_OR_DATAFRAME,
     longer_ema_window: Optional[INT] = 26,
@@ -373,12 +372,7 @@ def plot_macd(
 
     """
     # calculate MACD:
-    df = calculate_macd(
-        data,
-        longer_ema_window,
-        shorter_ema_window,
-        signal_ema_window
-    )
+    df = calculate_macd(data, longer_ema_window, shorter_ema_window, signal_ema_window)
 
     # plot macd
     macd_color = gen_macd_color(df)

@@ -15,15 +15,9 @@ def all_list_ele_in_other(
     return all(ele in l_2 for ele in l_1)
 
 
-def re_download_stock_data(
-    data: SERIES_OR_DATAFRAME,
-    stock_name: str
-) -> pd.DataFrame:
+def re_download_stock_data(data: SERIES_OR_DATAFRAME, stock_name: str) -> pd.DataFrame:
     # Type validations:
-    type_validation(
-        data=data,
-        name=stock_name,
-    )
+    type_validation(data=data, name=stock_name)
     # download additional price data 'Open' for given stock and timeframe:
     start_date = data.index.min() - datetime.timedelta(days=31)
     end_date = data.index.max() + datetime.timedelta(days=1)
