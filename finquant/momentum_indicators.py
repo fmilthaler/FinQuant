@@ -10,7 +10,7 @@ import pandas as pd
 from finquant.data_types import FLOAT, INT, SERIES_OR_DATAFRAME
 from finquant.portfolio import _yfinance_request
 from finquant.type_utilities import type_validation
-from finquant.utils import all_list_ele_in_other
+from finquant.utils import all_list_ele_in_other, re_download_stock_data
 
 
 def calculate_wilder_smoothing_averages(
@@ -254,24 +254,6 @@ def gen_macd_color(df: pd.DataFrame) -> List[str]:
         else:
             macd_color.append("#000000")
     return macd_color
-
-
-def re_download_stock_data(
-    data: SERIES_OR_DATAFRAME,
-    stock_name: str
-) -> pd.DataFrame:
-    # Type validations:
-    type_validation(
-        data=data,
-        name=stock_name,
-    )
-    # download additional price data 'Open' for given stock and timeframe:
-    start_date = data.index.min() - datetime.timedelta(days=31)
-    end_date = data.index.max() + datetime.timedelta(days=1)
-    df = _yfinance_request([stock_name], start_date=start_date, end_date=end_date)
-    # dropping second level of column header that yfinance returns
-    df.columns = df.columns.droplevel(1)
-    return df
 
 
 def calculate_macd(
