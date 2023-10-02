@@ -4,7 +4,7 @@ import pandas as pd
 import pytest
 
 from finquant.momentum_indicators import plot_macd
-from finquant.momentum_indicators import relative_strength_index as rsi
+from finquant.momentum_indicators import plot_relative_strength_index as rsi
 
 plt.close("all")
 plt.switch_backend("Agg")

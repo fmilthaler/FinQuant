@@ -327,7 +327,7 @@ print(pf.data.loc[pf.data.index.year == 2017].head(3))
 
 # <codecell>
 # plot the RSI (Relative Strength Index) for disney stock proces
-from finquant.momentum_indicators import relative_strength_index as rsi
+from finquant.momentum_indicators import plot_relative_strength_index as rsi
 
 # get stock data for disney
 dis = pf.get_stock("WIKI/DIS").data.copy(deep=True)

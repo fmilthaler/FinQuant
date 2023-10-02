@@ -15,7 +15,6 @@ from finquant.utils import all_list_ele_in_other
 
 
 
-def relative_strength_index(
     data: SERIES_OR_DATAFRAME,
     window_length: INT = 14,
     oversold: INT = 30,
@@ -85,6 +84,7 @@ def relative_strength_index(
     data["rs"] = data["avg_gain"] / data["avg_loss"]
     # calculate RSI
     data["rsi"] = 100 - (100 / (1.0 + data["rs"]))
+def plot_relative_strength_index(
     # Plot it
     stock_name = data.keys()[0]
     if standalone:
